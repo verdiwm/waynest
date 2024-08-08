@@ -10,4 +10,18 @@ documentation = "https://docs.rs/waynest"
 repository = "https://github.com/verdiwm/waynest"
 include = ["src/**/*.rs", "README.md", "LICENSE"]
 
+[features]
+fuzz = ["dep:arbitrary", "bytes/arbitrary"]
+
 [dependencies]
+arbitrary = { version = "1.3.2", optional = true }
+bytes = { version = "1.7.1", features = ["arbitrary"] }
+futures-util = { version = "0.3.30", default-features = false, features = ["sink"] }
+pin-project-lite = "0.2.14"
+rustix = "0.38.34"
+thiserror = "1.0.63"
+tokio = { version = "1.39.2", features = ["net"] }
+tracing = "0.1.40"
+
+[patch.crates-io]
+bytes = { git = "https://github.com/morr0ne/bytes", branch = "arbitrary" }
