@@ -5,7 +5,6 @@ use std::{
     fmt::Write as _,
     fs::{self, OpenOptions},
     io::Write as _,
-    process::Command,
 };
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -141,8 +140,8 @@ impl Arg {
     }
 
     fn find_protocol(&self, protocols: &[Protocol]) -> Option<Protocol> {
-        if let Some((enum_interface, name)) = self.to_enum_name() {
-            let e = if let Some(enum_interface) = enum_interface {
+        if let Some((enum_interface, _name)) = self.to_enum_name() {
+            if let Some(enum_interface) = enum_interface {
                 return Some(
                     protocols
                         .iter()
@@ -323,6 +322,10 @@ fn generate_client_code(protocols: &[Protocol]) -> Result<()> {
 
     writeln!(&mut generated_path, "#![allow(unused)]")?;
     writeln!(&mut generated_path, "#![allow(async_fn_in_trait)]")?;
+
+    for protocol in protocols {
+        dbg!(&protocol.name);
+    }
 
     Ok(())
 }
@@ -681,7 +684,7 @@ fn generate_server_code(protocols: &[Protocol]) -> Result<()> {
                 let mut tracing_brackets = String::new();
                 (0..num_tracing_args).for_each(|_| tracing_brackets.push_str("{}, "));
 
-                let tracing_brackets = tracing_brackets
+                let _tracing_brackets = tracing_brackets
                     .strip_suffix(", ")
                     .unwrap_or(&tracing_brackets);
 
