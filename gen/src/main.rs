@@ -303,10 +303,6 @@ fn main() -> Result<()> {
     generate_server_code(&protocols)?;
     generate_client_code(&protocols)?;
 
-    Command::new("rustfmt")
-        .arg("src/protocol/interfaces.rs")
-        .output()?;
-
     Ok(())
 }
 
