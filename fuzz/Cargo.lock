@@ -27,6 +27,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-trait"
+version = "0.1.81"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6e0c28dcc82d7c8ead5cb13beb15405b57b8546e93215673ff8ca0349a028107"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "backtrace"
 version = "0.3.73"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -51,9 +62,6 @@ checksum = "b048fb63fd8b5923fc5aa7b340d8e156aec7ec02f0c78fa8a6ddc2613f6f71de"
 name = "bytes"
 version = "1.7.1"
 source = "git+https://github.com/morr0ne/bytes?branch=arbitrary#9c77b9c082a4a624be116a7334fb9e45144a1a69"
-dependencies = [
- "arbitrary",
-]
 
 [[package]]
 name = "cc"
@@ -81,6 +89,12 @@ dependencies = [
  "quote",
  "syn",
 ]
+
+[[package]]
+name = "downcast-rs"
+version = "1.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "75b325c5dbd37f80359721ad39aca5a29fb04c89279657cffdda8736d0c0b9d2"
 
 [[package]]
 name = "errno"
@@ -314,6 +328,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "tokio-stream"
+version = "0.1.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "267ac89e0bec6e691e5813911606935d77c476ff49024f98abcea3e7b15e37af"
+dependencies = [
+ "futures-core",
+ "pin-project-lite",
+ "tokio",
+]
+
+[[package]]
 name = "tracing"
 version = "0.1.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -368,16 +393,29 @@ checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 
 [[package]]
 name = "waynest"
-version = "0.0.1"
+version = "0.0.4"
 dependencies = [
  "arbitrary",
+ "async-trait",
+ "bitflags",
  "bytes",
+ "downcast-rs",
  "futures-util",
  "pin-project-lite",
  "rustix",
  "thiserror",
  "tokio",
+ "tokio-stream",
  "tracing",
+ "waynest-macros",
+]
+
+[[package]]
+name = "waynest-macros"
+version = "0.0.2"
+dependencies = [
+ "quote",
+ "syn",
 ]
 
 [[package]]

@@ -6,12 +6,27 @@ use rustix::fd::{FromRawFd, OwnedFd};
 use super::{DecodeError, Fixed, NewId, ObjectId};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cfg_attr(feature = "fuzz", derive(arbitrary::Arbitrary))]
 pub struct Message {
     pub object_id: ObjectId,
     pub opcode: u16,
     payload: Bytes,
     fds: Vec<RawFd>,
+}
+
+#[cfg(feature = "fuzz")]
+impl<'a> arbitrary::Arbitrary<'a> for Message {
+    fn arbitrary(u: &mut arbitrary::Unstructured<'a>) -> arbitrary::Result<Self> {
+        let len = u.arbitrary_len::<u8>()?;
+
+        let payload = u.bytes(len).map(Bytes::copy_from_slice)?;
+
+        Ok(Self {
+            object_id: ObjectId::arbitrary(u)?,
+            opcode: u16::arbitrary(u)?,
+            payload,
+            fds: Vec::<RawFd>::arbitrary(u)?,
+        })
+    }
 }
 
 impl Message {
