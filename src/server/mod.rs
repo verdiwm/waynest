@@ -13,6 +13,8 @@ use crate::{
     Error, Result,
 };
 
+pub use waynest_macros::Dispatcher;
+
 // pub(crate) use verdi_macros::Dispatcher;
 
 pub struct Client {
