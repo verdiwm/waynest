@@ -8,7 +8,7 @@ pub fn derive_dispatcher(input: TokenStream) -> TokenStream {
     let ident = input.ident;
 
     quote! {
-        #[async_trait::async_trait]
+        #[waynest::async_trait::async_trait]
         impl waynest::server::Dispatcher for #ident {
             async fn dispatch(
                 &self,
