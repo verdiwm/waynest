@@ -428,6 +428,15 @@ dependencies = [
  "tokio",
  "tokio-stream",
  "tracing",
+ "waynest-macros",
+]
+
+[[package]]
+name = "waynest-macros"
+version = "0.0.1"
+dependencies = [
+ "quote",
+ "syn",
 ]
 
 [[package]]

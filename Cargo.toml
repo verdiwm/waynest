@@ -1,5 +1,5 @@
 [workspace]
-members = ["gen"]
+members = ["gen", "macros"]
 exclude = ["fuzz"]
 
 [package]
@@ -30,6 +30,7 @@ thiserror = "1.0.63"
 tokio = { version = "1.39.2", features = ["net"] }
 tokio-stream = "0.1.15"
 tracing = "0.1.40"
+waynest-macros = { version = "0.0.1", path = "macros" }
 
 [patch.crates-io]
 bytes = { git = "https://github.com/morr0ne/bytes", branch = "arbitrary" }
