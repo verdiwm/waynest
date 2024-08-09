@@ -418,6 +418,7 @@ version = "0.0.1"
 dependencies = [
  "arbitrary",
  "async-trait",
+ "bitflags",
  "bytes",
  "downcast-rs",
  "futures-util",
