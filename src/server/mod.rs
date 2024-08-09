@@ -54,8 +54,10 @@ impl Client {
         object.dispatch(self, message).await
     }
 
-    pub async fn next_message(&mut self) -> Result<Option<Message>, DecodeError> {
-        self.socket.try_next().await
+    pub async fn next_message(&mut self) -> Result<Option<Message>> {
+        let next = self.socket.try_next().await?;
+
+        Ok(next)
     }
 
     pub async fn send_message(&mut self, message: Message) -> Result<(), io::Error> {
