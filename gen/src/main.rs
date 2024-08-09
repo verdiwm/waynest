@@ -315,6 +315,15 @@ fn find_enum<'a>(protocol: &'a Protocol, name: &str) -> &'a Enum {
 }
 
 fn generate_client_code(protocols: &[Protocol]) -> Result<()> {
+    let mut generated_path = OpenOptions::new()
+        .truncate(true)
+        .write(true)
+        .create(true)
+        .open("src/client/protocol.rs")?;
+
+    writeln!(&mut generated_path, "#![allow(unused)]")?;
+    writeln!(&mut generated_path, "#![allow(async_fn_in_trait)]")?;
+
     Ok(())
 }
 
