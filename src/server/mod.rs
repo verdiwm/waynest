@@ -9,7 +9,7 @@ use tokio::net::UnixStream;
 use tokio_stream::StreamExt;
 
 use crate::{
-    wire::{Message, ObjectId, Socket, DecodeError},
+    wire::{DecodeError, Message, ObjectId, Socket},
     Error, Result,
 };
 

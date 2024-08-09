@@ -151,14 +151,14 @@ impl Arg {
         let ret = match self.ty {
             ArgType::Int => "i32",
             ArgType::Uint => "u32",
-            ArgType::Fixed => "waynest::wire::Fixed",
+            ArgType::Fixed => "crate::wire::Fixed",
             ArgType::String => "String",
-            ArgType::Object => "waynest::wire::ObjectId",
+            ArgType::Object => "crate::wire::ObjectId",
             ArgType::NewId => {
                 if self.interface.is_some() {
-                    "waynest::wire::ObjectId"
+                    "crate::wire::ObjectId"
                 } else {
-                    "waynest::wire::NewId"
+                    "crate::wire::NewId"
                 }
             }
             ArgType::Array => "Vec<u8>",
@@ -305,12 +305,12 @@ fn main() -> Result<()> {
                     writeln!(
                         &mut generated_path,
                         r#"impl TryFrom<u32> for {name} {{
-                            type Error = waynest::wire::DecodeError;
+                            type Error = crate::wire::DecodeError;
         
                             fn try_from(v: u32) -> Result<Self, Self::Error> {{
                                 match v {{
                                     {match_variants}
-                                    _ => Err(waynest::wire::DecodeError::MalformedPayload)
+                                    _ => Err(crate::wire::DecodeError::MalformedPayload)
                                 }}
                             }}
                         }}"#
@@ -372,10 +372,10 @@ fn main() -> Result<()> {
                     writeln!(
                         &mut generated_path,
                         r#"impl TryFrom<u32> for {name} {{
-                            type Error = waynest::wire::DecodeError;
+                            type Error = crate::wire::DecodeError;
         
                             fn try_from(v: u32) -> Result<Self, Self::Error> {{
-                               Self::from_bits(v).ok_or(waynest::wire::DecodeError::MalformedPayload)
+                               Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
                             }}
                         }}"#
                     )?;
@@ -388,16 +388,16 @@ fn main() -> Result<()> {
 
             writeln!(
                 &mut generated_path,
-                r#"pub trait {trait_name}: crate::Dispatcher {{
+                r#"pub trait {trait_name}: crate::server::Dispatcher {{
                     const INTERFACE: &str = "{name}";
                     const VERSION: u32 = {version};
 
-                    fn into_object(self, id: crate::ObjectId) -> crate::Object where Self: Sized
+                    fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object where Self: Sized
                     {{
-                        crate::Object::new(id, self)
+                        crate::server::Object::new(id, self)
                     }}
                     
-                    async fn handle_request(&self, object: &crate::Object, client: &mut crate::Client, message: &mut waynest::wire::Message) -> crate::Result<()> {{
+                    async fn handle_request(&self, object: &crate::server::Object, client: &mut crate::server::Client, message: &mut crate::wire::Message) -> crate::Result<()> {{
                     match message.opcode {{"#,
                 trait_name = interface.name.to_upper_camel_case(),
                 name = interface.name,
@@ -411,7 +411,7 @@ fn main() -> Result<()> {
                     let mut optional = String::new();
 
                     if !arg.allow_null && arg.is_return_option() {
-                        optional = format!(".ok_or(waynest::wire::DecodeError::MalformedPayload)?");
+                        optional = format!(".ok_or(crate::wire::DecodeError::MalformedPayload)?");
                     }
 
                     let mut tryinto = String::new();
@@ -447,7 +447,8 @@ fn main() -> Result<()> {
 
             for request in &interface.requests {
                 let mut args =
-                    "&self, _object: &crate::Object, client: &mut crate::Client,".to_string();
+                    "&self, _object: &crate::server::Object, client: &mut crate::server::Client,"
+                        .to_string();
 
                 for arg in &request.args {
                     let mut ty = arg.to_rust_type().to_string();
@@ -483,7 +484,8 @@ fn main() -> Result<()> {
 
             for (opcode, event) in interface.events.iter().enumerate() {
                 let mut args =
-                    "&self, _object: &crate::Object, client: &mut crate::Client,".to_string();
+                    "&self, _object: &crate::server::Object, client: &mut crate::server::Client,"
+                        .to_string();
                 let mut build_args = String::new();
                 let mut tracing_args = String::new();
                 let mut num_tracing_args = 0usize;
@@ -551,7 +553,7 @@ fn main() -> Result<()> {
                 writeln!(
                     &mut generated_path,
                     r#"tracing::debug!("-> {interface_name}#{{}}.{og_name}()", _object.id);
-                    let (payload,fds) = waynest::wire::PayloadBuilder::new()
+                    let (payload,fds) = crate::wire::PayloadBuilder::new()
                     {build_args}
                     .build();"#,
                     og_name = event.name.to_snek_case(),
@@ -561,7 +563,7 @@ fn main() -> Result<()> {
                 writeln!(
                     &mut generated_path,
                     r#"client
-                .send_message(waynest::wire::Message::new(_object.id, {opcode}, payload, fds))
+                .send_message(crate::wire::Message::new(_object.id, {opcode}, payload, fds))
                 .await
                 .map_err(crate::error::Error::IoError)"#
                 )?;
