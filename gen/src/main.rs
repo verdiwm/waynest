@@ -222,7 +222,7 @@ fn main() -> Result<()> {
         .truncate(true)
         .write(true)
         .create(true)
-        .open("src/protocol/server.rs")?;
+        .open("src/server/protocol.rs")?;
 
     writeln!(&mut generated_path, "#![allow(unused)]")?;
     writeln!(&mut generated_path, "#![allow(async_fn_in_trait)]")?;

@@ -1,4 +1,9 @@
 #![feature(unix_socket_ancillary_data)]
 
-pub mod protocol;
+mod error;
+
+pub mod client;
+pub mod server;
 pub mod wire;
+
+pub use error::{Error, Result};
