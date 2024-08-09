@@ -6,6 +6,7 @@ use std::{
     fs::{self, OpenOptions},
     io::Write as _,
 };
+use tracing::debug;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
@@ -294,6 +295,8 @@ const KEYWORDS: [&str; 51] = [
 ];
 
 fn main() -> Result<()> {
+    tracing_subscriber::fmt::init();
+
     let protocols: Vec<Protocol> = PROTOCOLS
         .iter()
         .map(|path| quick_xml::de::from_str(&fs::read_to_string(path).unwrap()).unwrap())
@@ -324,7 +327,7 @@ fn generate_client_code(protocols: &[Protocol]) -> Result<()> {
     writeln!(&mut generated_path, "#![allow(async_fn_in_trait)]")?;
 
     for protocol in protocols {
-        dbg!(&protocol.name);
+        debug!("Generating client code for \"{}\"", &protocol.name);
     }
 
     Ok(())
@@ -341,7 +344,7 @@ fn generate_server_code(protocols: &[Protocol]) -> Result<()> {
     writeln!(&mut generated_path, "#![allow(async_fn_in_trait)]")?;
 
     for protocol in protocols {
-        dbg!(&protocol.name);
+        debug!("Generating server code for \"{}\"", &protocol.name);
 
         if let Some(description) = &protocol.description {
             for line in description.lines() {
