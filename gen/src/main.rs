@@ -8,7 +8,7 @@ use std::{
     process::Command,
 };
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
 struct Protocol {
     #[serde(rename = "@name")]
@@ -19,7 +19,7 @@ struct Protocol {
     interfaces: Vec<Interface>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
 struct Interface {
     #[serde(rename = "@name")]
@@ -35,7 +35,7 @@ struct Interface {
     enums: Vec<Enum>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
 struct Message {
     #[serde(rename = "@name")]
@@ -51,13 +51,14 @@ struct Message {
     args: Vec<Arg>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
+
 enum MessageType {
     #[serde(rename = "destructor")]
     Destructor,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
 struct Arg {
     #[serde(rename = "@name")]
@@ -74,7 +75,7 @@ struct Arg {
     summary: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
 enum ArgType {
     #[serde(rename = "int")]
     Int,
@@ -94,7 +95,7 @@ enum ArgType {
     Fd,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
 struct Enum {
     #[serde(rename = "@name")]
@@ -110,7 +111,7 @@ struct Enum {
     entries: Vec<Entry>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
 struct Entry {
     #[serde(rename = "@name")]
@@ -127,22 +128,50 @@ struct Entry {
 }
 
 impl Arg {
-    fn to_enum_name(&self) -> Option<String> {
+    fn to_enum_name(&self) -> Option<(Option<String>, String)> {
         if let Some(e) = &self.r#enum {
-            if let Some((_, name)) = e.split_once('.') {
-                return Some(name.to_string());
+            if let Some((interface, name)) = e.split_once('.') {
+                return Some((Some(interface.to_string()), name.to_string()));
             } else {
-                return Some(e.to_string());
+                return Some((None, e.to_string()));
             }
         }
 
         None
     }
 
-    fn to_rust_type(&self) -> String {
+    fn find_protocol(&self, protocols: &[Protocol]) -> Option<Protocol> {
+        if let Some((enum_interface, name)) = self.to_enum_name() {
+            let e = if let Some(enum_interface) = enum_interface {
+                return Some(
+                    protocols
+                        .iter()
+                        .find(|protocol| {
+                            protocol
+                                .interfaces
+                                .iter()
+                                .find(|e| e.name == enum_interface)
+                                .is_some()
+                        })
+                        .unwrap()
+                        .clone(),
+                );
+            } else {
+                return None;
+            };
+        }
+
+        None
+    }
+
+    fn to_rust_type(&self, protocol: &Protocol) -> String {
         if let Some(e) = &self.r#enum {
             if let Some((module, name)) = e.split_once('.') {
-                return format!("super::{module}::{name}", name = name.to_upper_camel_case());
+                return format!(
+                    "super::super::{protocol_name}::{module}::{name}",
+                    protocol_name = protocol.name,
+                    name = name.to_upper_camel_case()
+                );
             } else {
                 return e.to_upper_camel_case();
             }
@@ -200,7 +229,7 @@ impl Arg {
     }
 }
 
-const PROTOCOLS: [&str; 44] = [
+const PROTOCOLS: &[&str] = &[
     "wayland/protocol/wayland.xml",
     "wayland-protocols/stable/linux-dmabuf/linux-dmabuf-v1.xml",
     "wayland-protocols/stable/presentation-time/presentation-time.xml",
@@ -245,6 +274,16 @@ const PROTOCOLS: [&str; 44] = [
     "wayland-protocols/unstable/xdg-output/xdg-output-unstable-v1.xml",
     "wayland-protocols/unstable/xdg-shell/xdg-shell-unstable-v5.xml",
     "wayland-protocols/unstable/xdg-shell/xdg-shell-unstable-v6.xml",
+    "wlr-protocols/unstable/wlr-data-control-unstable-v1.xml",
+    "wlr-protocols/unstable/wlr-export-dmabuf-unstable-v1.xml",
+    "wlr-protocols/unstable/wlr-foreign-toplevel-management-unstable-v1.xml",
+    "wlr-protocols/unstable/wlr-gamma-control-unstable-v1.xml",
+    "wlr-protocols/unstable/wlr-input-inhibitor-unstable-v1.xml",
+    "wlr-protocols/unstable/wlr-layer-shell-unstable-v1.xml",
+    "wlr-protocols/unstable/wlr-output-management-unstable-v1.xml",
+    "wlr-protocols/unstable/wlr-output-power-management-unstable-v1.xml",
+    "wlr-protocols/unstable/wlr-screencopy-unstable-v1.xml",
+    "wlr-protocols/unstable/wlr-virtual-pointer-unstable-v1.xml",
 ];
 
 const KEYWORDS: [&str; 51] = [
@@ -265,8 +304,12 @@ fn main() -> Result<()> {
     writeln!(&mut generated_path, "#![allow(unused)]")?;
     writeln!(&mut generated_path, "#![allow(async_fn_in_trait)]")?;
 
-    for path in PROTOCOLS {
-        let protocol: Protocol = quick_xml::de::from_str(&fs::read_to_string(path)?)?;
+    let protocols: Vec<Protocol> = PROTOCOLS
+        .iter()
+        .map(|path| quick_xml::de::from_str(&fs::read_to_string(path).unwrap()).unwrap())
+        .collect();
+
+    for protocol in &protocols {
         dbg!(&protocol.name);
 
         if let Some(description) = &protocol.description {
@@ -491,7 +534,9 @@ fn main() -> Result<()> {
                         .to_string();
 
                 for arg in &request.args {
-                    let mut ty = arg.to_rust_type().to_string();
+                    let mut ty = arg
+                        .to_rust_type(arg.find_protocol(&protocols).as_ref().unwrap_or(&protocol))
+                        .to_string();
 
                     if arg.allow_null {
                         ty = format!("Option<{ty}>");
@@ -533,7 +578,9 @@ fn main() -> Result<()> {
                 let mut num_tracing_args = 0usize;
 
                 for arg in &event.args {
-                    let mut ty = arg.to_rust_type().to_string();
+                    let mut ty = arg
+                        .to_rust_type(arg.find_protocol(&protocols).as_ref().unwrap_or(&protocol))
+                        .to_string();
                     let build_ty = arg.to_caller();
                     let mut name = arg.name.to_snek_case();
                     let mut build_name = arg.name.to_snek_case();
@@ -546,8 +593,24 @@ fn main() -> Result<()> {
                         build_name = format!("r#{name}")
                     }
 
-                    if let Some(name) = arg.to_enum_name() {
-                        let e = find_enum(&protocol, &name);
+                    if let Some((enum_interface, name)) = arg.to_enum_name() {
+                        let e = if let Some(enum_interface) = enum_interface {
+                            protocols
+                                .iter()
+                                .find_map(|protocol| {
+                                    protocol
+                                        .interfaces
+                                        .iter()
+                                        .find(|e| e.name == enum_interface)
+                                })
+                                .unwrap()
+                                .enums
+                                .iter()
+                                .find(|e| e.name == name)
+                                .unwrap()
+                        } else {
+                            find_enum(&protocol, &name)
+                        };
 
                         if e.bitfield {
                             build_name.push_str(".bits()");
