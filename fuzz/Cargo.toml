@@ -29,6 +29,3 @@ path = "fuzz_targets/message_to_bytes.rs"
 test = false
 doc = false
 bench = false
-
-[patch.crates-io]
-bytes = { git = "https://github.com/morr0ne/bytes", branch = "arbitrary" }
