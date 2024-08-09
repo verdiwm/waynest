@@ -12,7 +12,7 @@ use std::{collections::HashMap, io, sync::Arc};
 use tokio::net::UnixStream;
 use tokio_stream::StreamExt;
 
-use crate::wire::{DecodeError, Message, ObjectId, Socket};
+use crate::wire::{Message, ObjectId, Socket};
 
 pub struct Client {
     socket: Socket,
