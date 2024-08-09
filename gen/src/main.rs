@@ -301,6 +301,7 @@ fn main() -> Result<()> {
         .collect();
 
     generate_server_code(&protocols)?;
+    generate_client_code(&protocols)?;
 
     Command::new("rustfmt")
         .arg("src/protocol/interfaces.rs")
@@ -315,6 +316,10 @@ fn find_enum<'a>(protocol: &'a Protocol, name: &str) -> &'a Enum {
         .iter()
         .find_map(|interface| interface.enums.iter().find(|e| e.name == name))
         .unwrap()
+}
+
+fn generate_client_code(protocols: &[Protocol]) -> Result<()> {
+    Ok(())
 }
 
 fn generate_server_code(protocols: &[Protocol]) -> Result<()> {
