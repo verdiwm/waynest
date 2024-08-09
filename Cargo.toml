@@ -1,3 +1,6 @@
+[workspace]
+exclude = ["fuzz"]
+
 [package]
 name = "waynest"
 version = "0.0.1"
