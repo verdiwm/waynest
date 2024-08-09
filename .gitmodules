@@ -4,3 +4,6 @@
 [submodule "wayland"]
 	path = wayland
 	url = https://gitlab.freedesktop.org/wayland/wayland.git
+[submodule "wlr-protocols"]
+	path = wlr-protocols
+	url = https://gitlab.freedesktop.org/wlroots/wlr-protocols.git
