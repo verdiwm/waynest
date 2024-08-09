@@ -397,7 +397,7 @@ fn main() -> Result<()> {
                         crate::server::Object::new(id, self)
                     }}
                     
-                    async fn handle_request(&self, object: &crate::server::Object, client: &mut crate::server::Client, message: &mut crate::wire::Message) -> crate::Result<()> {{
+                    async fn handle_request(&self, object: &crate::server::Object, client: &mut crate::server::Client, message: &mut crate::wire::Message) -> crate::server::Result<()> {{
                     match message.opcode {{"#,
                 trait_name = interface.name.to_upper_camel_case(),
                 name = interface.name,
@@ -442,7 +442,7 @@ fn main() -> Result<()> {
 
             writeln!(
                 &mut generated_path,
-                "_ => Err(crate::error::Error::UnknownOpcode) }} }}"
+                "_ => Err(crate::server::error::Error::UnknownOpcode) }} }}"
             )?;
 
             for request in &interface.requests {
@@ -478,7 +478,7 @@ fn main() -> Result<()> {
 
                 writeln!(
                     &mut generated_path,
-                    "async fn {name}({args}) -> crate::Result<()>;",
+                    "async fn {name}({args}) -> crate::server::Result<()>;",
                 )?;
             }
 
@@ -540,7 +540,7 @@ fn main() -> Result<()> {
 
                 writeln!(
                     &mut generated_path,
-                    "async fn {name}({args}) -> crate::Result<()> {{",
+                    "async fn {name}({args}) -> crate::server::Result<()> {{",
                 )?;
 
                 let mut tracing_brackets = String::new();
@@ -565,7 +565,7 @@ fn main() -> Result<()> {
                     r#"client
                 .send_message(crate::wire::Message::new(_object.id, {opcode}, payload, fds))
                 .await
-                .map_err(crate::error::Error::IoError)"#
+                .map_err(crate::server::error::Error::IoError)"#
                 )?;
 
                 writeln!(&mut generated_path, "}}")?;

@@ -1,4 +1,8 @@
+mod error;
 pub mod protocol;
+
+pub use error::{Error, Result};
+pub use waynest_macros::Dispatcher;
 
 use async_trait::async_trait;
 use core::fmt;
@@ -8,14 +12,7 @@ use std::{collections::HashMap, io, sync::Arc};
 use tokio::net::UnixStream;
 use tokio_stream::StreamExt;
 
-use crate::{
-    wire::{DecodeError, Message, ObjectId, Socket},
-    Error, Result,
-};
-
-pub use waynest_macros::Dispatcher;
-
-// pub(crate) use verdi_macros::Dispatcher;
+use crate::wire::{DecodeError, Message, ObjectId, Socket};
 
 pub struct Client {
     socket: Socket,
