@@ -4,7 +4,7 @@ exclude = ["fuzz"]
 
 [package]
 name = "waynest"
-version = "0.0.3"
+version = "0.0.4"
 edition = "2021"
 license = "Apache-2.0"
 authors = ["Federico Maria Morrone <contact@morrone.dev>"]
@@ -30,7 +30,7 @@ thiserror = "1.0.63"
 tokio = { version = "1.39.2", features = ["net"] }
 tokio-stream = "0.1.15"
 tracing = "0.1.40"
-waynest-macros = { version = "0.0.1", path = "macros" }
+waynest-macros = { version = "0.0.2", path = "macros" }
 
 [patch.crates-io]
 bytes = { git = "https://github.com/morr0ne/bytes", branch = "arbitrary" }
