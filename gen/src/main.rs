@@ -295,6 +295,29 @@ const KEYWORDS: [&str; 51] = [
 ];
 
 fn main() -> Result<()> {
+    let protocols: Vec<Protocol> = PROTOCOLS
+        .iter()
+        .map(|path| quick_xml::de::from_str(&fs::read_to_string(path).unwrap()).unwrap())
+        .collect();
+
+    generate_server_code(&protocols)?;
+
+    Command::new("rustfmt")
+        .arg("src/protocol/interfaces.rs")
+        .output()?;
+
+    Ok(())
+}
+
+fn find_enum<'a>(protocol: &'a Protocol, name: &str) -> &'a Enum {
+    protocol
+        .interfaces
+        .iter()
+        .find_map(|interface| interface.enums.iter().find(|e| e.name == name))
+        .unwrap()
+}
+
+fn generate_server_code(protocols: &[Protocol]) -> Result<()> {
     let mut generated_path = OpenOptions::new()
         .truncate(true)
         .write(true)
@@ -304,12 +327,7 @@ fn main() -> Result<()> {
     writeln!(&mut generated_path, "#![allow(unused)]")?;
     writeln!(&mut generated_path, "#![allow(async_fn_in_trait)]")?;
 
-    let protocols: Vec<Protocol> = PROTOCOLS
-        .iter()
-        .map(|path| quick_xml::de::from_str(&fs::read_to_string(path).unwrap()).unwrap())
-        .collect();
-
-    for protocol in &protocols {
+    for protocol in protocols {
         dbg!(&protocol.name);
 
         if let Some(description) = &protocol.description {
@@ -683,17 +701,5 @@ fn main() -> Result<()> {
         writeln!(&mut generated_path, "}}")?;
     }
 
-    Command::new("rustfmt")
-        .arg("src/protocol/interfaces.rs")
-        .output()?;
-
     Ok(())
-}
-
-fn find_enum<'a>(protocol: &'a Protocol, name: &str) -> &'a Enum {
-    protocol
-        .interfaces
-        .iter()
-        .find_map(|interface| interface.enums.iter().find(|e| e.name == name))
-        .unwrap()
 }
