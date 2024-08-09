@@ -67,10 +67,8 @@ checksum = "b048fb63fd8b5923fc5aa7b340d8e156aec7ec02f0c78fa8a6ddc2613f6f71de"
 [[package]]
 name = "bytes"
 version = "1.7.1"
-source = "git+https://github.com/morr0ne/bytes?branch=arbitrary#9c77b9c082a4a624be116a7334fb9e45144a1a69"
-dependencies = [
- "arbitrary",
-]
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8318a53db07bb3f8dca91a600466bdb3f2eaadeedfdbcf02e1accbad9271ba50"
 
 [[package]]
 name = "cc"

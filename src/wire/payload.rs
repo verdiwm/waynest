@@ -6,7 +6,6 @@ use rustix::fd::AsRawFd;
 use super::{Fixed, NewId, ObjectId};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[cfg_attr(feature = "fuzz", derive(arbitrary::Arbitrary))]
 pub struct PayloadBuilder {
     payload: BytesMut,
     fds: Vec<RawFd>,
