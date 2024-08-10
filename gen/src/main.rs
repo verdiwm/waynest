@@ -328,6 +328,16 @@ fn generate_client_code(protocols: &[Protocol]) -> Result<()> {
 
     for protocol in protocols {
         debug!("Generating client code for \"{}\"", &protocol.name);
+
+        writeln!(
+            &mut generated_path,
+            "pub mod {name} {{",
+            name = &protocol.name
+        )?;
+
+        // TODO: Generate content
+
+        writeln!(&mut generated_path, "}}")?;
     }
 
     Ok(())
