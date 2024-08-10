@@ -332,8 +332,8 @@ impl Socket {
         loop {
             let mut guard = ready!(stream.poll_read_ready(cx))?;
 
-            let mut temp_buf = [0; 128];
-            let mut ancillary = SocketAncillary::new(&mut temp_buf);
+            let mut ancillary_buf = [0; 4096];
+            let mut ancillary = SocketAncillary::new(&mut ancillary_buf);
 
             let unfilled = buf.initialize_unfilled();
 
