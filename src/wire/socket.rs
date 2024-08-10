@@ -2,8 +2,8 @@ use std::{
     io::{self, IoSlice, IoSliceMut},
     mem::MaybeUninit,
     os::{
-        fd::RawFd,
-        unix::net::{AncillaryData, SocketAncillary, UnixStream},
+        fd::{BorrowedFd, RawFd},
+        unix::net::UnixStream,
     },
     pin::Pin,
     task::{Context, Poll},
@@ -12,6 +12,13 @@ use std::{
 use bytes::{Buf, BufMut, BytesMut};
 use futures_util::{ready, Sink, Stream};
 use pin_project_lite::pin_project;
+use rustix::{
+    fd::IntoRawFd,
+    net::{
+        recvmsg, sendmsg, RecvAncillaryBuffer, RecvAncillaryMessage, RecvFlags,
+        SendAncillaryBuffer, SendAncillaryMessage, SendFlags,
+    },
+};
 use tokio::io::{unix::AsyncFd, ReadBuf};
 use tracing::trace;
 
@@ -230,10 +237,14 @@ impl Sink<Message> for Socket {
         let pinned = self.project();
         let state = pinned.write_state;
 
-        let mut ancillary_buffer = [0; 128];
-        let mut ancillary = SocketAncillary::new(&mut ancillary_buffer);
+        let fds = state.fds.as_slice();
 
-        ancillary.add_fds(&state.fds);
+        let mut cmsg_space = vec![0; rustix::cmsg_space!(ScmRights(fds.len()))];
+        let mut ancillary_buf = SendAncillaryBuffer::new(&mut cmsg_space);
+
+        ancillary_buf.push(SendAncillaryMessage::ScmRights(unsafe {
+            core::slice::from_raw_parts(fds.as_ptr() as *const BorrowedFd, fds.len())
+        }));
 
         while !state.buffer.is_empty() {
             let mut guard = ready!(pinned.stream.poll_write_ready(cx))?;
@@ -242,9 +253,13 @@ impl Sink<Message> for Socket {
             let cnt = state.buffer.chunks_vectored(&mut slices);
 
             match guard.try_io(|stream| {
-                stream
-                    .get_ref()
-                    .send_vectored_with_ancillary(&slices[..cnt], &mut ancillary)
+                sendmsg(
+                    stream,
+                    &slices[..cnt],
+                    &mut ancillary_buf,
+                    SendFlags::DONTWAIT | SendFlags::NOSIGNAL,
+                )
+                .map_err(|errno| io::Error::from_raw_os_error(errno.raw_os_error()))
             }) {
                 Ok(Ok(len)) => {
                     state.buffer.advance(len);
@@ -332,27 +347,32 @@ impl Socket {
         loop {
             let mut guard = ready!(stream.poll_read_ready(cx))?;
 
-            let mut ancillary_buf = [0; 4096];
-            let mut ancillary = SocketAncillary::new(&mut ancillary_buf);
+            let mut cmsg_space = vec![0; rustix::cmsg_space!(ScmRights(28))];
+            let mut ancillary_buf = RecvAncillaryBuffer::new(&mut cmsg_space);
 
             let unfilled = buf.initialize_unfilled();
 
             match guard.try_io(|stream| {
-                stream
-                    .get_ref()
-                    .recv_vectored_with_ancillary(&mut [IoSliceMut::new(unfilled)], &mut ancillary)
+                recvmsg(
+                    stream,
+                    &mut [IoSliceMut::new(unfilled)],
+                    &mut ancillary_buf,
+                    RecvFlags::DONTWAIT | RecvFlags::CMSG_CLOEXEC,
+                )
+                .map_err(|errno| io::Error::from_raw_os_error(errno.raw_os_error()))
             }) {
-                Ok(Ok(len)) => {
-                    for ancillary_result in ancillary.messages() {
-                        if let AncillaryData::ScmRights(scm_rights) = ancillary_result.unwrap() {
+                Ok(Ok(msg)) => {
+                    for message in ancillary_buf.drain() {
+                        if let RecvAncillaryMessage::ScmRights(scm_rights) = message {
                             for fd in scm_rights {
+                                let fd = fd.into_raw_fd();
                                 trace!("receive file descriptor: {fd}");
                                 fds.push(fd);
                             }
                         }
                     }
 
-                    buf.advance(len);
+                    buf.advance(msg.bytes);
                     return Poll::Ready(Ok(()));
                 }
                 Ok(Err(err)) => return Poll::Ready(Err(err)),

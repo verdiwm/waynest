@@ -27,7 +27,7 @@ bytes = "1.7.1"
 downcast-rs = "1.2.1"
 futures-util = { version = "0.3.30", default-features = false, features = ["sink"] }
 pin-project-lite = "0.2.14"
-rustix = "0.38.34"
+rustix = { version = "0.38.34", features = ["net"] }
 thiserror = "1.0.63"
 tokio = { version = "1.39.2", features = ["net"] }
 tokio-stream = "0.1.15"
