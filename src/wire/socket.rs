@@ -295,13 +295,13 @@ impl Sink<Message> for Socket {
 }
 
 impl Socket {
-    pub fn new(stream: UnixStream) -> Self {
-        Self {
-            stream: AsyncFd::new(stream).unwrap(),
+    pub fn new(stream: UnixStream) -> io::Result<Self> {
+        Ok(Self {
+            stream: AsyncFd::new(stream)?,
             codec: MessageCodec::new(),
             read_state: ReadState::new(),
             write_state: WriteState::new(),
-        }
+        })
     }
 
     pub fn poll_read_buf<B: BufMut>(

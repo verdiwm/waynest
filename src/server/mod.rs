@@ -30,7 +30,7 @@ impl fmt::Debug for Client {
 impl Client {
     pub fn new(stream: UnixStream) -> Result<Self> {
         Ok(Self {
-            socket: Socket::new(stream.into_std()?),
+            socket: Socket::new(stream.into_std()?)?,
             _next_id: 0xff000000,
             store: Store::new(),
             event_serial: 0,
