@@ -33,7 +33,7 @@ pub mod wayland {
         #[doc = r#"The core global object.  This is a special singleton object.  It"#]
         #[doc = r#"is used for internal Wayland protocol features."#]
         pub trait WlDisplay: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_display";
+            const INTERFACE: &'static str = "wl_display";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -175,7 +175,7 @@ pub mod wayland {
         #[doc = r#"emit events to the client and lets the client invoke requests on"#]
         #[doc = r#"the object."#]
         pub trait WlRegistry: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_registry";
+            const INTERFACE: &'static str = "wl_registry";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -265,7 +265,7 @@ pub mod wayland {
         #[doc = r#"Note, because wl_callback objects are created from multiple independent"#]
         #[doc = r#"factory interfaces, the wl_callback interface is frozen at version 1."#]
         pub trait WlCallback: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_callback";
+            const INTERFACE: &'static str = "wl_callback";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -308,7 +308,7 @@ pub mod wayland {
         #[doc = r#"compositor is in charge of combining the contents of multiple"#]
         #[doc = r#"surfaces into one displayable output."#]
         pub trait WlCompositor: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_compositor";
+            const INTERFACE: &'static str = "wl_compositor";
             const VERSION: u32 = 6;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -375,7 +375,7 @@ pub mod wayland {
         #[doc = r#"setup/teardown overhead and is useful when interactively resizing"#]
         #[doc = r#"a surface or for many small buffers."#]
         pub trait WlShmPool: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_shm_pool";
+            const INTERFACE: &'static str = "wl_shm_pool";
             const VERSION: u32 = 2;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -887,7 +887,7 @@ pub mod wayland {
         #[doc = r#"are emitted to inform clients about the valid pixel formats"#]
         #[doc = r#"that can be used for buffers."#]
         pub trait WlShm: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_shm";
+            const INTERFACE: &'static str = "wl_shm";
             const VERSION: u32 = 2;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -983,7 +983,7 @@ pub mod wayland {
         #[doc = r#"Note, because wl_buffer objects are created from multiple independent"#]
         #[doc = r#"factory interfaces, the wl_buffer interface is frozen at version 1."#]
         pub trait WlBuffer: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_buffer";
+            const INTERFACE: &'static str = "wl_buffer";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -1076,7 +1076,7 @@ pub mod wayland {
         #[doc = r#"converted to and provides the mechanism for transferring the"#]
         #[doc = r#"data directly from the source client."#]
         pub trait WlDataOffer: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_data_offer";
+            const INTERFACE: &'static str = "wl_data_offer";
             const VERSION: u32 = 3;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -1351,7 +1351,7 @@ pub mod wayland {
         #[doc = r#"provides a way to describe the offered data and a way to respond"#]
         #[doc = r#"to requests to transfer the data."#]
         pub trait WlDataSource: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_data_source";
+            const INTERFACE: &'static str = "wl_data_source";
             const VERSION: u32 = 3;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -1604,7 +1604,7 @@ pub mod wayland {
         #[doc = r#"A wl_data_device provides access to inter-client data transfer"#]
         #[doc = r#"mechanisms such as copy-and-paste and drag-and-drop."#]
         pub trait WlDataDevice: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_data_device";
+            const INTERFACE: &'static str = "wl_data_device";
             const VERSION: u32 = 3;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -1895,7 +1895,7 @@ pub mod wayland {
         #[doc = r#"functioning properly. See wl_data_source.set_actions,"#]
         #[doc = r#"wl_data_offer.accept and wl_data_offer.finish for details."#]
         pub trait WlDataDeviceManager: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_data_device_manager";
+            const INTERFACE: &'static str = "wl_data_device_manager";
             const VERSION: u32 = 3;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -1988,7 +1988,7 @@ pub mod wayland {
         #[doc = r#"For desktop-style user interfaces, use xdg_shell. Compositors and clients"#]
         #[doc = r#"should not implement this interface."#]
         pub trait WlShell: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_shell";
+            const INTERFACE: &'static str = "wl_shell";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -2116,7 +2116,7 @@ pub mod wayland {
         #[doc = r#"wl_shell_surface_destroy() must be called before destroying"#]
         #[doc = r#"the wl_surface object."#]
         pub trait WlShellSurface: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_shell_surface";
+            const INTERFACE: &'static str = "wl_shell_surface";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -2557,7 +2557,7 @@ pub mod wayland {
         #[doc = r#"a cursor (cursor is a different role than sub-surface, and role"#]
         #[doc = r#"switching is not allowed)."#]
         pub trait WlSurface: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_surface";
+            const INTERFACE: &'static str = "wl_surface";
             const VERSION: u32 = 6;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -3144,7 +3144,7 @@ pub mod wayland {
         #[doc = r#"device is hot plugged.  A seat typically has a pointer and"#]
         #[doc = r#"maintains a keyboard focus and a pointer focus."#]
         pub trait WlSeat: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_seat";
+            const INTERFACE: &'static str = "wl_seat";
             const VERSION: u32 = 9;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -3456,7 +3456,7 @@ pub mod wayland {
         #[doc = r#"and button and axis events for button presses, button releases"#]
         #[doc = r#"and scrolling."#]
         pub trait WlPointer: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_pointer";
+            const INTERFACE: &'static str = "wl_pointer";
             const VERSION: u32 = 9;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -3998,7 +3998,7 @@ pub mod wayland {
         #[doc = r#"By default, the active surface is null, the keys currently logically down"#]
         #[doc = r#"are empty, the active modifiers and the active group are 0."#]
         pub trait WlKeyboard: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_keyboard";
+            const INTERFACE: &'static str = "wl_keyboard";
             const VERSION: u32 = 9;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -4224,7 +4224,7 @@ pub mod wayland {
         #[doc = r#"and ending with an up event. Events relating to the same"#]
         #[doc = r#"contact point can be identified by the ID of the sequence."#]
         pub trait WlTouch: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_touch";
+            const INTERFACE: &'static str = "wl_touch";
             const VERSION: u32 = 9;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -4557,7 +4557,7 @@ pub mod wayland {
         #[doc = r#"displays part of the compositor space.  This object is published"#]
         #[doc = r#"as global during start up, or when a monitor is hotplugged."#]
         pub trait WlOutput: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_output";
+            const INTERFACE: &'static str = "wl_output";
             const VERSION: u32 = 4;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -4819,7 +4819,7 @@ pub mod wayland {
         #[doc = r#"Region objects are used to describe the opaque and input"#]
         #[doc = r#"regions of a surface."#]
         pub trait WlRegion: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_region";
+            const INTERFACE: &'static str = "wl_region";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -4936,7 +4936,7 @@ pub mod wayland {
         #[doc = r#"objects. This should allow the compositor to pass YUV video buffer"#]
         #[doc = r#"processing to dedicated overlay hardware when possible."#]
         pub trait WlSubcompositor: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_subcompositor";
+            const INTERFACE: &'static str = "wl_subcompositor";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -5085,7 +5085,7 @@ pub mod wayland {
         #[doc = r#"The wl_surface.offset request is ignored: clients must use set_position"#]
         #[doc = r#"instead to move the sub-surface."#]
         pub trait WlSubsurface: crate::server::Dispatcher {
-            const INTERFACE: &str = "wl_subsurface";
+            const INTERFACE: &'static str = "wl_subsurface";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -5313,7 +5313,7 @@ pub mod linux_dmabuf_v1 {
         #[doc = r#"wait and signal fences implicitly passed via the DMA-BUF's reservation"#]
         #[doc = r#"mechanism."#]
         pub trait ZwpLinuxDmabufV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_linux_dmabuf_v1";
+            const INTERFACE: &'static str = "zwp_linux_dmabuf_v1";
             const VERSION: u32 = 5;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -5550,7 +5550,7 @@ pub mod linux_dmabuf_v1 {
         #[doc = r#"All planes required by the format must be given exactly once, but can"#]
         #[doc = r#"be given in any order. Each plane index can be set only once."#]
         pub trait ZwpLinuxBufferParamsV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_linux_buffer_params_v1";
+            const INTERFACE: &'static str = "zwp_linux_buffer_params_v1";
             const VERSION: u32 = 5;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -5832,7 +5832,7 @@ pub mod linux_dmabuf_v1 {
         #[doc = r#"event, tranche_formats events and then a tranche_done event), then one"#]
         #[doc = r#"done event."#]
         pub trait ZwpLinuxDmabufFeedbackV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_linux_dmabuf_feedback_v1";
+            const INTERFACE: &'static str = "zwp_linux_dmabuf_feedback_v1";
             const VERSION: u32 = 5;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -6129,7 +6129,7 @@ pub mod presentation_time {
         #[doc = r#"display update time and the update's target time, especially"#]
         #[doc = r#"when the compositor misses its target vertical blanking period."#]
         pub trait WpPresentation: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_presentation";
+            const INTERFACE: &'static str = "wp_presentation";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -6261,7 +6261,7 @@ pub mod presentation_time {
         #[doc = r#"Once a presentation_feedback object has delivered a 'presented'"#]
         #[doc = r#"or 'discarded' event it is automatically destroyed."#]
         pub trait WpPresentationFeedback: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_presentation_feedback";
+            const INTERFACE: &'static str = "wp_presentation_feedback";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -6470,7 +6470,7 @@ pub mod tablet_v2 {
         #[doc = r#"system. All tablets are associated with a seat, to get access to the"#]
         #[doc = r#"actual tablets, use wp_tablet_manager.get_tablet_seat."#]
         pub trait ZwpTabletManagerV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_manager_v2";
+            const INTERFACE: &'static str = "zwp_tablet_manager_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -6531,7 +6531,7 @@ pub mod tablet_v2 {
         #[doc = r#"seat. After binding to this interface, the compositor sends a set of"#]
         #[doc = r#"wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."#]
         pub trait ZwpTabletSeatV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_seat_v2";
+            const INTERFACE: &'static str = "zwp_tablet_seat_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -6770,7 +6770,7 @@ pub mod tablet_v2 {
         #[doc = r#"Any events received before a wp_tablet_tool.frame event should be"#]
         #[doc = r#"considered part of the same hardware state change."#]
         pub trait ZwpTabletToolV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_tool_v2";
+            const INTERFACE: &'static str = "zwp_tablet_tool_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -7296,7 +7296,7 @@ pub mod tablet_v2 {
         #[doc = r#"wp_tablet_seat.tablet_added event. This initial event sequence is"#]
         #[doc = r#"terminated by a wp_tablet.done event."#]
         pub trait ZwpTabletV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_v2";
+            const INTERFACE: &'static str = "zwp_tablet_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -7463,7 +7463,7 @@ pub mod tablet_v2 {
         #[doc = r#"Events on a ring are logically grouped by the wl_tablet_pad_ring.frame"#]
         #[doc = r#"event."#]
         pub trait ZwpTabletPadRingV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_pad_ring_v2";
+            const INTERFACE: &'static str = "zwp_tablet_pad_ring_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -7655,7 +7655,7 @@ pub mod tablet_v2 {
         #[doc = r#"Events on a strip are logically grouped by the wl_tablet_pad_strip.frame"#]
         #[doc = r#"event."#]
         pub trait ZwpTabletPadStripV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_pad_strip_v2";
+            const INTERFACE: &'static str = "zwp_tablet_pad_strip_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -7844,7 +7844,7 @@ pub mod tablet_v2 {
         #[doc = r#"actions, and/or issue the respective .set_feedback requests to notify the"#]
         #[doc = r#"compositor. See the wp_tablet_pad_group.mode_switch event for more details."#]
         pub trait ZwpTabletPadGroupV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_pad_group_v2";
+            const INTERFACE: &'static str = "zwp_tablet_pad_group_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -8077,7 +8077,7 @@ pub mod tablet_v2 {
         #[doc = r#"actions to a single pad feature. Only one mode can be active per group,"#]
         #[doc = r#"although different groups may have different active modes."#]
         pub trait ZwpTabletPadV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_pad_v2";
+            const INTERFACE: &'static str = "zwp_tablet_pad_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -8338,7 +8338,7 @@ pub mod viewporter {
         #[doc = r#"disconnecting the direct relationship between the buffer and the"#]
         #[doc = r#"surface size."#]
         pub trait WpViewporter: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_viewporter";
+            const INTERFACE: &'static str = "wp_viewporter";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -8480,7 +8480,7 @@ pub mod viewporter {
         #[doc = r#"state is removed from the wl_surface. The change will be applied"#]
         #[doc = r#"on the next wl_surface.commit."#]
         pub trait WpViewport: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_viewport";
+            const INTERFACE: &'static str = "wp_viewport";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -8612,7 +8612,7 @@ pub mod xdg_shell {
         #[doc = r#"create windows that can be dragged, resized, maximized, etc, as well as"#]
         #[doc = r#"creating transient windows such as popup menus."#]
         pub trait XdgWmBase: crate::server::Dispatcher {
-            const INTERFACE: &str = "xdg_wm_base";
+            const INTERFACE: &'static str = "xdg_wm_base";
             const VERSION: u32 = 6;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -8865,7 +8865,7 @@ pub mod xdg_shell {
         #[doc = r#"set_anchor_rect. Passing an incomplete xdg_positioner object when"#]
         #[doc = r#"positioning a surface raises an invalid_positioner error."#]
         pub trait XdgPositioner: crate::server::Dispatcher {
-            const INTERFACE: &str = "xdg_positioner";
+            const INTERFACE: &'static str = "xdg_positioner";
             const VERSION: u32 = 6;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -9157,7 +9157,7 @@ pub mod xdg_shell {
         #[doc = r#"has not been destroyed, i.e. the client must perform the initial commit"#]
         #[doc = r#"again before attaching a buffer."#]
         pub trait XdgSurface: crate::server::Dispatcher {
-            const INTERFACE: &str = "xdg_surface";
+            const INTERFACE: &'static str = "xdg_surface";
             const VERSION: u32 = 6;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -9524,7 +9524,7 @@ pub mod xdg_shell {
         #[doc = r#""#]
         #[doc = r#"Attaching a null buffer to a toplevel unmaps the surface."#]
         pub trait XdgToplevel: crate::server::Dispatcher {
-            const INTERFACE: &str = "xdg_toplevel";
+            const INTERFACE: &'static str = "xdg_toplevel";
             const VERSION: u32 = 6;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -10167,7 +10167,7 @@ pub mod xdg_shell {
         #[doc = r#"The client must call wl_surface.commit on the corresponding wl_surface"#]
         #[doc = r#"for the xdg_popup state to take effect."#]
         pub trait XdgPopup: crate::server::Dispatcher {
-            const INTERFACE: &str = "xdg_popup";
+            const INTERFACE: &'static str = "xdg_popup";
             const VERSION: u32 = 6;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -10406,7 +10406,7 @@ pub mod alpha_modifier_v1 {
         #[doc = r#"corresponding interface version bump. Backward incompatible changes can"#]
         #[doc = r#"only be done by creating a new major version of the extension."#]
         pub trait WpAlphaModifierV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_alpha_modifier_v1";
+            const INTERFACE: &'static str = "wp_alpha_modifier_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -10489,7 +10489,7 @@ pub mod alpha_modifier_v1 {
         #[doc = r#"wl_surface is destroyed, all request on this object will raise the"#]
         #[doc = r#"no_surface error."#]
         pub trait WpAlphaModifierSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_alpha_modifier_surface_v1";
+            const INTERFACE: &'static str = "wp_alpha_modifier_surface_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -10577,7 +10577,7 @@ pub mod content_type_v1 {
         #[doc = r#"corresponding interface version bump. Backward incompatible changes can"#]
         #[doc = r#"only be done by creating a new major version of the extension."#]
         pub trait WpContentTypeManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_content_type_manager_v1";
+            const INTERFACE: &'static str = "wp_content_type_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -10670,7 +10670,7 @@ pub mod content_type_v1 {
         #[doc = r#"When the associated surface gets destroyed, this object becomes inert and"#]
         #[doc = r#"the client should destroy it."#]
         pub trait WpContentTypeV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_content_type_v1";
+            const INTERFACE: &'static str = "wp_content_type_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -10735,7 +10735,7 @@ pub mod cursor_shape_v1 {
         #[doc = r#"corresponding interface version bump. Backward incompatible changes can"#]
         #[doc = r#"only be done by creating a new major version of the extension."#]
         pub trait WpCursorShapeManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_cursor_shape_manager_v1";
+            const INTERFACE: &'static str = "wp_cursor_shape_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -10954,7 +10954,7 @@ pub mod cursor_shape_v1 {
         }
         #[doc = r#"This interface allows clients to set the cursor shape."#]
         pub trait WpCursorShapeDeviceV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_cursor_shape_device_v1";
+            const INTERFACE: &'static str = "wp_cursor_shape_device_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -11052,7 +11052,7 @@ pub mod drm_lease_v1 {
         #[doc = r#"corresponding interface version bump. Backward incompatible changes can"#]
         #[doc = r#"only be done by creating a new major version of the extension."#]
         pub trait WpDrmLeaseDeviceV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_drm_lease_device_v1";
+            const INTERFACE: &'static str = "wp_drm_lease_device_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -11202,7 +11202,7 @@ pub mod drm_lease_v1 {
         #[doc = r#"event. When the description is updated the compositor will send a"#]
         #[doc = r#"description event followed by a done event."#]
         pub trait WpDrmLeaseConnectorV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_drm_lease_connector_v1";
+            const INTERFACE: &'static str = "wp_drm_lease_connector_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -11362,7 +11362,7 @@ pub mod drm_lease_v1 {
         #[doc = r#"wish to lease, then use wp_drm_lease_request_v1.submit to submit the"#]
         #[doc = r#"request."#]
         pub trait WpDrmLeaseRequestV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_drm_lease_request_v1";
+            const INTERFACE: &'static str = "wp_drm_lease_request_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -11448,7 +11448,7 @@ pub mod drm_lease_v1 {
         #[doc = r#"is denied, the compositor will send a finished event without a lease_fd"#]
         #[doc = r#"event."#]
         pub trait WpDrmLeaseV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_drm_lease_v1";
+            const INTERFACE: &'static str = "wp_drm_lease_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -11565,7 +11565,7 @@ pub mod ext_foreign_toplevel_list_v1 {
         #[doc = r#"event after the global is bound, the compositor must not send any"#]
         #[doc = r#"ext_foreign_toplevel_list_v1.toplevel events."#]
         pub trait ExtForeignToplevelListV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "ext_foreign_toplevel_list_v1";
+            const INTERFACE: &'static str = "ext_foreign_toplevel_list_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -11663,7 +11663,7 @@ pub mod ext_foreign_toplevel_list_v1 {
         #[doc = r#"A ext_foreign_toplevel_handle_v1 object represents a mapped toplevel"#]
         #[doc = r#"window. A single app may have multiple mapped toplevels."#]
         pub trait ExtForeignToplevelHandleV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "ext_foreign_toplevel_handle_v1";
+            const INTERFACE: &'static str = "ext_foreign_toplevel_handle_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -11831,7 +11831,7 @@ pub mod ext_idle_notify_v1 {
         #[doc = r#"After binding to this global, clients can create ext_idle_notification_v1"#]
         #[doc = r#"objects to get notified when the user is idle for a given amount of time."#]
         pub trait ExtIdleNotifierV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "ext_idle_notifier_v1";
+            const INTERFACE: &'static str = "ext_idle_notifier_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -11914,7 +11914,7 @@ pub mod ext_idle_notify_v1 {
         #[doc = r#"user activity starts again, the notification object stops being idle,"#]
         #[doc = r#"a resumed event is sent and the timeout is restarted."#]
         pub trait ExtIdleNotificationV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "ext_idle_notification_v1";
+            const INTERFACE: &'static str = "ext_idle_notification_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -12004,7 +12004,7 @@ pub mod ext_session_lock_v1 {
     pub mod ext_session_lock_manager_v1 {
         #[doc = r#"This interface is used to request that the session be locked."#]
         pub trait ExtSessionLockManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "ext_session_lock_manager_v1";
+            const INTERFACE: &'static str = "ext_session_lock_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -12138,7 +12138,7 @@ pub mod ext_session_lock_v1 {
         #[doc = r#"for unlocking the session, they may even start a new lock client"#]
         #[doc = r#"instance automatically."#]
         pub trait ExtSessionLockV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "ext_session_lock_v1";
+            const INTERFACE: &'static str = "ext_session_lock_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -12344,7 +12344,7 @@ pub mod ext_session_lock_v1 {
         #[doc = r#"give the first lock surface created keyboard focus and change keyboard"#]
         #[doc = r#"focus if the user clicks on other surfaces."#]
         pub trait ExtSessionLockSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "ext_session_lock_surface_v1";
+            const INTERFACE: &'static str = "ext_session_lock_surface_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -12469,7 +12469,7 @@ pub mod ext_transient_seat_v1 {
     pub mod ext_transient_seat_manager_v1 {
         #[doc = r#"The transient seat manager creates short-lived seats."#]
         pub trait ExtTransientSeatManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "ext_transient_seat_manager_v1";
+            const INTERFACE: &'static str = "ext_transient_seat_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -12530,7 +12530,7 @@ pub mod ext_transient_seat_v1 {
         #[doc = r#"When the transient seat handle is destroyed, the seat itself will also be"#]
         #[doc = r#"destroyed."#]
         pub trait ExtTransientSeatV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "ext_transient_seat_v1";
+            const INTERFACE: &'static str = "ext_transient_seat_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -12643,7 +12643,7 @@ pub mod fractional_scale_v1 {
         }
         #[doc = r#"A global interface for requesting surfaces to use fractional scales."#]
         pub trait WpFractionalScaleManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_fractional_scale_manager_v1";
+            const INTERFACE: &'static str = "wp_fractional_scale_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -12709,7 +12709,7 @@ pub mod fractional_scale_v1 {
         #[doc = r#"An additional interface to a wl_surface object which allows the compositor"#]
         #[doc = r#"to inform the client of the preferred scale."#]
         pub trait WpFractionalScaleV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_fractional_scale_v1";
+            const INTERFACE: &'static str = "wp_fractional_scale_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -12813,7 +12813,7 @@ pub mod linux_drm_syncobj_v1 {
         #[doc = r#""#]
         #[doc = r#"See wp_linux_drm_syncobj_surface_v1 for more information."#]
         pub trait WpLinuxDrmSyncobjManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_linux_drm_syncobj_manager_v1";
+            const INTERFACE: &'static str = "wp_linux_drm_syncobj_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -12910,7 +12910,7 @@ pub mod linux_drm_syncobj_v1 {
         #[doc = r#"This object represents an explicit synchronization object timeline"#]
         #[doc = r#"imported by the client to the compositor."#]
         pub trait WpLinuxDrmSyncobjTimelineV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_linux_drm_syncobj_timeline_v1";
+            const INTERFACE: &'static str = "wp_linux_drm_syncobj_timeline_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -13003,7 +13003,7 @@ pub mod linux_drm_syncobj_v1 {
         #[doc = r#"release point value, or else the conflicting_points protocol error is"#]
         #[doc = r#"raised."#]
         pub trait WpLinuxDrmSyncobjSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_linux_drm_syncobj_surface_v1";
+            const INTERFACE: &'static str = "wp_linux_drm_syncobj_surface_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -13195,7 +13195,7 @@ pub mod security_context_v1 {
         #[doc = r#"corresponding interface version bump. Backward incompatible changes can"#]
         #[doc = r#"only be done by creating a new major version of the extension."#]
         pub trait WpSecurityContextManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_security_context_manager_v1";
+            const INTERFACE: &'static str = "wp_security_context_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -13302,7 +13302,7 @@ pub mod security_context_v1 {
         #[doc = r#"When both are set, the combination of the instance ID and the sandbox"#]
         #[doc = r#"engine must uniquely identify a running instance of an application."#]
         pub trait WpSecurityContextV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_security_context_v1";
+            const INTERFACE: &'static str = "wp_security_context_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -13455,7 +13455,7 @@ pub mod single_pixel_buffer_v1 {
         #[doc = r#"The wp_single_pixel_buffer_manager_v1 interface is a factory for"#]
         #[doc = r#"single-pixel buffers."#]
         pub trait WpSinglePixelBufferManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_single_pixel_buffer_manager_v1";
+            const INTERFACE: &'static str = "wp_single_pixel_buffer_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -13562,7 +13562,7 @@ pub mod tearing_control_v1 {
         #[doc = r#"corresponding interface version bump. Backward incompatible changes can"#]
         #[doc = r#"only be done by creating a new major version of the extension."#]
         pub trait WpTearingControlManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_tearing_control_manager_v1";
+            const INTERFACE: &'static str = "wp_tearing_control_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -13652,7 +13652,7 @@ pub mod tearing_control_v1 {
         #[doc = r#"The default presentation hint is vsync. See presentation_hint for more"#]
         #[doc = r#"details."#]
         pub trait WpTearingControlV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "wp_tearing_control_v1";
+            const INTERFACE: &'static str = "wp_tearing_control_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -13750,7 +13750,7 @@ pub mod xdg_activation_v1 {
         #[doc = r#"being activated or started, or for applications to request to be"#]
         #[doc = r#"activated."#]
         pub trait XdgActivationV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "xdg_activation_v1";
+            const INTERFACE: &'static str = "xdg_activation_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -13864,7 +13864,7 @@ pub mod xdg_activation_v1 {
         #[doc = r#"done event with the token. In case the request's parameters are invalid,"#]
         #[doc = r#"the compositor will provide an invalid token."#]
         pub trait XdgActivationTokenV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "xdg_activation_token_v1";
+            const INTERFACE: &'static str = "xdg_activation_token_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -14033,7 +14033,7 @@ pub mod xdg_dialog_v1 {
         #[doc = r#"corresponding interface version bump. Backward incompatible changes can"#]
         #[doc = r#"only be done by creating a new major version of the extension."#]
         pub trait XdgWmDialogV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "xdg_wm_dialog_v1";
+            const INTERFACE: &'static str = "xdg_wm_dialog_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -14103,7 +14103,7 @@ pub mod xdg_dialog_v1 {
         #[doc = r#"the purpose of the secondary toplevel. This interface has no effect"#]
         #[doc = r#"on toplevels that are not attached to a parent toplevel."#]
         pub trait XdgDialogV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "xdg_dialog_v1";
+            const INTERFACE: &'static str = "xdg_dialog_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -14222,7 +14222,7 @@ pub mod xdg_toplevel_drag_v1 {
         #[doc = r#"corresponding interface version bump. Backward incompatible changes can"#]
         #[doc = r#"only be done by creating a new major version of the extension."#]
         pub trait XdgToplevelDragManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "xdg_toplevel_drag_manager_v1";
+            const INTERFACE: &'static str = "xdg_toplevel_drag_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -14312,7 +14312,7 @@ pub mod xdg_toplevel_drag_v1 {
             }
         }
         pub trait XdgToplevelDragV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "xdg_toplevel_drag_v1";
+            const INTERFACE: &'static str = "xdg_toplevel_drag_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -14447,7 +14447,7 @@ pub mod xwayland_shell_v1 {
         #[doc = r#"An Xwayland server that has bound this interface must not"#]
         #[doc = r#"set the `WL_SURFACE_ID` atom on a window."#]
         pub trait XwaylandShellV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "xwayland_shell_v1";
+            const INTERFACE: &'static str = "xwayland_shell_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -14541,7 +14541,7 @@ pub mod xwayland_shell_v1 {
         #[doc = r#"The client must call wl_surface.commit on the corresponding wl_surface"#]
         #[doc = r#"for the xwayland_surface_v1 state to take effect."#]
         pub trait XwaylandSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "xwayland_surface_v1";
+            const INTERFACE: &'static str = "xwayland_surface_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -14740,7 +14740,7 @@ pub mod fullscreen_shell_unstable_v1 {
         #[doc = r#"version number in the protocol and interface names are removed and the"#]
         #[doc = r#"interface version number is reset."#]
         pub trait ZwpFullscreenShellV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_fullscreen_shell_v1";
+            const INTERFACE: &'static str = "zwp_fullscreen_shell_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -14912,7 +14912,7 @@ pub mod fullscreen_shell_unstable_v1 {
     }
     pub mod zwp_fullscreen_shell_mode_feedback_v1 {
         pub trait ZwpFullscreenShellModeFeedbackV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_fullscreen_shell_mode_feedback_v1";
+            const INTERFACE: &'static str = "zwp_fullscreen_shell_mode_feedback_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -15013,7 +15013,7 @@ pub mod idle_inhibit_unstable_v1 {
         #[doc = r#"version number in the protocol and interface names are removed and the"#]
         #[doc = r#"interface version number is reset."#]
         pub trait ZwpIdleInhibitManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_idle_inhibit_manager_v1";
+            const INTERFACE: &'static str = "zwp_idle_inhibit_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -15084,7 +15084,7 @@ pub mod idle_inhibit_unstable_v1 {
         #[doc = r#"the time the inhibitor was established, although if the system later"#]
         #[doc = r#"de-idles and re-idles the inhibitor will take effect."#]
         pub trait ZwpIdleInhibitorV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_idle_inhibitor_v1";
+            const INTERFACE: &'static str = "zwp_idle_inhibitor_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -15143,7 +15143,7 @@ pub mod input_method_unstable_v1 {
         #[doc = r#"version number in the protocol and interface names are removed and the"#]
         #[doc = r#"interface version number is reset."#]
         pub trait ZwpInputMethodContextV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_input_method_context_v1";
+            const INTERFACE: &'static str = "zwp_input_method_context_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -15605,7 +15605,7 @@ pub mod input_method_unstable_v1 {
         #[doc = r#"object per seat. On activate there is a new input method context object"#]
         #[doc = r#"created which allows the input method to communicate with the text input."#]
         pub trait ZwpInputMethodV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_input_method_v1";
+            const INTERFACE: &'static str = "zwp_input_method_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -15665,7 +15665,7 @@ pub mod input_method_unstable_v1 {
     pub mod zwp_input_panel_v1 {
         #[doc = r#"Only one client can bind this interface at a time."#]
         pub trait ZwpInputPanelV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_input_panel_v1";
+            const INTERFACE: &'static str = "zwp_input_panel_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -15729,7 +15729,7 @@ pub mod input_method_unstable_v1 {
             }
         }
         pub trait ZwpInputPanelSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_input_panel_surface_v1";
+            const INTERFACE: &'static str = "zwp_input_panel_surface_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -15806,7 +15806,7 @@ pub mod input_timestamps_unstable_v1 {
         #[doc = r#"A global interface used for requesting high-resolution timestamps"#]
         #[doc = r#"for input events."#]
         pub trait ZwpInputTimestampsManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_input_timestamps_manager_v1";
+            const INTERFACE: &'static str = "zwp_input_timestamps_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -15941,7 +15941,7 @@ pub mod input_timestamps_unstable_v1 {
         #[doc = r#"events. The set of subscribed input events is determined by the"#]
         #[doc = r#"zwp_input_timestamps_manager_v1 request used to create this object."#]
         pub trait ZwpInputTimestampsV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_input_timestamps_v1";
+            const INTERFACE: &'static str = "zwp_input_timestamps_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -16044,7 +16044,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
         }
         #[doc = r#"A global interface used for inhibiting the compositor keyboard shortcuts."#]
         pub trait ZwpKeyboardShortcutsInhibitManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_keyboard_shortcuts_inhibit_manager_v1";
+            const INTERFACE: &'static str = "zwp_keyboard_shortcuts_inhibit_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -16147,7 +16147,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
         #[doc = r#"compositor will restore its own keyboard shortcuts but no "inactive""#]
         #[doc = r#"event is emitted in this case."#]
         pub trait ZwpKeyboardShortcutsInhibitorV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_keyboard_shortcuts_inhibitor_v1";
+            const INTERFACE: &'static str = "zwp_keyboard_shortcuts_inhibitor_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -16297,7 +16297,7 @@ pub mod linux_dmabuf_unstable_v1 {
         #[doc = r#"no longer used and only retained for backwards compatibility. The"#]
         #[doc = r#"canonical version can be found in the stable/ directory."#]
         pub trait ZwpLinuxDmabufV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_linux_dmabuf_v1";
+            const INTERFACE: &'static str = "zwp_linux_dmabuf_v1";
             const VERSION: u32 = 5;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -16534,7 +16534,7 @@ pub mod linux_dmabuf_unstable_v1 {
         #[doc = r#"All planes required by the format must be given exactly once, but can"#]
         #[doc = r#"be given in any order. Each plane index can be set only once."#]
         pub trait ZwpLinuxBufferParamsV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_linux_buffer_params_v1";
+            const INTERFACE: &'static str = "zwp_linux_buffer_params_v1";
             const VERSION: u32 = 5;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -16816,7 +16816,7 @@ pub mod linux_dmabuf_unstable_v1 {
         #[doc = r#"event, tranche_formats events and then a tranche_done event), then one"#]
         #[doc = r#"done event."#]
         pub trait ZwpLinuxDmabufFeedbackV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_linux_dmabuf_feedback_v1";
+            const INTERFACE: &'static str = "zwp_linux_dmabuf_feedback_v1";
             const VERSION: u32 = 5;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -17107,7 +17107,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
         #[doc = r#"version number in the protocol and interface names are removed and the"#]
         #[doc = r#"interface version number is reset."#]
         pub trait ZwpLinuxExplicitSynchronizationV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_linux_explicit_synchronization_v1";
+            const INTERFACE: &'static str = "zwp_linux_explicit_synchronization_v1";
             const VERSION: u32 = 2;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -17243,7 +17243,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
         #[doc = r#"extension. Compositors are free to support explicit synchronization for"#]
         #[doc = r#"additional buffer types."#]
         pub trait ZwpLinuxSurfaceSynchronizationV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_linux_surface_synchronization_v1";
+            const INTERFACE: &'static str = "zwp_linux_surface_synchronization_v1";
             const VERSION: u32 = 2;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -17377,7 +17377,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
         #[doc = r#"Once a buffer release object has delivered a 'fenced_release' or an"#]
         #[doc = r#"'immediate_release' event it is automatically destroyed."#]
         pub trait ZwpLinuxBufferReleaseV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_linux_buffer_release_v1";
+            const INTERFACE: &'static str = "zwp_linux_buffer_release_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -17527,7 +17527,7 @@ pub mod pointer_constraints_unstable_v1 {
         #[doc = r#"and with any of the wl_pointer objects of the same seat, an"#]
         #[doc = r#"'already_constrained' error will be raised."#]
         pub trait ZwpPointerConstraintsV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_pointer_constraints_v1";
+            const INTERFACE: &'static str = "zwp_pointer_constraints_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -17697,7 +17697,7 @@ pub mod pointer_constraints_unstable_v1 {
         #[doc = r#"yet activated, the wp_locked_pointer object is now defunct and must be"#]
         #[doc = r#"destroyed."#]
         pub trait ZwpLockedPointerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_locked_pointer_v1";
+            const INTERFACE: &'static str = "zwp_locked_pointer_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -17827,7 +17827,7 @@ pub mod pointer_constraints_unstable_v1 {
         #[doc = r#"sent. The wp_confined_pointer object is at this point defunct and should"#]
         #[doc = r#"be destroyed."#]
         pub trait ZwpConfinedPointerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_confined_pointer_v1";
+            const INTERFACE: &'static str = "zwp_confined_pointer_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -17938,7 +17938,7 @@ pub mod pointer_gestures_unstable_v1 {
         #[doc = r#"version number in the protocol and interface names are removed and the"#]
         #[doc = r#"interface version number is reset."#]
         pub trait ZwpPointerGesturesV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_pointer_gestures_v1";
+            const INTERFACE: &'static str = "zwp_pointer_gestures_v1";
             const VERSION: u32 = 3;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -18063,7 +18063,7 @@ pub mod pointer_gestures_unstable_v1 {
         #[doc = r#"Clients should not consider performing permanent or irreversible"#]
         #[doc = r#"actions until the end of a gesture has been received."#]
         pub trait ZwpPointerGestureSwipeV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_pointer_gesture_swipe_v1";
+            const INTERFACE: &'static str = "zwp_pointer_gesture_swipe_v1";
             const VERSION: u32 = 2;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -18184,7 +18184,7 @@ pub mod pointer_gestures_unstable_v1 {
         #[doc = r#"Clients should not consider performing permanent or irreversible"#]
         #[doc = r#"actions until the end of a gesture has been received."#]
         pub trait ZwpPointerGesturePinchV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_pointer_gesture_pinch_v1";
+            const INTERFACE: &'static str = "zwp_pointer_gesture_pinch_v1";
             const VERSION: u32 = 2;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -18318,7 +18318,7 @@ pub mod pointer_gestures_unstable_v1 {
         #[doc = r#"Clients should not consider performing permanent or irreversible"#]
         #[doc = r#"actions until the end of a gesture has been received."#]
         pub trait ZwpPointerGestureHoldV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_pointer_gesture_hold_v1";
+            const INTERFACE: &'static str = "zwp_pointer_gesture_hold_v1";
             const VERSION: u32 = 3;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -18448,7 +18448,7 @@ pub mod wp_primary_selection_unstable_v1 {
         #[doc = r#"wp_primary_selection_source objects, as well as retrieving the per-seat"#]
         #[doc = r#"wp_primary_selection_device objects."#]
         pub trait ZwpPrimarySelectionDeviceManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_primary_selection_device_manager_v1";
+            const INTERFACE: &'static str = "zwp_primary_selection_device_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -18531,7 +18531,7 @@ pub mod wp_primary_selection_unstable_v1 {
     }
     pub mod zwp_primary_selection_device_v1 {
         pub trait ZwpPrimarySelectionDeviceV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_primary_selection_device_v1";
+            const INTERFACE: &'static str = "zwp_primary_selection_device_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -18637,7 +18637,7 @@ pub mod wp_primary_selection_unstable_v1 {
         #[doc = r#"be converted to and provides the mechanisms for transferring the data"#]
         #[doc = r#"directly to the client."#]
         pub trait ZwpPrimarySelectionOfferV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_primary_selection_offer_v1";
+            const INTERFACE: &'static str = "zwp_primary_selection_offer_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -18721,7 +18721,7 @@ pub mod wp_primary_selection_unstable_v1 {
         #[doc = r#"describe the offered data and respond to requests to transfer the"#]
         #[doc = r#"requested contents of the primary selection clipboard."#]
         pub trait ZwpPrimarySelectionSourceV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_primary_selection_source_v1";
+            const INTERFACE: &'static str = "zwp_primary_selection_source_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -18837,7 +18837,7 @@ pub mod relative_pointer_unstable_v1 {
         #[doc = r#"A global interface used for getting the relative pointer object for a"#]
         #[doc = r#"given pointer."#]
         pub trait ZwpRelativePointerManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_relative_pointer_manager_v1";
+            const INTERFACE: &'static str = "zwp_relative_pointer_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -18902,7 +18902,7 @@ pub mod relative_pointer_unstable_v1 {
         #[doc = r#"wl_pointer objects of the same seat and will only emit events when it has"#]
         #[doc = r#"focus."#]
         pub trait ZwpRelativePointerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_relative_pointer_v1";
+            const INTERFACE: &'static str = "zwp_relative_pointer_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -19083,7 +19083,7 @@ pub mod tablet_unstable_v1 {
         #[doc = r#"system. All tablets are associated with a seat, to get access to the"#]
         #[doc = r#"actual tablets, use wp_tablet_manager.get_tablet_seat."#]
         pub trait ZwpTabletManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_manager_v1";
+            const INTERFACE: &'static str = "zwp_tablet_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -19144,7 +19144,7 @@ pub mod tablet_unstable_v1 {
         #[doc = r#"seat. After binding to this interface, the compositor sends a set of"#]
         #[doc = r#"wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."#]
         pub trait ZwpTabletSeatV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_seat_v1";
+            const INTERFACE: &'static str = "zwp_tablet_seat_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -19358,7 +19358,7 @@ pub mod tablet_unstable_v1 {
         #[doc = r#"Any events received before a wp_tablet_tool.frame event should be"#]
         #[doc = r#"considered part of the same hardware state change."#]
         pub trait ZwpTabletToolV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_tool_v1";
+            const INTERFACE: &'static str = "zwp_tablet_tool_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -19884,7 +19884,7 @@ pub mod tablet_unstable_v1 {
         #[doc = r#"wp_tablet_seat.tablet_added event. This initial event sequence is"#]
         #[doc = r#"terminated by a wp_tablet.done event."#]
         pub trait ZwpTabletV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_v1";
+            const INTERFACE: &'static str = "zwp_tablet_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -20101,7 +20101,7 @@ pub mod tablet_unstable_v2 {
         #[doc = r#"system. All tablets are associated with a seat, to get access to the"#]
         #[doc = r#"actual tablets, use wp_tablet_manager.get_tablet_seat."#]
         pub trait ZwpTabletManagerV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_manager_v2";
+            const INTERFACE: &'static str = "zwp_tablet_manager_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -20162,7 +20162,7 @@ pub mod tablet_unstable_v2 {
         #[doc = r#"seat. After binding to this interface, the compositor sends a set of"#]
         #[doc = r#"wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."#]
         pub trait ZwpTabletSeatV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_seat_v2";
+            const INTERFACE: &'static str = "zwp_tablet_seat_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -20401,7 +20401,7 @@ pub mod tablet_unstable_v2 {
         #[doc = r#"Any events received before a wp_tablet_tool.frame event should be"#]
         #[doc = r#"considered part of the same hardware state change."#]
         pub trait ZwpTabletToolV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_tool_v2";
+            const INTERFACE: &'static str = "zwp_tablet_tool_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -20927,7 +20927,7 @@ pub mod tablet_unstable_v2 {
         #[doc = r#"wp_tablet_seat.tablet_added event. This initial event sequence is"#]
         #[doc = r#"terminated by a wp_tablet.done event."#]
         pub trait ZwpTabletV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_v2";
+            const INTERFACE: &'static str = "zwp_tablet_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -21094,7 +21094,7 @@ pub mod tablet_unstable_v2 {
         #[doc = r#"Events on a ring are logically grouped by the wl_tablet_pad_ring.frame"#]
         #[doc = r#"event."#]
         pub trait ZwpTabletPadRingV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_pad_ring_v2";
+            const INTERFACE: &'static str = "zwp_tablet_pad_ring_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -21286,7 +21286,7 @@ pub mod tablet_unstable_v2 {
         #[doc = r#"Events on a strip are logically grouped by the wl_tablet_pad_strip.frame"#]
         #[doc = r#"event."#]
         pub trait ZwpTabletPadStripV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_pad_strip_v2";
+            const INTERFACE: &'static str = "zwp_tablet_pad_strip_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -21475,7 +21475,7 @@ pub mod tablet_unstable_v2 {
         #[doc = r#"actions, and/or issue the respective .set_feedback requests to notify the"#]
         #[doc = r#"compositor. See the wp_tablet_pad_group.mode_switch event for more details."#]
         pub trait ZwpTabletPadGroupV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_pad_group_v2";
+            const INTERFACE: &'static str = "zwp_tablet_pad_group_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -21708,7 +21708,7 @@ pub mod tablet_unstable_v2 {
         #[doc = r#"actions to a single pad feature. Only one mode can be active per group,"#]
         #[doc = r#"although different groups may have different active modes."#]
         pub trait ZwpTabletPadV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_tablet_pad_v2";
+            const INTERFACE: &'static str = "zwp_tablet_pad_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -22114,7 +22114,7 @@ pub mod text_input_unstable_v1 {
         #[doc = r#"version number in the protocol and interface names are removed and the"#]
         #[doc = r#"interface version number is reset."#]
         pub trait ZwpTextInputV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_text_input_v1";
+            const INTERFACE: &'static str = "zwp_text_input_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -22613,7 +22613,7 @@ pub mod text_input_unstable_v1 {
     pub mod zwp_text_input_manager_v1 {
         #[doc = r#"A factory for text_input objects. This object is a global singleton."#]
         pub trait ZwpTextInputManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_text_input_manager_v1";
+            const INTERFACE: &'static str = "zwp_text_input_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -22807,7 +22807,7 @@ pub mod text_input_unstable_v3 {
         #[doc = r#"enter event or disable request all state information is invalidated and"#]
         #[doc = r#"needs to be resent by the client."#]
         pub trait ZwpTextInputV3: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_text_input_v3";
+            const INTERFACE: &'static str = "zwp_text_input_v3";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -23251,7 +23251,7 @@ pub mod text_input_unstable_v3 {
     pub mod zwp_text_input_manager_v3 {
         #[doc = r#"A factory for text-input objects. This object is a global singleton."#]
         pub trait ZwpTextInputManagerV3: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwp_text_input_manager_v3";
+            const INTERFACE: &'static str = "zwp_text_input_manager_v3";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -23331,7 +23331,7 @@ pub mod xdg_decoration_unstable_v1 {
         #[doc = r#"version number in the protocol and interface names are removed and the"#]
         #[doc = r#"interface version number is reset."#]
         pub trait ZxdgDecorationManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_decoration_manager_v1";
+            const INTERFACE: &'static str = "zxdg_decoration_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -23447,7 +23447,7 @@ pub mod xdg_decoration_unstable_v1 {
         #[doc = r#"The xdg_toplevel_decoration object must be destroyed before its"#]
         #[doc = r#"xdg_toplevel."#]
         pub trait ZxdgToplevelDecorationV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_toplevel_decoration_v1";
+            const INTERFACE: &'static str = "zxdg_toplevel_decoration_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -23579,7 +23579,7 @@ pub mod xdg_foreign_unstable_v1 {
         #[doc = r#"A global interface used for exporting surfaces that can later be imported"#]
         #[doc = r#"using xdg_importer."#]
         pub trait ZxdgExporterV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_exporter_v1";
+            const INTERFACE: &'static str = "zxdg_exporter_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -23646,7 +23646,7 @@ pub mod xdg_foreign_unstable_v1 {
         #[doc = r#"With this interface, a client can create a reference to a surface of"#]
         #[doc = r#"another client."#]
         pub trait ZxdgImporterV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_importer_v1";
+            const INTERFACE: &'static str = "zxdg_importer_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -23711,7 +23711,7 @@ pub mod xdg_foreign_unstable_v1 {
         #[doc = r#"destroyed. Destroying the xdg_exported invalidates any relationship the"#]
         #[doc = r#"importer may have established using xdg_imported."#]
         pub trait ZxdgExportedV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_exported_v1";
+            const INTERFACE: &'static str = "zxdg_exported_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -23769,7 +23769,7 @@ pub mod xdg_foreign_unstable_v1 {
         #[doc = r#"by some client. A client can use this interface to manipulate"#]
         #[doc = r#"relationships between its own surfaces and the imported surface."#]
         pub trait ZxdgImportedV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_imported_v1";
+            const INTERFACE: &'static str = "zxdg_imported_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -23894,7 +23894,7 @@ pub mod xdg_foreign_unstable_v2 {
         #[doc = r#"A global interface used for exporting surfaces that can later be imported"#]
         #[doc = r#"using xdg_importer."#]
         pub trait ZxdgExporterV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_exporter_v2";
+            const INTERFACE: &'static str = "zxdg_exporter_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -23962,7 +23962,7 @@ pub mod xdg_foreign_unstable_v2 {
         #[doc = r#"With this interface, a client can create a reference to a surface of"#]
         #[doc = r#"another client."#]
         pub trait ZxdgImporterV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_importer_v2";
+            const INTERFACE: &'static str = "zxdg_importer_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -24027,7 +24027,7 @@ pub mod xdg_foreign_unstable_v2 {
         #[doc = r#"destroyed. Destroying the xdg_exported invalidates any relationship the"#]
         #[doc = r#"importer may have established using xdg_imported."#]
         pub trait ZxdgExportedV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_exported_v2";
+            const INTERFACE: &'static str = "zxdg_exported_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -24104,7 +24104,7 @@ pub mod xdg_foreign_unstable_v2 {
         #[doc = r#"by some client. A client can use this interface to manipulate"#]
         #[doc = r#"relationships between its own surfaces and the imported surface."#]
         pub trait ZxdgImportedV2: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_imported_v2";
+            const INTERFACE: &'static str = "zxdg_imported_v2";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -24208,7 +24208,7 @@ pub mod xdg_output_unstable_v1 {
     pub mod zxdg_output_manager_v1 {
         #[doc = r#"A global factory interface for xdg_output objects."#]
         pub trait ZxdgOutputManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_output_manager_v1";
+            const INTERFACE: &'static str = "zxdg_output_manager_v1";
             const VERSION: u32 = 3;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -24276,7 +24276,7 @@ pub mod xdg_output_unstable_v1 {
         #[doc = r#"wl_output.done event is sent. This allows changes to the output"#]
         #[doc = r#"properties to be seen as atomic, even if they happen via multiple events."#]
         pub trait ZxdgOutputV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_output_v1";
+            const INTERFACE: &'static str = "zxdg_output_v1";
             const VERSION: u32 = 3;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -24524,7 +24524,7 @@ pub mod xdg_shell_unstable_v5 {
         #[doc = r#"user. Everything about this interface is suited towards traditional"#]
         #[doc = r#"desktop environments."#]
         pub trait XdgShell: crate::server::Dispatcher {
-            const INTERFACE: &str = "xdg_shell";
+            const INTERFACE: &'static str = "xdg_shell";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -24787,7 +24787,7 @@ pub mod xdg_shell_unstable_v5 {
         #[doc = r#"For a surface to be mapped by the compositor the client must have"#]
         #[doc = r#"committed both an xdg_surface state and a buffer."#]
         pub trait XdgSurface: crate::server::Dispatcher {
-            const INTERFACE: &str = "xdg_surface";
+            const INTERFACE: &'static str = "xdg_surface";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -25318,7 +25318,7 @@ pub mod xdg_shell_unstable_v5 {
         #[doc = r#"For a surface to be mapped by the compositor the client must have"#]
         #[doc = r#"committed both the xdg_popup state and a buffer."#]
         pub trait XdgPopup: crate::server::Dispatcher {
-            const INTERFACE: &str = "xdg_popup";
+            const INTERFACE: &'static str = "xdg_popup";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -25409,7 +25409,7 @@ pub mod xdg_shell_unstable_v6 {
         #[doc = r#"user. Everything about this interface is suited towards traditional"#]
         #[doc = r#"desktop environments."#]
         pub trait ZxdgShellV6: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_shell_v6";
+            const INTERFACE: &'static str = "zxdg_shell_v6";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -25625,7 +25625,7 @@ pub mod xdg_shell_unstable_v6 {
         #[doc = r#"set_anchor_rect. Passing an incomplete xdg_positioner object when"#]
         #[doc = r#"positioning a surface raises an error."#]
         pub trait ZxdgPositionerV6: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_positioner_v6";
+            const INTERFACE: &'static str = "zxdg_positioner_v6";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -25848,7 +25848,7 @@ pub mod xdg_shell_unstable_v6 {
         #[doc = r#"the role dependent state to the surface and (3) the client has committed a"#]
         #[doc = r#"buffer to the surface."#]
         pub trait ZxdgSurfaceV6: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_surface_v6";
+            const INTERFACE: &'static str = "zxdg_surface_v6";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -26117,7 +26117,7 @@ pub mod xdg_shell_unstable_v6 {
         #[doc = r#"id, and well as trigger user interactive operations such as interactive"#]
         #[doc = r#"resize and move."#]
         pub trait ZxdgToplevelV6: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_toplevel_v6";
+            const INTERFACE: &'static str = "zxdg_toplevel_v6";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -26657,7 +26657,7 @@ pub mod xdg_shell_unstable_v6 {
         #[doc = r#"The client must call wl_surface.commit on the corresponding wl_surface"#]
         #[doc = r#"for the xdg_popup state to take effect."#]
         pub trait ZxdgPopupV6: crate::server::Dispatcher {
-            const INTERFACE: &str = "zxdg_popup_v6";
+            const INTERFACE: &'static str = "zxdg_popup_v6";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -26814,7 +26814,7 @@ pub mod wlr_data_control_unstable_v1 {
         #[doc = r#"This interface is a manager that allows creating per-seat data device"#]
         #[doc = r#"controls."#]
         pub trait ZwlrDataControlManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_data_control_manager_v1";
+            const INTERFACE: &'static str = "zwlr_data_control_manager_v1";
             const VERSION: u32 = 2;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -26915,7 +26915,7 @@ pub mod wlr_data_control_unstable_v1 {
         #[doc = r#""#]
         #[doc = r#"When the seat is destroyed, this object becomes inert."#]
         pub trait ZwlrDataControlDeviceV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_data_control_device_v1";
+            const INTERFACE: &'static str = "zwlr_data_control_device_v1";
             const VERSION: u32 = 2;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -27107,7 +27107,7 @@ pub mod wlr_data_control_unstable_v1 {
         #[doc = r#"transfer and provides a way to describe the offered data and a way to"#]
         #[doc = r#"respond to requests to transfer the data."#]
         pub trait ZwlrDataControlSourceV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_data_control_source_v1";
+            const INTERFACE: &'static str = "zwlr_data_control_source_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -27202,7 +27202,7 @@ pub mod wlr_data_control_unstable_v1 {
         #[doc = r#"MIME types that the data can be converted to and provides the mechanism"#]
         #[doc = r#"for transferring the data directly from the source client."#]
         pub trait ZwlrDataControlOfferV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_data_control_offer_v1";
+            const INTERFACE: &'static str = "zwlr_data_control_offer_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -27295,7 +27295,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
     pub mod zwlr_export_dmabuf_manager_v1 {
         #[doc = r#"This object is a manager with which to start capturing from sources."#]
         pub trait ZwlrExportDmabufManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_export_dmabuf_manager_v1";
+            const INTERFACE: &'static str = "zwlr_export_dmabuf_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -27413,7 +27413,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
         #[doc = r#""#]
         #[doc = r#"All frames are read-only and may not be written into or altered."#]
         pub trait ZwlrExportDmabufFrameV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_export_dmabuf_frame_v1";
+            const INTERFACE: &'static str = "zwlr_export_dmabuf_frame_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -27583,7 +27583,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
         #[doc = r#"After a client binds the zwlr_foreign_toplevel_manager_v1, each opened"#]
         #[doc = r#"toplevel window will be sent via the toplevel event"#]
         pub trait ZwlrForeignToplevelManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_foreign_toplevel_manager_v1";
+            const INTERFACE: &'static str = "zwlr_foreign_toplevel_manager_v1";
             const VERSION: u32 = 3;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -27715,7 +27715,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
         #[doc = r#"Each toplevel has a list of outputs it is visible on, conveyed to the"#]
         #[doc = r#"client with the output_enter and output_leave events."#]
         pub trait ZwlrForeignToplevelHandleV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_foreign_toplevel_handle_v1";
+            const INTERFACE: &'static str = "zwlr_foreign_toplevel_handle_v1";
             const VERSION: u32 = 3;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -28072,7 +28072,7 @@ pub mod wlr_gamma_control_unstable_v1 {
         #[doc = r#"This interface is a manager that allows creating per-output gamma"#]
         #[doc = r#"controls."#]
         pub trait ZwlrGammaControlManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_gamma_control_manager_v1";
+            const INTERFACE: &'static str = "zwlr_gamma_control_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -28160,7 +28160,7 @@ pub mod wlr_gamma_control_unstable_v1 {
         #[doc = r#"has exclusive access to this particular output. When the gamma control"#]
         #[doc = r#"object is destroyed, the gamma table is restored to its original value."#]
         pub trait ZwlrGammaControlV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_gamma_control_v1";
+            const INTERFACE: &'static str = "zwlr_gamma_control_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -28274,7 +28274,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
         #[doc = r#"Note! This protocol is deprecated and not intended for production use."#]
         #[doc = r#"For screen lockers, use the ext-session-lock-v1 protocol."#]
         pub trait ZwlrInputInhibitManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_input_inhibit_manager_v1";
+            const INTERFACE: &'static str = "zwlr_input_inhibit_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -28329,7 +28329,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
         #[doc = r#"The compositor may continue to send input events to selected clients,"#]
         #[doc = r#"such as an on-screen keyboard (via the input-method protocol)."#]
         pub trait ZwlrInputInhibitorV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_input_inhibitor_v1";
+            const INTERFACE: &'static str = "zwlr_input_inhibitor_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -28423,7 +28423,7 @@ pub mod wlr_layer_shell_unstable_v1 {
         #[doc = r#"many desktop shell components, and a broad number of other applications"#]
         #[doc = r#"that interact with the desktop."#]
         pub trait ZwlrLayerShellV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_layer_shell_v1";
+            const INTERFACE: &'static str = "zwlr_layer_shell_v1";
             const VERSION: u32 = 5;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -28593,7 +28593,7 @@ pub mod wlr_layer_shell_unstable_v1 {
         #[doc = r#"The client can re-map the surface by performing a commit without any"#]
         #[doc = r#"buffer attached, waiting for a configure event and handling it as usual."#]
         pub trait ZwlrLayerSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_layer_surface_v1";
+            const INTERFACE: &'static str = "zwlr_layer_surface_v1";
             const VERSION: u32 = 5;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -28942,7 +28942,7 @@ pub mod wlr_output_management_unstable_v1 {
         #[doc = r#"output property advertisement protocol for regular clients. Instead,"#]
         #[doc = r#"protocols such as xdg-output should be used."#]
         pub trait ZwlrOutputManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_output_manager_v1";
+            const INTERFACE: &'static str = "zwlr_output_manager_v1";
             const VERSION: u32 = 4;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -29095,7 +29095,7 @@ pub mod wlr_output_management_unstable_v1 {
         #[doc = r#"wlr_output_manager.done event. No guarantees are made regarding the order"#]
         #[doc = r#"in which properties are sent."#]
         pub trait ZwlrOutputHeadV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_output_head_v1";
+            const INTERFACE: &'static str = "zwlr_output_head_v1";
             const VERSION: u32 = 4;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -29453,7 +29453,7 @@ pub mod wlr_output_management_unstable_v1 {
         #[doc = r#"wlr_output_manager.done event. No guarantees are made regarding the order"#]
         #[doc = r#"in which properties are sent."#]
         pub trait ZwlrOutputModeV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_output_mode_v1";
+            const INTERFACE: &'static str = "zwlr_output_mode_v1";
             const VERSION: u32 = 3;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -29585,7 +29585,7 @@ pub mod wlr_output_management_unstable_v1 {
         #[doc = r#"then reply with a succeeded, failed or cancelled event. Finally the client"#]
         #[doc = r#"should destroy the configuration object."#]
         pub trait ZwlrOutputConfigurationV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_output_configuration_v1";
+            const INTERFACE: &'static str = "zwlr_output_configuration_v1";
             const VERSION: u32 = 4;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -29796,7 +29796,7 @@ pub mod wlr_output_management_unstable_v1 {
         #[doc = r#""#]
         #[doc = r#"It is a protocol error to set the same property twice."#]
         pub trait ZwlrOutputConfigurationHeadV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_output_configuration_head_v1";
+            const INTERFACE: &'static str = "zwlr_output_configuration_head_v1";
             const VERSION: u32 = 4;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -29949,7 +29949,7 @@ pub mod wlr_output_power_management_unstable_v1 {
         #[doc = r#"This interface is a manager that allows creating per-output power"#]
         #[doc = r#"management mode controls."#]
         pub trait ZwlrOutputPowerManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_output_power_manager_v1";
+            const INTERFACE: &'static str = "zwlr_output_power_manager_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -30049,7 +30049,7 @@ pub mod wlr_output_power_management_unstable_v1 {
         #[doc = r#"This object offers requests to set the power management mode of"#]
         #[doc = r#"an output."#]
         pub trait ZwlrOutputPowerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_output_power_v1";
+            const INTERFACE: &'static str = "zwlr_output_power_v1";
             const VERSION: u32 = 1;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -30155,7 +30155,7 @@ pub mod wlr_screencopy_unstable_v1 {
         #[doc = r#"This object is a manager which offers requests to start capturing from a"#]
         #[doc = r#"source."#]
         pub trait ZwlrScreencopyManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_screencopy_manager_v1";
+            const INTERFACE: &'static str = "zwlr_screencopy_manager_v1";
             const VERSION: u32 = 3;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -30304,7 +30304,7 @@ pub mod wlr_screencopy_unstable_v1 {
         #[doc = r#"Once either a "ready" or a "failed" event is received, the client should"#]
         #[doc = r#"destroy the frame."#]
         pub trait ZwlrScreencopyFrameV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_screencopy_frame_v1";
+            const INTERFACE: &'static str = "zwlr_screencopy_frame_v1";
             const VERSION: u32 = 3;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -30563,7 +30563,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
         #[doc = r#"This protocol allows clients to emulate a physical pointer device. The"#]
         #[doc = r#"requests are mostly mirror opposites of those specified in wl_pointer."#]
         pub trait ZwlrVirtualPointerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_virtual_pointer_v1";
+            const INTERFACE: &'static str = "zwlr_virtual_pointer_v1";
             const VERSION: u32 = 2;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
@@ -30746,7 +30746,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
     pub mod zwlr_virtual_pointer_manager_v1 {
         #[doc = r#"This object allows clients to create individual virtual pointer objects."#]
         pub trait ZwlrVirtualPointerManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &str = "zwlr_virtual_pointer_manager_v1";
+            const INTERFACE: &'static str = "zwlr_virtual_pointer_manager_v1";
             const VERSION: u32 = 2;
 
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object

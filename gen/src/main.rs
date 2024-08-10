@@ -516,7 +516,7 @@ fn generate_server_code(protocols: &[Protocol]) -> Result<()> {
             writeln!(
                 &mut generated_path,
                 r#"pub trait {trait_name}: crate::server::Dispatcher {{
-                    const INTERFACE: &str = "{name}";
+                    const INTERFACE: &'static str = "{name}";
                     const VERSION: u32 = {version};
 
                     fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object where Self: Sized
