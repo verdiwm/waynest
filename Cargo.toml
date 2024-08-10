@@ -15,6 +15,8 @@ repository = "https://github.com/verdiwm/waynest"
 include = ["src/**/*.rs", "README.md", "LICENSE"]
 
 [features]
+client = []
+server = []
 fuzz = ["dep:arbitrary"]
 
 [dependencies]
