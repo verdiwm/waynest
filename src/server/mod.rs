@@ -49,7 +49,7 @@ impl Client {
     }
 
     pub async fn handle_message(&mut self, message: &mut Message) -> Result<()> {
-        let object = self.store.get(&message.object_id).unwrap();
+        let object = self.store.get(&message.object_id).ok_or(Error::Internal)?;
 
         object.dispatch(self, message).await
     }
