@@ -33,3 +33,6 @@ tokio = { version = "1.39.2", features = ["net"] }
 tokio-stream = "0.1.15"
 tracing = "0.1.40"
 waynest-macros = { version = "0.0.2", path = "macros" }
+
+[package.metadata.docs.rs]
+features = ["client", "server"]
