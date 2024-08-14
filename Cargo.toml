@@ -1,6 +1,6 @@
 [workspace]
-members = ["gen", "macros"]
-exclude = ["fuzz"]
+members = ["macros"]
+exclude = ["gen", "fuzz"]
 
 [package]
 name = "waynest"
