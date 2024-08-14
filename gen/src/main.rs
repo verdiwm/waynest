@@ -358,96 +358,13 @@ fn main() -> Result<()> {
             let docs = description_to_docs(interface.description.as_ref());
             let module_name = make_ident(&interface.name);
             let trait_name = make_ident(interface.name.to_upper_camel_case());
-            let trait_docs = format!("Trait to implement the {} interface. See the module level documentation for more info", interface.name);
+            let _trait_docs = format!("Trait to implement the {} interface. See the module level documentation for more info", interface.name);
             let name = &interface.name;
             let version = &interface.version;
 
-            let mut requests = Vec::new();
-            let mut dispatchers = Vec::new();
-
-            for (opcode, request) in interface.requests.iter().enumerate() {
-                let opcode = opcode as u16;
-                let name = make_ident(&request.name);
-
-                let tracing_inner =
-                    format!("{}#{{}}.{}()", interface.name, request.name.to_snek_case());
-
-                let mut args = vec![quote! { object }, quote! { client }];
-
-                for arg in &request.args {
-                    let mut optional = quote! {};
-
-                    if !arg.allow_null && arg.is_return_option() {
-                        optional = quote! {.ok_or(crate::wire::DecodeError::MalformedPayload)?};
-                    }
-
-                    let mut tryinto = quote! {};
-
-                    if arg.r#enum.is_some() {
-                        tryinto = quote! {.try_into()?}
-                    }
-
-                    let caller = make_ident(arg.to_caller());
-
-                    args.push(quote! {
-                        message.#caller()? #optional #tryinto
-                    })
-                }
-
-                dispatchers.push(quote! {
-                    #opcode => {
-                        tracing::debug!(#tracing_inner, object.id);
-                        self.#name(#(#args),*).await
-                    }                // let args = quote! {&self, object: &crate::server::Object, client: &mut crate::server::Client,};
-
-                });
-            }
-
-            for request in &interface.requests {
-                let docs = description_to_docs(request.description.as_ref());
-                let name = make_ident(request.name.to_snek_case());
-                let mut args = vec![
-                    quote! {&self },
-                    quote! {object: &crate::server::Object},
-                    quote! {client: &mut crate::server::Client},
-                ];
-
-                for arg in &request.args {
-                    let mut ty = arg.to_rust_type_token(
-                        arg.find_protocol(&protocols).as_ref().unwrap_or(&protocol),
-                    );
-
-                    if arg.allow_null {
-                        ty = quote! {Option<#ty>};
-                    }
-
-                    let name = make_ident(arg.name.to_snek_case());
-
-                    args.push(quote! {#name: #ty})
-                }
-
-                requests.push(quote! {
-                    #(#docs)*
-                    async fn #name(#(#args),*) -> crate::server::Result<()>;
-                });
-            }
-
-            let mut events = Vec::new();
-
-            for (opcode, event) in interface.events.iter().enumerate() {
-                let _opcode = opcode as u16;
-
-                let docs = description_to_docs(event.description.as_ref());
-                let name = make_ident(event.name.to_snek_case());
-                let args = quote! {&self, object: &crate::server::Object, client: &mut crate::server::Client,};
-
-                events.push(quote! {
-                    #(#docs)*
-                    async fn #name(#args) -> crate::server::Result<()> {
-                        todo!()
-                    }
-                });
-            }
+            let dispatchers = write_dispatchers(&interface);
+            let requests = write_requests(&protocols, &protocol, &interface);
+            let events = write_events(&interface);
 
             inner_modules.push(quote! {
                 pub mod #module_name {
@@ -522,6 +439,112 @@ fn make_ident<D: Display>(ident: D) -> Ident {
     }
 
     format_ident!("{ident}")
+}
+
+fn write_enums() -> TokenStream {
+    quote! {}
+}
+
+fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
+    let mut dispatchers = Vec::new();
+
+    for (opcode, request) in interface.requests.iter().enumerate() {
+        let opcode = opcode as u16;
+        let name = make_ident(&request.name);
+
+        let tracing_inner = format!("{}#{{}}.{}()", interface.name, request.name.to_snek_case());
+
+        let mut args = vec![quote! { object }, quote! { client }];
+
+        for arg in &request.args {
+            let mut optional = quote! {};
+
+            if !arg.allow_null && arg.is_return_option() {
+                optional = quote! {.ok_or(crate::wire::DecodeError::MalformedPayload)?};
+            }
+
+            let mut tryinto = quote! {};
+
+            if arg.r#enum.is_some() {
+                tryinto = quote! {.try_into()?}
+            }
+
+            let caller = make_ident(arg.to_caller());
+
+            args.push(quote! {
+                message.#caller()? #optional #tryinto
+            })
+        }
+
+        dispatchers.push(quote! {
+            #opcode => {
+                tracing::debug!(#tracing_inner, object.id);
+                self.#name(#(#args),*).await
+            }                // let args = quote! {&self, object: &crate::server::Object, client: &mut crate::server::Client,};
+
+        });
+    }
+
+    dispatchers
+}
+fn write_requests(
+    protocols: &[Protocol],
+    protocol: &Protocol,
+    interface: &Interface,
+) -> Vec<TokenStream> {
+    let mut requests = Vec::new();
+
+    for request in &interface.requests {
+        let docs = description_to_docs(request.description.as_ref());
+        let name = make_ident(request.name.to_snek_case());
+        let mut args = vec![
+            quote! {&self },
+            quote! {object: &crate::server::Object},
+            quote! {client: &mut crate::server::Client},
+        ];
+
+        for arg in &request.args {
+            let mut ty =
+                arg.to_rust_type_token(arg.find_protocol(&protocols).as_ref().unwrap_or(protocol));
+
+            if arg.allow_null {
+                ty = quote! {Option<#ty>};
+            }
+
+            let name = make_ident(arg.name.to_snek_case());
+
+            args.push(quote! {#name: #ty})
+        }
+
+        requests.push(quote! {
+            #(#docs)*
+            async fn #name(#(#args),*) -> crate::server::Result<()>;
+        });
+    }
+
+    requests
+}
+
+fn write_events(interface: &Interface) -> Vec<TokenStream> {
+    let mut events = Vec::new();
+
+    for (opcode, event) in interface.events.iter().enumerate() {
+        let _opcode = opcode as u16;
+
+        let docs = description_to_docs(event.description.as_ref());
+        let name = make_ident(event.name.to_snek_case());
+        let args =
+            quote! {&self, object: &crate::server::Object, client: &mut crate::server::Client,};
+
+        events.push(quote! {
+            #(#docs)*
+            async fn #name(#args) -> crate::server::Result<()> {
+                todo!()
+            }
+        });
+    }
+
+    events
 }
 
 fn find_enum<'a>(protocol: &'a Protocol, name: &str) -> &'a Enum {
