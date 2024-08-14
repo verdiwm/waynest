@@ -467,23 +467,7 @@ fn write_enums(interface: &Interface) -> Vec<TokenStream> {
 
                 let name = make_ident(format!("{prefix}{}", entry.name.to_upper_camel_case()));
 
-                // if let Some(summary) = &entry.summary {
-                //     for line in summary.lines() {
-                //         let doc = line.trim();
-
-                //         let mut c = doc.chars();
-                //         let doc = c.next().unwrap().to_uppercase().collect::<String>()
-                //             + c.as_str();
-
-                //         writeln!(&mut variants, r##"#[doc = r#"{doc}"#]"##,)?;
-                //     }
-                // }
-
-                // variants.push_str(&format!(
-                //     "const {prefix}{name} = {value};",
-                //     name = entry.name.to_upper_camel_case(),
-                //     value = entry.value
-                // ))
+                let docs = description_to_docs(entry.summary.as_ref());
 
                 let value: u32 = if let Some(s) = entry.value.strip_prefix("0x") {
                     u32::from_str_radix(s, 16).expect("Invalid enum value")
@@ -491,7 +475,10 @@ fn write_enums(interface: &Interface) -> Vec<TokenStream> {
                     entry.value.parse().expect("Invalid enum value")
                 };
 
-                variants.push(quote! { const #name = #value });
+                variants.push(quote! {
+                    #(#docs)*
+                    const #name = #value;
+                });
             }
 
             enums.push(quote! {
@@ -499,7 +486,7 @@ fn write_enums(interface: &Interface) -> Vec<TokenStream> {
                     #(#docs)*
                     #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
                     pub struct #name: u32 {
-                        #(#variants);*
+                        #(#variants)*
                     }
                 }
 
