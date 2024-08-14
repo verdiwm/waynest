@@ -1579,7 +1579,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 seat: crate::wire::ObjectId,
                 serial: u32,
-                edges: u32,
+                edges: Resize,
             ) -> crate::server::Result<()>;
             #[doc = "Map the surface as a toplevel surface."]
             #[doc = ""]
@@ -1603,7 +1603,7 @@ pub mod wayland {
                 parent: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-                flags: u32,
+                flags: Transient,
             ) -> crate::server::Result<()>;
             #[doc = "Map the surface as a fullscreen surface."]
             #[doc = ""]
@@ -1642,7 +1642,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                method: u32,
+                method: FullscreenMethod,
                 framerate: u32,
                 output: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
@@ -1674,7 +1674,7 @@ pub mod wayland {
                 parent: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-                flags: u32,
+                flags: Transient,
             ) -> crate::server::Result<()>;
             #[doc = "Map the surface as a maximized surface."]
             #[doc = ""]
@@ -4390,7 +4390,7 @@ pub mod linux_dmabuf_v1 {
                 width: i32,
                 height: i32,
                 format: u32,
-                flags: u32,
+                flags: Flags,
             ) -> crate::server::Result<()>;
             #[doc = "This asks for immediate creation of a wl_buffer by importing the"]
             #[doc = "added dmabufs."]
@@ -4423,7 +4423,7 @@ pub mod linux_dmabuf_v1 {
                 width: i32,
                 height: i32,
                 format: u32,
-                flags: u32,
+                flags: Flags,
             ) -> crate::server::Result<()>;
             #[doc = "This event indicates that the attempted buffer creation was"]
             #[doc = "successful. It provides the new wl_buffer referencing the dmabuf(s)."]
@@ -6928,7 +6928,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                anchor: u32,
+                anchor: Anchor,
             ) -> crate::server::Result<()>;
             #[doc = "Defines in what direction a surface should be positioned, relative to"]
             #[doc = "the anchor point of the parent surface. If a corner gravity is"]
@@ -6941,7 +6941,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                gravity: u32,
+                gravity: Gravity,
             ) -> crate::server::Result<()>;
             #[doc = "Specify how the window should be positioned if the originally intended"]
             #[doc = "position caused the surface to be constrained, meaning at least"]
@@ -6960,7 +6960,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                constraint_adjustment: u32,
+                constraint_adjustment: ConstraintAdjustment,
             ) -> crate::server::Result<()>;
             #[doc = "Specify the surface position offset relative to the position of the"]
             #[doc = "anchor on the anchor rectangle and the anchor on the surface. For"]
@@ -7641,7 +7641,7 @@ pub mod xdg_shell {
                 client: &mut crate::server::Client,
                 seat: crate::wire::ObjectId,
                 serial: u32,
-                edges: u32,
+                edges: ResizeEdge,
             ) -> crate::server::Result<()>;
             #[doc = "Set a maximum size for the window."]
             #[doc = ""]
@@ -8470,7 +8470,7 @@ pub mod content_type_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                content_type: u32,
+                content_type: Type,
             ) -> crate::server::Result<()>;
         }
     }
@@ -8652,7 +8652,7 @@ pub mod cursor_shape_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
                 serial: u32,
-                shape: u32,
+                shape: Shape,
             ) -> crate::server::Result<()>;
         }
     }
@@ -11029,7 +11029,7 @@ pub mod tearing_control_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                hint: u32,
+                hint: PresentationHint,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy this surface tearing object and revert the presentation hint to"]
             #[doc = "vsync. The change will be applied on the next wl_surface.commit."]
@@ -12065,7 +12065,7 @@ pub mod fullscreen_shell_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
                 surface: Option<crate::wire::ObjectId>,
-                method: u32,
+                method: PresentMethod,
                 output: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "Presents a surface on the given output for a particular mode."]
@@ -13712,7 +13712,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 width: i32,
                 height: i32,
                 format: u32,
-                flags: u32,
+                flags: Flags,
             ) -> crate::server::Result<()>;
             #[doc = "This asks for immediate creation of a wl_buffer by importing the"]
             #[doc = "added dmabufs."]
@@ -13745,7 +13745,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 width: i32,
                 height: i32,
                 format: u32,
-                flags: u32,
+                flags: Flags,
             ) -> crate::server::Result<()>;
             #[doc = "This event indicates that the attempted buffer creation was"]
             #[doc = "successful. It provides the new wl_buffer referencing the dmabuf(s)."]
@@ -14507,7 +14507,7 @@ pub mod pointer_constraints_unstable_v1 {
                 surface: crate::wire::ObjectId,
                 pointer: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
-                lifetime: u32,
+                lifetime: Lifetime,
             ) -> crate::server::Result<()>;
             #[doc = "The confine_pointer request lets the client request to confine the"]
             #[doc = "pointer cursor to a given region. This request may not take effect"]
@@ -14534,7 +14534,7 @@ pub mod pointer_constraints_unstable_v1 {
                 surface: crate::wire::ObjectId,
                 pointer: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
-                lifetime: u32,
+                lifetime: Lifetime,
             ) -> crate::server::Result<()>;
         }
     }
@@ -18093,8 +18093,8 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                hint: u32,
-                purpose: u32,
+                hint: ContentHint,
+                purpose: ContentPurpose,
             ) -> crate::server::Result<()>;
             async fn set_cursor_rectangle(
                 &self,
@@ -18592,7 +18592,7 @@ pub mod text_input_unstable_v3 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                cause: u32,
+                cause: ChangeCause,
             ) -> crate::server::Result<()>;
             #[doc = "Sets the content purpose and content hint. While the purpose is the"]
             #[doc = "basic purpose of an input field, the hint flags allow to modify some of"]
@@ -18609,8 +18609,8 @@ pub mod text_input_unstable_v3 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                hint: u32,
-                purpose: u32,
+                hint: ContentHint,
+                purpose: ContentPurpose,
             ) -> crate::server::Result<()>;
             #[doc = "Marks an area around the cursor as a x, y, width, height rectangle in"]
             #[doc = "surface local coordinates."]
@@ -19035,7 +19035,7 @@ pub mod xdg_decoration_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                mode: u32,
+                mode: Mode,
             ) -> crate::server::Result<()>;
             #[doc = "Unset the toplevel surface decoration mode. This informs the compositor"]
             #[doc = "that the client doesn't prefer a particular decoration mode."]
@@ -20991,7 +20991,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                anchor: u32,
+                anchor: Anchor,
             ) -> crate::server::Result<()>;
             #[doc = "Defines in what direction a surface should be positioned, relative to"]
             #[doc = "the anchor point of the parent surface. If two orthogonal gravities are"]
@@ -21006,7 +21006,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                gravity: u32,
+                gravity: Gravity,
             ) -> crate::server::Result<()>;
             #[doc = "Specify how the window should be positioned if the originally intended"]
             #[doc = "position caused the surface to be constrained, meaning at least"]
@@ -23350,7 +23350,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 output: Option<crate::wire::ObjectId>,
-                layer: u32,
+                layer: Layer,
                 namespace: String,
             ) -> crate::server::Result<()>;
             #[doc = "This request indicates that the client will not use the layer_shell"]
@@ -23525,7 +23525,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                anchor: u32,
+                anchor: Anchor,
             ) -> crate::server::Result<()>;
             #[doc = "Requests that the compositor avoids occluding an area with other"]
             #[doc = "surfaces. The compositor's use of this information is"]
@@ -23597,7 +23597,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                keyboard_interactivity: u32,
+                keyboard_interactivity: KeyboardInteractivity,
             ) -> crate::server::Result<()>;
             #[doc = "This assigns an xdg_popup's parent to this layer_surface.  This popup"]
             #[doc = "should have been created via xdg_surface::get_popup with the parent set"]
@@ -23660,7 +23660,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                edge: u32,
+                edge: Anchor,
             ) -> crate::server::Result<()>;
             #[doc = "The configure event asks the client to resize its surface."]
             #[doc = ""]
@@ -24663,7 +24663,7 @@ pub mod wlr_output_power_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                mode: u32,
+                mode: Mode,
             ) -> crate::server::Result<()>;
             #[doc = "Destroys the output power management mode control object."]
             async fn destroy(
