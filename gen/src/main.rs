@@ -1,8 +1,10 @@
 use anyhow::Result;
 use heck::{ToSnekCase, ToUpperCamelCase};
+use proc_macro2::{Ident, TokenStream};
+use quote::{format_ident, quote};
 use serde::{Deserialize, Serialize};
 use std::{
-    fmt::Write as _,
+    fmt::{Display, Write as _},
     fs::{self, OpenOptions},
     io::Write as _,
 };
@@ -302,10 +304,167 @@ fn main() -> Result<()> {
         .map(|path| quick_xml::de::from_str(&fs::read_to_string(path).unwrap()).unwrap())
         .collect();
 
-    generate_server_code(&protocols)?;
-    generate_client_code(&protocols)?;
+    let mut generated_path = OpenOptions::new()
+        .truncate(true)
+        .write(true)
+        .create(true)
+        .open("src/server/protocol.rs")?;
+
+    let mut modules = Vec::new();
+
+    for protocol in protocols {
+        debug!("Generating server code for \"{}\"", &protocol.name);
+
+        let mut inner_modules = Vec::new();
+
+        for interface in &protocol.interfaces {
+            let docs = description_to_docs(interface.description.as_ref());
+            let module_name = make_ident(&interface.name);
+            let trait_name = make_ident(interface.name.to_upper_camel_case());
+            let trait_docs = format!("Trait to implement the {} interface. See the module level documentation for more info", interface.name);
+            let name = &interface.name;
+            let version = &interface.version;
+
+            let mut requests = Vec::new();
+            let mut dispatchers = Vec::new();
+
+            for (opcode, request) in interface.requests.iter().enumerate() {
+                let opcode = opcode as u16;
+                let name = make_ident(&request.name);
+
+                let tracing_inner =
+                    format!("{}#{{}}.{}()", interface.name, request.name.to_snek_case());
+
+                let mut args = Vec::new();
+
+                for arg in &request.args {
+                    let mut optional = quote! {};
+
+                    if !arg.allow_null && arg.is_return_option() {
+                        optional = quote! {".ok_or(crate::wire::DecodeError::MalformedPayload)?"};
+                    }
+
+                    let mut tryinto = quote! {};
+
+                    if arg.r#enum.is_some() {
+                        tryinto = quote!{".try_into()?"}
+                    }
+
+                    args.push(format!(
+                        "message.{caller}()?{optional}{tryinto},",
+                        caller = arg.to_caller()
+                    ))
+                }
+
+                dispatchers.push(quote! {
+                    #opcode => {
+                        tracing::debug!(#tracing_inner, object.id);
+                        self.#name().await
+                    }
+                });
+            }
+
+            for request in &interface.requests {
+                let docs = description_to_docs(request.description.as_ref());
+                let name = make_ident(request.name.to_snek_case());
+                let args = quote! {&self, object: &crate::server::Object, client: &mut crate::server::Client,};
+
+                requests.push(quote! {
+                    #(#docs)*
+                    async fn #name(#args) -> crate::server::Result<()>;
+                });
+            }
+
+            let mut events = Vec::new();
+
+            for (opcode, event) in interface.events.iter().enumerate() {
+                let _opcode = opcode as u16;
+
+                let docs = description_to_docs(event.description.as_ref());
+                let name = make_ident(event.name.to_snek_case());
+                let args = quote! {&self, object: &crate::server::Object, client: &mut crate::server::Client,};
+
+                events.push(quote! {
+                    #(#docs)*
+                    async fn #name(#args) -> crate::server::Result<()> {
+                        todo!()
+                    }
+                });
+            }
+
+            inner_modules.push(quote! {
+                pub mod #module_name {
+                    #(#docs)*
+                    pub trait #trait_name: crate::server::Dispatcher {
+                        const INTERFACE: &'static str = #name;
+                        const VERSION: u32 = #version;
+
+                        fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object where Self: Sized
+                        {
+                            crate::server::Object::new(id, self)
+                        }
+
+                        async fn handle_request(
+                            &self,
+                            object: &crate::server::Object,
+                            client: &mut crate::server::Client,
+                            message: &mut crate::wire::Message,
+                        ) -> crate::server::Result<()> {
+                            match message.opcode {
+                                #(#dispatchers),*
+                                _ => Err(crate::server::error::Error::UnknownOpcode),
+                            }
+                        }
+
+                        #(#requests)*
+                        #(#events)*
+                    }
+                }
+            })
+        }
+
+        let docs = description_to_docs(protocol.description.as_ref());
+        let module_name = make_ident(protocol.name);
+
+        modules.push(quote! {
+            #(#docs)*
+            pub mod #module_name {
+                #(#inner_modules)*
+            }
+        })
+    }
+
+    let tokens = quote! {
+        #![allow(unused)]
+        #![allow(async_fn_in_trait)]
+        #(#modules)*
+    };
+
+    write!(&mut generated_path, "{tokens}")?;
 
     Ok(())
+}
+
+fn description_to_docs(description: Option<&String>) -> Vec<TokenStream> {
+    let mut docs = Vec::new();
+
+    if let Some(description) = description {
+        for line in description.lines() {
+            // writeln!(&mut generated_path, r##"#[doc = r#"{}"#]"##, line.trim())?;
+            let doc = line.trim();
+            docs.push(quote! {#[doc = #doc]})
+        }
+    }
+
+    docs
+}
+
+fn make_ident<D: Display>(ident: D) -> Ident {
+    if KEYWORDS.contains(&ident.to_string().as_str()) {
+        return format_ident!("r#{ident}");
+    }
+
+    format_ident!("{ident}")
 }
 
 fn find_enum<'a>(protocol: &'a Protocol, name: &str) -> &'a Enum {
