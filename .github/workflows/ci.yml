@@ -17,7 +17,7 @@ jobs:
       - name: Install nextest to run tests
         uses: taiki-e/install-action@nextest
       - name: Run tests
-        run: cargo nextest run
+        run: cargo nextest run --all-features
 
   # miri:
   #   name: Build and test with miri
