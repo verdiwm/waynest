@@ -455,6 +455,29 @@ fn write_enums(interface: &Interface) -> Vec<TokenStream> {
         let name = make_ident(e.name.to_upper_camel_case());
 
         if !e.bitfield {
+            let mut variants = Vec::new();
+
+            variants.push(quote! { Temp });
+
+            enums.push(quote! {
+                #[repr(u32)]
+                #[non_exhaustive]
+                #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+                pub enum #name {
+                    #(#variants),*
+                }
+
+                impl TryFrom<u32> for #name {
+                    type Error = crate::wire::DecodeError;
+
+                    fn try_from(v: u32) -> Result<Self, Self::Error> {
+                        match v {
+                            // {match_variants}
+                            _ => Err(crate::wire::DecodeError::MalformedPayload)
+                        }
+                    }
+                }
+            })
         } else {
             let mut variants = Vec::new();
 
