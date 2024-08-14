@@ -22,11 +22,25 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_display#{}.sync()", object.id);
-                        self.sync().await
+                        self.sync(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("wl_display#{}.get_registry()", object.id);
-                        self.get_registry().await
+                        self.get_registry(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -46,6 +60,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                callback: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This request creates a registry object that allows the client"]
             #[doc = "to list and bind the global objects available from the"]
@@ -60,6 +75,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                registry: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The error event is sent out when a fatal (non-recoverable)"]
             #[doc = "error has occurred.  The object_id argument is the object"]
@@ -128,7 +144,8 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_registry#{}.bind()", object.id);
-                        self.bind().await
+                        self.bind(object, client, message.uint()?, message.new_id()?)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -139,6 +156,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                name: u32,
+                id: crate::wire::NewId,
             ) -> crate::server::Result<()>;
             #[doc = "Notify the client of global objects."]
             #[doc = ""]
@@ -228,11 +247,25 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_compositor#{}.create_surface()", object.id);
-                        self.create_surface().await
+                        self.create_surface(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("wl_compositor#{}.create_region()", object.id);
-                        self.create_region().await
+                        self.create_region(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -242,12 +275,14 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Ask the compositor to create a new region."]
             async fn create_region(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -277,15 +312,27 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_shm_pool#{}.create_buffer()", object.id);
-                        self.create_buffer().await
+                        self.create_buffer(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("wl_shm_pool#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     2u16 => {
                         tracing::debug!("wl_shm_pool#{}.resize()", object.id);
-                        self.resize().await
+                        self.resize(object, client, message.int()?).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -305,6 +352,12 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                offset: i32,
+                width: i32,
+                height: i32,
+                stride: i32,
+                format: super::super::wayland::wl_shm::Format,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the shared memory pool."]
             #[doc = ""]
@@ -330,6 +383,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                size: i32,
             ) -> crate::server::Result<()>;
         }
     }
@@ -361,11 +415,20 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_shm#{}.create_pool()", object.id);
-                        self.create_pool().await
+                        self.create_pool(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.fd()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("wl_shm#{}.release()", object.id);
-                        self.release().await
+                        self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -379,6 +442,9 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                fd: rustix::fd::OwnedFd,
+                size: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Using this request a client can tell the server that it is not going to"]
             #[doc = "use the shm object anymore."]
@@ -435,7 +501,7 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_buffer#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -495,23 +561,38 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_data_offer#{}.accept()", object.id);
-                        self.accept().await
+                        self.accept(object, client, message.uint()?, message.string()?)
+                            .await
                     }
                     1u16 => {
                         tracing::debug!("wl_data_offer#{}.receive()", object.id);
-                        self.receive().await
+                        self.receive(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.fd()?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("wl_data_offer#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     3u16 => {
                         tracing::debug!("wl_data_offer#{}.finish()", object.id);
-                        self.finish().await
+                        self.finish(object, client).await
                     }
                     4u16 => {
                         tracing::debug!("wl_data_offer#{}.set_actions()", object.id);
-                        self.set_actions().await
+                        self.set_actions(
+                            object,
+                            client,
+                            message.uint()?.try_into()?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -534,6 +615,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                mime_type: Option<String>,
             ) -> crate::server::Result<()>;
             #[doc = "To transfer the offered data, the client issues this request"]
             #[doc = "and indicates the mime type it wants to receive.  The transfer"]
@@ -554,6 +637,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mime_type: String,
+                fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the data offer."]
             async fn destroy(
@@ -615,6 +700,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                dnd_actions: super::super::wayland::wl_data_device_manager::DndAction,
+                preferred_action: super::super::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()>;
             #[doc = "Sent immediately after creating the wl_data_offer object.  One"]
             #[doc = "event per offered mime type."]
@@ -703,15 +790,23 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_data_source#{}.offer()", object.id);
-                        self.offer().await
+                        self.offer(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("wl_data_source#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     2u16 => {
                         tracing::debug!("wl_data_source#{}.set_actions()", object.id);
-                        self.set_actions().await
+                        self.set_actions(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -723,6 +818,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mime_type: String,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the data source."]
             async fn destroy(
@@ -747,6 +843,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                dnd_actions: super::super::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()>;
             #[doc = "Sent when a target accepts pointer_focus or motion events.  If"]
             #[doc = "a target does not accept any of the offered types, type is NULL."]
@@ -883,15 +980,26 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_data_device#{}.start_drag()", object.id);
-                        self.start_drag().await
+                        self.start_drag(
+                            object,
+                            client,
+                            message.object()?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.object()?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("wl_data_device#{}.set_selection()", object.id);
-                        self.set_selection().await
+                        self.set_selection(object, client, message.object()?, message.uint()?)
+                            .await
                     }
                     2u16 => {
                         tracing::debug!("wl_data_device#{}.release()", object.id);
-                        self.release().await
+                        self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -929,6 +1037,10 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                source: Option<crate::wire::ObjectId>,
+                origin: crate::wire::ObjectId,
+                icon: Option<crate::wire::ObjectId>,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This request asks the compositor to set the selection"]
             #[doc = "to the data from the source on behalf of the client."]
@@ -942,6 +1054,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                source: Option<crate::wire::ObjectId>,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This request destroys the data device."]
             async fn release(
@@ -1068,11 +1182,28 @@ pub mod wayland {
                             "wl_data_device_manager#{}.create_data_source()",
                             object.id
                         );
-                        self.create_data_source().await
+                        self.create_data_source(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("wl_data_device_manager#{}.get_data_device()", object.id);
-                        self.get_data_device().await
+                        self.get_data_device(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1082,12 +1213,15 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Create a new data device for a given seat."]
             async fn get_data_device(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -1119,7 +1253,17 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_shell#{}.get_shell_surface()", object.id);
-                        self.get_shell_surface().await
+                        self.get_shell_surface(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1133,6 +1277,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -1166,43 +1312,105 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_shell_surface#{}.pong()", object.id);
-                        self.pong().await
+                        self.pong(object, client, message.uint()?).await
                     }
                     1u16 => {
                         tracing::debug!("wl_shell_surface#{}.move()", object.id);
-                        self.r#move().await
+                        self.r#move(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("wl_shell_surface#{}.resize()", object.id);
-                        self.resize().await
+                        self.resize(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("wl_shell_surface#{}.set_toplevel()", object.id);
-                        self.set_toplevel().await
+                        self.set_toplevel(object, client).await
                     }
                     4u16 => {
                         tracing::debug!("wl_shell_surface#{}.set_transient()", object.id);
-                        self.set_transient().await
+                        self.set_transient(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.int()?,
+                            message.int()?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
                     }
                     5u16 => {
                         tracing::debug!("wl_shell_surface#{}.set_fullscreen()", object.id);
-                        self.set_fullscreen().await
+                        self.set_fullscreen(
+                            object,
+                            client,
+                            message.uint()?.try_into()?,
+                            message.uint()?,
+                            message.object()?,
+                        )
+                        .await
                     }
                     6u16 => {
                         tracing::debug!("wl_shell_surface#{}.set_popup()", object.id);
-                        self.set_popup().await
+                        self.set_popup(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.int()?,
+                            message.int()?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
                     }
                     7u16 => {
                         tracing::debug!("wl_shell_surface#{}.set_maximized()", object.id);
-                        self.set_maximized().await
+                        self.set_maximized(object, client, message.object()?).await
                     }
                     8u16 => {
                         tracing::debug!("wl_shell_surface#{}.set_title()", object.id);
-                        self.set_title().await
+                        self.set_title(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     9u16 => {
                         tracing::debug!("wl_shell_surface#{}.set_class()", object.id);
-                        self.set_class().await
+                        self.set_class(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1213,6 +1421,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Start a pointer-driven move of the surface."]
             #[doc = ""]
@@ -1223,6 +1432,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Start a pointer-driven resizing of the surface."]
             #[doc = ""]
@@ -1233,6 +1444,9 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
+                serial: u32,
+                edges: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Map the surface as a toplevel surface."]
             #[doc = ""]
@@ -1253,6 +1467,10 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                parent: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+                flags: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Map the surface as a fullscreen surface."]
             #[doc = ""]
@@ -1291,6 +1509,9 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                method: u32,
+                framerate: u32,
+                output: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "Map the surface as a popup."]
             #[doc = ""]
@@ -1315,6 +1536,12 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
+                serial: u32,
+                parent: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+                flags: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Map the surface as a maximized surface."]
             #[doc = ""]
@@ -1338,6 +1565,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                output: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "Set a short title for the surface."]
             #[doc = ""]
@@ -1350,6 +1578,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                title: String,
             ) -> crate::server::Result<()>;
             #[doc = "Set a class for the surface."]
             #[doc = ""]
@@ -1361,6 +1590,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                class: String,
             ) -> crate::server::Result<()>;
             #[doc = "Ping a client to check if it is receiving events and sending"]
             #[doc = "requests. A client is expected to reply with a pong request."]
@@ -1468,47 +1698,81 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_surface#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("wl_surface#{}.attach()", object.id);
-                        self.attach().await
+                        self.attach(
+                            object,
+                            client,
+                            message.object()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("wl_surface#{}.damage()", object.id);
-                        self.damage().await
+                        self.damage(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("wl_surface#{}.frame()", object.id);
-                        self.frame().await
+                        self.frame(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     4u16 => {
                         tracing::debug!("wl_surface#{}.set_opaque_region()", object.id);
-                        self.set_opaque_region().await
+                        self.set_opaque_region(object, client, message.object()?)
+                            .await
                     }
                     5u16 => {
                         tracing::debug!("wl_surface#{}.set_input_region()", object.id);
-                        self.set_input_region().await
+                        self.set_input_region(object, client, message.object()?)
+                            .await
                     }
                     6u16 => {
                         tracing::debug!("wl_surface#{}.commit()", object.id);
-                        self.commit().await
+                        self.commit(object, client).await
                     }
                     7u16 => {
                         tracing::debug!("wl_surface#{}.set_buffer_transform()", object.id);
-                        self.set_buffer_transform().await
+                        self.set_buffer_transform(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     8u16 => {
                         tracing::debug!("wl_surface#{}.set_buffer_scale()", object.id);
-                        self.set_buffer_scale().await
+                        self.set_buffer_scale(object, client, message.int()?).await
                     }
                     9u16 => {
                         tracing::debug!("wl_surface#{}.damage_buffer()", object.id);
-                        self.damage_buffer().await
+                        self.damage_buffer(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     10u16 => {
                         tracing::debug!("wl_surface#{}.offset()", object.id);
-                        self.offset().await
+                        self.offset(object, client, message.int()?, message.int()?)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1587,6 +1851,9 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                buffer: Option<crate::wire::ObjectId>,
+                x: i32,
+                y: i32,
             ) -> crate::server::Result<()>;
             #[doc = "This request is used to describe the regions where the pending"]
             #[doc = "buffer is different from the current surface contents, and where"]
@@ -1613,6 +1880,10 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Request a notification when it is a good time to start drawing a new"]
             #[doc = "frame, by creating a frame callback. This is useful for throttling"]
@@ -1650,6 +1921,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                callback: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This request sets the region of the surface that contains"]
             #[doc = "opaque content."]
@@ -1679,6 +1951,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                region: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "This request sets the region of the surface that can receive"]
             #[doc = "pointer and touch events."]
@@ -1706,6 +1979,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                region: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "Surface state (input, opaque, and damage regions, attached buffers,"]
             #[doc = "etc.) is double-buffered. Protocol requests modify the pending state,"]
@@ -1766,6 +2040,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                transform: super::super::wayland::wl_output::Transform,
             ) -> crate::server::Result<()>;
             #[doc = "This request sets an optional scaling factor on how the compositor"]
             #[doc = "interprets the contents of the buffer attached to the window."]
@@ -1794,6 +2069,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                scale: i32,
             ) -> crate::server::Result<()>;
             #[doc = "This request is used to describe the regions where the pending"]
             #[doc = "buffer is different from the current surface contents, and where"]
@@ -1831,6 +2107,10 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "The x and y arguments specify the location of the new pending"]
             #[doc = "buffer's upper left corner, relative to the current buffer's upper"]
@@ -1848,6 +2128,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
             ) -> crate::server::Result<()>;
             #[doc = "This is emitted whenever a surface's creation, movement, or resizing"]
             #[doc = "results in some part of it being within the scanout region of an"]
@@ -1937,19 +2219,40 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_seat#{}.get_pointer()", object.id);
-                        self.get_pointer().await
+                        self.get_pointer(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("wl_seat#{}.get_keyboard()", object.id);
-                        self.get_keyboard().await
+                        self.get_keyboard(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("wl_seat#{}.get_touch()", object.id);
-                        self.get_touch().await
+                        self.get_touch(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("wl_seat#{}.release()", object.id);
-                        self.release().await
+                        self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1966,6 +2269,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The ID provided will be initialized to the wl_keyboard interface"]
             #[doc = "for this seat."]
@@ -1979,6 +2283,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The ID provided will be initialized to the wl_touch interface"]
             #[doc = "for this seat."]
@@ -1992,6 +2297,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Using this request a client can tell the server that it is not going to"]
             #[doc = "use the seat object anymore."]
@@ -2083,11 +2389,19 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_pointer#{}.set_cursor()", object.id);
-                        self.set_cursor().await
+                        self.set_cursor(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.object()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("wl_pointer#{}.release()", object.id);
-                        self.release().await
+                        self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2129,6 +2443,10 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                surface: Option<crate::wire::ObjectId>,
+                hotspot_x: i32,
+                hotspot_y: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Using this request a client can tell the server that it is not going to"]
             #[doc = "use the pointer object anymore."]
@@ -2453,7 +2771,7 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_keyboard#{}.release()", object.id);
-                        self.release().await
+                        self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2603,7 +2921,7 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_touch#{}.release()", object.id);
-                        self.release().await
+                        self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2761,7 +3079,7 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_output#{}.release()", object.id);
-                        self.release().await
+                        self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2958,15 +3276,31 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_region#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("wl_region#{}.add()", object.id);
-                        self.add().await
+                        self.add(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("wl_region#{}.subtract()", object.id);
-                        self.subtract().await
+                        self.subtract(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2982,12 +3316,20 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Subtract the specified rectangle from the region."]
             async fn subtract(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
         }
     }
@@ -3029,11 +3371,24 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_subcompositor#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("wl_subcompositor#{}.get_subsurface()", object.id);
-                        self.get_subsurface().await
+                        self.get_subsurface(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3069,6 +3424,9 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+                parent: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -3143,27 +3501,42 @@ pub mod wayland {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_subsurface#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("wl_subsurface#{}.set_position()", object.id);
-                        self.set_position().await
+                        self.set_position(object, client, message.int()?, message.int()?)
+                            .await
                     }
                     2u16 => {
                         tracing::debug!("wl_subsurface#{}.place_above()", object.id);
-                        self.place_above().await
+                        self.place_above(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("wl_subsurface#{}.place_below()", object.id);
-                        self.place_below().await
+                        self.place_below(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     4u16 => {
                         tracing::debug!("wl_subsurface#{}.set_sync()", object.id);
-                        self.set_sync().await
+                        self.set_sync(object, client).await
                     }
                     5u16 => {
                         tracing::debug!("wl_subsurface#{}.set_desync()", object.id);
-                        self.set_desync().await
+                        self.set_desync(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3195,6 +3568,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
             ) -> crate::server::Result<()>;
             #[doc = "This sub-surface is taken from the stack, and put back just"]
             #[doc = "above the reference surface, changing the z-order of the sub-surfaces."]
@@ -3213,6 +3588,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sibling: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The sub-surface is placed just below the reference surface."]
             #[doc = "See wl_subsurface.place_above."]
@@ -3220,6 +3596,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sibling: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Change the commit behaviour of the sub-surface to synchronized"]
             #[doc = "mode, also described as the parent dependent mode."]
@@ -3350,19 +3727,43 @@ pub mod linux_dmabuf_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_linux_dmabuf_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zwp_linux_dmabuf_v1#{}.create_params()", object.id);
-                        self.create_params().await
+                        self.create_params(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("zwp_linux_dmabuf_v1#{}.get_default_feedback()", object.id);
-                        self.get_default_feedback().await
+                        self.get_default_feedback(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("zwp_linux_dmabuf_v1#{}.get_surface_feedback()", object.id);
-                        self.get_surface_feedback().await
+                        self.get_surface_feedback(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3382,6 +3783,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                params_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This request creates a new wp_linux_dmabuf_feedback object not bound"]
             #[doc = "to a particular surface. This object will deliver feedback about dmabuf"]
@@ -3391,6 +3793,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This request creates a new wp_linux_dmabuf_feedback object for the"]
             #[doc = "specified wl_surface. This object will deliver feedback about dmabuf"]
@@ -3402,6 +3805,8 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This event advertises one buffer format that the server supports."]
             #[doc = "All the supported formats are advertised once when the client"]
@@ -3486,19 +3891,48 @@ pub mod linux_dmabuf_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_linux_buffer_params_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zwp_linux_buffer_params_v1#{}.add()", object.id);
-                        self.add().await
+                        self.add(
+                            object,
+                            client,
+                            message.fd()?,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("zwp_linux_buffer_params_v1#{}.create()", object.id);
-                        self.create().await
+                        self.create(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.uint()?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("zwp_linux_buffer_params_v1#{}.create_immed()", object.id);
-                        self.create_immed().await
+                        self.create_immed(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.int()?,
+                            message.int()?,
+                            message.uint()?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3533,6 +3967,12 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                fd: rustix::fd::OwnedFd,
+                plane_idx: u32,
+                offset: u32,
+                stride: u32,
+                modifier_hi: u32,
+                modifier_lo: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This asks for creation of a wl_buffer from the added dmabuf"]
             #[doc = "buffers. The wl_buffer is not created immediately but returned via"]
@@ -3597,6 +4037,10 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
+                format: u32,
+                flags: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This asks for immediate creation of a wl_buffer by importing the"]
             #[doc = "added dmabufs."]
@@ -3625,6 +4069,11 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                buffer_id: crate::wire::ObjectId,
+                width: i32,
+                height: i32,
+                format: u32,
+                flags: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This event indicates that the attempted buffer creation was"]
             #[doc = "successful. It provides the new wl_buffer referencing the dmabuf(s)."]
@@ -3697,7 +4146,7 @@ pub mod linux_dmabuf_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_linux_dmabuf_feedback_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3904,11 +4353,21 @@ pub mod presentation_time {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_presentation#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("wp_presentation#{}.feedback()", object.id);
-                        self.feedback().await
+                        self.feedback(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3933,6 +4392,8 @@ pub mod presentation_time {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                surface: crate::wire::ObjectId,
+                callback: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This event tells the client in which clock domain the"]
             #[doc = "compositor interprets the timestamps used by the presentation"]
@@ -4175,11 +4636,21 @@ pub mod tablet_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_manager_v2#{}.get_tablet_seat()", object.id);
-                        self.get_tablet_seat().await
+                        self.get_tablet_seat(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_manager_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4190,6 +4661,8 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                tablet_seat: crate::wire::ObjectId,
+                seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the wp_tablet_manager object. Objects created from this"]
             #[doc = "object are unaffected and should be destroyed separately."]
@@ -4222,7 +4695,7 @@ pub mod tablet_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_seat_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4314,11 +4787,19 @@ pub mod tablet_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_tool_v2#{}.set_cursor()", object.id);
-                        self.set_cursor().await
+                        self.set_cursor(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.object()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_tool_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4357,6 +4838,10 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                surface: Option<crate::wire::ObjectId>,
+                hotspot_x: i32,
+                hotspot_y: i32,
             ) -> crate::server::Result<()>;
             #[doc = "This destroys the client's resource for this tool object."]
             async fn destroy(
@@ -4674,7 +5159,7 @@ pub mod tablet_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4782,11 +5267,19 @@ pub mod tablet_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_pad_ring_v2#{}.set_feedback()", object.id);
-                        self.set_feedback().await
+                        self.set_feedback(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_pad_ring_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4814,6 +5307,8 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                description: String,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This destroys the client's resource for this ring object."]
             async fn destroy(
@@ -4914,11 +5409,19 @@ pub mod tablet_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_pad_strip_v2#{}.set_feedback()", object.id);
-                        self.set_feedback().await
+                        self.set_feedback(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_pad_strip_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4946,6 +5449,8 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                description: String,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This destroys the client's resource for this strip object."]
             async fn destroy(
@@ -5064,7 +5569,7 @@ pub mod tablet_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_pad_group_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5226,11 +5731,20 @@ pub mod tablet_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_pad_v2#{}.set_feedback()", object.id);
-                        self.set_feedback().await
+                        self.set_feedback(
+                            object,
+                            client,
+                            message.uint()?,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_pad_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5263,6 +5777,9 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                button: u32,
+                description: String,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the wp_tablet_pad object. Objects created from this object"]
             #[doc = "are unaffected and should be destroyed separately."]
@@ -5390,11 +5907,21 @@ pub mod viewporter {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_viewporter#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("wp_viewporter#{}.get_viewport()", object.id);
-                        self.get_viewport().await
+                        self.get_viewport(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5415,6 +5942,8 @@ pub mod viewporter {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -5492,15 +6021,24 @@ pub mod viewporter {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_viewport#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("wp_viewport#{}.set_source()", object.id);
-                        self.set_source().await
+                        self.set_source(
+                            object,
+                            client,
+                            message.fixed()?,
+                            message.fixed()?,
+                            message.fixed()?,
+                            message.fixed()?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("wp_viewport#{}.set_destination()", object.id);
-                        self.set_destination().await
+                        self.set_destination(object, client, message.int()?, message.int()?)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5527,6 +6065,10 @@ pub mod viewporter {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
+                width: crate::wire::Fixed,
+                height: crate::wire::Fixed,
             ) -> crate::server::Result<()>;
             #[doc = "Set the destination size of the associated wl_surface. See"]
             #[doc = "wp_viewport for the description, and relation to the wl_buffer"]
@@ -5543,6 +6085,8 @@ pub mod viewporter {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
         }
     }
@@ -5572,19 +6116,36 @@ pub mod xdg_shell {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_wm_base#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("xdg_wm_base#{}.create_positioner()", object.id);
-                        self.create_positioner().await
+                        self.create_positioner(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("xdg_wm_base#{}.get_xdg_surface()", object.id);
-                        self.get_xdg_surface().await
+                        self.get_xdg_surface(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("xdg_wm_base#{}.pong()", object.id);
-                        self.pong().await
+                        self.pong(object, client, message.uint()?).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5606,6 +6167,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This creates an xdg_surface for the given surface. While xdg_surface"]
             #[doc = "itself is not a role, the corresponding surface may only be assigned"]
@@ -5624,6 +6186,8 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "A client must respond to a ping event with a pong request or"]
             #[doc = "the client may be deemed unresponsive. See xdg_wm_base.ping"]
@@ -5632,6 +6196,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "The ping event asks the client if it's still alive. Pass the"]
             #[doc = "serial specified in the event back to the compositor by sending"]
@@ -5693,43 +6258,58 @@ pub mod xdg_shell {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_positioner#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("xdg_positioner#{}.set_size()", object.id);
-                        self.set_size().await
+                        self.set_size(object, client, message.int()?, message.int()?)
+                            .await
                     }
                     2u16 => {
                         tracing::debug!("xdg_positioner#{}.set_anchor_rect()", object.id);
-                        self.set_anchor_rect().await
+                        self.set_anchor_rect(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("xdg_positioner#{}.set_anchor()", object.id);
-                        self.set_anchor().await
+                        self.set_anchor(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     4u16 => {
                         tracing::debug!("xdg_positioner#{}.set_gravity()", object.id);
-                        self.set_gravity().await
+                        self.set_gravity(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     5u16 => {
                         tracing::debug!("xdg_positioner#{}.set_constraint_adjustment()", object.id);
-                        self.set_constraint_adjustment().await
+                        self.set_constraint_adjustment(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     6u16 => {
                         tracing::debug!("xdg_positioner#{}.set_offset()", object.id);
-                        self.set_offset().await
+                        self.set_offset(object, client, message.int()?, message.int()?)
+                            .await
                     }
                     7u16 => {
                         tracing::debug!("xdg_positioner#{}.set_reactive()", object.id);
-                        self.set_reactive().await
+                        self.set_reactive(object, client).await
                     }
                     8u16 => {
                         tracing::debug!("xdg_positioner#{}.set_parent_size()", object.id);
-                        self.set_parent_size().await
+                        self.set_parent_size(object, client, message.int()?, message.int()?)
+                            .await
                     }
                     9u16 => {
                         tracing::debug!("xdg_positioner#{}.set_parent_configure()", object.id);
-                        self.set_parent_configure().await
+                        self.set_parent_configure(object, client, message.uint()?)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5749,6 +6329,8 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Specify the anchor rectangle within the parent surface that the child"]
             #[doc = "surface will be placed relative to. The rectangle is relative to the"]
@@ -5764,6 +6346,10 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Defines the anchor point for the anchor rectangle. The specified anchor"]
             #[doc = "is used derive an anchor point that the child surface will be"]
@@ -5775,6 +6361,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                anchor: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Defines in what direction a surface should be positioned, relative to"]
             #[doc = "the anchor point of the parent surface. If a corner gravity is"]
@@ -5787,6 +6374,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                gravity: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Specify how the window should be positioned if the originally intended"]
             #[doc = "position caused the surface to be constrained, meaning at least"]
@@ -5805,6 +6393,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                constraint_adjustment: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Specify the surface position offset relative to the position of the"]
             #[doc = "anchor on the anchor rectangle and the anchor on the surface. For"]
@@ -5821,6 +6410,8 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
             ) -> crate::server::Result<()>;
             #[doc = "When set reactive, the surface is reconstrained if the conditions used"]
             #[doc = "for constraining changed, e.g. the parent window moved."]
@@ -5844,6 +6435,8 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                parent_width: i32,
+                parent_height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Set the serial of an xdg_surface.configure event this positioner will be"]
             #[doc = "used in response to. The compositor may use this information together"]
@@ -5853,6 +6446,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()>;
         }
     }
@@ -5922,23 +6516,49 @@ pub mod xdg_shell {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_surface#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("xdg_surface#{}.get_toplevel()", object.id);
-                        self.get_toplevel().await
+                        self.get_toplevel(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("xdg_surface#{}.get_popup()", object.id);
-                        self.get_popup().await
+                        self.get_popup(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.object()?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("xdg_surface#{}.set_window_geometry()", object.id);
-                        self.set_window_geometry().await
+                        self.set_window_geometry(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     4u16 => {
                         tracing::debug!("xdg_surface#{}.ack_configure()", object.id);
-                        self.ack_configure().await
+                        self.ack_configure(object, client, message.uint()?).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5960,6 +6580,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This creates an xdg_popup object for the given xdg_surface and gives"]
             #[doc = "the associated wl_surface the xdg_popup role."]
@@ -5973,6 +6594,9 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                parent: Option<crate::wire::ObjectId>,
+                positioner: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The window geometry of a surface is its \"visible bounds\" from the"]
             #[doc = "user's perspective. Client-side decorations often have invisible"]
@@ -6016,6 +6640,10 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "When a configure event is received, if a client commits the"]
             #[doc = "surface in response to the configure event, then the client"]
@@ -6053,6 +6681,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "The configure event marks the end of a configure sequence. A configure"]
             #[doc = "sequence is a set of one or more events configuring the state of the"]
@@ -6119,59 +6748,102 @@ pub mod xdg_shell {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_toplevel#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("xdg_toplevel#{}.set_parent()", object.id);
-                        self.set_parent().await
+                        self.set_parent(object, client, message.object()?).await
                     }
                     2u16 => {
                         tracing::debug!("xdg_toplevel#{}.set_title()", object.id);
-                        self.set_title().await
+                        self.set_title(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("xdg_toplevel#{}.set_app_id()", object.id);
-                        self.set_app_id().await
+                        self.set_app_id(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     4u16 => {
                         tracing::debug!("xdg_toplevel#{}.show_window_menu()", object.id);
-                        self.show_window_menu().await
+                        self.show_window_menu(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     5u16 => {
                         tracing::debug!("xdg_toplevel#{}.move()", object.id);
-                        self.r#move().await
+                        self.r#move(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     6u16 => {
                         tracing::debug!("xdg_toplevel#{}.resize()", object.id);
-                        self.resize().await
+                        self.resize(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
                     }
                     7u16 => {
                         tracing::debug!("xdg_toplevel#{}.set_max_size()", object.id);
-                        self.set_max_size().await
+                        self.set_max_size(object, client, message.int()?, message.int()?)
+                            .await
                     }
                     8u16 => {
                         tracing::debug!("xdg_toplevel#{}.set_min_size()", object.id);
-                        self.set_min_size().await
+                        self.set_min_size(object, client, message.int()?, message.int()?)
+                            .await
                     }
                     9u16 => {
                         tracing::debug!("xdg_toplevel#{}.set_maximized()", object.id);
-                        self.set_maximized().await
+                        self.set_maximized(object, client).await
                     }
                     10u16 => {
                         tracing::debug!("xdg_toplevel#{}.unset_maximized()", object.id);
-                        self.unset_maximized().await
+                        self.unset_maximized(object, client).await
                     }
                     11u16 => {
                         tracing::debug!("xdg_toplevel#{}.set_fullscreen()", object.id);
-                        self.set_fullscreen().await
+                        self.set_fullscreen(object, client, message.object()?).await
                     }
                     12u16 => {
                         tracing::debug!("xdg_toplevel#{}.unset_fullscreen()", object.id);
-                        self.unset_fullscreen().await
+                        self.unset_fullscreen(object, client).await
                     }
                     13u16 => {
                         tracing::debug!("xdg_toplevel#{}.set_minimized()", object.id);
-                        self.set_minimized().await
+                        self.set_minimized(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -6207,6 +6879,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                parent: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "Set a short title for the surface."]
             #[doc = ""]
@@ -6219,6 +6892,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                title: String,
             ) -> crate::server::Result<()>;
             #[doc = "Set an application identifier for the surface."]
             #[doc = ""]
@@ -6247,6 +6921,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                app_id: String,
             ) -> crate::server::Result<()>;
             #[doc = "Clients implementing client-side decorations might want to show"]
             #[doc = "a context menu when right-clicking on the decorations, giving the"]
@@ -6264,6 +6939,10 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
+                serial: u32,
+                x: i32,
+                y: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Start an interactive, user-driven move of the surface."]
             #[doc = ""]
@@ -6285,6 +6964,8 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Start a user-driven, interactive resize of the surface."]
             #[doc = ""]
@@ -6321,6 +7002,9 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
+                serial: u32,
+                edges: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Set a maximum size for the window."]
             #[doc = ""]
@@ -6360,6 +7044,8 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Set a minimum size for the window."]
             #[doc = ""]
@@ -6399,6 +7085,8 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Maximize the surface."]
             #[doc = ""]
@@ -6477,6 +7165,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                output: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "Make the surface no longer fullscreen."]
             #[doc = ""]
@@ -6648,15 +7337,31 @@ pub mod xdg_shell {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_popup#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("xdg_popup#{}.grab()", object.id);
-                        self.grab().await
+                        self.grab(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("xdg_popup#{}.reposition()", object.id);
-                        self.reposition().await
+                        self.reposition(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -6712,6 +7417,8 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Reposition an already-mapped popup. The popup will be placed given the"]
             #[doc = "details in the passed xdg_positioner object, and a"]
@@ -6740,6 +7447,8 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                positioner: crate::wire::ObjectId,
+                token: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This event asks the popup surface to configure itself given the"]
             #[doc = "configuration. The configured state should not be applied immediately."]
@@ -6823,11 +7532,21 @@ pub mod alpha_modifier_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_alpha_modifier_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("wp_alpha_modifier_v1#{}.get_surface()", object.id);
-                        self.get_surface().await
+                        self.get_surface(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -6846,6 +7565,8 @@ pub mod alpha_modifier_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -6875,14 +7596,14 @@ pub mod alpha_modifier_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_alpha_modifier_surface_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "wp_alpha_modifier_surface_v1#{}.set_multiplier()",
                             object.id
                         );
-                        self.set_multiplier().await
+                        self.set_multiplier(object, client, message.uint()?).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -6912,6 +7633,7 @@ pub mod alpha_modifier_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                factor: u32,
             ) -> crate::server::Result<()>;
         }
     }
@@ -6943,14 +7665,24 @@ pub mod content_type_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_content_type_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "wp_content_type_manager_v1#{}.get_surface_content_type()",
                             object.id
                         );
-                        self.get_surface_content_type().await
+                        self.get_surface_content_type(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -6970,6 +7702,8 @@ pub mod content_type_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -6999,11 +7733,12 @@ pub mod content_type_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_content_type_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("wp_content_type_v1#{}.set_content_type()", object.id);
-                        self.set_content_type().await
+                        self.set_content_type(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -7028,6 +7763,7 @@ pub mod content_type_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                content_type: u32,
             ) -> crate::server::Result<()>;
         }
     }
@@ -7060,18 +7796,38 @@ pub mod cursor_shape_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_cursor_shape_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("wp_cursor_shape_manager_v1#{}.get_pointer()", object.id);
-                        self.get_pointer().await
+                        self.get_pointer(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!(
                             "wp_cursor_shape_manager_v1#{}.get_tablet_tool_v2()",
                             object.id
                         );
-                        self.get_tablet_tool_v2().await
+                        self.get_tablet_tool_v2(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -7087,12 +7843,16 @@ pub mod cursor_shape_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                cursor_shape_device: crate::wire::ObjectId,
+                pointer: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Obtain a wp_cursor_shape_device_v1 for a zwp_tablet_tool_v2 object."]
             async fn get_tablet_tool_v2(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                cursor_shape_device: crate::wire::ObjectId,
+                tablet_tool: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -7116,11 +7876,12 @@ pub mod cursor_shape_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_cursor_shape_device_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("wp_cursor_shape_device_v1#{}.set_shape()", object.id);
-                        self.set_shape().await
+                        self.set_shape(object, client, message.uint()?, message.uint()?.try_into()?)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -7155,6 +7916,8 @@ pub mod cursor_shape_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                shape: u32,
             ) -> crate::server::Result<()>;
         }
     }
@@ -7212,11 +7975,18 @@ pub mod drm_lease_v1 {
                             "wp_drm_lease_device_v1#{}.create_lease_request()",
                             object.id
                         );
-                        self.create_lease_request().await
+                        self.create_lease_request(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("wp_drm_lease_device_v1#{}.release()", object.id);
-                        self.release().await
+                        self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -7228,6 +7998,7 @@ pub mod drm_lease_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Indicates the client no longer wishes to use this object. In response"]
             #[doc = "the compositor will immediately send the released event and destroy"]
@@ -7325,7 +8096,7 @@ pub mod drm_lease_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_drm_lease_connector_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -7429,11 +8200,25 @@ pub mod drm_lease_v1 {
                             "wp_drm_lease_request_v1#{}.request_connector()",
                             object.id
                         );
-                        self.request_connector().await
+                        self.request_connector(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("wp_drm_lease_request_v1#{}.submit()", object.id);
-                        self.submit().await
+                        self.submit(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -7452,6 +8237,7 @@ pub mod drm_lease_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                connector: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Submits the lease request and creates a new wp_drm_lease_v1 object."]
             #[doc = "After calling submit the compositor will immediately destroy this"]
@@ -7464,6 +8250,7 @@ pub mod drm_lease_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -7494,7 +8281,7 @@ pub mod drm_lease_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_drm_lease_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -7598,11 +8385,11 @@ pub mod ext_foreign_toplevel_list_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("ext_foreign_toplevel_list_v1#{}.stop()", object.id);
-                        self.stop().await
+                        self.stop(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("ext_foreign_toplevel_list_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -7681,7 +8468,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("ext_foreign_toplevel_handle_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -7810,14 +8597,25 @@ pub mod ext_idle_notify_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("ext_idle_notifier_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "ext_idle_notifier_v1#{}.get_idle_notification()",
                             object.id
                         );
-                        self.get_idle_notification().await
+                        self.get_idle_notification(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -7841,6 +8639,9 @@ pub mod ext_idle_notify_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                timeout: u32,
+                seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -7877,7 +8678,7 @@ pub mod ext_idle_notify_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("ext_idle_notification_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -7955,11 +8756,18 @@ pub mod ext_session_lock_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("ext_session_lock_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("ext_session_lock_manager_v1#{}.lock()", object.id);
-                        self.lock().await
+                        self.lock(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -7980,6 +8788,7 @@ pub mod ext_session_lock_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -8050,15 +8859,28 @@ pub mod ext_session_lock_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("ext_session_lock_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("ext_session_lock_v1#{}.get_lock_surface()", object.id);
-                        self.get_lock_surface().await
+                        self.get_lock_surface(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("ext_session_lock_v1#{}.unlock_and_destroy()", object.id);
-                        self.unlock_and_destroy().await
+                        self.unlock_and_destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -8092,6 +8914,9 @@ pub mod ext_session_lock_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This request indicates that the session should be unlocked, for"]
             #[doc = "example because the user has entered their password and it has been"]
@@ -8202,14 +9027,14 @@ pub mod ext_session_lock_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("ext_session_lock_surface_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "ext_session_lock_surface_v1#{}.ack_configure()",
                             object.id
                         );
-                        self.ack_configure().await
+                        self.ack_configure(object, client, message.uint()?).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -8256,6 +9081,7 @@ pub mod ext_session_lock_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This event is sent once on binding the interface and may be sent again"]
             #[doc = "at the compositor's discretion, for example if output geometry changes."]
@@ -8312,11 +9138,18 @@ pub mod ext_transient_seat_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("ext_transient_seat_manager_v1#{}.create()", object.id);
-                        self.create().await
+                        self.create(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("ext_transient_seat_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -8330,6 +9163,7 @@ pub mod ext_transient_seat_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the manager."]
             #[doc = ""]
@@ -8363,7 +9197,7 @@ pub mod ext_transient_seat_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("ext_transient_seat_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -8444,14 +9278,24 @@ pub mod fractional_scale_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_fractional_scale_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "wp_fractional_scale_manager_v1#{}.get_fractional_scale()",
                             object.id
                         );
-                        self.get_fractional_scale().await
+                        self.get_fractional_scale(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -8472,6 +9316,8 @@ pub mod fractional_scale_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -8496,7 +9342,7 @@ pub mod fractional_scale_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_fractional_scale_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -8572,21 +9418,39 @@ pub mod linux_drm_syncobj_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_linux_drm_syncobj_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "wp_linux_drm_syncobj_manager_v1#{}.get_surface()",
                             object.id
                         );
-                        self.get_surface().await
+                        self.get_surface(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!(
                             "wp_linux_drm_syncobj_manager_v1#{}.import_timeline()",
                             object.id
                         );
-                        self.import_timeline().await
+                        self.import_timeline(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.fd()?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -8613,6 +9477,8 @@ pub mod linux_drm_syncobj_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Import a DRM synchronization object timeline."]
             #[doc = ""]
@@ -8621,6 +9487,8 @@ pub mod linux_drm_syncobj_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()>;
         }
     }
@@ -8645,7 +9513,7 @@ pub mod linux_drm_syncobj_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_linux_drm_syncobj_timeline_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -8704,21 +9572,39 @@ pub mod linux_drm_syncobj_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_linux_drm_syncobj_surface_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "wp_linux_drm_syncobj_surface_v1#{}.set_acquire_point()",
                             object.id
                         );
-                        self.set_acquire_point().await
+                        self.set_acquire_point(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!(
                             "wp_linux_drm_syncobj_surface_v1#{}.set_release_point()",
                             object.id
                         );
-                        self.set_release_point().await
+                        self.set_release_point(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -8760,6 +9646,9 @@ pub mod linux_drm_syncobj_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                timeline: crate::wire::ObjectId,
+                point_hi: u32,
+                point_lo: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Set the timeline point that must be signalled by the compositor when it"]
             #[doc = "has finished its usage of the buffer attached with wl_surface.attach"]
@@ -8808,6 +9697,9 @@ pub mod linux_drm_syncobj_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                timeline: crate::wire::ObjectId,
+                point_hi: u32,
+                point_lo: u32,
             ) -> crate::server::Result<()>;
         }
     }
@@ -8850,14 +9742,23 @@ pub mod security_context_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_security_context_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "wp_security_context_manager_v1#{}.create_listener()",
                             object.id
                         );
-                        self.create_listener().await
+                        self.create_listener(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.fd()?,
+                            message.fd()?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -8888,6 +9789,9 @@ pub mod security_context_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                listen_fd: rustix::fd::OwnedFd,
+                close_fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()>;
         }
     }
@@ -8920,26 +9824,47 @@ pub mod security_context_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_security_context_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "wp_security_context_v1#{}.set_sandbox_engine()",
                             object.id
                         );
-                        self.set_sandbox_engine().await
+                        self.set_sandbox_engine(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("wp_security_context_v1#{}.set_app_id()", object.id);
-                        self.set_app_id().await
+                        self.set_app_id(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("wp_security_context_v1#{}.set_instance_id()", object.id);
-                        self.set_instance_id().await
+                        self.set_instance_id(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     4u16 => {
                         tracing::debug!("wp_security_context_v1#{}.commit()", object.id);
-                        self.commit().await
+                        self.commit(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -8962,6 +9887,7 @@ pub mod security_context_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                name: String,
             ) -> crate::server::Result<()>;
             #[doc = "Attach an application ID to the security context."]
             #[doc = ""]
@@ -8980,6 +9906,7 @@ pub mod security_context_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                app_id: String,
             ) -> crate::server::Result<()>;
             #[doc = "Attach an instance ID to the security context."]
             #[doc = ""]
@@ -8996,6 +9923,7 @@ pub mod security_context_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                instance_id: String,
             ) -> crate::server::Result<()>;
             #[doc = "Atomically register the new client and attach the security context"]
             #[doc = "metadata."]
@@ -9050,14 +9978,25 @@ pub mod single_pixel_buffer_v1 {
                             "wp_single_pixel_buffer_manager_v1#{}.destroy()",
                             object.id
                         );
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "wp_single_pixel_buffer_manager_v1#{}.create_u32_rgba_buffer()",
                             object.id
                         );
-                        self.create_u32_rgba_buffer().await
+                        self.create_u32_rgba_buffer(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -9080,6 +10019,11 @@ pub mod single_pixel_buffer_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                r: u32,
+                g: u32,
+                b: u32,
+                a: u32,
             ) -> crate::server::Result<()>;
         }
     }
@@ -9119,14 +10063,24 @@ pub mod tearing_control_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_tearing_control_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "wp_tearing_control_manager_v1#{}.get_tearing_control()",
                             object.id
                         );
-                        self.get_tearing_control().await
+                        self.get_tearing_control(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -9148,6 +10102,8 @@ pub mod tearing_control_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -9178,11 +10134,12 @@ pub mod tearing_control_v1 {
                             "wp_tearing_control_v1#{}.set_presentation_hint()",
                             object.id
                         );
-                        self.set_presentation_hint().await
+                        self.set_presentation_hint(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     1u16 => {
                         tracing::debug!("wp_tearing_control_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -9197,6 +10154,7 @@ pub mod tearing_control_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                hint: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy this surface tearing object and revert the presentation hint to"]
             #[doc = "vsync. The change will be applied on the next wl_surface.commit."]
@@ -9269,15 +10227,32 @@ pub mod xdg_activation_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_activation_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("xdg_activation_v1#{}.get_activation_token()", object.id);
-                        self.get_activation_token().await
+                        self.get_activation_token(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("xdg_activation_v1#{}.activate()", object.id);
-                        self.activate().await
+                        self.activate(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -9299,6 +10274,7 @@ pub mod xdg_activation_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Requests surface activation. It's up to the compositor to display"]
             #[doc = "this information as desired, for example by placing the surface above"]
@@ -9314,6 +10290,8 @@ pub mod xdg_activation_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                token: String,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -9344,23 +10322,45 @@ pub mod xdg_activation_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_activation_token_v1#{}.set_serial()", object.id);
-                        self.set_serial().await
+                        self.set_serial(
+                            object,
+                            client,
+                            message.uint()?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("xdg_activation_token_v1#{}.set_app_id()", object.id);
-                        self.set_app_id().await
+                        self.set_app_id(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("xdg_activation_token_v1#{}.set_surface()", object.id);
-                        self.set_surface().await
+                        self.set_surface(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("xdg_activation_token_v1#{}.commit()", object.id);
-                        self.commit().await
+                        self.commit(object, client).await
                     }
                     4u16 => {
                         tracing::debug!("xdg_activation_token_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -9381,6 +10381,8 @@ pub mod xdg_activation_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The requesting client can specify an app_id to associate the token"]
             #[doc = "being created with it."]
@@ -9390,6 +10392,7 @@ pub mod xdg_activation_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                app_id: String,
             ) -> crate::server::Result<()>;
             #[doc = "This request sets the surface requesting the activation. Note, this is"]
             #[doc = "different from the surface that will be activated."]
@@ -9402,6 +10405,7 @@ pub mod xdg_activation_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Requests an activation token based on the different parameters that"]
             #[doc = "have been offered through set_serial, set_surface and set_app_id."]
@@ -9460,11 +10464,21 @@ pub mod xdg_dialog_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_wm_dialog_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("xdg_wm_dialog_v1#{}.get_xdg_dialog()", object.id);
-                        self.get_xdg_dialog().await
+                        self.get_xdg_dialog(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -9485,6 +10499,8 @@ pub mod xdg_dialog_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -9516,15 +10532,15 @@ pub mod xdg_dialog_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_dialog_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("xdg_dialog_v1#{}.set_modal()", object.id);
-                        self.set_modal().await
+                        self.set_modal(object, client).await
                     }
                     2u16 => {
                         tracing::debug!("xdg_dialog_v1#{}.unset_modal()", object.id);
-                        self.unset_modal().await
+                        self.unset_modal(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -9616,14 +10632,24 @@ pub mod xdg_toplevel_drag_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_toplevel_drag_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "xdg_toplevel_drag_manager_v1#{}.get_xdg_toplevel_drag()",
                             object.id
                         );
-                        self.get_xdg_toplevel_drag().await
+                        self.get_xdg_toplevel_drag(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -9650,6 +10676,8 @@ pub mod xdg_toplevel_drag_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                data_source: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -9672,11 +10700,20 @@ pub mod xdg_toplevel_drag_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_toplevel_drag_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("xdg_toplevel_drag_v1#{}.attach()", object.id);
-                        self.attach().await
+                        self.attach(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -9708,6 +10745,9 @@ pub mod xdg_toplevel_drag_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+                x_offset: i32,
+                y_offset: i32,
             ) -> crate::server::Result<()>;
         }
     }
@@ -9776,11 +10816,21 @@ pub mod xwayland_shell_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xwayland_shell_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("xwayland_shell_v1#{}.get_xwayland_surface()", object.id);
-                        self.get_xwayland_surface().await
+                        self.get_xwayland_surface(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -9806,6 +10856,8 @@ pub mod xwayland_shell_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -9836,11 +10888,12 @@ pub mod xwayland_shell_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xwayland_surface_v1#{}.set_serial()", object.id);
-                        self.set_serial().await
+                        self.set_serial(object, client, message.uint()?, message.uint()?)
+                            .await
                     }
                     1u16 => {
                         tracing::debug!("xwayland_surface_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -9871,6 +10924,8 @@ pub mod xwayland_shell_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial_lo: u32,
+                serial_hi: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the xwayland_surface_v1 object."]
             #[doc = ""]
@@ -9936,18 +10991,39 @@ pub mod fullscreen_shell_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_fullscreen_shell_v1#{}.release()", object.id);
-                        self.release().await
+                        self.release(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zwp_fullscreen_shell_v1#{}.present_surface()", object.id);
-                        self.present_surface().await
+                        self.present_surface(
+                            object,
+                            client,
+                            message.object()?,
+                            message.uint()?.try_into()?,
+                            message.object()?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!(
                             "zwp_fullscreen_shell_v1#{}.present_surface_for_mode()",
                             object.id
                         );
-                        self.present_surface_for_mode().await
+                        self.present_surface_for_mode(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.int()?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -9987,6 +11063,9 @@ pub mod fullscreen_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                surface: Option<crate::wire::ObjectId>,
+                method: u32,
+                output: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "Presents a surface on the given output for a particular mode."]
             #[doc = ""]
@@ -10033,6 +11112,10 @@ pub mod fullscreen_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                surface: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
+                framerate: i32,
+                feedback: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Advertises a single capability of the compositor."]
             #[doc = ""]
@@ -10145,14 +11228,24 @@ pub mod idle_inhibit_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_idle_inhibit_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwp_idle_inhibit_manager_v1#{}.create_inhibitor()",
                             object.id
                         );
-                        self.create_inhibitor().await
+                        self.create_inhibitor(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -10168,6 +11261,8 @@ pub mod idle_inhibit_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -10202,7 +11297,7 @@ pub mod idle_inhibit_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_idle_inhibitor_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -10259,86 +11354,161 @@ pub mod input_method_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_input_method_context_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwp_input_method_context_v1#{}.commit_string()",
                             object.id
                         );
-                        self.commit_string().await
+                        self.commit_string(
+                            object,
+                            client,
+                            message.uint()?,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!(
                             "zwp_input_method_context_v1#{}.preedit_string()",
                             object.id
                         );
-                        self.preedit_string().await
+                        self.preedit_string(
+                            object,
+                            client,
+                            message.uint()?,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!(
                             "zwp_input_method_context_v1#{}.preedit_styling()",
                             object.id
                         );
-                        self.preedit_styling().await
+                        self.preedit_styling(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     4u16 => {
                         tracing::debug!(
                             "zwp_input_method_context_v1#{}.preedit_cursor()",
                             object.id
                         );
-                        self.preedit_cursor().await
+                        self.preedit_cursor(object, client, message.int()?).await
                     }
                     5u16 => {
                         tracing::debug!(
                             "zwp_input_method_context_v1#{}.delete_surrounding_text()",
                             object.id
                         );
-                        self.delete_surrounding_text().await
+                        self.delete_surrounding_text(
+                            object,
+                            client,
+                            message.int()?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     6u16 => {
                         tracing::debug!(
                             "zwp_input_method_context_v1#{}.cursor_position()",
                             object.id
                         );
-                        self.cursor_position().await
+                        self.cursor_position(object, client, message.int()?, message.int()?)
+                            .await
                     }
                     7u16 => {
                         tracing::debug!(
                             "zwp_input_method_context_v1#{}.modifiers_map()",
                             object.id
                         );
-                        self.modifiers_map().await
+                        self.modifiers_map(object, client, message.array()?).await
                     }
                     8u16 => {
                         tracing::debug!("zwp_input_method_context_v1#{}.keysym()", object.id);
-                        self.keysym().await
+                        self.keysym(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     9u16 => {
                         tracing::debug!(
                             "zwp_input_method_context_v1#{}.grab_keyboard()",
                             object.id
                         );
-                        self.grab_keyboard().await
+                        self.grab_keyboard(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     10u16 => {
                         tracing::debug!("zwp_input_method_context_v1#{}.key()", object.id);
-                        self.key().await
+                        self.key(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     11u16 => {
                         tracing::debug!("zwp_input_method_context_v1#{}.modifiers()", object.id);
-                        self.modifiers().await
+                        self.modifiers(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     12u16 => {
                         tracing::debug!("zwp_input_method_context_v1#{}.language()", object.id);
-                        self.language().await
+                        self.language(
+                            object,
+                            client,
+                            message.uint()?,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     13u16 => {
                         tracing::debug!(
                             "zwp_input_method_context_v1#{}.text_direction()",
                             object.id
                         );
-                        self.text_direction().await
+                        self.text_direction(object, client, message.uint()?, message.uint()?)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -10361,6 +11531,8 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                text: String,
             ) -> crate::server::Result<()>;
             #[doc = "Send the pre-edit string text to the application text input."]
             #[doc = ""]
@@ -10373,6 +11545,9 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                text: String,
+                commit: String,
             ) -> crate::server::Result<()>;
             #[doc = "Set the styling information on composing text. The style is applied for"]
             #[doc = "length in bytes from index relative to the beginning of"]
@@ -10384,6 +11559,9 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                index: u32,
+                length: u32,
+                style: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Set the cursor position inside the composing text (as byte offset)"]
             #[doc = "relative to the start of the composing text."]
@@ -10395,6 +11573,7 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                index: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Remove the surrounding text."]
             #[doc = ""]
@@ -10404,6 +11583,8 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                index: i32,
+                length: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Set the cursor and anchor to a new position. Index is the new cursor"]
             #[doc = "position in bytes (when >= 0 this is relative to the end of the inserted text,"]
@@ -10419,11 +11600,14 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                index: i32,
+                anchor: i32,
             ) -> crate::server::Result<()>;
             async fn modifiers_map(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                map: Vec<u8>,
             ) -> crate::server::Result<()>;
             #[doc = "Notify when a key event was sent. Key events should not be used for"]
             #[doc = "normal text input operations, which should be done with commit_string,"]
@@ -10433,6 +11617,11 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                time: u32,
+                sym: u32,
+                state: u32,
+                modifiers: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Allow an input method to receive hardware keyboard input and process"]
             #[doc = "key events to generate text events (with pre-edit) over the wire. This"]
@@ -10442,6 +11631,7 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                keyboard: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Forward a wl_keyboard::key event to the client that was not processed"]
             #[doc = "by the input method itself. Should be used when filtering key events"]
@@ -10453,6 +11643,10 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                time: u32,
+                key: u32,
+                state: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Forward a wl_keyboard::modifiers event to the client that was not"]
             #[doc = "processed by the input method itself.  Should be used when filtering"]
@@ -10462,16 +11656,25 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                mods_depressed: u32,
+                mods_latched: u32,
+                mods_locked: u32,
+                group: u32,
             ) -> crate::server::Result<()>;
             async fn language(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                language: String,
             ) -> crate::server::Result<()>;
             async fn text_direction(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                direction: u32,
             ) -> crate::server::Result<()>;
             #[doc = "The plain surrounding text around the input position. Cursor is the"]
             #[doc = "position in bytes within the surrounding text relative to the beginning"]
@@ -10590,7 +11793,17 @@ pub mod input_method_unstable_v1 {
                             "zwp_input_panel_v1#{}.get_input_panel_surface()",
                             object.id
                         );
-                        self.get_input_panel_surface().await
+                        self.get_input_panel_surface(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -10599,6 +11812,8 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -10621,14 +11836,22 @@ pub mod input_method_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_input_panel_surface_v1#{}.set_toplevel()", object.id);
-                        self.set_toplevel().await
+                        self.set_toplevel(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwp_input_panel_surface_v1#{}.set_overlay_panel()",
                             object.id
                         );
-                        self.set_overlay_panel().await
+                        self.set_overlay_panel(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -10640,6 +11863,8 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                output: crate::wire::ObjectId,
+                position: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Set the input_panel_surface to be an overlay panel."]
             #[doc = ""]
@@ -10686,28 +11911,58 @@ pub mod input_timestamps_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_input_timestamps_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwp_input_timestamps_manager_v1#{}.get_keyboard_timestamps()",
                             object.id
                         );
-                        self.get_keyboard_timestamps().await
+                        self.get_keyboard_timestamps(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!(
                             "zwp_input_timestamps_manager_v1#{}.get_pointer_timestamps()",
                             object.id
                         );
-                        self.get_pointer_timestamps().await
+                        self.get_pointer_timestamps(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!(
                             "zwp_input_timestamps_manager_v1#{}.get_touch_timestamps()",
                             object.id
                         );
-                        self.get_touch_timestamps().await
+                        self.get_touch_timestamps(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -10732,6 +11987,8 @@ pub mod input_timestamps_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                keyboard: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Creates a new input timestamps object that represents a subscription"]
             #[doc = "to high-resolution timestamp events for all wl_pointer events that"]
@@ -10745,6 +12002,8 @@ pub mod input_timestamps_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                pointer: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Creates a new input timestamps object that represents a subscription"]
             #[doc = "to high-resolution timestamp events for all wl_touch events that"]
@@ -10758,6 +12017,8 @@ pub mod input_timestamps_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                touch: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -10783,7 +12044,7 @@ pub mod input_timestamps_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_input_timestamps_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -10858,14 +12119,27 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                             "zwp_keyboard_shortcuts_inhibit_manager_v1#{}.destroy()",
                             object.id
                         );
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwp_keyboard_shortcuts_inhibit_manager_v1#{}.inhibit_shortcuts()",
                             object.id
                         );
-                        self.inhibit_shortcuts().await
+                        self.inhibit_shortcuts(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -10885,6 +12159,9 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+                seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -10943,7 +12220,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                             "zwp_keyboard_shortcuts_inhibitor_v1#{}.destroy()",
                             object.id
                         );
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -11072,19 +12349,43 @@ pub mod linux_dmabuf_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_linux_dmabuf_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zwp_linux_dmabuf_v1#{}.create_params()", object.id);
-                        self.create_params().await
+                        self.create_params(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("zwp_linux_dmabuf_v1#{}.get_default_feedback()", object.id);
-                        self.get_default_feedback().await
+                        self.get_default_feedback(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("zwp_linux_dmabuf_v1#{}.get_surface_feedback()", object.id);
-                        self.get_surface_feedback().await
+                        self.get_surface_feedback(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -11104,6 +12405,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                params_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This request creates a new wp_linux_dmabuf_feedback object not bound"]
             #[doc = "to a particular surface. This object will deliver feedback about dmabuf"]
@@ -11113,6 +12415,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This request creates a new wp_linux_dmabuf_feedback object for the"]
             #[doc = "specified wl_surface. This object will deliver feedback about dmabuf"]
@@ -11124,6 +12427,8 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This event advertises one buffer format that the server supports."]
             #[doc = "All the supported formats are advertised once when the client"]
@@ -11208,19 +12513,48 @@ pub mod linux_dmabuf_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_linux_buffer_params_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zwp_linux_buffer_params_v1#{}.add()", object.id);
-                        self.add().await
+                        self.add(
+                            object,
+                            client,
+                            message.fd()?,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("zwp_linux_buffer_params_v1#{}.create()", object.id);
-                        self.create().await
+                        self.create(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.uint()?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("zwp_linux_buffer_params_v1#{}.create_immed()", object.id);
-                        self.create_immed().await
+                        self.create_immed(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.int()?,
+                            message.int()?,
+                            message.uint()?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -11255,6 +12589,12 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                fd: rustix::fd::OwnedFd,
+                plane_idx: u32,
+                offset: u32,
+                stride: u32,
+                modifier_hi: u32,
+                modifier_lo: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This asks for creation of a wl_buffer from the added dmabuf"]
             #[doc = "buffers. The wl_buffer is not created immediately but returned via"]
@@ -11319,6 +12659,10 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
+                format: u32,
+                flags: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This asks for immediate creation of a wl_buffer by importing the"]
             #[doc = "added dmabufs."]
@@ -11347,6 +12691,11 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                buffer_id: crate::wire::ObjectId,
+                width: i32,
+                height: i32,
+                format: u32,
+                flags: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This event indicates that the attempted buffer creation was"]
             #[doc = "successful. It provides the new wl_buffer referencing the dmabuf(s)."]
@@ -11419,7 +12768,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_linux_dmabuf_feedback_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -11628,14 +12977,24 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                             "zwp_linux_explicit_synchronization_v1#{}.destroy()",
                             object.id
                         );
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwp_linux_explicit_synchronization_v1#{}.get_synchronization()",
                             object.id
                         );
-                        self.get_synchronization().await
+                        self.get_synchronization(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -11663,6 +13022,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -11718,21 +13079,28 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                             "zwp_linux_surface_synchronization_v1#{}.destroy()",
                             object.id
                         );
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwp_linux_surface_synchronization_v1#{}.set_acquire_fence()",
                             object.id
                         );
-                        self.set_acquire_fence().await
+                        self.set_acquire_fence(object, client, message.fd()?).await
                     }
                     2u16 => {
                         tracing::debug!(
                             "zwp_linux_surface_synchronization_v1#{}.get_release()",
                             object.id
                         );
-                        self.get_release().await
+                        self.get_release(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -11777,6 +13145,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()>;
             #[doc = "Create a listener for the release of the buffer attached by the"]
             #[doc = "client with wl_surface.attach. See zwp_linux_buffer_release_v1"]
@@ -11799,6 +13168,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                release: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -11929,18 +13299,48 @@ pub mod pointer_constraints_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_pointer_constraints_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zwp_pointer_constraints_v1#{}.lock_pointer()", object.id);
-                        self.lock_pointer().await
+                        self.lock_pointer(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.object()?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!(
                             "zwp_pointer_constraints_v1#{}.confine_pointer()",
                             object.id
                         );
-                        self.confine_pointer().await
+                        self.confine_pointer(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.object()?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -11990,6 +13390,11 @@ pub mod pointer_constraints_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+                pointer: crate::wire::ObjectId,
+                region: Option<crate::wire::ObjectId>,
+                lifetime: u32,
             ) -> crate::server::Result<()>;
             #[doc = "The confine_pointer request lets the client request to confine the"]
             #[doc = "pointer cursor to a given region. This request may not take effect"]
@@ -12012,6 +13417,11 @@ pub mod pointer_constraints_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+                pointer: crate::wire::ObjectId,
+                region: Option<crate::wire::ObjectId>,
+                lifetime: u32,
             ) -> crate::server::Result<()>;
         }
     }
@@ -12057,18 +13467,24 @@ pub mod pointer_constraints_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_locked_pointer_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwp_locked_pointer_v1#{}.set_cursor_position_hint()",
                             object.id
                         );
-                        self.set_cursor_position_hint().await
+                        self.set_cursor_position_hint(
+                            object,
+                            client,
+                            message.fixed()?,
+                            message.fixed()?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("zwp_locked_pointer_v1#{}.set_region()", object.id);
-                        self.set_region().await
+                        self.set_region(object, client, message.object()?).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -12095,6 +13511,8 @@ pub mod pointer_constraints_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                surface_x: crate::wire::Fixed,
+                surface_y: crate::wire::Fixed,
             ) -> crate::server::Result<()>;
             #[doc = "Set a new region used to lock the pointer."]
             #[doc = ""]
@@ -12107,6 +13525,7 @@ pub mod pointer_constraints_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                region: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "Notification that the pointer lock of the seat's pointer is activated."]
             async fn locked(
@@ -12166,11 +13585,11 @@ pub mod pointer_constraints_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_confined_pointer_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zwp_confined_pointer_v1#{}.set_region()", object.id);
-                        self.set_region().await
+                        self.set_region(object, client, message.object()?).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -12202,6 +13621,7 @@ pub mod pointer_constraints_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                region: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "Notification that the pointer confinement of the seat's pointer is"]
             #[doc = "activated."]
@@ -12267,22 +13687,52 @@ pub mod pointer_gestures_unstable_v1 {
                             "zwp_pointer_gestures_v1#{}.get_swipe_gesture()",
                             object.id
                         );
-                        self.get_swipe_gesture().await
+                        self.get_swipe_gesture(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwp_pointer_gestures_v1#{}.get_pinch_gesture()",
                             object.id
                         );
-                        self.get_pinch_gesture().await
+                        self.get_pinch_gesture(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("zwp_pointer_gestures_v1#{}.release()", object.id);
-                        self.release().await
+                        self.release(object, client).await
                     }
                     3u16 => {
                         tracing::debug!("zwp_pointer_gestures_v1#{}.get_hold_gesture()", object.id);
-                        self.get_hold_gesture().await
+                        self.get_hold_gesture(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -12293,6 +13743,8 @@ pub mod pointer_gestures_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                pointer: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Create a pinch gesture object. See the"]
             #[doc = "wl_pointer_gesture_pinch interface for details."]
@@ -12300,6 +13752,8 @@ pub mod pointer_gestures_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                pointer: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the pointer gesture object. Swipe, pinch and hold objects"]
             #[doc = "created via this gesture object remain valid."]
@@ -12314,6 +13768,8 @@ pub mod pointer_gestures_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                pointer: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -12351,7 +13807,7 @@ pub mod pointer_gestures_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_pointer_gesture_swipe_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -12432,7 +13888,7 @@ pub mod pointer_gestures_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_pointer_gesture_pinch_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -12522,7 +13978,7 @@ pub mod pointer_gestures_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_pointer_gesture_hold_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -12627,21 +14083,38 @@ pub mod wp_primary_selection_unstable_v1 {
                             "zwp_primary_selection_device_manager_v1#{}.create_source()",
                             object.id
                         );
-                        self.create_source().await
+                        self.create_source(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwp_primary_selection_device_manager_v1#{}.get_device()",
                             object.id
                         );
-                        self.get_device().await
+                        self.get_device(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!(
                             "zwp_primary_selection_device_manager_v1#{}.destroy()",
                             object.id
                         );
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -12651,12 +14124,15 @@ pub mod wp_primary_selection_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Create a new data device for a given seat."]
             async fn get_device(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the primary selection device manager."]
             async fn destroy(
@@ -12688,11 +14164,12 @@ pub mod wp_primary_selection_unstable_v1 {
                             "zwp_primary_selection_device_v1#{}.set_selection()",
                             object.id
                         );
-                        self.set_selection().await
+                        self.set_selection(object, client, message.object()?, message.uint()?)
+                            .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_primary_selection_device_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -12705,6 +14182,8 @@ pub mod wp_primary_selection_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                source: Option<crate::wire::ObjectId>,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the primary selection device."]
             async fn destroy(
@@ -12766,11 +14245,19 @@ pub mod wp_primary_selection_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_primary_selection_offer_v1#{}.receive()", object.id);
-                        self.receive().await
+                        self.receive(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.fd()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_primary_selection_offer_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -12788,6 +14275,8 @@ pub mod wp_primary_selection_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mime_type: String,
+                fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the primary selection offer."]
             async fn destroy(
@@ -12830,11 +14319,18 @@ pub mod wp_primary_selection_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_primary_selection_source_v1#{}.offer()", object.id);
-                        self.offer().await
+                        self.offer(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_primary_selection_source_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -12845,6 +14341,7 @@ pub mod wp_primary_selection_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mime_type: String,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the primary selection source."]
             async fn destroy(
@@ -12918,14 +14415,24 @@ pub mod relative_pointer_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_relative_pointer_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwp_relative_pointer_manager_v1#{}.get_relative_pointer()",
                             object.id
                         );
-                        self.get_relative_pointer().await
+                        self.get_relative_pointer(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -12943,6 +14450,8 @@ pub mod relative_pointer_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                pointer: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -12969,7 +14478,7 @@ pub mod relative_pointer_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_relative_pointer_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -13127,11 +14636,21 @@ pub mod tablet_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_manager_v1#{}.get_tablet_seat()", object.id);
-                        self.get_tablet_seat().await
+                        self.get_tablet_seat(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -13142,6 +14661,8 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                tablet_seat: crate::wire::ObjectId,
+                seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the wp_tablet_manager object. Objects created from this"]
             #[doc = "object are unaffected and should be destroyed separately."]
@@ -13174,7 +14695,7 @@ pub mod tablet_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_seat_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -13249,11 +14770,19 @@ pub mod tablet_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_tool_v1#{}.set_cursor()", object.id);
-                        self.set_cursor().await
+                        self.set_cursor(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.object()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_tool_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -13294,6 +14823,10 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                surface: Option<crate::wire::ObjectId>,
+                hotspot_x: i32,
+                hotspot_y: i32,
             ) -> crate::server::Result<()>;
             #[doc = "This destroys the client's resource for this tool object."]
             async fn destroy(
@@ -13611,7 +15144,7 @@ pub mod tablet_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -13790,11 +15323,21 @@ pub mod tablet_unstable_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_manager_v2#{}.get_tablet_seat()", object.id);
-                        self.get_tablet_seat().await
+                        self.get_tablet_seat(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_manager_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -13805,6 +15348,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                tablet_seat: crate::wire::ObjectId,
+                seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the wp_tablet_manager object. Objects created from this"]
             #[doc = "object are unaffected and should be destroyed separately."]
@@ -13837,7 +15382,7 @@ pub mod tablet_unstable_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_seat_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -13929,11 +15474,19 @@ pub mod tablet_unstable_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_tool_v2#{}.set_cursor()", object.id);
-                        self.set_cursor().await
+                        self.set_cursor(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.object()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_tool_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -13972,6 +15525,10 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                surface: Option<crate::wire::ObjectId>,
+                hotspot_x: i32,
+                hotspot_y: i32,
             ) -> crate::server::Result<()>;
             #[doc = "This destroys the client's resource for this tool object."]
             async fn destroy(
@@ -14289,7 +15846,7 @@ pub mod tablet_unstable_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -14397,11 +15954,19 @@ pub mod tablet_unstable_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_pad_ring_v2#{}.set_feedback()", object.id);
-                        self.set_feedback().await
+                        self.set_feedback(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_pad_ring_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -14429,6 +15994,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                description: String,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This destroys the client's resource for this ring object."]
             async fn destroy(
@@ -14529,11 +16096,19 @@ pub mod tablet_unstable_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_pad_strip_v2#{}.set_feedback()", object.id);
-                        self.set_feedback().await
+                        self.set_feedback(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_pad_strip_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -14561,6 +16136,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                description: String,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This destroys the client's resource for this strip object."]
             async fn destroy(
@@ -14679,7 +16256,7 @@ pub mod tablet_unstable_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_pad_group_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -14841,11 +16418,20 @@ pub mod tablet_unstable_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_pad_v2#{}.set_feedback()", object.id);
-                        self.set_feedback().await
+                        self.set_feedback(
+                            object,
+                            client,
+                            message.uint()?,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_pad_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -14878,6 +16464,9 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                button: u32,
+                description: String,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the wp_tablet_pad object. Objects created from this object"]
             #[doc = "are unaffected and should be destroyed separately."]
@@ -15028,47 +16617,95 @@ pub mod text_input_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_text_input_v1#{}.activate()", object.id);
-                        self.activate().await
+                        self.activate(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_text_input_v1#{}.deactivate()", object.id);
-                        self.deactivate().await
+                        self.deactivate(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("zwp_text_input_v1#{}.show_input_panel()", object.id);
-                        self.show_input_panel().await
+                        self.show_input_panel(object, client).await
                     }
                     3u16 => {
                         tracing::debug!("zwp_text_input_v1#{}.hide_input_panel()", object.id);
-                        self.hide_input_panel().await
+                        self.hide_input_panel(object, client).await
                     }
                     4u16 => {
                         tracing::debug!("zwp_text_input_v1#{}.reset()", object.id);
-                        self.reset().await
+                        self.reset(object, client).await
                     }
                     5u16 => {
                         tracing::debug!("zwp_text_input_v1#{}.set_surrounding_text()", object.id);
-                        self.set_surrounding_text().await
+                        self.set_surrounding_text(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     6u16 => {
                         tracing::debug!("zwp_text_input_v1#{}.set_content_type()", object.id);
-                        self.set_content_type().await
+                        self.set_content_type(
+                            object,
+                            client,
+                            message.uint()?.try_into()?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
                     }
                     7u16 => {
                         tracing::debug!("zwp_text_input_v1#{}.set_cursor_rectangle()", object.id);
-                        self.set_cursor_rectangle().await
+                        self.set_cursor_rectangle(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     8u16 => {
                         tracing::debug!("zwp_text_input_v1#{}.set_preferred_language()", object.id);
-                        self.set_preferred_language().await
+                        self.set_preferred_language(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     9u16 => {
                         tracing::debug!("zwp_text_input_v1#{}.commit_state()", object.id);
-                        self.commit_state().await
+                        self.commit_state(object, client, message.uint()?).await
                     }
                     10u16 => {
                         tracing::debug!("zwp_text_input_v1#{}.invoke_action()", object.id);
-                        self.invoke_action().await
+                        self.invoke_action(object, client, message.uint()?, message.uint()?)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -15084,6 +16721,8 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Requests the text_input object to be deactivated (typically when the"]
             #[doc = "text entry lost focus). The seat argument is a wl_seat which was used"]
@@ -15092,6 +16731,7 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Requests input panels (virtual keyboard) to show."]
             async fn show_input_panel(
@@ -15122,6 +16762,9 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                text: String,
+                cursor: u32,
+                anchor: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Sets the content purpose and content hint. While the purpose is the"]
             #[doc = "basic purpose of an input field, the hint flags allow to modify some"]
@@ -15134,11 +16777,17 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                hint: u32,
+                purpose: u32,
             ) -> crate::server::Result<()>;
             async fn set_cursor_rectangle(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Sets a specific language. This allows for example a virtual keyboard to"]
             #[doc = "show a language specific layout. The \"language\" argument is an RFC-3066"]
@@ -15151,16 +16800,20 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                language: String,
             ) -> crate::server::Result<()>;
             async fn commit_state(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()>;
             async fn invoke_action(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                button: u32,
+                index: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Notify the text_input object when it received focus. Typically in"]
             #[doc = "response to an activate request."]
@@ -15340,7 +16993,14 @@ pub mod text_input_unstable_v1 {
                             "zwp_text_input_manager_v1#{}.create_text_input()",
                             object.id
                         );
-                        self.create_text_input().await
+                        self.create_text_input(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -15350,6 +17010,7 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -15415,35 +17076,59 @@ pub mod text_input_unstable_v3 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_text_input_v3#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zwp_text_input_v3#{}.enable()", object.id);
-                        self.enable().await
+                        self.enable(object, client).await
                     }
                     2u16 => {
                         tracing::debug!("zwp_text_input_v3#{}.disable()", object.id);
-                        self.disable().await
+                        self.disable(object, client).await
                     }
                     3u16 => {
                         tracing::debug!("zwp_text_input_v3#{}.set_surrounding_text()", object.id);
-                        self.set_surrounding_text().await
+                        self.set_surrounding_text(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     4u16 => {
                         tracing::debug!("zwp_text_input_v3#{}.set_text_change_cause()", object.id);
-                        self.set_text_change_cause().await
+                        self.set_text_change_cause(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     5u16 => {
                         tracing::debug!("zwp_text_input_v3#{}.set_content_type()", object.id);
-                        self.set_content_type().await
+                        self.set_content_type(
+                            object,
+                            client,
+                            message.uint()?.try_into()?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
                     }
                     6u16 => {
                         tracing::debug!("zwp_text_input_v3#{}.set_cursor_rectangle()", object.id);
-                        self.set_cursor_rectangle().await
+                        self.set_cursor_rectangle(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     7u16 => {
                         tracing::debug!("zwp_text_input_v3#{}.commit()", object.id);
-                        self.commit().await
+                        self.commit(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -15534,6 +17219,9 @@ pub mod text_input_unstable_v3 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                text: String,
+                cursor: i32,
+                anchor: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Tells the compositor why the text surrounding the cursor changed."]
             #[doc = ""]
@@ -15553,6 +17241,7 @@ pub mod text_input_unstable_v3 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                cause: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Sets the content purpose and content hint. While the purpose is the"]
             #[doc = "basic purpose of an input field, the hint flags allow to modify some of"]
@@ -15569,6 +17258,8 @@ pub mod text_input_unstable_v3 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                hint: u32,
+                purpose: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Marks an area around the cursor as a x, y, width, height rectangle in"]
             #[doc = "surface local coordinates."]
@@ -15591,6 +17282,10 @@ pub mod text_input_unstable_v3 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Atomically applies state changes recently sent to the compositor."]
             #[doc = ""]
@@ -15770,11 +17465,21 @@ pub mod text_input_unstable_v3 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_text_input_manager_v3#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zwp_text_input_manager_v3#{}.get_text_input()", object.id);
-                        self.get_text_input().await
+                        self.get_text_input(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -15790,6 +17495,8 @@ pub mod text_input_unstable_v3 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -15836,14 +17543,24 @@ pub mod xdg_decoration_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_decoration_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zxdg_decoration_manager_v1#{}.get_toplevel_decoration()",
                             object.id
                         );
-                        self.get_toplevel_decoration().await
+                        self.get_toplevel_decoration(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -15866,6 +17583,8 @@ pub mod xdg_decoration_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -15894,15 +17613,16 @@ pub mod xdg_decoration_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_toplevel_decoration_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zxdg_toplevel_decoration_v1#{}.set_mode()", object.id);
-                        self.set_mode().await
+                        self.set_mode(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     2u16 => {
                         tracing::debug!("zxdg_toplevel_decoration_v1#{}.unset_mode()", object.id);
-                        self.unset_mode().await
+                        self.unset_mode(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -15936,6 +17656,7 @@ pub mod xdg_decoration_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mode: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Unset the toplevel surface decoration mode. This informs the compositor"]
             #[doc = "that the client doesn't prefer a particular decoration mode."]
@@ -16014,11 +17735,21 @@ pub mod xdg_foreign_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_exporter_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zxdg_exporter_v1#{}.export()", object.id);
-                        self.export().await
+                        self.export(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -16042,6 +17773,8 @@ pub mod xdg_foreign_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -16067,11 +17800,21 @@ pub mod xdg_foreign_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_importer_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zxdg_importer_v1#{}.import()", object.id);
-                        self.import().await
+                        self.import(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -16092,6 +17835,8 @@ pub mod xdg_foreign_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                handle: String,
             ) -> crate::server::Result<()>;
         }
     }
@@ -16118,7 +17863,7 @@ pub mod xdg_foreign_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_exported_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -16166,11 +17911,18 @@ pub mod xdg_foreign_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_imported_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zxdg_imported_v1#{}.set_parent_of()", object.id);
-                        self.set_parent_of().await
+                        self.set_parent_of(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -16191,6 +17943,7 @@ pub mod xdg_foreign_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The imported surface handle has been destroyed and any relationship set"]
             #[doc = "up has been invalidated. This may happen for various reasons, for"]
@@ -16257,11 +18010,21 @@ pub mod xdg_foreign_unstable_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_exporter_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zxdg_exporter_v2#{}.export_toplevel()", object.id);
-                        self.export_toplevel().await
+                        self.export_toplevel(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -16286,6 +18049,8 @@ pub mod xdg_foreign_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -16311,11 +18076,21 @@ pub mod xdg_foreign_unstable_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_importer_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zxdg_importer_v2#{}.import_toplevel()", object.id);
-                        self.import_toplevel().await
+                        self.import_toplevel(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -16336,6 +18111,8 @@ pub mod xdg_foreign_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                handle: String,
             ) -> crate::server::Result<()>;
         }
     }
@@ -16362,7 +18139,7 @@ pub mod xdg_foreign_unstable_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_exported_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -16410,11 +18187,18 @@ pub mod xdg_foreign_unstable_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_imported_v2#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zxdg_imported_v2#{}.set_parent_of()", object.id);
-                        self.set_parent_of().await
+                        self.set_parent_of(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -16436,6 +18220,7 @@ pub mod xdg_foreign_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The imported surface handle has been destroyed and any relationship set"]
             #[doc = "up has been invalidated. This may happen for various reasons, for"]
@@ -16499,11 +18284,21 @@ pub mod xdg_output_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_output_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zxdg_output_manager_v1#{}.get_xdg_output()", object.id);
-                        self.get_xdg_output().await
+                        self.get_xdg_output(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -16522,6 +18317,8 @@ pub mod xdg_output_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -16553,7 +18350,7 @@ pub mod xdg_output_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_output_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -16711,23 +18508,53 @@ pub mod xdg_shell_unstable_v5 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_shell#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("xdg_shell#{}.use_unstable_version()", object.id);
-                        self.use_unstable_version().await
+                        self.use_unstable_version(object, client, message.int()?)
+                            .await
                     }
                     2u16 => {
                         tracing::debug!("xdg_shell#{}.get_xdg_surface()", object.id);
-                        self.get_xdg_surface().await
+                        self.get_xdg_surface(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("xdg_shell#{}.get_xdg_popup()", object.id);
-                        self.get_xdg_popup().await
+                        self.get_xdg_popup(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     4u16 => {
                         tracing::debug!("xdg_shell#{}.pong()", object.id);
-                        self.pong().await
+                        self.pong(object, client, message.uint()?).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -16751,6 +18578,7 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                version: i32,
             ) -> crate::server::Result<()>;
             #[doc = "This creates an xdg_surface for the given surface and gives it the"]
             #[doc = "xdg_surface role. A wl_surface can only be given an xdg_surface role"]
@@ -16764,6 +18592,8 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This creates an xdg_popup for the given surface and gives it the"]
             #[doc = "xdg_popup role. A wl_surface can only be given an xdg_popup role"]
@@ -16780,6 +18610,13 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+                parent: crate::wire::ObjectId,
+                seat: crate::wire::ObjectId,
+                serial: u32,
+                x: i32,
+                y: i32,
             ) -> crate::server::Result<()>;
             #[doc = "A client must respond to a ping event with a pong request or"]
             #[doc = "the client may be deemed unresponsive."]
@@ -16787,6 +18624,7 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "The ping event asks the client if it's still alive. Pass the"]
             #[doc = "serial specified in the event back to the compositor by sending"]
@@ -16846,59 +18684,108 @@ pub mod xdg_shell_unstable_v5 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_surface#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("xdg_surface#{}.set_parent()", object.id);
-                        self.set_parent().await
+                        self.set_parent(object, client, message.object()?).await
                     }
                     2u16 => {
                         tracing::debug!("xdg_surface#{}.set_title()", object.id);
-                        self.set_title().await
+                        self.set_title(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("xdg_surface#{}.set_app_id()", object.id);
-                        self.set_app_id().await
+                        self.set_app_id(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     4u16 => {
                         tracing::debug!("xdg_surface#{}.show_window_menu()", object.id);
-                        self.show_window_menu().await
+                        self.show_window_menu(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     5u16 => {
                         tracing::debug!("xdg_surface#{}.move()", object.id);
-                        self.r#move().await
+                        self.r#move(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     6u16 => {
                         tracing::debug!("xdg_surface#{}.resize()", object.id);
-                        self.resize().await
+                        self.resize(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     7u16 => {
                         tracing::debug!("xdg_surface#{}.ack_configure()", object.id);
-                        self.ack_configure().await
+                        self.ack_configure(object, client, message.uint()?).await
                     }
                     8u16 => {
                         tracing::debug!("xdg_surface#{}.set_window_geometry()", object.id);
-                        self.set_window_geometry().await
+                        self.set_window_geometry(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     9u16 => {
                         tracing::debug!("xdg_surface#{}.set_maximized()", object.id);
-                        self.set_maximized().await
+                        self.set_maximized(object, client).await
                     }
                     10u16 => {
                         tracing::debug!("xdg_surface#{}.unset_maximized()", object.id);
-                        self.unset_maximized().await
+                        self.unset_maximized(object, client).await
                     }
                     11u16 => {
                         tracing::debug!("xdg_surface#{}.set_fullscreen()", object.id);
-                        self.set_fullscreen().await
+                        self.set_fullscreen(object, client, message.object()?).await
                     }
                     12u16 => {
                         tracing::debug!("xdg_surface#{}.unset_fullscreen()", object.id);
-                        self.unset_fullscreen().await
+                        self.unset_fullscreen(object, client).await
                     }
                     13u16 => {
                         tracing::debug!("xdg_surface#{}.set_minimized()", object.id);
-                        self.set_minimized().await
+                        self.set_minimized(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -16922,6 +18809,7 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                parent: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "Set a short title for the surface."]
             #[doc = ""]
@@ -16934,6 +18822,7 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                title: String,
             ) -> crate::server::Result<()>;
             #[doc = "Set an application identifier for the surface."]
             #[doc = ""]
@@ -16959,6 +18848,7 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                app_id: String,
             ) -> crate::server::Result<()>;
             #[doc = "Clients implementing client-side decorations might want to show"]
             #[doc = "a context menu when right-clicking on the decorations, giving the"]
@@ -16975,6 +18865,10 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
+                serial: u32,
+                x: i32,
+                y: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Start an interactive, user-driven move of the surface."]
             #[doc = ""]
@@ -16996,6 +18890,8 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Start a user-driven, interactive resize of the surface."]
             #[doc = ""]
@@ -17031,6 +18927,9 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
+                serial: u32,
+                edges: u32,
             ) -> crate::server::Result<()>;
             #[doc = "When a configure event is received, if a client commits the"]
             #[doc = "surface in response to the configure event, then the client"]
@@ -17055,6 +18954,7 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "The window geometry of a window is its \"visible bounds\" from the"]
             #[doc = "user's perspective. Client-side decorations often have invisible"]
@@ -17085,6 +18985,10 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Maximize the surface."]
             #[doc = ""]
@@ -17152,6 +19056,7 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                output: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             async fn unset_fullscreen(
                 &self,
@@ -17289,7 +19194,7 @@ pub mod xdg_shell_unstable_v5 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_popup#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -17341,19 +19246,36 @@ pub mod xdg_shell_unstable_v6 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_shell_v6#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zxdg_shell_v6#{}.create_positioner()", object.id);
-                        self.create_positioner().await
+                        self.create_positioner(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("zxdg_shell_v6#{}.get_xdg_surface()", object.id);
-                        self.get_xdg_surface().await
+                        self.get_xdg_surface(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("zxdg_shell_v6#{}.pong()", object.id);
-                        self.pong().await
+                        self.pong(object, client, message.uint()?).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -17375,6 +19297,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This creates an xdg_surface for the given surface. While xdg_surface"]
             #[doc = "itself is not a role, the corresponding surface may only be assigned"]
@@ -17391,6 +19314,8 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "A client must respond to a ping event with a pong request or"]
             #[doc = "the client may be deemed unresponsive. See xdg_shell.ping."]
@@ -17398,6 +19323,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "The ping event asks the client if it's still alive. Pass the"]
             #[doc = "serial specified in the event back to the compositor by sending"]
@@ -17457,34 +19383,47 @@ pub mod xdg_shell_unstable_v6 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_positioner_v6#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zxdg_positioner_v6#{}.set_size()", object.id);
-                        self.set_size().await
+                        self.set_size(object, client, message.int()?, message.int()?)
+                            .await
                     }
                     2u16 => {
                         tracing::debug!("zxdg_positioner_v6#{}.set_anchor_rect()", object.id);
-                        self.set_anchor_rect().await
+                        self.set_anchor_rect(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("zxdg_positioner_v6#{}.set_anchor()", object.id);
-                        self.set_anchor().await
+                        self.set_anchor(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     4u16 => {
                         tracing::debug!("zxdg_positioner_v6#{}.set_gravity()", object.id);
-                        self.set_gravity().await
+                        self.set_gravity(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     5u16 => {
                         tracing::debug!(
                             "zxdg_positioner_v6#{}.set_constraint_adjustment()",
                             object.id
                         );
-                        self.set_constraint_adjustment().await
+                        self.set_constraint_adjustment(object, client, message.uint()?)
+                            .await
                     }
                     6u16 => {
                         tracing::debug!("zxdg_positioner_v6#{}.set_offset()", object.id);
-                        self.set_offset().await
+                        self.set_offset(object, client, message.int()?, message.int()?)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -17504,6 +19443,8 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Specify the anchor rectangle within the parent surface that the child"]
             #[doc = "surface will be placed relative to. The rectangle is relative to the"]
@@ -17519,6 +19460,10 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Defines a set of edges for the anchor rectangle. These are used to"]
             #[doc = "derive an anchor point that the child surface will be positioned"]
@@ -17534,6 +19479,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                anchor: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Defines in what direction a surface should be positioned, relative to"]
             #[doc = "the anchor point of the parent surface. If two orthogonal gravities are"]
@@ -17548,6 +19494,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                gravity: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Specify how the window should be positioned if the originally intended"]
             #[doc = "position caused the surface to be constrained, meaning at least"]
@@ -17566,6 +19513,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                constraint_adjustment: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Specify the surface position offset relative to the position of the"]
             #[doc = "anchor on the anchor rectangle and the anchor on the surface. For"]
@@ -17582,6 +19530,8 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
             ) -> crate::server::Result<()>;
         }
     }
@@ -17634,23 +19584,51 @@ pub mod xdg_shell_unstable_v6 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_surface_v6#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zxdg_surface_v6#{}.get_toplevel()", object.id);
-                        self.get_toplevel().await
+                        self.get_toplevel(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("zxdg_surface_v6#{}.get_popup()", object.id);
-                        self.get_popup().await
+                        self.get_popup(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("zxdg_surface_v6#{}.set_window_geometry()", object.id);
-                        self.set_window_geometry().await
+                        self.set_window_geometry(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     4u16 => {
                         tracing::debug!("zxdg_surface_v6#{}.ack_configure()", object.id);
-                        self.ack_configure().await
+                        self.ack_configure(object, client, message.uint()?).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -17674,6 +19652,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This creates an xdg_popup object for the given xdg_surface and gives the"]
             #[doc = "associated wl_surface the xdg_popup role. If the surface already"]
@@ -17685,6 +19664,9 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                parent: crate::wire::ObjectId,
+                positioner: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The window geometry of a surface is its \"visible bounds\" from the"]
             #[doc = "user's perspective. Client-side decorations often have invisible"]
@@ -17714,6 +19696,10 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "When a configure event is received, if a client commits the"]
             #[doc = "surface in response to the configure event, then the client"]
@@ -17741,6 +19727,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "The configure event marks the end of a configure sequence. A configure"]
             #[doc = "sequence is a set of one or more events configuring the state of the"]
@@ -17791,59 +19778,102 @@ pub mod xdg_shell_unstable_v6 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.set_parent()", object.id);
-                        self.set_parent().await
+                        self.set_parent(object, client, message.object()?).await
                     }
                     2u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.set_title()", object.id);
-                        self.set_title().await
+                        self.set_title(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.set_app_id()", object.id);
-                        self.set_app_id().await
+                        self.set_app_id(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     4u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.show_window_menu()", object.id);
-                        self.show_window_menu().await
+                        self.show_window_menu(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     5u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.move()", object.id);
-                        self.r#move().await
+                        self.r#move(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     6u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.resize()", object.id);
-                        self.resize().await
+                        self.resize(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     7u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.set_max_size()", object.id);
-                        self.set_max_size().await
+                        self.set_max_size(object, client, message.int()?, message.int()?)
+                            .await
                     }
                     8u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.set_min_size()", object.id);
-                        self.set_min_size().await
+                        self.set_min_size(object, client, message.int()?, message.int()?)
+                            .await
                     }
                     9u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.set_maximized()", object.id);
-                        self.set_maximized().await
+                        self.set_maximized(object, client).await
                     }
                     10u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.unset_maximized()", object.id);
-                        self.unset_maximized().await
+                        self.unset_maximized(object, client).await
                     }
                     11u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.set_fullscreen()", object.id);
-                        self.set_fullscreen().await
+                        self.set_fullscreen(object, client, message.object()?).await
                     }
                     12u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.unset_fullscreen()", object.id);
-                        self.unset_fullscreen().await
+                        self.unset_fullscreen(object, client).await
                     }
                     13u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.set_minimized()", object.id);
-                        self.set_minimized().await
+                        self.set_minimized(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -17867,6 +19897,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                parent: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "Set a short title for the surface."]
             #[doc = ""]
@@ -17879,6 +19910,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                title: String,
             ) -> crate::server::Result<()>;
             #[doc = "Set an application identifier for the surface."]
             #[doc = ""]
@@ -17904,6 +19936,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                app_id: String,
             ) -> crate::server::Result<()>;
             #[doc = "Clients implementing client-side decorations might want to show"]
             #[doc = "a context menu when right-clicking on the decorations, giving the"]
@@ -17920,6 +19953,10 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
+                serial: u32,
+                x: i32,
+                y: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Start an interactive, user-driven move of the surface."]
             #[doc = ""]
@@ -17941,6 +19978,8 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Start a user-driven, interactive resize of the surface."]
             #[doc = ""]
@@ -17976,6 +20015,9 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
+                serial: u32,
+                edges: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Set a maximum size for the window."]
             #[doc = ""]
@@ -18015,6 +20057,8 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Set a minimum size for the window."]
             #[doc = ""]
@@ -18054,6 +20098,8 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Maximize the surface."]
             #[doc = ""]
@@ -18121,6 +20167,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                output: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             async fn unset_fullscreen(
                 &self,
@@ -18235,11 +20282,19 @@ pub mod xdg_shell_unstable_v6 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_popup_v6#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("zxdg_popup_v6#{}.grab()", object.id);
-                        self.grab().await
+                        self.grab(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -18299,6 +20354,8 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This event asks the popup surface to configure itself given the"]
             #[doc = "configuration. The configured state should not be applied immediately."]
@@ -18364,18 +20421,35 @@ pub mod wlr_data_control_unstable_v1 {
                             "zwlr_data_control_manager_v1#{}.create_data_source()",
                             object.id
                         );
-                        self.create_data_source().await
+                        self.create_data_source(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwlr_data_control_manager_v1#{}.get_data_device()",
                             object.id
                         );
-                        self.get_data_device().await
+                        self.get_data_device(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("zwlr_data_control_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -18385,12 +20459,15 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Create a data device that can be used to manage a seat's selection."]
             async fn get_data_device(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
@@ -18426,18 +20503,19 @@ pub mod wlr_data_control_unstable_v1 {
                             "zwlr_data_control_device_v1#{}.set_selection()",
                             object.id
                         );
-                        self.set_selection().await
+                        self.set_selection(object, client, message.object()?).await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_data_control_device_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     2u16 => {
                         tracing::debug!(
                             "zwlr_data_control_device_v1#{}.set_primary_selection()",
                             object.id
                         );
-                        self.set_primary_selection().await
+                        self.set_primary_selection(object, client, message.object()?)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -18454,6 +20532,7 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                source: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "Destroys the data device object."]
             async fn destroy(
@@ -18476,6 +20555,7 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                source: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "The data_offer event introduces a new wlr_data_control_offer object,"]
             #[doc = "which will subsequently be used in either the"]
@@ -18565,11 +20645,18 @@ pub mod wlr_data_control_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwlr_data_control_source_v1#{}.offer()", object.id);
-                        self.offer().await
+                        self.offer(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_data_control_source_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -18583,6 +20670,7 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mime_type: String,
             ) -> crate::server::Result<()>;
             #[doc = "Destroys the data source object."]
             async fn destroy(
@@ -18635,11 +20723,19 @@ pub mod wlr_data_control_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwlr_data_control_offer_v1#{}.receive()", object.id);
-                        self.receive().await
+                        self.receive(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.fd()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_data_control_offer_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -18658,6 +20754,8 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mime_type: String,
+                fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()>;
             #[doc = "Destroys the data offer object."]
             async fn destroy(
@@ -18711,11 +20809,22 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                             "zwlr_export_dmabuf_manager_v1#{}.capture_output()",
                             object.id
                         );
-                        self.capture_output().await
+                        self.capture_output(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.int()?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_export_dmabuf_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -18725,6 +20834,9 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                frame: crate::wire::ObjectId,
+                overlay_cursor: i32,
+                output: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
@@ -18768,7 +20880,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwlr_export_dmabuf_frame_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -18872,7 +20984,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwlr_foreign_toplevel_manager_v1#{}.stop()", object.id);
-                        self.stop().await
+                        self.stop(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -18941,61 +21053,79 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                             "zwlr_foreign_toplevel_handle_v1#{}.set_maximized()",
                             object.id
                         );
-                        self.set_maximized().await
+                        self.set_maximized(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwlr_foreign_toplevel_handle_v1#{}.unset_maximized()",
                             object.id
                         );
-                        self.unset_maximized().await
+                        self.unset_maximized(object, client).await
                     }
                     2u16 => {
                         tracing::debug!(
                             "zwlr_foreign_toplevel_handle_v1#{}.set_minimized()",
                             object.id
                         );
-                        self.set_minimized().await
+                        self.set_minimized(object, client).await
                     }
                     3u16 => {
                         tracing::debug!(
                             "zwlr_foreign_toplevel_handle_v1#{}.unset_minimized()",
                             object.id
                         );
-                        self.unset_minimized().await
+                        self.unset_minimized(object, client).await
                     }
                     4u16 => {
                         tracing::debug!("zwlr_foreign_toplevel_handle_v1#{}.activate()", object.id);
-                        self.activate().await
+                        self.activate(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     5u16 => {
                         tracing::debug!("zwlr_foreign_toplevel_handle_v1#{}.close()", object.id);
-                        self.close().await
+                        self.close(object, client).await
                     }
                     6u16 => {
                         tracing::debug!(
                             "zwlr_foreign_toplevel_handle_v1#{}.set_rectangle()",
                             object.id
                         );
-                        self.set_rectangle().await
+                        self.set_rectangle(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     7u16 => {
                         tracing::debug!("zwlr_foreign_toplevel_handle_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     8u16 => {
                         tracing::debug!(
                             "zwlr_foreign_toplevel_handle_v1#{}.set_fullscreen()",
                             object.id
                         );
-                        self.set_fullscreen().await
+                        self.set_fullscreen(object, client, message.object()?).await
                     }
                     9u16 => {
                         tracing::debug!(
                             "zwlr_foreign_toplevel_handle_v1#{}.unset_fullscreen()",
                             object.id
                         );
-                        self.unset_fullscreen().await
+                        self.unset_fullscreen(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -19034,6 +21164,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Send a request to the toplevel to close itself. The compositor would"]
             #[doc = "typically use a shell-specific method to carry out this request, for"]
@@ -19061,6 +21192,11 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                surface: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Destroys the zwlr_foreign_toplevel_handle_v1 object."]
             #[doc = ""]
@@ -19084,6 +21220,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                output: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "Requests that the toplevel be unfullscreened. If the fullscreen state"]
             #[doc = "actually changes, this will be indicated by the state event."]
@@ -19209,11 +21346,21 @@ pub mod wlr_gamma_control_unstable_v1 {
                             "zwlr_gamma_control_manager_v1#{}.get_gamma_control()",
                             object.id
                         );
-                        self.get_gamma_control().await
+                        self.get_gamma_control(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_gamma_control_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -19224,6 +21371,8 @@ pub mod wlr_gamma_control_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
@@ -19263,11 +21412,11 @@ pub mod wlr_gamma_control_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwlr_gamma_control_v1#{}.set_gamma()", object.id);
-                        self.set_gamma().await
+                        self.set_gamma(object, client, message.fd()?).await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_gamma_control_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -19283,6 +21432,7 @@ pub mod wlr_gamma_control_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()>;
             #[doc = "Destroys the gamma control object. If the object is still valid, this"]
             #[doc = "restores the original gamma tables."]
@@ -19349,7 +21499,14 @@ pub mod wlr_input_inhibit_unstable_v1 {
                             "zwlr_input_inhibit_manager_v1#{}.get_inhibitor()",
                             object.id
                         );
-                        self.get_inhibitor().await
+                        self.get_inhibitor(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -19360,6 +21517,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -19391,7 +21549,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwlr_input_inhibitor_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -19432,11 +21590,26 @@ pub mod wlr_layer_shell_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwlr_layer_shell_v1#{}.get_layer_surface()", object.id);
-                        self.get_layer_surface().await
+                        self.get_layer_surface(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.object()?,
+                            message.uint()?.try_into()?,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_layer_shell_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -19466,6 +21639,11 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+                output: Option<crate::wire::ObjectId>,
+                layer: u32,
+                namespace: String,
             ) -> crate::server::Result<()>;
             #[doc = "This request indicates that the client will not use the layer_shell"]
             #[doc = "object any more. Objects that have been created through this instance"]
@@ -19511,46 +21689,67 @@ pub mod wlr_layer_shell_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwlr_layer_surface_v1#{}.set_size()", object.id);
-                        self.set_size().await
+                        self.set_size(object, client, message.uint()?, message.uint()?)
+                            .await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_layer_surface_v1#{}.set_anchor()", object.id);
-                        self.set_anchor().await
+                        self.set_anchor(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     2u16 => {
                         tracing::debug!("zwlr_layer_surface_v1#{}.set_exclusive_zone()", object.id);
-                        self.set_exclusive_zone().await
+                        self.set_exclusive_zone(object, client, message.int()?)
+                            .await
                     }
                     3u16 => {
                         tracing::debug!("zwlr_layer_surface_v1#{}.set_margin()", object.id);
-                        self.set_margin().await
+                        self.set_margin(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     4u16 => {
                         tracing::debug!(
                             "zwlr_layer_surface_v1#{}.set_keyboard_interactivity()",
                             object.id
                         );
-                        self.set_keyboard_interactivity().await
+                        self.set_keyboard_interactivity(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     5u16 => {
                         tracing::debug!("zwlr_layer_surface_v1#{}.get_popup()", object.id);
-                        self.get_popup().await
+                        self.get_popup(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     6u16 => {
                         tracing::debug!("zwlr_layer_surface_v1#{}.ack_configure()", object.id);
-                        self.ack_configure().await
+                        self.ack_configure(object, client, message.uint()?).await
                     }
                     7u16 => {
                         tracing::debug!("zwlr_layer_surface_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     8u16 => {
                         tracing::debug!("zwlr_layer_surface_v1#{}.set_layer()", object.id);
-                        self.set_layer().await
+                        self.set_layer(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     9u16 => {
                         tracing::debug!("zwlr_layer_surface_v1#{}.set_exclusive_edge()", object.id);
-                        self.set_exclusive_edge().await
+                        self.set_exclusive_edge(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -19569,6 +21768,8 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: u32,
+                height: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Requests that the compositor anchor the surface to the specified edges"]
             #[doc = "and corners. If two orthogonal edges are specified (e.g. 'top' and"]
@@ -19581,6 +21782,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                anchor: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Requests that the compositor avoids occluding an area with other"]
             #[doc = "surfaces. The compositor's use of this information is"]
@@ -19618,6 +21820,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                zone: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Requests that the surface be placed some distance away from the anchor"]
             #[doc = "point on the output, in surface-local coordinates. Setting this value"]
@@ -19630,6 +21833,10 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                top: i32,
+                right: i32,
+                bottom: i32,
+                left: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Set how keyboard events are delivered to this surface. By default,"]
             #[doc = "layer shell surfaces do not receive keyboard events; this request can"]
@@ -19647,6 +21854,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                keyboard_interactivity: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This assigns an xdg_popup's parent to this layer_surface.  This popup"]
             #[doc = "should have been created via xdg_surface::get_popup with the parent set"]
@@ -19659,6 +21867,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                popup: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "When a configure event is received, if a client commits the"]
             #[doc = "surface in response to the configure event, then the client"]
@@ -19679,6 +21888,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This request destroys the layer surface."]
             async fn destroy(
@@ -19693,6 +21903,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                layer: super::super::wlr_layer_shell_unstable_v1::zwlr_layer_shell_v1::Layer,
             ) -> crate::server::Result<()>;
             #[doc = "Requests an edge for the exclusive zone to apply. The exclusive"]
             #[doc = "edge will be automatically deduced from anchor points when possible,"]
@@ -19706,6 +21917,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                edge: u32,
             ) -> crate::server::Result<()>;
             #[doc = "The configure event asks the client to resize its surface."]
             #[doc = ""]
@@ -19810,11 +22022,19 @@ pub mod wlr_output_management_unstable_v1 {
                             "zwlr_output_manager_v1#{}.create_configuration()",
                             object.id
                         );
-                        self.create_configuration().await
+                        self.create_configuration(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_output_manager_v1#{}.stop()", object.id);
-                        self.stop().await
+                        self.stop(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -19825,6 +22045,8 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Indicates the client no longer wishes to receive events for output"]
             #[doc = "configuration changes. However the compositor may emit further events,"]
@@ -19909,7 +22131,7 @@ pub mod wlr_output_management_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwlr_output_head_v1#{}.release()", object.id);
-                        self.release().await
+                        self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -20156,7 +22378,7 @@ pub mod wlr_output_management_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwlr_output_mode_v1#{}.release()", object.id);
-                        self.release().await
+                        self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -20237,26 +22459,43 @@ pub mod wlr_output_management_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwlr_output_configuration_v1#{}.enable_head()", object.id);
-                        self.enable_head().await
+                        self.enable_head(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwlr_output_configuration_v1#{}.disable_head()",
                             object.id
                         );
-                        self.disable_head().await
+                        self.disable_head(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("zwlr_output_configuration_v1#{}.apply()", object.id);
-                        self.apply().await
+                        self.apply(object, client).await
                     }
                     3u16 => {
                         tracing::debug!("zwlr_output_configuration_v1#{}.test()", object.id);
-                        self.test().await
+                        self.test(object, client).await
                     }
                     4u16 => {
                         tracing::debug!("zwlr_output_configuration_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -20267,12 +22506,15 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                head: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Disable a head."]
             async fn disable_head(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                head: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Apply the new output configuration."]
             #[doc = ""]
@@ -20382,42 +22624,59 @@ pub mod wlr_output_management_unstable_v1 {
                             "zwlr_output_configuration_head_v1#{}.set_mode()",
                             object.id
                         );
-                        self.set_mode().await
+                        self.set_mode(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwlr_output_configuration_head_v1#{}.set_custom_mode()",
                             object.id
                         );
-                        self.set_custom_mode().await
+                        self.set_custom_mode(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!(
                             "zwlr_output_configuration_head_v1#{}.set_position()",
                             object.id
                         );
-                        self.set_position().await
+                        self.set_position(object, client, message.int()?, message.int()?)
+                            .await
                     }
                     3u16 => {
                         tracing::debug!(
                             "zwlr_output_configuration_head_v1#{}.set_transform()",
                             object.id
                         );
-                        self.set_transform().await
+                        self.set_transform(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     4u16 => {
                         tracing::debug!(
                             "zwlr_output_configuration_head_v1#{}.set_scale()",
                             object.id
                         );
-                        self.set_scale().await
+                        self.set_scale(object, client, message.fixed()?).await
                     }
                     5u16 => {
                         tracing::debug!(
                             "zwlr_output_configuration_head_v1#{}.set_adaptive_sync()",
                             object.id
                         );
-                        self.set_adaptive_sync().await
+                        self.set_adaptive_sync(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -20427,6 +22686,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mode: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This request assigns a custom mode to the head. The size is given in"]
             #[doc = "physical hardware units of the output device. If set to zero, the"]
@@ -20437,24 +22697,31 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
+                refresh: i32,
             ) -> crate::server::Result<()>;
             #[doc = "This request sets the head's position in the global compositor space."]
             async fn set_position(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
             ) -> crate::server::Result<()>;
             #[doc = "This request sets the head's transform."]
             async fn set_transform(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                transform: super::super::wayland::wl_output::Transform,
             ) -> crate::server::Result<()>;
             #[doc = "This request sets the head's scale."]
             async fn set_scale(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                scale: crate::wire::Fixed,
             ) -> crate::server::Result<()>;
             #[doc = "This request enables/disables adaptive sync. Adaptive sync is also"]
             #[doc = "known as Variable Refresh Rate or VRR."]
@@ -20462,6 +22729,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                state : super :: super :: wlr_output_management_unstable_v1 :: zwlr_output_head_v1 :: AdaptiveSyncState,
             ) -> crate::server::Result<()>;
         }
     }
@@ -20507,11 +22775,21 @@ pub mod wlr_output_power_management_unstable_v1 {
                             "zwlr_output_power_manager_v1#{}.get_output_power()",
                             object.id
                         );
-                        self.get_output_power().await
+                        self.get_output_power(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_output_power_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -20522,6 +22800,8 @@ pub mod wlr_output_power_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
@@ -20553,11 +22833,12 @@ pub mod wlr_output_power_management_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwlr_output_power_v1#{}.set_mode()", object.id);
-                        self.set_mode().await
+                        self.set_mode(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_output_power_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -20569,6 +22850,7 @@ pub mod wlr_output_power_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mode: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Destroys the output power management mode control object."]
             async fn destroy(
@@ -20645,18 +22927,44 @@ pub mod wlr_screencopy_unstable_v1 {
                             "zwlr_screencopy_manager_v1#{}.capture_output()",
                             object.id
                         );
-                        self.capture_output().await
+                        self.capture_output(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.int()?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwlr_screencopy_manager_v1#{}.capture_output_region()",
                             object.id
                         );
-                        self.capture_output_region().await
+                        self.capture_output_region(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.int()?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("zwlr_screencopy_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -20666,6 +22974,9 @@ pub mod wlr_screencopy_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                frame: crate::wire::ObjectId,
+                overlay_cursor: i32,
+                output: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Capture the next frame of an output's region."]
             #[doc = ""]
@@ -20676,6 +22987,13 @@ pub mod wlr_screencopy_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                frame: crate::wire::ObjectId,
+                overlay_cursor: i32,
+                output: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()>;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
@@ -20721,18 +23039,32 @@ pub mod wlr_screencopy_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwlr_screencopy_frame_v1#{}.copy()", object.id);
-                        self.copy().await
+                        self.copy(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_screencopy_frame_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     2u16 => {
                         tracing::debug!(
                             "zwlr_screencopy_frame_v1#{}.copy_with_damage()",
                             object.id
                         );
-                        self.copy_with_damage().await
+                        self.copy_with_damage(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -20748,6 +23080,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                buffer: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Destroys the frame. This request can be sent at any time by the client."]
             async fn destroy(
@@ -20760,6 +23093,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                buffer: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Provides information about wl_shm buffer parameters that need to be"]
             #[doc = "used for this frame. This event is sent once after the frame is created"]
@@ -20872,39 +23206,79 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwlr_virtual_pointer_v1#{}.motion()", object.id);
-                        self.motion().await
+                        self.motion(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.fixed()?,
+                            message.fixed()?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_virtual_pointer_v1#{}.motion_absolute()", object.id);
-                        self.motion_absolute().await
+                        self.motion_absolute(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                        )
+                        .await
                     }
                     2u16 => {
                         tracing::debug!("zwlr_virtual_pointer_v1#{}.button()", object.id);
-                        self.button().await
+                        self.button(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
                     }
                     3u16 => {
                         tracing::debug!("zwlr_virtual_pointer_v1#{}.axis()", object.id);
-                        self.axis().await
+                        self.axis(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.uint()?.try_into()?,
+                            message.fixed()?,
+                        )
+                        .await
                     }
                     4u16 => {
                         tracing::debug!("zwlr_virtual_pointer_v1#{}.frame()", object.id);
-                        self.frame().await
+                        self.frame(object, client).await
                     }
                     5u16 => {
                         tracing::debug!("zwlr_virtual_pointer_v1#{}.axis_source()", object.id);
-                        self.axis_source().await
+                        self.axis_source(object, client, message.uint()?.try_into()?)
+                            .await
                     }
                     6u16 => {
                         tracing::debug!("zwlr_virtual_pointer_v1#{}.axis_stop()", object.id);
-                        self.axis_stop().await
+                        self.axis_stop(object, client, message.uint()?, message.uint()?.try_into()?)
+                            .await
                     }
                     7u16 => {
                         tracing::debug!("zwlr_virtual_pointer_v1#{}.axis_discrete()", object.id);
-                        self.axis_discrete().await
+                        self.axis_discrete(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.uint()?.try_into()?,
+                            message.fixed()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     8u16 => {
                         tracing::debug!("zwlr_virtual_pointer_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -20916,6 +23290,9 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                dx: crate::wire::Fixed,
+                dy: crate::wire::Fixed,
             ) -> crate::server::Result<()>;
             #[doc = "The pointer has moved in an absolute coordinate frame."]
             #[doc = ""]
@@ -20925,18 +23302,29 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                x: u32,
+                y: u32,
+                x_extent: u32,
+                y_extent: u32,
             ) -> crate::server::Result<()>;
             #[doc = "A button was pressed or released."]
             async fn button(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                button: u32,
+                state: super::super::wayland::wl_pointer::ButtonState,
             ) -> crate::server::Result<()>;
             #[doc = "Scroll and other axis requests."]
             async fn axis(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                axis: super::super::wayland::wl_pointer::Axis,
+                value: crate::wire::Fixed,
             ) -> crate::server::Result<()>;
             #[doc = "Indicates the set of events that logically belong together."]
             async fn frame(
@@ -20949,12 +23337,15 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                axis_source: super::super::wayland::wl_pointer::AxisSource,
             ) -> crate::server::Result<()>;
             #[doc = "Stop notification for scroll and other axes."]
             async fn axis_stop(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                axis: super::super::wayland::wl_pointer::Axis,
             ) -> crate::server::Result<()>;
             #[doc = "Discrete step information for scroll and other axes."]
             #[doc = ""]
@@ -20964,6 +23355,10 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                axis: super::super::wayland::wl_pointer::Axis,
+                value: crate::wire::Fixed,
+                discrete: i32,
             ) -> crate::server::Result<()>;
             async fn destroy(
                 &self,
@@ -20995,15 +23390,32 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                             "zwlr_virtual_pointer_manager_v1#{}.create_virtual_pointer()",
                             object.id
                         );
-                        self.create_virtual_pointer().await
+                        self.create_virtual_pointer(
+                            object,
+                            client,
+                            message.object()?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_virtual_pointer_manager_v1#{}.destroy()", object.id);
-                        self.destroy().await
+                        self.destroy(object, client).await
                     }
                     2u16 => {
                         tracing :: debug ! ("zwlr_virtual_pointer_manager_v1#{}.create_virtual_pointer_with_output()" , object . id);
-                        self.create_virtual_pointer_with_output().await
+                        self.create_virtual_pointer_with_output(
+                            object,
+                            client,
+                            message.object()?,
+                            message.object()?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -21014,6 +23426,8 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: Option<crate::wire::ObjectId>,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             async fn destroy(
                 &self,
@@ -21028,6 +23442,9 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                seat: Option<crate::wire::ObjectId>,
+                output: Option<crate::wire::ObjectId>,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
