@@ -366,8 +366,12 @@ fn main() -> Result<()> {
             let requests = write_requests(&protocols, &protocol, &interface);
             let events = write_events(&interface);
 
+            let enums = write_enums(&interface);
+
             inner_modules.push(quote! {
                 pub mod #module_name {
+                    #(#enums)*
+
                     #(#docs)*
                     pub trait #trait_name: crate::server::Dispatcher {
                         const INTERFACE: &'static str = #name;
@@ -441,8 +445,76 @@ fn make_ident<D: Display>(ident: D) -> Ident {
     format_ident!("{ident}")
 }
 
-fn write_enums() -> TokenStream {
-    quote! {}
+fn write_enums(interface: &Interface) -> Vec<TokenStream> {
+    // quote! {}
+
+    let mut enums = Vec::new();
+
+    for e in &interface.enums {
+        let docs = description_to_docs(e.description.as_ref());
+        let name = make_ident(e.name.to_upper_camel_case());
+
+        if !e.bitfield {
+        } else {
+            let mut variants = Vec::new();
+
+            for entry in &e.entries {
+                let mut prefix = "";
+
+                if entry.name.chars().next().unwrap().is_numeric() {
+                    prefix = "_"
+                }
+
+                let name = make_ident(format!("{prefix}{}", entry.name.to_upper_camel_case()));
+
+                // if let Some(summary) = &entry.summary {
+                //     for line in summary.lines() {
+                //         let doc = line.trim();
+
+                //         let mut c = doc.chars();
+                //         let doc = c.next().unwrap().to_uppercase().collect::<String>()
+                //             + c.as_str();
+
+                //         writeln!(&mut variants, r##"#[doc = r#"{doc}"#]"##,)?;
+                //     }
+                // }
+
+                // variants.push_str(&format!(
+                //     "const {prefix}{name} = {value};",
+                //     name = entry.name.to_upper_camel_case(),
+                //     value = entry.value
+                // ))
+
+                let value: u32 = if let Some(s) = entry.value.strip_prefix("0x") {
+                    u32::from_str_radix(s, 16).expect("Invalid enum value")
+                } else {
+                    entry.value.parse().expect("Invalid enum value")
+                };
+
+                variants.push(quote! { const #name = #value });
+            }
+
+            enums.push(quote! {
+                bitflags::bitflags! {
+                    #(#docs)*
+                    #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+                    pub struct #name: u32 {
+                        #(#variants);*
+                    }
+                }
+
+                impl TryFrom<u32> for #name {
+                    type Error = crate::wire::DecodeError;
+
+                    fn try_from(v: u32) -> Result<Self, Self::Error> {
+                       Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+                    }
+                }
+            })
+        }
+    }
+
+    enums
 }
 
 fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
