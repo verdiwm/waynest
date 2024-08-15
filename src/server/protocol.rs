@@ -15,10 +15,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidObject),
-                    1u32 => Ok(Self::InvalidMethod),
-                    2u32 => Ok(Self::NoMemory),
-                    3u32 => Ok(Self::Implementation),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -421,9 +417,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidFormat),
-                    1u32 => Ok(Self::InvalidStride),
-                    2u32 => Ok(Self::InvalidFd),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -560,129 +553,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Argb8888),
-                    1u32 => Ok(Self::Xrgb8888),
-                    538982467u32 => Ok(Self::C8),
-                    943867730u32 => Ok(Self::Rgb332),
-                    944916290u32 => Ok(Self::Bgr233),
-                    842093144u32 => Ok(Self::Xrgb4444),
-                    842089048u32 => Ok(Self::Xbgr4444),
-                    842094674u32 => Ok(Self::Rgbx4444),
-                    842094658u32 => Ok(Self::Bgrx4444),
-                    842093121u32 => Ok(Self::Argb4444),
-                    842089025u32 => Ok(Self::Abgr4444),
-                    842088786u32 => Ok(Self::Rgba4444),
-                    842088770u32 => Ok(Self::Bgra4444),
-                    892424792u32 => Ok(Self::Xrgb1555),
-                    892420696u32 => Ok(Self::Xbgr1555),
-                    892426322u32 => Ok(Self::Rgbx5551),
-                    892426306u32 => Ok(Self::Bgrx5551),
-                    892424769u32 => Ok(Self::Argb1555),
-                    892420673u32 => Ok(Self::Abgr1555),
-                    892420434u32 => Ok(Self::Rgba5551),
-                    892420418u32 => Ok(Self::Bgra5551),
-                    909199186u32 => Ok(Self::Rgb565),
-                    909199170u32 => Ok(Self::Bgr565),
-                    875710290u32 => Ok(Self::Rgb888),
-                    875710274u32 => Ok(Self::Bgr888),
-                    875709016u32 => Ok(Self::Xbgr8888),
-                    875714642u32 => Ok(Self::Rgbx8888),
-                    875714626u32 => Ok(Self::Bgrx8888),
-                    875708993u32 => Ok(Self::Abgr8888),
-                    875708754u32 => Ok(Self::Rgba8888),
-                    875708738u32 => Ok(Self::Bgra8888),
-                    808669784u32 => Ok(Self::Xrgb2101010),
-                    808665688u32 => Ok(Self::Xbgr2101010),
-                    808671314u32 => Ok(Self::Rgbx1010102),
-                    808671298u32 => Ok(Self::Bgrx1010102),
-                    808669761u32 => Ok(Self::Argb2101010),
-                    808665665u32 => Ok(Self::Abgr2101010),
-                    808665426u32 => Ok(Self::Rgba1010102),
-                    808665410u32 => Ok(Self::Bgra1010102),
-                    1448695129u32 => Ok(Self::Yuyv),
-                    1431918169u32 => Ok(Self::Yvyu),
-                    1498831189u32 => Ok(Self::Uyvy),
-                    1498765654u32 => Ok(Self::Vyuy),
-                    1448433985u32 => Ok(Self::Ayuv),
-                    842094158u32 => Ok(Self::Nv12),
-                    825382478u32 => Ok(Self::Nv21),
-                    909203022u32 => Ok(Self::Nv16),
-                    825644622u32 => Ok(Self::Nv61),
-                    961959257u32 => Ok(Self::Yuv410),
-                    961893977u32 => Ok(Self::Yvu410),
-                    825316697u32 => Ok(Self::Yuv411),
-                    825316953u32 => Ok(Self::Yvu411),
-                    842093913u32 => Ok(Self::Yuv420),
-                    842094169u32 => Ok(Self::Yvu420),
-                    909202777u32 => Ok(Self::Yuv422),
-                    909203033u32 => Ok(Self::Yvu422),
-                    875713881u32 => Ok(Self::Yuv444),
-                    875714137u32 => Ok(Self::Yvu444),
-                    538982482u32 => Ok(Self::R8),
-                    540422482u32 => Ok(Self::R16),
-                    943212370u32 => Ok(Self::Rg88),
-                    943215175u32 => Ok(Self::Gr88),
-                    842221394u32 => Ok(Self::Rg1616),
-                    842224199u32 => Ok(Self::Gr1616),
-                    1211388504u32 => Ok(Self::Xrgb16161616f),
-                    1211384408u32 => Ok(Self::Xbgr16161616f),
-                    1211388481u32 => Ok(Self::Argb16161616f),
-                    1211384385u32 => Ok(Self::Abgr16161616f),
-                    1448434008u32 => Ok(Self::Xyuv8888),
-                    875713878u32 => Ok(Self::Vuy888),
-                    808670550u32 => Ok(Self::Vuy101010),
-                    808530521u32 => Ok(Self::Y210),
-                    842084953u32 => Ok(Self::Y212),
-                    909193817u32 => Ok(Self::Y216),
-                    808531033u32 => Ok(Self::Y410),
-                    842085465u32 => Ok(Self::Y412),
-                    909194329u32 => Ok(Self::Y416),
-                    808670808u32 => Ok(Self::Xvyu2101010),
-                    909334104u32 => Ok(Self::Xvyu1216161616),
-                    942954072u32 => Ok(Self::Xvyu16161616),
-                    810299481u32 => Ok(Self::Y0l0),
-                    810299480u32 => Ok(Self::X0l0),
-                    843853913u32 => Ok(Self::Y0l2),
-                    843853912u32 => Ok(Self::X0l2),
-                    942691673u32 => Ok(Self::Yuv4208bit),
-                    808539481u32 => Ok(Self::Yuv42010bit),
-                    943805016u32 => Ok(Self::Xrgb8888A8),
-                    943800920u32 => Ok(Self::Xbgr8888A8),
-                    943806546u32 => Ok(Self::Rgbx8888A8),
-                    943806530u32 => Ok(Self::Bgrx8888A8),
-                    943798354u32 => Ok(Self::Rgb888A8),
-                    943798338u32 => Ok(Self::Bgr888A8),
-                    943797586u32 => Ok(Self::Rgb565A8),
-                    943797570u32 => Ok(Self::Bgr565A8),
-                    875714126u32 => Ok(Self::Nv24),
-                    842290766u32 => Ok(Self::Nv42),
-                    808530512u32 => Ok(Self::P210),
-                    808530000u32 => Ok(Self::P010),
-                    842084432u32 => Ok(Self::P012),
-                    909193296u32 => Ok(Self::P016),
-                    808534593u32 => Ok(Self::Axbxgxrx106106106106),
-                    892425806u32 => Ok(Self::Nv15),
-                    808531025u32 => Ok(Self::Q410),
-                    825242705u32 => Ok(Self::Q401),
-                    942953048u32 => Ok(Self::Xrgb16161616),
-                    942948952u32 => Ok(Self::Xbgr16161616),
-                    942953025u32 => Ok(Self::Argb16161616),
-                    942948929u32 => Ok(Self::Abgr16161616),
-                    538980675u32 => Ok(Self::C1),
-                    538980931u32 => Ok(Self::C2),
-                    538981443u32 => Ok(Self::C4),
-                    538980676u32 => Ok(Self::D1),
-                    538980932u32 => Ok(Self::D2),
-                    538981444u32 => Ok(Self::D4),
-                    538982468u32 => Ok(Self::D8),
-                    538980690u32 => Ok(Self::R1),
-                    538980946u32 => Ok(Self::R2),
-                    538981458u32 => Ok(Self::R4),
-                    540029266u32 => Ok(Self::R10),
-                    540160338u32 => Ok(Self::R12),
-                    1498764865u32 => Ok(Self::Avuy8888),
-                    1498764888u32 => Ok(Self::Xvuy8888),
-                    808661072u32 => Ok(Self::P030),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -849,10 +719,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidFinish),
-                    1u32 => Ok(Self::InvalidActionMask),
-                    2u32 => Ok(Self::InvalidAction),
-                    3u32 => Ok(Self::InvalidOffer),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -1099,8 +965,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidActionMask),
-                    1u32 => Ok(Self::InvalidSource),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -1305,8 +1169,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Role),
-                    1u32 => Ok(Self::UsedSource),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -1597,7 +1459,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Role),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -1686,10 +1547,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Default),
-                    1u32 => Ok(Self::Scale),
-                    2u32 => Ok(Self::Driver),
-                    3u32 => Ok(Self::Fill),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -2063,11 +1920,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidScale),
-                    1u32 => Ok(Self::InvalidTransform),
-                    2u32 => Ok(Self::InvalidSize),
-                    3u32 => Ok(Self::InvalidOffset),
-                    4u32 => Ok(Self::DefunctRoleObject),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -2648,7 +2500,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::MissingCapability),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -2829,7 +2680,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Role),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -2845,8 +2695,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Released),
-                    1u32 => Ok(Self::Pressed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -2862,8 +2710,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::VerticalScroll),
-                    1u32 => Ok(Self::HorizontalScroll),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -2881,10 +2727,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Wheel),
-                    1u32 => Ok(Self::Finger),
-                    2u32 => Ok(Self::Continuous),
-                    3u32 => Ok(Self::WheelTilt),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -2900,8 +2742,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Identical),
-                    1u32 => Ok(Self::Inverted),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -3295,8 +3135,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::NoKeymap),
-                    1u32 => Ok(Self::XkbV1),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -3312,8 +3150,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Released),
-                    1u32 => Ok(Self::Pressed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -3647,12 +3483,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Unknown),
-                    1u32 => Ok(Self::None),
-                    2u32 => Ok(Self::HorizontalRgb),
-                    3u32 => Ok(Self::HorizontalBgr),
-                    4u32 => Ok(Self::VerticalRgb),
-                    5u32 => Ok(Self::VerticalBgr),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -3674,14 +3504,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Normal),
-                    1u32 => Ok(Self::_90),
-                    2u32 => Ok(Self::_180),
-                    3u32 => Ok(Self::_270),
-                    4u32 => Ok(Self::Flipped),
-                    5u32 => Ok(Self::Flipped90),
-                    6u32 => Ok(Self::Flipped180),
-                    7u32 => Ok(Self::Flipped270),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -3983,8 +3805,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::BadSurface),
-                    1u32 => Ok(Self::BadParent),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -4096,7 +3916,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::BadSurface),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -4546,14 +4365,6 @@ pub mod linux_dmabuf_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::AlreadyUsed),
-                    1u32 => Ok(Self::PlaneIdx),
-                    2u32 => Ok(Self::PlaneSet),
-                    3u32 => Ok(Self::Incomplete),
-                    4u32 => Ok(Self::InvalidFormat),
-                    5u32 => Ok(Self::InvalidDimensions),
-                    6u32 => Ok(Self::OutOfBounds),
-                    7u32 => Ok(Self::InvalidWlBuffer),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -5040,8 +4851,6 @@ pub mod presentation_time {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidTimestamp),
-                    1u32 => Ok(Self::InvalidFlag),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -5503,14 +5312,6 @@ pub mod tablet_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    320u32 => Ok(Self::Pen),
-                    321u32 => Ok(Self::Eraser),
-                    322u32 => Ok(Self::Brush),
-                    323u32 => Ok(Self::Pencil),
-                    324u32 => Ok(Self::Airbrush),
-                    325u32 => Ok(Self::Finger),
-                    326u32 => Ok(Self::Mouse),
-                    327u32 => Ok(Self::Lens),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -5530,12 +5331,6 @@ pub mod tablet_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::Tilt),
-                    2u32 => Ok(Self::Pressure),
-                    3u32 => Ok(Self::Distance),
-                    4u32 => Ok(Self::Rotation),
-                    5u32 => Ok(Self::Slider),
-                    6u32 => Ok(Self::Wheel),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -5551,8 +5346,6 @@ pub mod tablet_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Released),
-                    1u32 => Ok(Self::Pressed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -5567,7 +5360,6 @@ pub mod tablet_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Role),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -6077,7 +5869,6 @@ pub mod tablet_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::Finger),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -6234,7 +6025,6 @@ pub mod tablet_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::Finger),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -6555,8 +6345,6 @@ pub mod tablet_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Released),
-                    1u32 => Ok(Self::Pressed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -6763,7 +6551,6 @@ pub mod viewporter {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::ViewportExists),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -6846,10 +6633,6 @@ pub mod viewporter {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::BadValue),
-                    1u32 => Ok(Self::BadSize),
-                    2u32 => Ok(Self::OutOfBuffer),
-                    3u32 => Ok(Self::NoSurface),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -7015,13 +6798,6 @@ pub mod xdg_shell {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Role),
-                    1u32 => Ok(Self::DefunctSurfaces),
-                    2u32 => Ok(Self::NotTheTopmostPopup),
-                    3u32 => Ok(Self::InvalidPopupParent),
-                    4u32 => Ok(Self::InvalidSurfaceState),
-                    5u32 => Ok(Self::InvalidPositioner),
-                    6u32 => Ok(Self::Unresponsive),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -7164,7 +6940,6 @@ pub mod xdg_shell {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidInput),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -7187,15 +6962,6 @@ pub mod xdg_shell {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::None),
-                    1u32 => Ok(Self::Top),
-                    2u32 => Ok(Self::Bottom),
-                    3u32 => Ok(Self::Left),
-                    4u32 => Ok(Self::Right),
-                    5u32 => Ok(Self::TopLeft),
-                    6u32 => Ok(Self::BottomLeft),
-                    7u32 => Ok(Self::TopRight),
-                    8u32 => Ok(Self::BottomRight),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -7218,15 +6984,6 @@ pub mod xdg_shell {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::None),
-                    1u32 => Ok(Self::Top),
-                    2u32 => Ok(Self::Bottom),
-                    3u32 => Ok(Self::Left),
-                    4u32 => Ok(Self::Right),
-                    5u32 => Ok(Self::TopLeft),
-                    6u32 => Ok(Self::BottomLeft),
-                    7u32 => Ok(Self::TopRight),
-                    8u32 => Ok(Self::BottomRight),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -7483,12 +7240,6 @@ pub mod xdg_shell {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::NotConstructed),
-                    2u32 => Ok(Self::AlreadyConstructed),
-                    3u32 => Ok(Self::UnconfiguredBuffer),
-                    4u32 => Ok(Self::InvalidSerial),
-                    5u32 => Ok(Self::InvalidSize),
-                    6u32 => Ok(Self::DefunctRoleObject),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -7763,9 +7514,6 @@ pub mod xdg_shell {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidResizeEdge),
-                    1u32 => Ok(Self::InvalidParent),
-                    2u32 => Ok(Self::InvalidSize),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -7788,15 +7536,6 @@ pub mod xdg_shell {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::None),
-                    1u32 => Ok(Self::Top),
-                    2u32 => Ok(Self::Bottom),
-                    4u32 => Ok(Self::Left),
-                    5u32 => Ok(Self::TopLeft),
-                    6u32 => Ok(Self::BottomLeft),
-                    8u32 => Ok(Self::Right),
-                    9u32 => Ok(Self::TopRight),
-                    10u32 => Ok(Self::BottomRight),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -7860,15 +7599,6 @@ pub mod xdg_shell {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::Maximized),
-                    2u32 => Ok(Self::Fullscreen),
-                    3u32 => Ok(Self::Resizing),
-                    4u32 => Ok(Self::Activated),
-                    5u32 => Ok(Self::TiledLeft),
-                    6u32 => Ok(Self::TiledRight),
-                    7u32 => Ok(Self::TiledTop),
-                    8u32 => Ok(Self::TiledBottom),
-                    9u32 => Ok(Self::Suspended),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -7886,10 +7616,6 @@ pub mod xdg_shell {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::WindowMenu),
-                    2u32 => Ok(Self::Maximize),
-                    3u32 => Ok(Self::Fullscreen),
-                    4u32 => Ok(Self::Minimize),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -8490,7 +8216,6 @@ pub mod xdg_shell {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidGrab),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -8716,7 +8441,6 @@ pub mod alpha_modifier_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::AlreadyConstructed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -8796,7 +8520,6 @@ pub mod alpha_modifier_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::NoSurface),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -8880,7 +8603,6 @@ pub mod content_type_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::AlreadyConstructed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -8976,10 +8698,6 @@ pub mod content_type_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::None),
-                    1u32 => Ok(Self::Photo),
-                    2u32 => Ok(Self::Video),
-                    3u32 => Ok(Self::Game),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -9176,40 +8894,6 @@ pub mod cursor_shape_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::Default),
-                    2u32 => Ok(Self::ContextMenu),
-                    3u32 => Ok(Self::Help),
-                    4u32 => Ok(Self::Pointer),
-                    5u32 => Ok(Self::Progress),
-                    6u32 => Ok(Self::Wait),
-                    7u32 => Ok(Self::Cell),
-                    8u32 => Ok(Self::Crosshair),
-                    9u32 => Ok(Self::Text),
-                    10u32 => Ok(Self::VerticalText),
-                    11u32 => Ok(Self::Alias),
-                    12u32 => Ok(Self::Copy),
-                    13u32 => Ok(Self::Move),
-                    14u32 => Ok(Self::NoDrop),
-                    15u32 => Ok(Self::NotAllowed),
-                    16u32 => Ok(Self::Grab),
-                    17u32 => Ok(Self::Grabbing),
-                    18u32 => Ok(Self::EResize),
-                    19u32 => Ok(Self::NResize),
-                    20u32 => Ok(Self::NeResize),
-                    21u32 => Ok(Self::NwResize),
-                    22u32 => Ok(Self::SResize),
-                    23u32 => Ok(Self::SeResize),
-                    24u32 => Ok(Self::SwResize),
-                    25u32 => Ok(Self::WResize),
-                    26u32 => Ok(Self::EwResize),
-                    27u32 => Ok(Self::NsResize),
-                    28u32 => Ok(Self::NeswResize),
-                    29u32 => Ok(Self::NwseResize),
-                    30u32 => Ok(Self::ColResize),
-                    31u32 => Ok(Self::RowResize),
-                    32u32 => Ok(Self::AllScroll),
-                    33u32 => Ok(Self::ZoomIn),
-                    34u32 => Ok(Self::ZoomOut),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -9224,7 +8908,6 @@ pub mod cursor_shape_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::InvalidShape),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -9559,9 +9242,6 @@ pub mod drm_lease_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::WrongDevice),
-                    1u32 => Ok(Self::DuplicateConnector),
-                    2u32 => Ok(Self::EmptyLease),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -10198,11 +9878,6 @@ pub mod ext_session_lock_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidDestroy),
-                    1u32 => Ok(Self::InvalidUnlock),
-                    2u32 => Ok(Self::Role),
-                    3u32 => Ok(Self::DuplicateOutput),
-                    4u32 => Ok(Self::AlreadyConstructed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -10421,10 +10096,6 @@ pub mod ext_session_lock_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::CommitBeforeFirstAck),
-                    1u32 => Ok(Self::NullBuffer),
-                    2u32 => Ok(Self::DimensionsMismatch),
-                    3u32 => Ok(Self::InvalidSerial),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -10704,7 +10375,6 @@ pub mod fractional_scale_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::FractionalScaleExists),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -10857,8 +10527,6 @@ pub mod linux_drm_syncobj_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::SurfaceExists),
-                    1u32 => Ok(Self::InvalidTimeline),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -11011,12 +10679,6 @@ pub mod linux_drm_syncobj_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::NoSurface),
-                    2u32 => Ok(Self::UnsupportedBuffer),
-                    3u32 => Ok(Self::NoBuffer),
-                    4u32 => Ok(Self::NoAcquirePoint),
-                    5u32 => Ok(Self::NoReleasePoint),
-                    6u32 => Ok(Self::ConflictingPoints),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -11209,8 +10871,6 @@ pub mod security_context_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::InvalidListenFd),
-                    2u32 => Ok(Self::Nested),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -11317,9 +10977,6 @@ pub mod security_context_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::AlreadyUsed),
-                    2u32 => Ok(Self::AlreadySet),
-                    3u32 => Ok(Self::InvalidMetadata),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -11568,7 +11225,6 @@ pub mod tearing_control_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::TearingControlExists),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -11667,8 +11323,6 @@ pub mod tearing_control_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Vsync),
-                    1u32 => Ok(Self::Async),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -11871,7 +11525,6 @@ pub mod xdg_activation_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::AlreadyUsed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -12025,7 +11678,6 @@ pub mod xdg_dialog_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::AlreadyUsed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -12186,7 +11838,6 @@ pub mod xdg_toplevel_drag_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidSource),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -12303,8 +11954,6 @@ pub mod xdg_toplevel_drag_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::ToplevelAttached),
-                    1u32 => Ok(Self::OngoingDrag),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -12420,7 +12069,6 @@ pub mod xwayland_shell_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Role),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -12515,8 +12163,6 @@ pub mod xwayland_shell_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::AlreadyAssociated),
-                    1u32 => Ok(Self::InvalidSerial),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -12610,8 +12256,6 @@ pub mod fullscreen_shell_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::ArbitraryModes),
-                    2u32 => Ok(Self::CursorPlane),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -12630,11 +12274,6 @@ pub mod fullscreen_shell_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Default),
-                    1u32 => Ok(Self::Center),
-                    2u32 => Ok(Self::Zoom),
-                    3u32 => Ok(Self::ZoomCrop),
-                    4u32 => Ok(Self::Stretch),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -12650,8 +12289,6 @@ pub mod fullscreen_shell_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidMethod),
-                    1u32 => Ok(Self::Role),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -13544,7 +13181,6 @@ pub mod input_method_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::CenterBottom),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -13838,7 +13474,6 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::AlreadyInhibited),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -14244,14 +13879,6 @@ pub mod linux_dmabuf_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::AlreadyUsed),
-                    1u32 => Ok(Self::PlaneIdx),
-                    2u32 => Ok(Self::PlaneSet),
-                    3u32 => Ok(Self::Incomplete),
-                    4u32 => Ok(Self::InvalidFormat),
-                    5u32 => Ok(Self::InvalidDimensions),
-                    6u32 => Ok(Self::OutOfBounds),
-                    7u32 => Ok(Self::InvalidWlBuffer),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -14737,7 +14364,6 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::SynchronizationExists),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -14847,12 +14473,6 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidFence),
-                    1u32 => Ok(Self::DuplicateFence),
-                    2u32 => Ok(Self::DuplicateRelease),
-                    3u32 => Ok(Self::NoSurface),
-                    4u32 => Ok(Self::UnsupportedBuffer),
-                    5u32 => Ok(Self::NoBuffer),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -15107,7 +14727,6 @@ pub mod pointer_constraints_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::AlreadyConstrained),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -15131,8 +14750,6 @@ pub mod pointer_constraints_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::Oneshot),
-                    2u32 => Ok(Self::Persistent),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -16618,14 +16235,6 @@ pub mod tablet_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    320u32 => Ok(Self::Pen),
-                    321u32 => Ok(Self::Eraser),
-                    322u32 => Ok(Self::Brush),
-                    323u32 => Ok(Self::Pencil),
-                    324u32 => Ok(Self::Airbrush),
-                    325u32 => Ok(Self::Finger),
-                    326u32 => Ok(Self::Mouse),
-                    327u32 => Ok(Self::Lens),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -16645,12 +16254,6 @@ pub mod tablet_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::Tilt),
-                    2u32 => Ok(Self::Pressure),
-                    3u32 => Ok(Self::Distance),
-                    4u32 => Ok(Self::Rotation),
-                    5u32 => Ok(Self::Slider),
-                    6u32 => Ok(Self::Wheel),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -16666,8 +16269,6 @@ pub mod tablet_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Released),
-                    1u32 => Ok(Self::Pressed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -16682,7 +16283,6 @@ pub mod tablet_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Role),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -17408,14 +17008,6 @@ pub mod tablet_unstable_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    320u32 => Ok(Self::Pen),
-                    321u32 => Ok(Self::Eraser),
-                    322u32 => Ok(Self::Brush),
-                    323u32 => Ok(Self::Pencil),
-                    324u32 => Ok(Self::Airbrush),
-                    325u32 => Ok(Self::Finger),
-                    326u32 => Ok(Self::Mouse),
-                    327u32 => Ok(Self::Lens),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -17435,12 +17027,6 @@ pub mod tablet_unstable_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::Tilt),
-                    2u32 => Ok(Self::Pressure),
-                    3u32 => Ok(Self::Distance),
-                    4u32 => Ok(Self::Rotation),
-                    5u32 => Ok(Self::Slider),
-                    6u32 => Ok(Self::Wheel),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -17456,8 +17042,6 @@ pub mod tablet_unstable_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Released),
-                    1u32 => Ok(Self::Pressed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -17472,7 +17056,6 @@ pub mod tablet_unstable_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Role),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -17982,7 +17565,6 @@ pub mod tablet_unstable_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::Finger),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -18139,7 +17721,6 @@ pub mod tablet_unstable_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::Finger),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -18460,8 +18041,6 @@ pub mod tablet_unstable_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Released),
-                    1u32 => Ok(Self::Pressed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -18687,19 +18266,6 @@ pub mod text_input_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Normal),
-                    1u32 => Ok(Self::Alpha),
-                    2u32 => Ok(Self::Digits),
-                    3u32 => Ok(Self::Number),
-                    4u32 => Ok(Self::Phone),
-                    5u32 => Ok(Self::Url),
-                    6u32 => Ok(Self::Email),
-                    7u32 => Ok(Self::Name),
-                    8u32 => Ok(Self::Password),
-                    9u32 => Ok(Self::Date),
-                    10u32 => Ok(Self::Time),
-                    11u32 => Ok(Self::Datetime),
-                    12u32 => Ok(Self::Terminal),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -18721,14 +18287,6 @@ pub mod text_input_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Default),
-                    1u32 => Ok(Self::None),
-                    2u32 => Ok(Self::Active),
-                    3u32 => Ok(Self::Inactive),
-                    4u32 => Ok(Self::Highlight),
-                    5u32 => Ok(Self::Underline),
-                    6u32 => Ok(Self::Selection),
-                    7u32 => Ok(Self::Incorrect),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -18745,9 +18303,6 @@ pub mod text_input_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Auto),
-                    1u32 => Ok(Self::Ltr),
-                    2u32 => Ok(Self::Rtl),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -19225,8 +18780,6 @@ pub mod text_input_unstable_v3 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InputMethod),
-                    1u32 => Ok(Self::Other),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -19261,20 +18814,6 @@ pub mod text_input_unstable_v3 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Normal),
-                    1u32 => Ok(Self::Alpha),
-                    2u32 => Ok(Self::Digits),
-                    3u32 => Ok(Self::Number),
-                    4u32 => Ok(Self::Phone),
-                    5u32 => Ok(Self::Url),
-                    6u32 => Ok(Self::Email),
-                    7u32 => Ok(Self::Name),
-                    8u32 => Ok(Self::Password),
-                    9u32 => Ok(Self::Pin),
-                    10u32 => Ok(Self::Date),
-                    11u32 => Ok(Self::Time),
-                    12u32 => Ok(Self::Datetime),
-                    13u32 => Ok(Self::Terminal),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -19848,9 +19387,6 @@ pub mod xdg_decoration_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::UnconfiguredBuffer),
-                    1u32 => Ok(Self::AlreadyConstructed),
-                    2u32 => Ok(Self::Orphaned),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -19866,8 +19402,6 @@ pub mod xdg_decoration_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::ClientSide),
-                    2u32 => Ok(Self::ServerSide),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -20283,7 +19817,6 @@ pub mod xdg_foreign_unstable_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidSurface),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -20474,7 +20007,6 @@ pub mod xdg_foreign_unstable_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidSurface),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -20809,7 +20341,6 @@ pub mod xdg_shell_unstable_v5 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    5u32 => Ok(Self::Current),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -20827,10 +20358,6 @@ pub mod xdg_shell_unstable_v5 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Role),
-                    1u32 => Ok(Self::DefunctSurfaces),
-                    2u32 => Ok(Self::NotTheTopmostPopup),
-                    3u32 => Ok(Self::InvalidPopupParent),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -21014,15 +20541,6 @@ pub mod xdg_shell_unstable_v5 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::None),
-                    1u32 => Ok(Self::Top),
-                    2u32 => Ok(Self::Bottom),
-                    4u32 => Ok(Self::Left),
-                    5u32 => Ok(Self::TopLeft),
-                    6u32 => Ok(Self::BottomLeft),
-                    8u32 => Ok(Self::Right),
-                    9u32 => Ok(Self::TopRight),
-                    10u32 => Ok(Self::BottomRight),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -21051,10 +20569,6 @@ pub mod xdg_shell_unstable_v5 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::Maximized),
-                    2u32 => Ok(Self::Fullscreen),
-                    3u32 => Ok(Self::Resizing),
-                    4u32 => Ok(Self::Activated),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -21651,12 +21165,6 @@ pub mod xdg_shell_unstable_v6 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Role),
-                    1u32 => Ok(Self::DefunctSurfaces),
-                    2u32 => Ok(Self::NotTheTopmostPopup),
-                    3u32 => Ok(Self::InvalidPopupParent),
-                    4u32 => Ok(Self::InvalidSurfaceState),
-                    5u32 => Ok(Self::InvalidPositioner),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -21793,7 +21301,6 @@ pub mod xdg_shell_unstable_v6 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidInput),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -22021,9 +21528,6 @@ pub mod xdg_shell_unstable_v6 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::NotConstructed),
-                    2u32 => Ok(Self::AlreadyConstructed),
-                    3u32 => Ok(Self::UnconfiguredBuffer),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -22265,15 +21769,6 @@ pub mod xdg_shell_unstable_v6 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::None),
-                    1u32 => Ok(Self::Top),
-                    2u32 => Ok(Self::Bottom),
-                    4u32 => Ok(Self::Left),
-                    5u32 => Ok(Self::TopLeft),
-                    6u32 => Ok(Self::BottomLeft),
-                    8u32 => Ok(Self::Right),
-                    9u32 => Ok(Self::TopRight),
-                    10u32 => Ok(Self::BottomRight),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -22304,10 +21799,6 @@ pub mod xdg_shell_unstable_v6 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::Maximized),
-                    2u32 => Ok(Self::Fullscreen),
-                    3u32 => Ok(Self::Resizing),
-                    4u32 => Ok(Self::Activated),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -22798,7 +22289,6 @@ pub mod xdg_shell_unstable_v6 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidGrab),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -23061,7 +22551,6 @@ pub mod wlr_data_control_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::UsedSource),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -23220,7 +22709,6 @@ pub mod wlr_data_control_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::InvalidOffer),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -23460,7 +22948,6 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::Transient),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -23477,9 +22964,6 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Temporary),
-                    1u32 => Ok(Self::Permanent),
-                    2u32 => Ok(Self::Resizing),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -23676,10 +23160,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Maximized),
-                    1u32 => Ok(Self::Minimized),
-                    2u32 => Ok(Self::Activated),
-                    3u32 => Ok(Self::Fullscreen),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -23694,7 +23174,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidRectangle),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -24066,7 +23545,6 @@ pub mod wlr_gamma_control_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::InvalidGamma),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -24168,7 +23646,6 @@ pub mod wlr_input_inhibit_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::AlreadyInhibited),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -24279,9 +23756,6 @@ pub mod wlr_layer_shell_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Role),
-                    1u32 => Ok(Self::InvalidLayer),
-                    2u32 => Ok(Self::AlreadyConstructed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -24299,10 +23773,6 @@ pub mod wlr_layer_shell_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Background),
-                    1u32 => Ok(Self::Bottom),
-                    2u32 => Ok(Self::Top),
-                    3u32 => Ok(Self::Overlay),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -24450,9 +23920,6 @@ pub mod wlr_layer_shell_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::None),
-                    1u32 => Ok(Self::Exclusive),
-                    2u32 => Ok(Self::OnDemand),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -24471,11 +23938,6 @@ pub mod wlr_layer_shell_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidSurfaceState),
-                    1u32 => Ok(Self::InvalidSize),
-                    2u32 => Ok(Self::InvalidAnchor),
-                    3u32 => Ok(Self::InvalidKeyboardInteractivity),
-                    4u32 => Ok(Self::InvalidExclusiveEdge),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -24942,8 +24404,6 @@ pub mod wlr_output_management_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Disabled),
-                    1u32 => Ok(Self::Enabled),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -25291,9 +24751,6 @@ pub mod wlr_output_management_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::AlreadyConfiguredHead),
-                    2u32 => Ok(Self::UnconfiguredHead),
-                    3u32 => Ok(Self::AlreadyUsed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -25482,12 +24939,6 @@ pub mod wlr_output_management_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::AlreadySet),
-                    2u32 => Ok(Self::InvalidMode),
-                    3u32 => Ok(Self::InvalidCustomMode),
-                    4u32 => Ok(Self::InvalidTransform),
-                    5u32 => Ok(Self::InvalidScale),
-                    6u32 => Ok(Self::InvalidAdaptiveSyncState),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -25716,8 +25167,6 @@ pub mod wlr_output_power_management_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Off),
-                    1u32 => Ok(Self::On),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -25732,7 +25181,6 @@ pub mod wlr_output_power_management_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    1u32 => Ok(Self::InvalidMode),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -25940,8 +25388,6 @@ pub mod wlr_screencopy_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::AlreadyUsed),
-                    1u32 => Ok(Self::InvalidBuffer),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -26145,8 +25591,6 @@ pub mod wlr_virtual_pointer_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidAxis),
-                    1u32 => Ok(Self::InvalidAxisSource),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
