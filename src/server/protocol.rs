@@ -1,8 +1,6 @@
 #![allow(unused)]
 #![allow(async_fn_in_trait)]
 pub mod wayland {
-    #[doc = "The core global object.  This is a special singleton object.  It"]
-    #[doc = "is used for internal Wayland protocol features."]
     pub mod wl_display {
         #[doc = "These errors are global and can be emitted in response to any"]
         #[doc = "server request."]
@@ -31,7 +29,8 @@ pub mod wayland {
                 }
             }
         }
-        #[doc = "Trait to implement the wl_display interface. See the module level documentation for more info"]
+        #[doc = "The core global object.  This is a special singleton object.  It"]
+        #[doc = "is used for internal Wayland protocol features."]
         pub trait WlDisplay: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_display";
             const VERSION: u32 = 1u32;
@@ -151,28 +150,27 @@ pub mod wayland {
             }
         }
     }
-    #[doc = "The singleton global registry object.  The server has a number of"]
-    #[doc = "global objects that are available to all clients.  These objects"]
-    #[doc = "typically represent an actual object in the server (for example,"]
-    #[doc = "an input device) or they are singleton objects that provide"]
-    #[doc = "extension functionality."]
-    #[doc = ""]
-    #[doc = "When a client creates a registry object, the registry object"]
-    #[doc = "will emit a global event for each global currently in the"]
-    #[doc = "registry.  Globals come and go as a result of device or"]
-    #[doc = "monitor hotplugs, reconfiguration or other events, and the"]
-    #[doc = "registry will send out global and global_remove events to"]
-    #[doc = "keep the client up to date with the changes.  To mark the end"]
-    #[doc = "of the initial burst of events, the client can use the"]
-    #[doc = "wl_display.sync request immediately after calling"]
-    #[doc = "wl_display.get_registry."]
-    #[doc = ""]
-    #[doc = "A client can bind to a global object by using the bind"]
-    #[doc = "request.  This creates a client-side handle that lets the object"]
-    #[doc = "emit events to the client and lets the client invoke requests on"]
-    #[doc = "the object."]
     pub mod wl_registry {
-        #[doc = "Trait to implement the wl_registry interface. See the module level documentation for more info"]
+        #[doc = "The singleton global registry object.  The server has a number of"]
+        #[doc = "global objects that are available to all clients.  These objects"]
+        #[doc = "typically represent an actual object in the server (for example,"]
+        #[doc = "an input device) or they are singleton objects that provide"]
+        #[doc = "extension functionality."]
+        #[doc = ""]
+        #[doc = "When a client creates a registry object, the registry object"]
+        #[doc = "will emit a global event for each global currently in the"]
+        #[doc = "registry.  Globals come and go as a result of device or"]
+        #[doc = "monitor hotplugs, reconfiguration or other events, and the"]
+        #[doc = "registry will send out global and global_remove events to"]
+        #[doc = "keep the client up to date with the changes.  To mark the end"]
+        #[doc = "of the initial burst of events, the client can use the"]
+        #[doc = "wl_display.sync request immediately after calling"]
+        #[doc = "wl_display.get_registry."]
+        #[doc = ""]
+        #[doc = "A client can bind to a global object by using the bind"]
+        #[doc = "request.  This creates a client-side handle that lets the object"]
+        #[doc = "emit events to the client and lets the client invoke requests on"]
+        #[doc = "the object."]
         pub trait WlRegistry: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_registry";
             const VERSION: u32 = 1u32;
@@ -255,13 +253,12 @@ pub mod wayland {
             }
         }
     }
-    #[doc = "Clients can handle the 'done' event to get notified when"]
-    #[doc = "the related request is done."]
-    #[doc = ""]
-    #[doc = "Note, because wl_callback objects are created from multiple independent"]
-    #[doc = "factory interfaces, the wl_callback interface is frozen at version 1."]
     pub mod wl_callback {
-        #[doc = "Trait to implement the wl_callback interface. See the module level documentation for more info"]
+        #[doc = "Clients can handle the 'done' event to get notified when"]
+        #[doc = "the related request is done."]
+        #[doc = ""]
+        #[doc = "Note, because wl_callback objects are created from multiple independent"]
+        #[doc = "factory interfaces, the wl_callback interface is frozen at version 1."]
         pub trait WlCallback: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_callback";
             const VERSION: u32 = 1u32;
@@ -299,11 +296,10 @@ pub mod wayland {
             }
         }
     }
-    #[doc = "A compositor.  This object is a singleton global.  The"]
-    #[doc = "compositor is in charge of combining the contents of multiple"]
-    #[doc = "surfaces into one displayable output."]
     pub mod wl_compositor {
-        #[doc = "Trait to implement the wl_compositor interface. See the module level documentation for more info"]
+        #[doc = "A compositor.  This object is a singleton global.  The"]
+        #[doc = "compositor is in charge of combining the contents of multiple"]
+        #[doc = "surfaces into one displayable output."]
         pub trait WlCompositor: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_compositor";
             const VERSION: u32 = 6u32;
@@ -361,15 +357,14 @@ pub mod wayland {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "The wl_shm_pool object encapsulates a piece of memory shared"]
-    #[doc = "between the compositor and client.  Through the wl_shm_pool"]
-    #[doc = "object, the client can allocate shared memory wl_buffer objects."]
-    #[doc = "All objects created through the same pool share the same"]
-    #[doc = "underlying mapped memory. Reusing the mapped memory avoids the"]
-    #[doc = "setup/teardown overhead and is useful when interactively resizing"]
-    #[doc = "a surface or for many small buffers."]
     pub mod wl_shm_pool {
-        #[doc = "Trait to implement the wl_shm_pool interface. See the module level documentation for more info"]
+        #[doc = "The wl_shm_pool object encapsulates a piece of memory shared"]
+        #[doc = "between the compositor and client.  Through the wl_shm_pool"]
+        #[doc = "object, the client can allocate shared memory wl_buffer objects."]
+        #[doc = "All objects created through the same pool share the same"]
+        #[doc = "underlying mapped memory. Reusing the mapped memory avoids the"]
+        #[doc = "setup/teardown overhead and is useful when interactively resizing"]
+        #[doc = "a surface or for many small buffers."]
         pub trait WlShmPool: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_shm_pool";
             const VERSION: u32 = 2u32;
@@ -463,15 +458,6 @@ pub mod wayland {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "A singleton global object that provides support for shared"]
-    #[doc = "memory."]
-    #[doc = ""]
-    #[doc = "Clients can create wl_shm_pool objects using the create_pool"]
-    #[doc = "request."]
-    #[doc = ""]
-    #[doc = "On binding the wl_shm object one or more format events"]
-    #[doc = "are emitted to inform clients about the valid pixel formats"]
-    #[doc = "that can be used for buffers."]
     pub mod wl_shm {
         #[doc = "These errors can be emitted in response to wl_shm requests."]
         #[repr(u32)]
@@ -878,7 +864,15 @@ pub mod wayland {
                 }
             }
         }
-        #[doc = "Trait to implement the wl_shm interface. See the module level documentation for more info"]
+        #[doc = "A singleton global object that provides support for shared"]
+        #[doc = "memory."]
+        #[doc = ""]
+        #[doc = "Clients can create wl_shm_pool objects using the create_pool"]
+        #[doc = "request."]
+        #[doc = ""]
+        #[doc = "On binding the wl_shm object one or more format events"]
+        #[doc = "are emitted to inform clients about the valid pixel formats"]
+        #[doc = "that can be used for buffers."]
         pub trait WlShm: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_shm";
             const VERSION: u32 = 2u32;
@@ -957,23 +951,22 @@ pub mod wayland {
             }
         }
     }
-    #[doc = "A buffer provides the content for a wl_surface. Buffers are"]
-    #[doc = "created through factory interfaces such as wl_shm, wp_linux_buffer_params"]
-    #[doc = "(from the linux-dmabuf protocol extension) or similar. It has a width and"]
-    #[doc = "a height and can be attached to a wl_surface, but the mechanism by which a"]
-    #[doc = "client provides and updates the contents is defined by the buffer factory"]
-    #[doc = "interface."]
-    #[doc = ""]
-    #[doc = "Color channels are assumed to be electrical rather than optical (in other"]
-    #[doc = "words, encoded with a transfer function) unless otherwise specified. If"]
-    #[doc = "the buffer uses a format that has an alpha channel, the alpha channel is"]
-    #[doc = "assumed to be premultiplied into the electrical color channel values"]
-    #[doc = "(after transfer function encoding) unless otherwise specified."]
-    #[doc = ""]
-    #[doc = "Note, because wl_buffer objects are created from multiple independent"]
-    #[doc = "factory interfaces, the wl_buffer interface is frozen at version 1."]
     pub mod wl_buffer {
-        #[doc = "Trait to implement the wl_buffer interface. See the module level documentation for more info"]
+        #[doc = "A buffer provides the content for a wl_surface. Buffers are"]
+        #[doc = "created through factory interfaces such as wl_shm, wp_linux_buffer_params"]
+        #[doc = "(from the linux-dmabuf protocol extension) or similar. It has a width and"]
+        #[doc = "a height and can be attached to a wl_surface, but the mechanism by which a"]
+        #[doc = "client provides and updates the contents is defined by the buffer factory"]
+        #[doc = "interface."]
+        #[doc = ""]
+        #[doc = "Color channels are assumed to be electrical rather than optical (in other"]
+        #[doc = "words, encoded with a transfer function) unless otherwise specified. If"]
+        #[doc = "the buffer uses a format that has an alpha channel, the alpha channel is"]
+        #[doc = "assumed to be premultiplied into the electrical color channel values"]
+        #[doc = "(after transfer function encoding) unless otherwise specified."]
+        #[doc = ""]
+        #[doc = "Note, because wl_buffer objects are created from multiple independent"]
+        #[doc = "factory interfaces, the wl_buffer interface is frozen at version 1."]
         pub trait WlBuffer: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_buffer";
             const VERSION: u32 = 1u32;
@@ -1032,12 +1025,6 @@ pub mod wayland {
             }
         }
     }
-    #[doc = "A wl_data_offer represents a piece of data offered for transfer"]
-    #[doc = "by another client (the source client).  It is used by the"]
-    #[doc = "copy-and-paste and drag-and-drop mechanisms.  The offer"]
-    #[doc = "describes the different mime types that the data can be"]
-    #[doc = "converted to and provides the mechanism for transferring the"]
-    #[doc = "data directly from the source client."]
     pub mod wl_data_offer {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1064,7 +1051,12 @@ pub mod wayland {
                 }
             }
         }
-        #[doc = "Trait to implement the wl_data_offer interface. See the module level documentation for more info"]
+        #[doc = "A wl_data_offer represents a piece of data offered for transfer"]
+        #[doc = "by another client (the source client).  It is used by the"]
+        #[doc = "copy-and-paste and drag-and-drop mechanisms.  The offer"]
+        #[doc = "describes the different mime types that the data can be"]
+        #[doc = "converted to and provides the mechanism for transferring the"]
+        #[doc = "data directly from the source client."]
         pub trait WlDataOffer: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_data_offer";
             const VERSION: u32 = 3u32;
@@ -1313,10 +1305,6 @@ pub mod wayland {
             }
         }
     }
-    #[doc = "The wl_data_source object is the source side of a wl_data_offer."]
-    #[doc = "It is created by the source client in a data transfer and"]
-    #[doc = "provides a way to describe the offered data and a way to respond"]
-    #[doc = "to requests to transfer the data."]
     pub mod wl_data_source {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1337,7 +1325,10 @@ pub mod wayland {
                 }
             }
         }
-        #[doc = "Trait to implement the wl_data_source interface. See the module level documentation for more info"]
+        #[doc = "The wl_data_source object is the source side of a wl_data_offer."]
+        #[doc = "It is created by the source client in a data transfer and"]
+        #[doc = "provides a way to describe the offered data and a way to respond"]
+        #[doc = "to requests to transfer the data."]
         pub trait WlDataSource: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_data_source";
             const VERSION: u32 = 3u32;
@@ -1563,11 +1554,6 @@ pub mod wayland {
             }
         }
     }
-    #[doc = "There is one wl_data_device per seat which can be obtained"]
-    #[doc = "from the global wl_data_device_manager singleton."]
-    #[doc = ""]
-    #[doc = "A wl_data_device provides access to inter-client data transfer"]
-    #[doc = "mechanisms such as copy-and-paste and drag-and-drop."]
     pub mod wl_data_device {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1588,7 +1574,11 @@ pub mod wayland {
                 }
             }
         }
-        #[doc = "Trait to implement the wl_data_device interface. See the module level documentation for more info"]
+        #[doc = "There is one wl_data_device per seat which can be obtained"]
+        #[doc = "from the global wl_data_device_manager singleton."]
+        #[doc = ""]
+        #[doc = "A wl_data_device provides access to inter-client data transfer"]
+        #[doc = "mechanisms such as copy-and-paste and drag-and-drop."]
         pub trait WlDataDevice: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_data_device";
             const VERSION: u32 = 3u32;
@@ -1829,16 +1819,6 @@ pub mod wayland {
             }
         }
     }
-    #[doc = "The wl_data_device_manager is a singleton global object that"]
-    #[doc = "provides access to inter-client data transfer mechanisms such as"]
-    #[doc = "copy-and-paste and drag-and-drop.  These mechanisms are tied to"]
-    #[doc = "a wl_seat and this interface lets a client get a wl_data_device"]
-    #[doc = "corresponding to a wl_seat."]
-    #[doc = ""]
-    #[doc = "Depending on the version bound, the objects created from the bound"]
-    #[doc = "wl_data_device_manager object will have different requirements for"]
-    #[doc = "functioning properly. See wl_data_source.set_actions,"]
-    #[doc = "wl_data_offer.accept and wl_data_offer.finish for details."]
     pub mod wl_data_device_manager {
         bitflags::bitflags! { # [doc = "This is a bitmask of the available/preferred actions in a"] # [doc = "drag-and-drop operation."] # [doc = ""] # [doc = "In the compositor, the selected action is a result of matching the"] # [doc = "actions offered by the source and destination sides.  \"action\" events"] # [doc = "with a \"none\" action will be sent to both source and destination if"] # [doc = "there is no match. All further checks will effectively happen on"] # [doc = "(source actions ∩ destination actions)."] # [doc = ""] # [doc = "In addition, compositors may also pick different actions in"] # [doc = "reaction to key modifiers being pressed. One common design that"] # [doc = "is used in major toolkits (and the behavior recommended for"] # [doc = "compositors) is:"] # [doc = ""] # [doc = "- If no modifiers are pressed, the first match (in bit order)"] # [doc = "will be used."] # [doc = "- Pressing Shift selects \"move\", if enabled in the mask."] # [doc = "- Pressing Control selects \"copy\", if enabled in the mask."] # [doc = ""] # [doc = "Behavior beyond that is considered implementation-dependent."] # [doc = "Compositors may for example bind other modifiers (like Alt/Meta)"] # [doc = "or drags initiated with other buttons than BTN_LEFT to specific"] # [doc = "actions (e.g. \"ask\")."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct DndAction : u32 { # [doc = "no action"] const None = 0u32 ; # [doc = "copy action"] const Copy = 1u32 ; # [doc = "move action"] const Move = 2u32 ; # [doc = "ask action"] const Ask = 4u32 ; } }
         impl TryFrom<u32> for DndAction {
@@ -1847,7 +1827,16 @@ pub mod wayland {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
-        #[doc = "Trait to implement the wl_data_device_manager interface. See the module level documentation for more info"]
+        #[doc = "The wl_data_device_manager is a singleton global object that"]
+        #[doc = "provides access to inter-client data transfer mechanisms such as"]
+        #[doc = "copy-and-paste and drag-and-drop.  These mechanisms are tied to"]
+        #[doc = "a wl_seat and this interface lets a client get a wl_data_device"]
+        #[doc = "corresponding to a wl_seat."]
+        #[doc = ""]
+        #[doc = "Depending on the version bound, the objects created from the bound"]
+        #[doc = "wl_data_device_manager object will have different requirements for"]
+        #[doc = "functioning properly. See wl_data_source.set_actions,"]
+        #[doc = "wl_data_offer.accept and wl_data_offer.finish for details."]
         pub trait WlDataDeviceManager: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_data_device_manager";
             const VERSION: u32 = 3u32;
@@ -1912,15 +1901,6 @@ pub mod wayland {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "This interface is implemented by servers that provide"]
-    #[doc = "desktop-style user interfaces."]
-    #[doc = ""]
-    #[doc = "It allows clients to associate a wl_shell_surface with"]
-    #[doc = "a basic surface."]
-    #[doc = ""]
-    #[doc = "Note! This protocol is deprecated and not intended for production use."]
-    #[doc = "For desktop-style user interfaces, use xdg_shell. Compositors and clients"]
-    #[doc = "should not implement this interface."]
     pub mod wl_shell {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1938,7 +1918,15 @@ pub mod wayland {
                 }
             }
         }
-        #[doc = "Trait to implement the wl_shell interface. See the module level documentation for more info"]
+        #[doc = "This interface is implemented by servers that provide"]
+        #[doc = "desktop-style user interfaces."]
+        #[doc = ""]
+        #[doc = "It allows clients to associate a wl_shell_surface with"]
+        #[doc = "a basic surface."]
+        #[doc = ""]
+        #[doc = "Note! This protocol is deprecated and not intended for production use."]
+        #[doc = "For desktop-style user interfaces, use xdg_shell. Compositors and clients"]
+        #[doc = "should not implement this interface."]
         pub trait WlShell: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_shell";
             const VERSION: u32 = 1u32;
@@ -1986,17 +1974,6 @@ pub mod wayland {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An interface that may be implemented by a wl_surface, for"]
-    #[doc = "implementations that provide a desktop-style user interface."]
-    #[doc = ""]
-    #[doc = "It provides requests to treat surfaces like toplevel, fullscreen"]
-    #[doc = "or popup windows, move, resize or maximize them, associate"]
-    #[doc = "metadata like title and class, etc."]
-    #[doc = ""]
-    #[doc = "On the server side the object is automatically destroyed when"]
-    #[doc = "the related wl_surface is destroyed. On the client side,"]
-    #[doc = "wl_shell_surface_destroy() must be called before destroying"]
-    #[doc = "the wl_surface object."]
     pub mod wl_shell_surface {
         bitflags::bitflags! { # [doc = "These values are used to indicate which edge of a surface"] # [doc = "is being dragged in a resize operation. The server may"] # [doc = "use this information to adapt its behavior, e.g. choose"] # [doc = "an appropriate cursor image."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Resize : u32 { # [doc = "no edge"] const None = 0u32 ; # [doc = "top edge"] const Top = 1u32 ; # [doc = "bottom edge"] const Bottom = 2u32 ; # [doc = "left edge"] const Left = 4u32 ; # [doc = "top and left edges"] const TopLeft = 5u32 ; # [doc = "bottom and left edges"] const BottomLeft = 6u32 ; # [doc = "right edge"] const Right = 8u32 ; # [doc = "top and right edges"] const TopRight = 9u32 ; # [doc = "bottom and right edges"] const BottomRight = 10u32 ; } }
         impl TryFrom<u32> for Resize {
@@ -2040,7 +2017,17 @@ pub mod wayland {
                 }
             }
         }
-        #[doc = "Trait to implement the wl_shell_surface interface. See the module level documentation for more info"]
+        #[doc = "An interface that may be implemented by a wl_surface, for"]
+        #[doc = "implementations that provide a desktop-style user interface."]
+        #[doc = ""]
+        #[doc = "It provides requests to treat surfaces like toplevel, fullscreen"]
+        #[doc = "or popup windows, move, resize or maximize them, associate"]
+        #[doc = "metadata like title and class, etc."]
+        #[doc = ""]
+        #[doc = "On the server side the object is automatically destroyed when"]
+        #[doc = "the related wl_surface is destroyed. On the client side,"]
+        #[doc = "wl_shell_surface_destroy() must be called before destroying"]
+        #[doc = "the wl_surface object."]
         pub trait WlShellSurface: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_shell_surface";
             const VERSION: u32 = 1u32;
@@ -2407,48 +2394,6 @@ pub mod wayland {
             }
         }
     }
-    #[doc = "A surface is a rectangular area that may be displayed on zero"]
-    #[doc = "or more outputs, and shown any number of times at the compositor's"]
-    #[doc = "discretion. They can present wl_buffers, receive user input, and"]
-    #[doc = "define a local coordinate system."]
-    #[doc = ""]
-    #[doc = "The size of a surface (and relative positions on it) is described"]
-    #[doc = "in surface-local coordinates, which may differ from the buffer"]
-    #[doc = "coordinates of the pixel content, in case a buffer_transform"]
-    #[doc = "or a buffer_scale is used."]
-    #[doc = ""]
-    #[doc = "A surface without a \"role\" is fairly useless: a compositor does"]
-    #[doc = "not know where, when or how to present it. The role is the"]
-    #[doc = "purpose of a wl_surface. Examples of roles are a cursor for a"]
-    #[doc = "pointer (as set by wl_pointer.set_cursor), a drag icon"]
-    #[doc = "(wl_data_device.start_drag), a sub-surface"]
-    #[doc = "(wl_subcompositor.get_subsurface), and a window as defined by a"]
-    #[doc = "shell protocol (e.g. wl_shell.get_shell_surface)."]
-    #[doc = ""]
-    #[doc = "A surface can have only one role at a time. Initially a"]
-    #[doc = "wl_surface does not have a role. Once a wl_surface is given a"]
-    #[doc = "role, it is set permanently for the whole lifetime of the"]
-    #[doc = "wl_surface object. Giving the current role again is allowed,"]
-    #[doc = "unless explicitly forbidden by the relevant interface"]
-    #[doc = "specification."]
-    #[doc = ""]
-    #[doc = "Surface roles are given by requests in other interfaces such as"]
-    #[doc = "wl_pointer.set_cursor. The request should explicitly mention"]
-    #[doc = "that this request gives a role to a wl_surface. Often, this"]
-    #[doc = "request also creates a new protocol object that represents the"]
-    #[doc = "role and adds additional functionality to wl_surface. When a"]
-    #[doc = "client wants to destroy a wl_surface, they must destroy this role"]
-    #[doc = "object before the wl_surface, otherwise a defunct_role_object error is"]
-    #[doc = "sent."]
-    #[doc = ""]
-    #[doc = "Destroying the role object does not remove the role from the"]
-    #[doc = "wl_surface, but it may stop the wl_surface from \"playing the role\"."]
-    #[doc = "For instance, if a wl_subsurface object is destroyed, the wl_surface"]
-    #[doc = "it was created for will be unmapped and forget its position and"]
-    #[doc = "z-order. It is allowed to create a wl_subsurface for the same"]
-    #[doc = "wl_surface again, but it is not allowed to use the wl_surface as"]
-    #[doc = "a cursor (cursor is a different role than sub-surface, and role"]
-    #[doc = "switching is not allowed)."]
     pub mod wl_surface {
         #[doc = "These errors can be emitted in response to wl_surface requests."]
         #[repr(u32)]
@@ -2479,7 +2424,48 @@ pub mod wayland {
                 }
             }
         }
-        #[doc = "Trait to implement the wl_surface interface. See the module level documentation for more info"]
+        #[doc = "A surface is a rectangular area that may be displayed on zero"]
+        #[doc = "or more outputs, and shown any number of times at the compositor's"]
+        #[doc = "discretion. They can present wl_buffers, receive user input, and"]
+        #[doc = "define a local coordinate system."]
+        #[doc = ""]
+        #[doc = "The size of a surface (and relative positions on it) is described"]
+        #[doc = "in surface-local coordinates, which may differ from the buffer"]
+        #[doc = "coordinates of the pixel content, in case a buffer_transform"]
+        #[doc = "or a buffer_scale is used."]
+        #[doc = ""]
+        #[doc = "A surface without a \"role\" is fairly useless: a compositor does"]
+        #[doc = "not know where, when or how to present it. The role is the"]
+        #[doc = "purpose of a wl_surface. Examples of roles are a cursor for a"]
+        #[doc = "pointer (as set by wl_pointer.set_cursor), a drag icon"]
+        #[doc = "(wl_data_device.start_drag), a sub-surface"]
+        #[doc = "(wl_subcompositor.get_subsurface), and a window as defined by a"]
+        #[doc = "shell protocol (e.g. wl_shell.get_shell_surface)."]
+        #[doc = ""]
+        #[doc = "A surface can have only one role at a time. Initially a"]
+        #[doc = "wl_surface does not have a role. Once a wl_surface is given a"]
+        #[doc = "role, it is set permanently for the whole lifetime of the"]
+        #[doc = "wl_surface object. Giving the current role again is allowed,"]
+        #[doc = "unless explicitly forbidden by the relevant interface"]
+        #[doc = "specification."]
+        #[doc = ""]
+        #[doc = "Surface roles are given by requests in other interfaces such as"]
+        #[doc = "wl_pointer.set_cursor. The request should explicitly mention"]
+        #[doc = "that this request gives a role to a wl_surface. Often, this"]
+        #[doc = "request also creates a new protocol object that represents the"]
+        #[doc = "role and adds additional functionality to wl_surface. When a"]
+        #[doc = "client wants to destroy a wl_surface, they must destroy this role"]
+        #[doc = "object before the wl_surface, otherwise a defunct_role_object error is"]
+        #[doc = "sent."]
+        #[doc = ""]
+        #[doc = "Destroying the role object does not remove the role from the"]
+        #[doc = "wl_surface, but it may stop the wl_surface from \"playing the role\"."]
+        #[doc = "For instance, if a wl_subsurface object is destroyed, the wl_surface"]
+        #[doc = "it was created for will be unmapped and forget its position and"]
+        #[doc = "z-order. It is allowed to create a wl_subsurface for the same"]
+        #[doc = "wl_surface again, but it is not allowed to use the wl_surface as"]
+        #[doc = "a cursor (cursor is a different role than sub-surface, and role"]
+        #[doc = "switching is not allowed)."]
         pub trait WlSurface: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_surface";
             const VERSION: u32 = 6u32;
@@ -3026,10 +3012,6 @@ pub mod wayland {
             }
         }
     }
-    #[doc = "A seat is a group of keyboards, pointer and touch devices. This"]
-    #[doc = "object is published as a global during start up, or when such a"]
-    #[doc = "device is hot plugged.  A seat typically has a pointer and"]
-    #[doc = "maintains a keyboard focus and a pointer focus."]
     pub mod wl_seat {
         bitflags::bitflags! { # [doc = "This is a bitmask of capabilities this seat has; if a member is"] # [doc = "set, then it is present on the seat."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "the seat has pointer devices"] const Pointer = 1u32 ; # [doc = "the seat has one or more keyboards"] const Keyboard = 2u32 ; # [doc = "the seat has touch devices"] const Touch = 4u32 ; } }
         impl TryFrom<u32> for Capability {
@@ -3055,7 +3037,10 @@ pub mod wayland {
                 }
             }
         }
-        #[doc = "Trait to implement the wl_seat interface. See the module level documentation for more info"]
+        #[doc = "A seat is a group of keyboards, pointer and touch devices. This"]
+        #[doc = "object is published as a global during start up, or when such a"]
+        #[doc = "device is hot plugged.  A seat typically has a pointer and"]
+        #[doc = "maintains a keyboard focus and a pointer focus."]
         pub trait WlSeat: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_seat";
             const VERSION: u32 = 9u32;
@@ -3233,14 +3218,6 @@ pub mod wayland {
             }
         }
     }
-    #[doc = "The wl_pointer interface represents one or more input devices,"]
-    #[doc = "such as mice, which control the pointer location and pointer_focus"]
-    #[doc = "of a seat."]
-    #[doc = ""]
-    #[doc = "The wl_pointer interface generates motion, enter and leave"]
-    #[doc = "events for the surfaces that the pointer is located over,"]
-    #[doc = "and button and axis events for button presses, button releases"]
-    #[doc = "and scrolling."]
     pub mod wl_pointer {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3361,7 +3338,14 @@ pub mod wayland {
                 }
             }
         }
-        #[doc = "Trait to implement the wl_pointer interface. See the module level documentation for more info"]
+        #[doc = "The wl_pointer interface represents one or more input devices,"]
+        #[doc = "such as mice, which control the pointer location and pointer_focus"]
+        #[doc = "of a seat."]
+        #[doc = ""]
+        #[doc = "The wl_pointer interface generates motion, enter and leave"]
+        #[doc = "events for the surfaces that the pointer is located over,"]
+        #[doc = "and button and axis events for button presses, button releases"]
+        #[doc = "and scrolling."]
         pub trait WlPointer: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_pointer";
             const VERSION: u32 = 9u32;
@@ -3846,18 +3830,6 @@ pub mod wayland {
             }
         }
     }
-    #[doc = "The wl_keyboard interface represents one or more keyboards"]
-    #[doc = "associated with a seat."]
-    #[doc = ""]
-    #[doc = "Each wl_keyboard has the following logical state:"]
-    #[doc = ""]
-    #[doc = "- an active surface (possibly null),"]
-    #[doc = "- the keys currently logically down,"]
-    #[doc = "- the active modifiers,"]
-    #[doc = "- the active group."]
-    #[doc = ""]
-    #[doc = "By default, the active surface is null, the keys currently logically down"]
-    #[doc = "are empty, the active modifiers and the active group are 0."]
     pub mod wl_keyboard {
         #[doc = "This specifies the format of the keymap provided to the"]
         #[doc = "client with the wl_keyboard.keymap event."]
@@ -3900,7 +3872,18 @@ pub mod wayland {
                 }
             }
         }
-        #[doc = "Trait to implement the wl_keyboard interface. See the module level documentation for more info"]
+        #[doc = "The wl_keyboard interface represents one or more keyboards"]
+        #[doc = "associated with a seat."]
+        #[doc = ""]
+        #[doc = "Each wl_keyboard has the following logical state:"]
+        #[doc = ""]
+        #[doc = "- an active surface (possibly null),"]
+        #[doc = "- the keys currently logically down,"]
+        #[doc = "- the active modifiers,"]
+        #[doc = "- the active group."]
+        #[doc = ""]
+        #[doc = "By default, the active surface is null, the keys currently logically down"]
+        #[doc = "are empty, the active modifiers and the active group are 0."]
         pub trait WlKeyboard: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_keyboard";
             const VERSION: u32 = 9u32;
@@ -4116,16 +4099,15 @@ pub mod wayland {
             }
         }
     }
-    #[doc = "The wl_touch interface represents a touchscreen"]
-    #[doc = "associated with a seat."]
-    #[doc = ""]
-    #[doc = "Touch interactions can consist of one or more contacts."]
-    #[doc = "For each contact, a series of events is generated, starting"]
-    #[doc = "with a down event, followed by zero or more motion events,"]
-    #[doc = "and ending with an up event. Events relating to the same"]
-    #[doc = "contact point can be identified by the ID of the sequence."]
     pub mod wl_touch {
-        #[doc = "Trait to implement the wl_touch interface. See the module level documentation for more info"]
+        #[doc = "The wl_touch interface represents a touchscreen"]
+        #[doc = "associated with a seat."]
+        #[doc = ""]
+        #[doc = "Touch interactions can consist of one or more contacts."]
+        #[doc = "For each contact, a series of events is generated, starting"]
+        #[doc = "with a down event, followed by zero or more motion events,"]
+        #[doc = "and ending with an up event. Events relating to the same"]
+        #[doc = "contact point can be identified by the ID of the sequence."]
         pub trait WlTouch: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_touch";
             const VERSION: u32 = 9u32;
@@ -4353,12 +4335,6 @@ pub mod wayland {
             }
         }
     }
-    #[doc = "An output describes part of the compositor geometry.  The"]
-    #[doc = "compositor works in the 'compositor coordinate system' and an"]
-    #[doc = "output corresponds to a rectangular area in that space that is"]
-    #[doc = "actually visible.  This typically corresponds to a monitor that"]
-    #[doc = "displays part of the compositor space.  This object is published"]
-    #[doc = "as global during start up, or when a monitor is hotplugged."]
     pub mod wl_output {
         #[doc = "This enumeration describes how the physical"]
         #[doc = "pixels on an output are laid out."]
@@ -4447,7 +4423,12 @@ pub mod wayland {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
-        #[doc = "Trait to implement the wl_output interface. See the module level documentation for more info"]
+        #[doc = "An output describes part of the compositor geometry.  The"]
+        #[doc = "compositor works in the 'compositor coordinate system' and an"]
+        #[doc = "output corresponds to a rectangular area in that space that is"]
+        #[doc = "actually visible.  This typically corresponds to a monitor that"]
+        #[doc = "displays part of the compositor space.  This object is published"]
+        #[doc = "as global during start up, or when a monitor is hotplugged."]
         pub trait WlOutput: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_output";
             const VERSION: u32 = 4u32;
@@ -4703,12 +4684,11 @@ pub mod wayland {
             }
         }
     }
-    #[doc = "A region object describes an area."]
-    #[doc = ""]
-    #[doc = "Region objects are used to describe the opaque and input"]
-    #[doc = "regions of a surface."]
     pub mod wl_region {
-        #[doc = "Trait to implement the wl_region interface. See the module level documentation for more info"]
+        #[doc = "A region object describes an area."]
+        #[doc = ""]
+        #[doc = "Region objects are used to describe the opaque and input"]
+        #[doc = "regions of a surface."]
         pub trait WlRegion: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_region";
             const VERSION: u32 = 1u32;
@@ -4784,25 +4764,6 @@ pub mod wayland {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "The global interface exposing sub-surface compositing capabilities."]
-    #[doc = "A wl_surface, that has sub-surfaces associated, is called the"]
-    #[doc = "parent surface. Sub-surfaces can be arbitrarily nested and create"]
-    #[doc = "a tree of sub-surfaces."]
-    #[doc = ""]
-    #[doc = "The root surface in a tree of sub-surfaces is the main"]
-    #[doc = "surface. The main surface cannot be a sub-surface, because"]
-    #[doc = "sub-surfaces must always have a parent."]
-    #[doc = ""]
-    #[doc = "A main surface with its sub-surfaces forms a (compound) window."]
-    #[doc = "For window management purposes, this set of wl_surface objects is"]
-    #[doc = "to be considered as a single window, and it should also behave as"]
-    #[doc = "such."]
-    #[doc = ""]
-    #[doc = "The aim of sub-surfaces is to offload some of the compositing work"]
-    #[doc = "within a window from clients to the compositor. A prime example is"]
-    #[doc = "a video player with decorations and video in separate wl_surface"]
-    #[doc = "objects. This should allow the compositor to pass YUV video buffer"]
-    #[doc = "processing to dedicated overlay hardware when possible."]
     pub mod wl_subcompositor {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4823,7 +4784,25 @@ pub mod wayland {
                 }
             }
         }
-        #[doc = "Trait to implement the wl_subcompositor interface. See the module level documentation for more info"]
+        #[doc = "The global interface exposing sub-surface compositing capabilities."]
+        #[doc = "A wl_surface, that has sub-surfaces associated, is called the"]
+        #[doc = "parent surface. Sub-surfaces can be arbitrarily nested and create"]
+        #[doc = "a tree of sub-surfaces."]
+        #[doc = ""]
+        #[doc = "The root surface in a tree of sub-surfaces is the main"]
+        #[doc = "surface. The main surface cannot be a sub-surface, because"]
+        #[doc = "sub-surfaces must always have a parent."]
+        #[doc = ""]
+        #[doc = "A main surface with its sub-surfaces forms a (compound) window."]
+        #[doc = "For window management purposes, this set of wl_surface objects is"]
+        #[doc = "to be considered as a single window, and it should also behave as"]
+        #[doc = "such."]
+        #[doc = ""]
+        #[doc = "The aim of sub-surfaces is to offload some of the compositing work"]
+        #[doc = "within a window from clients to the compositor. A prime example is"]
+        #[doc = "a video player with decorations and video in separate wl_surface"]
+        #[doc = "objects. This should allow the compositor to pass YUV video buffer"]
+        #[doc = "processing to dedicated overlay hardware when possible."]
         pub trait WlSubcompositor: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_subcompositor";
             const VERSION: u32 = 1u32;
@@ -4901,58 +4880,6 @@ pub mod wayland {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An additional interface to a wl_surface object, which has been"]
-    #[doc = "made a sub-surface. A sub-surface has one parent surface. A"]
-    #[doc = "sub-surface's size and position are not limited to that of the parent."]
-    #[doc = "Particularly, a sub-surface is not automatically clipped to its"]
-    #[doc = "parent's area."]
-    #[doc = ""]
-    #[doc = "A sub-surface becomes mapped, when a non-NULL wl_buffer is applied"]
-    #[doc = "and the parent surface is mapped. The order of which one happens"]
-    #[doc = "first is irrelevant. A sub-surface is hidden if the parent becomes"]
-    #[doc = "hidden, or if a NULL wl_buffer is applied. These rules apply"]
-    #[doc = "recursively through the tree of surfaces."]
-    #[doc = ""]
-    #[doc = "The behaviour of a wl_surface.commit request on a sub-surface"]
-    #[doc = "depends on the sub-surface's mode. The possible modes are"]
-    #[doc = "synchronized and desynchronized, see methods"]
-    #[doc = "wl_subsurface.set_sync and wl_subsurface.set_desync. Synchronized"]
-    #[doc = "mode caches the wl_surface state to be applied when the parent's"]
-    #[doc = "state gets applied, and desynchronized mode applies the pending"]
-    #[doc = "wl_surface state directly. A sub-surface is initially in the"]
-    #[doc = "synchronized mode."]
-    #[doc = ""]
-    #[doc = "Sub-surfaces also have another kind of state, which is managed by"]
-    #[doc = "wl_subsurface requests, as opposed to wl_surface requests. This"]
-    #[doc = "state includes the sub-surface position relative to the parent"]
-    #[doc = "surface (wl_subsurface.set_position), and the stacking order of"]
-    #[doc = "the parent and its sub-surfaces (wl_subsurface.place_above and"]
-    #[doc = ".place_below). This state is applied when the parent surface's"]
-    #[doc = "wl_surface state is applied, regardless of the sub-surface's mode."]
-    #[doc = "As the exception, set_sync and set_desync are effective immediately."]
-    #[doc = ""]
-    #[doc = "The main surface can be thought to be always in desynchronized mode,"]
-    #[doc = "since it does not have a parent in the sub-surfaces sense."]
-    #[doc = ""]
-    #[doc = "Even if a sub-surface is in desynchronized mode, it will behave as"]
-    #[doc = "in synchronized mode, if its parent surface behaves as in"]
-    #[doc = "synchronized mode. This rule is applied recursively throughout the"]
-    #[doc = "tree of surfaces. This means, that one can set a sub-surface into"]
-    #[doc = "synchronized mode, and then assume that all its child and grand-child"]
-    #[doc = "sub-surfaces are synchronized, too, without explicitly setting them."]
-    #[doc = ""]
-    #[doc = "Destroying a sub-surface takes effect immediately. If you need to"]
-    #[doc = "synchronize the removal of a sub-surface to the parent surface update,"]
-    #[doc = "unmap the sub-surface first by attaching a NULL wl_buffer, update parent,"]
-    #[doc = "and then destroy the sub-surface."]
-    #[doc = ""]
-    #[doc = "If the parent wl_surface object is destroyed, the sub-surface is"]
-    #[doc = "unmapped."]
-    #[doc = ""]
-    #[doc = "A sub-surface never has the keyboard focus of any seat."]
-    #[doc = ""]
-    #[doc = "The wl_surface.offset request is ignored: clients must use set_position"]
-    #[doc = "instead to move the sub-surface."]
     pub mod wl_subsurface {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4970,7 +4897,58 @@ pub mod wayland {
                 }
             }
         }
-        #[doc = "Trait to implement the wl_subsurface interface. See the module level documentation for more info"]
+        #[doc = "An additional interface to a wl_surface object, which has been"]
+        #[doc = "made a sub-surface. A sub-surface has one parent surface. A"]
+        #[doc = "sub-surface's size and position are not limited to that of the parent."]
+        #[doc = "Particularly, a sub-surface is not automatically clipped to its"]
+        #[doc = "parent's area."]
+        #[doc = ""]
+        #[doc = "A sub-surface becomes mapped, when a non-NULL wl_buffer is applied"]
+        #[doc = "and the parent surface is mapped. The order of which one happens"]
+        #[doc = "first is irrelevant. A sub-surface is hidden if the parent becomes"]
+        #[doc = "hidden, or if a NULL wl_buffer is applied. These rules apply"]
+        #[doc = "recursively through the tree of surfaces."]
+        #[doc = ""]
+        #[doc = "The behaviour of a wl_surface.commit request on a sub-surface"]
+        #[doc = "depends on the sub-surface's mode. The possible modes are"]
+        #[doc = "synchronized and desynchronized, see methods"]
+        #[doc = "wl_subsurface.set_sync and wl_subsurface.set_desync. Synchronized"]
+        #[doc = "mode caches the wl_surface state to be applied when the parent's"]
+        #[doc = "state gets applied, and desynchronized mode applies the pending"]
+        #[doc = "wl_surface state directly. A sub-surface is initially in the"]
+        #[doc = "synchronized mode."]
+        #[doc = ""]
+        #[doc = "Sub-surfaces also have another kind of state, which is managed by"]
+        #[doc = "wl_subsurface requests, as opposed to wl_surface requests. This"]
+        #[doc = "state includes the sub-surface position relative to the parent"]
+        #[doc = "surface (wl_subsurface.set_position), and the stacking order of"]
+        #[doc = "the parent and its sub-surfaces (wl_subsurface.place_above and"]
+        #[doc = ".place_below). This state is applied when the parent surface's"]
+        #[doc = "wl_surface state is applied, regardless of the sub-surface's mode."]
+        #[doc = "As the exception, set_sync and set_desync are effective immediately."]
+        #[doc = ""]
+        #[doc = "The main surface can be thought to be always in desynchronized mode,"]
+        #[doc = "since it does not have a parent in the sub-surfaces sense."]
+        #[doc = ""]
+        #[doc = "Even if a sub-surface is in desynchronized mode, it will behave as"]
+        #[doc = "in synchronized mode, if its parent surface behaves as in"]
+        #[doc = "synchronized mode. This rule is applied recursively throughout the"]
+        #[doc = "tree of surfaces. This means, that one can set a sub-surface into"]
+        #[doc = "synchronized mode, and then assume that all its child and grand-child"]
+        #[doc = "sub-surfaces are synchronized, too, without explicitly setting them."]
+        #[doc = ""]
+        #[doc = "Destroying a sub-surface takes effect immediately. If you need to"]
+        #[doc = "synchronize the removal of a sub-surface to the parent surface update,"]
+        #[doc = "unmap the sub-surface first by attaching a NULL wl_buffer, update parent,"]
+        #[doc = "and then destroy the sub-surface."]
+        #[doc = ""]
+        #[doc = "If the parent wl_surface object is destroyed, the sub-surface is"]
+        #[doc = "unmapped."]
+        #[doc = ""]
+        #[doc = "A sub-surface never has the keyboard focus of any seat."]
+        #[doc = ""]
+        #[doc = "The wl_surface.offset request is ignored: clients must use set_position"]
+        #[doc = "instead to move the sub-surface."]
         pub trait WlSubsurface: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_subsurface";
             const VERSION: u32 = 1u32;
@@ -5132,72 +5110,71 @@ pub mod wayland {
     }
 }
 pub mod linux_dmabuf_v1 {
-    #[doc = "Following the interfaces from:"]
-    #[doc = "https://www.khronos.org/registry/egl/extensions/EXT/EGL_EXT_image_dma_buf_import.txt"]
-    #[doc = "https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_image_dma_buf_import_modifiers.txt"]
-    #[doc = "and the Linux DRM sub-system's AddFb2 ioctl."]
-    #[doc = ""]
-    #[doc = "This interface offers ways to create generic dmabuf-based wl_buffers."]
-    #[doc = ""]
-    #[doc = "Clients can use the get_surface_feedback request to get dmabuf feedback"]
-    #[doc = "for a particular surface. If the client wants to retrieve feedback not"]
-    #[doc = "tied to a surface, they can use the get_default_feedback request."]
-    #[doc = ""]
-    #[doc = "The following are required from clients:"]
-    #[doc = ""]
-    #[doc = "- Clients must ensure that either all data in the dma-buf is"]
-    #[doc = "coherent for all subsequent read access or that coherency is"]
-    #[doc = "correctly handled by the underlying kernel-side dma-buf"]
-    #[doc = "implementation."]
-    #[doc = ""]
-    #[doc = "- Don't make any more attachments after sending the buffer to the"]
-    #[doc = "compositor. Making more attachments later increases the risk of"]
-    #[doc = "the compositor not being able to use (re-import) an existing"]
-    #[doc = "dmabuf-based wl_buffer."]
-    #[doc = ""]
-    #[doc = "The underlying graphics stack must ensure the following:"]
-    #[doc = ""]
-    #[doc = "- The dmabuf file descriptors relayed to the server will stay valid"]
-    #[doc = "for the whole lifetime of the wl_buffer. This means the server may"]
-    #[doc = "at any time use those fds to import the dmabuf into any kernel"]
-    #[doc = "sub-system that might accept it."]
-    #[doc = ""]
-    #[doc = "However, when the underlying graphics stack fails to deliver the"]
-    #[doc = "promise, because of e.g. a device hot-unplug which raises internal"]
-    #[doc = "errors, after the wl_buffer has been successfully created the"]
-    #[doc = "compositor must not raise protocol errors to the client when dmabuf"]
-    #[doc = "import later fails."]
-    #[doc = ""]
-    #[doc = "To create a wl_buffer from one or more dmabufs, a client creates a"]
-    #[doc = "zwp_linux_dmabuf_params_v1 object with a zwp_linux_dmabuf_v1.create_params"]
-    #[doc = "request. All planes required by the intended format are added with"]
-    #[doc = "the 'add' request. Finally, a 'create' or 'create_immed' request is"]
-    #[doc = "issued, which has the following outcome depending on the import success."]
-    #[doc = ""]
-    #[doc = "The 'create' request,"]
-    #[doc = "- on success, triggers a 'created' event which provides the final"]
-    #[doc = "wl_buffer to the client."]
-    #[doc = "- on failure, triggers a 'failed' event to convey that the server"]
-    #[doc = "cannot use the dmabufs received from the client."]
-    #[doc = ""]
-    #[doc = "For the 'create_immed' request,"]
-    #[doc = "- on success, the server immediately imports the added dmabufs to"]
-    #[doc = "create a wl_buffer. No event is sent from the server in this case."]
-    #[doc = "- on failure, the server can choose to either:"]
-    #[doc = "- terminate the client by raising a fatal error."]
-    #[doc = "- mark the wl_buffer as failed, and send a 'failed' event to the"]
-    #[doc = "client. If the client uses a failed wl_buffer as an argument to any"]
-    #[doc = "request, the behaviour is compositor implementation-defined."]
-    #[doc = ""]
-    #[doc = "For all DRM formats and unless specified in another protocol extension,"]
-    #[doc = "pre-multiplied alpha is used for pixel values."]
-    #[doc = ""]
-    #[doc = "Unless specified otherwise in another protocol extension, implicit"]
-    #[doc = "synchronization is used. In other words, compositors and clients must"]
-    #[doc = "wait and signal fences implicitly passed via the DMA-BUF's reservation"]
-    #[doc = "mechanism."]
     pub mod zwp_linux_dmabuf_v1 {
-        #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
+        #[doc = "Following the interfaces from:"]
+        #[doc = "https://www.khronos.org/registry/egl/extensions/EXT/EGL_EXT_image_dma_buf_import.txt"]
+        #[doc = "https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_image_dma_buf_import_modifiers.txt"]
+        #[doc = "and the Linux DRM sub-system's AddFb2 ioctl."]
+        #[doc = ""]
+        #[doc = "This interface offers ways to create generic dmabuf-based wl_buffers."]
+        #[doc = ""]
+        #[doc = "Clients can use the get_surface_feedback request to get dmabuf feedback"]
+        #[doc = "for a particular surface. If the client wants to retrieve feedback not"]
+        #[doc = "tied to a surface, they can use the get_default_feedback request."]
+        #[doc = ""]
+        #[doc = "The following are required from clients:"]
+        #[doc = ""]
+        #[doc = "- Clients must ensure that either all data in the dma-buf is"]
+        #[doc = "coherent for all subsequent read access or that coherency is"]
+        #[doc = "correctly handled by the underlying kernel-side dma-buf"]
+        #[doc = "implementation."]
+        #[doc = ""]
+        #[doc = "- Don't make any more attachments after sending the buffer to the"]
+        #[doc = "compositor. Making more attachments later increases the risk of"]
+        #[doc = "the compositor not being able to use (re-import) an existing"]
+        #[doc = "dmabuf-based wl_buffer."]
+        #[doc = ""]
+        #[doc = "The underlying graphics stack must ensure the following:"]
+        #[doc = ""]
+        #[doc = "- The dmabuf file descriptors relayed to the server will stay valid"]
+        #[doc = "for the whole lifetime of the wl_buffer. This means the server may"]
+        #[doc = "at any time use those fds to import the dmabuf into any kernel"]
+        #[doc = "sub-system that might accept it."]
+        #[doc = ""]
+        #[doc = "However, when the underlying graphics stack fails to deliver the"]
+        #[doc = "promise, because of e.g. a device hot-unplug which raises internal"]
+        #[doc = "errors, after the wl_buffer has been successfully created the"]
+        #[doc = "compositor must not raise protocol errors to the client when dmabuf"]
+        #[doc = "import later fails."]
+        #[doc = ""]
+        #[doc = "To create a wl_buffer from one or more dmabufs, a client creates a"]
+        #[doc = "zwp_linux_dmabuf_params_v1 object with a zwp_linux_dmabuf_v1.create_params"]
+        #[doc = "request. All planes required by the intended format are added with"]
+        #[doc = "the 'add' request. Finally, a 'create' or 'create_immed' request is"]
+        #[doc = "issued, which has the following outcome depending on the import success."]
+        #[doc = ""]
+        #[doc = "The 'create' request,"]
+        #[doc = "- on success, triggers a 'created' event which provides the final"]
+        #[doc = "wl_buffer to the client."]
+        #[doc = "- on failure, triggers a 'failed' event to convey that the server"]
+        #[doc = "cannot use the dmabufs received from the client."]
+        #[doc = ""]
+        #[doc = "For the 'create_immed' request,"]
+        #[doc = "- on success, the server immediately imports the added dmabufs to"]
+        #[doc = "create a wl_buffer. No event is sent from the server in this case."]
+        #[doc = "- on failure, the server can choose to either:"]
+        #[doc = "- terminate the client by raising a fatal error."]
+        #[doc = "- mark the wl_buffer as failed, and send a 'failed' event to the"]
+        #[doc = "client. If the client uses a failed wl_buffer as an argument to any"]
+        #[doc = "request, the behaviour is compositor implementation-defined."]
+        #[doc = ""]
+        #[doc = "For all DRM formats and unless specified in another protocol extension,"]
+        #[doc = "pre-multiplied alpha is used for pixel values."]
+        #[doc = ""]
+        #[doc = "Unless specified otherwise in another protocol extension, implicit"]
+        #[doc = "synchronization is used. In other words, compositors and clients must"]
+        #[doc = "wait and signal fences implicitly passed via the DMA-BUF's reservation"]
+        #[doc = "mechanism."]
         pub trait ZwpLinuxDmabufV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_linux_dmabuf_v1";
             const VERSION: u32 = 5u32;
@@ -5365,20 +5342,6 @@ pub mod linux_dmabuf_v1 {
             }
         }
     }
-    #[doc = "This temporary object is a collection of dmabufs and other"]
-    #[doc = "parameters that together form a single logical buffer. The temporary"]
-    #[doc = "object may eventually create one wl_buffer unless cancelled by"]
-    #[doc = "destroying it before requesting 'create'."]
-    #[doc = ""]
-    #[doc = "Single-planar formats only require one dmabuf, however"]
-    #[doc = "multi-planar formats may require more than one dmabuf. For all"]
-    #[doc = "formats, an 'add' request must be called once per plane (even if the"]
-    #[doc = "underlying dmabuf fd is identical)."]
-    #[doc = ""]
-    #[doc = "You must use consecutive plane indices ('plane_idx' argument for 'add')"]
-    #[doc = "from zero to the number of planes used by the drm_fourcc format code."]
-    #[doc = "All planes required by the format must be given exactly once, but can"]
-    #[doc = "be given in any order. Each plane index can be set only once."]
     pub mod zwp_linux_buffer_params_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -5425,7 +5388,20 @@ pub mod linux_dmabuf_v1 {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
-        #[doc = "Trait to implement the zwp_linux_buffer_params_v1 interface. See the module level documentation for more info"]
+        #[doc = "This temporary object is a collection of dmabufs and other"]
+        #[doc = "parameters that together form a single logical buffer. The temporary"]
+        #[doc = "object may eventually create one wl_buffer unless cancelled by"]
+        #[doc = "destroying it before requesting 'create'."]
+        #[doc = ""]
+        #[doc = "Single-planar formats only require one dmabuf, however"]
+        #[doc = "multi-planar formats may require more than one dmabuf. For all"]
+        #[doc = "formats, an 'add' request must be called once per plane (even if the"]
+        #[doc = "underlying dmabuf fd is identical)."]
+        #[doc = ""]
+        #[doc = "You must use consecutive plane indices ('plane_idx' argument for 'add')"]
+        #[doc = "from zero to the number of planes used by the drm_fourcc format code."]
+        #[doc = "All planes required by the format must be given exactly once, but can"]
+        #[doc = "be given in any order. Each plane index can be set only once."]
         pub trait ZwpLinuxBufferParamsV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_linux_buffer_params_v1";
             const VERSION: u32 = 5u32;
@@ -5668,31 +5644,6 @@ pub mod linux_dmabuf_v1 {
             }
         }
     }
-    #[doc = "This object advertises dmabuf parameters feedback. This includes the"]
-    #[doc = "preferred devices and the supported formats/modifiers."]
-    #[doc = ""]
-    #[doc = "The parameters are sent once when this object is created and whenever they"]
-    #[doc = "change. The done event is always sent once after all parameters have been"]
-    #[doc = "sent. When a single parameter changes, all parameters are re-sent by the"]
-    #[doc = "compositor."]
-    #[doc = ""]
-    #[doc = "Compositors can re-send the parameters when the current client buffer"]
-    #[doc = "allocations are sub-optimal. Compositors should not re-send the"]
-    #[doc = "parameters if re-allocating the buffers would not result in a more optimal"]
-    #[doc = "configuration. In particular, compositors should avoid sending the exact"]
-    #[doc = "same parameters multiple times in a row."]
-    #[doc = ""]
-    #[doc = "The tranche_target_device and tranche_formats events are grouped by"]
-    #[doc = "tranches of preference. For each tranche, a tranche_target_device, one"]
-    #[doc = "tranche_flags and one or more tranche_formats events are sent, followed"]
-    #[doc = "by a tranche_done event finishing the list. The tranches are sent in"]
-    #[doc = "descending order of preference. All formats and modifiers in the same"]
-    #[doc = "tranche have the same preference."]
-    #[doc = ""]
-    #[doc = "To send parameters, the compositor sends one main_device event, tranches"]
-    #[doc = "(each consisting of one tranche_target_device event, one tranche_flags"]
-    #[doc = "event, tranche_formats events and then a tranche_done event), then one"]
-    #[doc = "done event."]
     pub mod zwp_linux_dmabuf_feedback_v1 {
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { # [doc = "direct scan-out tranche"] const Scanout = 1u32 ; } }
         impl TryFrom<u32> for TrancheFlags {
@@ -5701,7 +5652,31 @@ pub mod linux_dmabuf_v1 {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
-        #[doc = "Trait to implement the zwp_linux_dmabuf_feedback_v1 interface. See the module level documentation for more info"]
+        #[doc = "This object advertises dmabuf parameters feedback. This includes the"]
+        #[doc = "preferred devices and the supported formats/modifiers."]
+        #[doc = ""]
+        #[doc = "The parameters are sent once when this object is created and whenever they"]
+        #[doc = "change. The done event is always sent once after all parameters have been"]
+        #[doc = "sent. When a single parameter changes, all parameters are re-sent by the"]
+        #[doc = "compositor."]
+        #[doc = ""]
+        #[doc = "Compositors can re-send the parameters when the current client buffer"]
+        #[doc = "allocations are sub-optimal. Compositors should not re-send the"]
+        #[doc = "parameters if re-allocating the buffers would not result in a more optimal"]
+        #[doc = "configuration. In particular, compositors should avoid sending the exact"]
+        #[doc = "same parameters multiple times in a row."]
+        #[doc = ""]
+        #[doc = "The tranche_target_device and tranche_formats events are grouped by"]
+        #[doc = "tranches of preference. For each tranche, a tranche_target_device, one"]
+        #[doc = "tranche_flags and one or more tranche_formats events are sent, followed"]
+        #[doc = "by a tranche_done event finishing the list. The tranches are sent in"]
+        #[doc = "descending order of preference. All formats and modifiers in the same"]
+        #[doc = "tranche have the same preference."]
+        #[doc = ""]
+        #[doc = "To send parameters, the compositor sends one main_device event, tranches"]
+        #[doc = "(each consisting of one tranche_target_device event, one tranche_flags"]
+        #[doc = "event, tranche_formats events and then a tranche_done event), then one"]
+        #[doc = "done event."]
         pub trait ZwpLinuxDmabufFeedbackV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_linux_dmabuf_feedback_v1";
             const VERSION: u32 = 5u32;
@@ -5955,25 +5930,6 @@ pub mod linux_dmabuf_v1 {
     }
 }
 pub mod presentation_time {
-    #[doc = "The main feature of this interface is accurate presentation"]
-    #[doc = "timing feedback to ensure smooth video playback while maintaining"]
-    #[doc = "audio/video synchronization. Some features use the concept of a"]
-    #[doc = "presentation clock, which is defined in the"]
-    #[doc = "presentation.clock_id event."]
-    #[doc = ""]
-    #[doc = "A content update for a wl_surface is submitted by a"]
-    #[doc = "wl_surface.commit request. Request 'feedback' associates with"]
-    #[doc = "the wl_surface.commit and provides feedback on the content"]
-    #[doc = "update, particularly the final realized presentation time."]
-    #[doc = ""]
-    #[doc = ""]
-    #[doc = ""]
-    #[doc = "When the final realized presentation time is available, e.g."]
-    #[doc = "after a framebuffer flip completes, the requested"]
-    #[doc = "presentation_feedback.presented events are sent. The final"]
-    #[doc = "presentation time can differ from the compositor's predicted"]
-    #[doc = "display update time and the update's target time, especially"]
-    #[doc = "when the compositor misses its target vertical blanking period."]
     pub mod wp_presentation {
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal presentation requests."]
@@ -5996,7 +5952,25 @@ pub mod presentation_time {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_presentation interface. See the module level documentation for more info"]
+        #[doc = "The main feature of this interface is accurate presentation"]
+        #[doc = "timing feedback to ensure smooth video playback while maintaining"]
+        #[doc = "audio/video synchronization. Some features use the concept of a"]
+        #[doc = "presentation clock, which is defined in the"]
+        #[doc = "presentation.clock_id event."]
+        #[doc = ""]
+        #[doc = "A content update for a wl_surface is submitted by a"]
+        #[doc = "wl_surface.commit request. Request 'feedback' associates with"]
+        #[doc = "the wl_surface.commit and provides feedback on the content"]
+        #[doc = "update, particularly the final realized presentation time."]
+        #[doc = ""]
+        #[doc = ""]
+        #[doc = ""]
+        #[doc = "When the final realized presentation time is available, e.g."]
+        #[doc = "after a framebuffer flip completes, the requested"]
+        #[doc = "presentation_feedback.presented events are sent. The final"]
+        #[doc = "presentation time can differ from the compositor's predicted"]
+        #[doc = "display update time and the update's target time, especially"]
+        #[doc = "when the compositor misses its target vertical blanking period."]
         pub trait WpPresentation: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_presentation";
             const VERSION: u32 = 1u32;
@@ -6100,17 +6074,6 @@ pub mod presentation_time {
             }
         }
     }
-    #[doc = "A presentation_feedback object returns an indication that a"]
-    #[doc = "wl_surface content update has become visible to the user."]
-    #[doc = "One object corresponds to one content update submission"]
-    #[doc = "(wl_surface.commit). There are two possible outcomes: the"]
-    #[doc = "content update is presented to the user, and a presentation"]
-    #[doc = "timestamp delivered; or, the user did not see the content"]
-    #[doc = "update because it was superseded or its surface destroyed,"]
-    #[doc = "and the content update is discarded."]
-    #[doc = ""]
-    #[doc = "Once a presentation_feedback object has delivered a 'presented'"]
-    #[doc = "or 'discarded' event it is automatically destroyed."]
     pub mod wp_presentation_feedback {
         bitflags::bitflags! { # [doc = "These flags provide information about how the presentation of"] # [doc = "the related content update was done. The intent is to help"] # [doc = "clients assess the reliability of the feedback and the visual"] # [doc = "quality with respect to possible tearing and timings."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Kind : u32 { const Vsync = 1u32 ; const HwClock = 2u32 ; const HwCompletion = 4u32 ; const ZeroCopy = 8u32 ; } }
         impl TryFrom<u32> for Kind {
@@ -6119,7 +6082,17 @@ pub mod presentation_time {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
-        #[doc = "Trait to implement the wp_presentation_feedback interface. See the module level documentation for more info"]
+        #[doc = "A presentation_feedback object returns an indication that a"]
+        #[doc = "wl_surface content update has become visible to the user."]
+        #[doc = "One object corresponds to one content update submission"]
+        #[doc = "(wl_surface.commit). There are two possible outcomes: the"]
+        #[doc = "content update is presented to the user, and a presentation"]
+        #[doc = "timestamp delivered; or, the user did not see the content"]
+        #[doc = "update because it was superseded or its surface destroyed,"]
+        #[doc = "and the content update is discarded."]
+        #[doc = ""]
+        #[doc = "Once a presentation_feedback object has delivered a 'presented'"]
+        #[doc = "or 'discarded' event it is automatically destroyed."]
         pub trait WpPresentationFeedback: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_presentation_feedback";
             const VERSION: u32 = 1u32;
@@ -6323,11 +6296,10 @@ pub mod presentation_time {
 #[doc = "will likely include some form of removing a tool when all tablets the"]
 #[doc = "tool was used on are removed."]
 pub mod tablet_v2 {
-    #[doc = "An object that provides access to the graphics tablets available on this"]
-    #[doc = "system. All tablets are associated with a seat, to get access to the"]
-    #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
     pub mod zwp_tablet_manager_v2 {
-        #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
+        #[doc = "An object that provides access to the graphics tablets available on this"]
+        #[doc = "system. All tablets are associated with a seat, to get access to the"]
+        #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
         pub trait ZwpTabletManagerV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_manager_v2";
             const VERSION: u32 = 1u32;
@@ -6383,11 +6355,10 @@ pub mod tablet_v2 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An object that provides access to the graphics tablets available on this"]
-    #[doc = "seat. After binding to this interface, the compositor sends a set of"]
-    #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
     pub mod zwp_tablet_seat_v2 {
-        #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
+        #[doc = "An object that provides access to the graphics tablets available on this"]
+        #[doc = "seat. After binding to this interface, the compositor sends a set of"]
+        #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
         pub trait ZwpTabletSeatV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_seat_v2";
             const VERSION: u32 = 1u32;
@@ -6483,26 +6454,6 @@ pub mod tablet_v2 {
             }
         }
     }
-    #[doc = "An object that represents a physical tool that has been, or is"]
-    #[doc = "currently in use with a tablet in this seat. Each wp_tablet_tool"]
-    #[doc = "object stays valid until the client destroys it; the compositor"]
-    #[doc = "reuses the wp_tablet_tool object to indicate that the object's"]
-    #[doc = "respective physical tool has come into proximity of a tablet again."]
-    #[doc = ""]
-    #[doc = "A wp_tablet_tool object's relation to a physical tool depends on the"]
-    #[doc = "tablet's ability to report serial numbers. If the tablet supports"]
-    #[doc = "this capability, then the object represents a specific physical tool"]
-    #[doc = "and can be identified even when used on multiple tablets."]
-    #[doc = ""]
-    #[doc = "A tablet tool has a number of static characteristics, e.g. tool type,"]
-    #[doc = "hardware_serial and capabilities. These capabilities are sent in an"]
-    #[doc = "event sequence after the wp_tablet_seat.tool_added event before any"]
-    #[doc = "actual events from this tool. This initial event sequence is"]
-    #[doc = "terminated by a wp_tablet_tool.done event."]
-    #[doc = ""]
-    #[doc = "Tablet tool events are grouped by wp_tablet_tool.frame events."]
-    #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
-    #[doc = "considered part of the same hardware state change."]
     pub mod zwp_tablet_tool_v2 {
         #[doc = "Describes the physical type of a tool. The physical type of a tool"]
         #[doc = "generally defines its base usage."]
@@ -6621,7 +6572,26 @@ pub mod tablet_v2 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_tablet_tool_v2 interface. See the module level documentation for more info"]
+        #[doc = "An object that represents a physical tool that has been, or is"]
+        #[doc = "currently in use with a tablet in this seat. Each wp_tablet_tool"]
+        #[doc = "object stays valid until the client destroys it; the compositor"]
+        #[doc = "reuses the wp_tablet_tool object to indicate that the object's"]
+        #[doc = "respective physical tool has come into proximity of a tablet again."]
+        #[doc = ""]
+        #[doc = "A wp_tablet_tool object's relation to a physical tool depends on the"]
+        #[doc = "tablet's ability to report serial numbers. If the tablet supports"]
+        #[doc = "this capability, then the object represents a specific physical tool"]
+        #[doc = "and can be identified even when used on multiple tablets."]
+        #[doc = ""]
+        #[doc = "A tablet tool has a number of static characteristics, e.g. tool type,"]
+        #[doc = "hardware_serial and capabilities. These capabilities are sent in an"]
+        #[doc = "event sequence after the wp_tablet_seat.tool_added event before any"]
+        #[doc = "actual events from this tool. This initial event sequence is"]
+        #[doc = "terminated by a wp_tablet_tool.done event."]
+        #[doc = ""]
+        #[doc = "Tablet tool events are grouped by wp_tablet_tool.frame events."]
+        #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
+        #[doc = "considered part of the same hardware state change."]
         pub trait ZwpTabletToolV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_tool_v2";
             const VERSION: u32 = 1u32;
@@ -7137,16 +7107,15 @@ pub mod tablet_v2 {
             }
         }
     }
-    #[doc = "The wp_tablet interface represents one graphics tablet device. The"]
-    #[doc = "tablet interface itself does not generate events; all events are"]
-    #[doc = "generated by wp_tablet_tool objects when in proximity above a tablet."]
-    #[doc = ""]
-    #[doc = "A tablet has a number of static characteristics, e.g. device name and"]
-    #[doc = "pid/vid. These capabilities are sent in an event sequence after the"]
-    #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
-    #[doc = "terminated by a wp_tablet.done event."]
     pub mod zwp_tablet_v2 {
-        #[doc = "Trait to implement the zwp_tablet_v2 interface. See the module level documentation for more info"]
+        #[doc = "The wp_tablet interface represents one graphics tablet device. The"]
+        #[doc = "tablet interface itself does not generate events; all events are"]
+        #[doc = "generated by wp_tablet_tool objects when in proximity above a tablet."]
+        #[doc = ""]
+        #[doc = "A tablet has a number of static characteristics, e.g. device name and"]
+        #[doc = "pid/vid. These capabilities are sent in an event sequence after the"]
+        #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
+        #[doc = "terminated by a wp_tablet.done event."]
         pub trait ZwpTabletV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_v2";
             const VERSION: u32 = 1u32;
@@ -7285,11 +7254,6 @@ pub mod tablet_v2 {
             }
         }
     }
-    #[doc = "A circular interaction area, such as the touch ring on the Wacom Intuos"]
-    #[doc = "Pro series tablets."]
-    #[doc = ""]
-    #[doc = "Events on a ring are logically grouped by the wl_tablet_pad_ring.frame"]
-    #[doc = "event."]
     pub mod zwp_tablet_pad_ring_v2 {
         #[doc = "Describes the source types for ring events. This indicates to the"]
         #[doc = "client how a ring event was physically generated; a client may"]
@@ -7311,7 +7275,11 @@ pub mod tablet_v2 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_tablet_pad_ring_v2 interface. See the module level documentation for more info"]
+        #[doc = "A circular interaction area, such as the touch ring on the Wacom Intuos"]
+        #[doc = "Pro series tablets."]
+        #[doc = ""]
+        #[doc = "Events on a ring are logically grouped by the wl_tablet_pad_ring.frame"]
+        #[doc = "event."]
         pub trait ZwpTabletPadRingV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_pad_ring_v2";
             const VERSION: u32 = 1u32;
@@ -7475,11 +7443,6 @@ pub mod tablet_v2 {
             }
         }
     }
-    #[doc = "A linear interaction area, such as the strips found in Wacom Cintiq"]
-    #[doc = "models."]
-    #[doc = ""]
-    #[doc = "Events on a strip are logically grouped by the wl_tablet_pad_strip.frame"]
-    #[doc = "event."]
     pub mod zwp_tablet_pad_strip_v2 {
         #[doc = "Describes the source types for strip events. This indicates to the"]
         #[doc = "client how a strip event was physically generated; a client may"]
@@ -7501,7 +7464,11 @@ pub mod tablet_v2 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_tablet_pad_strip_v2 interface. See the module level documentation for more info"]
+        #[doc = "A linear interaction area, such as the strips found in Wacom Cintiq"]
+        #[doc = "models."]
+        #[doc = ""]
+        #[doc = "Events on a strip are logically grouped by the wl_tablet_pad_strip.frame"]
+        #[doc = "event."]
         pub trait ZwpTabletPadStripV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_pad_strip_v2";
             const VERSION: u32 = 1u32;
@@ -7667,29 +7634,28 @@ pub mod tablet_v2 {
             }
         }
     }
-    #[doc = "A pad group describes a distinct (sub)set of buttons, rings and strips"]
-    #[doc = "present in the tablet. The criteria of this grouping is usually positional,"]
-    #[doc = "eg. if a tablet has buttons on the left and right side, 2 groups will be"]
-    #[doc = "presented. The physical arrangement of groups is undisclosed and may"]
-    #[doc = "change on the fly."]
-    #[doc = ""]
-    #[doc = "Pad groups will announce their features during pad initialization. Between"]
-    #[doc = "the corresponding wp_tablet_pad.group event and wp_tablet_pad_group.done, the"]
-    #[doc = "pad group will announce the buttons, rings and strips contained in it,"]
-    #[doc = "plus the number of supported modes."]
-    #[doc = ""]
-    #[doc = "Modes are a mechanism to allow multiple groups of actions for every element"]
-    #[doc = "in the pad group. The number of groups and available modes in each is"]
-    #[doc = "persistent across device plugs. The current mode is user-switchable, it"]
-    #[doc = "will be announced through the wp_tablet_pad_group.mode_switch event both"]
-    #[doc = "whenever it is switched, and after wp_tablet_pad.enter."]
-    #[doc = ""]
-    #[doc = "The current mode logically applies to all elements in the pad group,"]
-    #[doc = "although it is at clients' discretion whether to actually perform different"]
-    #[doc = "actions, and/or issue the respective .set_feedback requests to notify the"]
-    #[doc = "compositor. See the wp_tablet_pad_group.mode_switch event for more details."]
     pub mod zwp_tablet_pad_group_v2 {
-        #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
+        #[doc = "A pad group describes a distinct (sub)set of buttons, rings and strips"]
+        #[doc = "present in the tablet. The criteria of this grouping is usually positional,"]
+        #[doc = "eg. if a tablet has buttons on the left and right side, 2 groups will be"]
+        #[doc = "presented. The physical arrangement of groups is undisclosed and may"]
+        #[doc = "change on the fly."]
+        #[doc = ""]
+        #[doc = "Pad groups will announce their features during pad initialization. Between"]
+        #[doc = "the corresponding wp_tablet_pad.group event and wp_tablet_pad_group.done, the"]
+        #[doc = "pad group will announce the buttons, rings and strips contained in it,"]
+        #[doc = "plus the number of supported modes."]
+        #[doc = ""]
+        #[doc = "Modes are a mechanism to allow multiple groups of actions for every element"]
+        #[doc = "in the pad group. The number of groups and available modes in each is"]
+        #[doc = "persistent across device plugs. The current mode is user-switchable, it"]
+        #[doc = "will be announced through the wp_tablet_pad_group.mode_switch event both"]
+        #[doc = "whenever it is switched, and after wp_tablet_pad.enter."]
+        #[doc = ""]
+        #[doc = "The current mode logically applies to all elements in the pad group,"]
+        #[doc = "although it is at clients' discretion whether to actually perform different"]
+        #[doc = "actions, and/or issue the respective .set_feedback requests to notify the"]
+        #[doc = "compositor. See the wp_tablet_pad_group.mode_switch event for more details."]
         pub trait ZwpTabletPadGroupV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_pad_group_v2";
             const VERSION: u32 = 1u32;
@@ -7876,28 +7842,6 @@ pub mod tablet_v2 {
             }
         }
     }
-    #[doc = "A pad device is a set of buttons, rings and strips"]
-    #[doc = "usually physically present on the tablet device itself. Some"]
-    #[doc = "exceptions exist where the pad device is physically detached, e.g. the"]
-    #[doc = "Wacom ExpressKey Remote."]
-    #[doc = ""]
-    #[doc = "Pad devices have no axes that control the cursor and are generally"]
-    #[doc = "auxiliary devices to the tool devices used on the tablet surface."]
-    #[doc = ""]
-    #[doc = "A pad device has a number of static characteristics, e.g. the number"]
-    #[doc = "of rings. These capabilities are sent in an event sequence after the"]
-    #[doc = "wp_tablet_seat.pad_added event before any actual events from this pad."]
-    #[doc = "This initial event sequence is terminated by a wp_tablet_pad.done"]
-    #[doc = "event."]
-    #[doc = ""]
-    #[doc = "All pad features (buttons, rings and strips) are logically divided into"]
-    #[doc = "groups and all pads have at least one group. The available groups are"]
-    #[doc = "notified through the wp_tablet_pad.group event; the compositor will"]
-    #[doc = "emit one event per group before emitting wp_tablet_pad.done."]
-    #[doc = ""]
-    #[doc = "Groups may have multiple modes. Modes allow clients to map multiple"]
-    #[doc = "actions to a single pad feature. Only one mode can be active per group,"]
-    #[doc = "although different groups may have different active modes."]
     pub mod zwp_tablet_pad_v2 {
         #[doc = "Describes the physical state of a button that caused the button"]
         #[doc = "event."]
@@ -7920,7 +7864,28 @@ pub mod tablet_v2 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_tablet_pad_v2 interface. See the module level documentation for more info"]
+        #[doc = "A pad device is a set of buttons, rings and strips"]
+        #[doc = "usually physically present on the tablet device itself. Some"]
+        #[doc = "exceptions exist where the pad device is physically detached, e.g. the"]
+        #[doc = "Wacom ExpressKey Remote."]
+        #[doc = ""]
+        #[doc = "Pad devices have no axes that control the cursor and are generally"]
+        #[doc = "auxiliary devices to the tool devices used on the tablet surface."]
+        #[doc = ""]
+        #[doc = "A pad device has a number of static characteristics, e.g. the number"]
+        #[doc = "of rings. These capabilities are sent in an event sequence after the"]
+        #[doc = "wp_tablet_seat.pad_added event before any actual events from this pad."]
+        #[doc = "This initial event sequence is terminated by a wp_tablet_pad.done"]
+        #[doc = "event."]
+        #[doc = ""]
+        #[doc = "All pad features (buttons, rings and strips) are logically divided into"]
+        #[doc = "groups and all pads have at least one group. The available groups are"]
+        #[doc = "notified through the wp_tablet_pad.group event; the compositor will"]
+        #[doc = "emit one event per group before emitting wp_tablet_pad.done."]
+        #[doc = ""]
+        #[doc = "Groups may have multiple modes. Modes allow clients to map multiple"]
+        #[doc = "actions to a single pad feature. Only one mode can be active per group,"]
+        #[doc = "although different groups may have different active modes."]
         pub trait ZwpTabletPadV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_pad_v2";
             const VERSION: u32 = 1u32;
@@ -8156,12 +8121,6 @@ pub mod tablet_v2 {
     }
 }
 pub mod viewporter {
-    #[doc = "The global interface exposing surface cropping and scaling"]
-    #[doc = "capabilities is used to instantiate an interface extension for a"]
-    #[doc = "wl_surface object. This extended interface will then allow"]
-    #[doc = "cropping and scaling the surface contents, effectively"]
-    #[doc = "disconnecting the direct relationship between the buffer and the"]
-    #[doc = "surface size."]
     pub mod wp_viewporter {
         #[repr(u32)]
         #[non_exhaustive]
@@ -8179,7 +8138,12 @@ pub mod viewporter {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_viewporter interface. See the module level documentation for more info"]
+        #[doc = "The global interface exposing surface cropping and scaling"]
+        #[doc = "capabilities is used to instantiate an interface extension for a"]
+        #[doc = "wl_surface object. This extended interface will then allow"]
+        #[doc = "cropping and scaling the surface contents, effectively"]
+        #[doc = "disconnecting the direct relationship between the buffer and the"]
+        #[doc = "surface size."]
         pub trait WpViewporter: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_viewporter";
             const VERSION: u32 = 1u32;
@@ -8238,61 +8202,6 @@ pub mod viewporter {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An additional interface to a wl_surface object, which allows the"]
-    #[doc = "client to specify the cropping and scaling of the surface"]
-    #[doc = "contents."]
-    #[doc = ""]
-    #[doc = "This interface works with two concepts: the source rectangle (src_x,"]
-    #[doc = "src_y, src_width, src_height), and the destination size (dst_width,"]
-    #[doc = "dst_height). The contents of the source rectangle are scaled to the"]
-    #[doc = "destination size, and content outside the source rectangle is ignored."]
-    #[doc = "This state is double-buffered, and is applied on the next"]
-    #[doc = "wl_surface.commit."]
-    #[doc = ""]
-    #[doc = "The two parts of crop and scale state are independent: the source"]
-    #[doc = "rectangle, and the destination size. Initially both are unset, that"]
-    #[doc = "is, no scaling is applied. The whole of the current wl_buffer is"]
-    #[doc = "used as the source, and the surface size is as defined in"]
-    #[doc = "wl_surface.attach."]
-    #[doc = ""]
-    #[doc = "If the destination size is set, it causes the surface size to become"]
-    #[doc = "dst_width, dst_height. The source (rectangle) is scaled to exactly"]
-    #[doc = "this size. This overrides whatever the attached wl_buffer size is,"]
-    #[doc = "unless the wl_buffer is NULL. If the wl_buffer is NULL, the surface"]
-    #[doc = "has no content and therefore no size. Otherwise, the size is always"]
-    #[doc = "at least 1x1 in surface local coordinates."]
-    #[doc = ""]
-    #[doc = "If the source rectangle is set, it defines what area of the wl_buffer is"]
-    #[doc = "taken as the source. If the source rectangle is set and the destination"]
-    #[doc = "size is not set, then src_width and src_height must be integers, and the"]
-    #[doc = "surface size becomes the source rectangle size. This results in cropping"]
-    #[doc = "without scaling. If src_width or src_height are not integers and"]
-    #[doc = "destination size is not set, the bad_size protocol error is raised when"]
-    #[doc = "the surface state is applied."]
-    #[doc = ""]
-    #[doc = "The coordinate transformations from buffer pixel coordinates up to"]
-    #[doc = "the surface-local coordinates happen in the following order:"]
-    #[doc = "1. buffer_transform (wl_surface.set_buffer_transform)"]
-    #[doc = "2. buffer_scale (wl_surface.set_buffer_scale)"]
-    #[doc = "3. crop and scale (wp_viewport.set*)"]
-    #[doc = "This means, that the source rectangle coordinates of crop and scale"]
-    #[doc = "are given in the coordinates after the buffer transform and scale,"]
-    #[doc = "i.e. in the coordinates that would be the surface-local coordinates"]
-    #[doc = "if the crop and scale was not applied."]
-    #[doc = ""]
-    #[doc = "If src_x or src_y are negative, the bad_value protocol error is raised."]
-    #[doc = "Otherwise, if the source rectangle is partially or completely outside of"]
-    #[doc = "the non-NULL wl_buffer, then the out_of_buffer protocol error is raised"]
-    #[doc = "when the surface state is applied. A NULL wl_buffer does not raise the"]
-    #[doc = "out_of_buffer error."]
-    #[doc = ""]
-    #[doc = "If the wl_surface associated with the wp_viewport is destroyed,"]
-    #[doc = "all wp_viewport requests except 'destroy' raise the protocol error"]
-    #[doc = "no_surface."]
-    #[doc = ""]
-    #[doc = "If the wp_viewport object is destroyed, the crop and scale"]
-    #[doc = "state is removed from the wl_surface. The change will be applied"]
-    #[doc = "on the next wl_surface.commit."]
     pub mod wp_viewport {
         #[repr(u32)]
         #[non_exhaustive]
@@ -8319,7 +8228,61 @@ pub mod viewporter {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_viewport interface. See the module level documentation for more info"]
+        #[doc = "An additional interface to a wl_surface object, which allows the"]
+        #[doc = "client to specify the cropping and scaling of the surface"]
+        #[doc = "contents."]
+        #[doc = ""]
+        #[doc = "This interface works with two concepts: the source rectangle (src_x,"]
+        #[doc = "src_y, src_width, src_height), and the destination size (dst_width,"]
+        #[doc = "dst_height). The contents of the source rectangle are scaled to the"]
+        #[doc = "destination size, and content outside the source rectangle is ignored."]
+        #[doc = "This state is double-buffered, and is applied on the next"]
+        #[doc = "wl_surface.commit."]
+        #[doc = ""]
+        #[doc = "The two parts of crop and scale state are independent: the source"]
+        #[doc = "rectangle, and the destination size. Initially both are unset, that"]
+        #[doc = "is, no scaling is applied. The whole of the current wl_buffer is"]
+        #[doc = "used as the source, and the surface size is as defined in"]
+        #[doc = "wl_surface.attach."]
+        #[doc = ""]
+        #[doc = "If the destination size is set, it causes the surface size to become"]
+        #[doc = "dst_width, dst_height. The source (rectangle) is scaled to exactly"]
+        #[doc = "this size. This overrides whatever the attached wl_buffer size is,"]
+        #[doc = "unless the wl_buffer is NULL. If the wl_buffer is NULL, the surface"]
+        #[doc = "has no content and therefore no size. Otherwise, the size is always"]
+        #[doc = "at least 1x1 in surface local coordinates."]
+        #[doc = ""]
+        #[doc = "If the source rectangle is set, it defines what area of the wl_buffer is"]
+        #[doc = "taken as the source. If the source rectangle is set and the destination"]
+        #[doc = "size is not set, then src_width and src_height must be integers, and the"]
+        #[doc = "surface size becomes the source rectangle size. This results in cropping"]
+        #[doc = "without scaling. If src_width or src_height are not integers and"]
+        #[doc = "destination size is not set, the bad_size protocol error is raised when"]
+        #[doc = "the surface state is applied."]
+        #[doc = ""]
+        #[doc = "The coordinate transformations from buffer pixel coordinates up to"]
+        #[doc = "the surface-local coordinates happen in the following order:"]
+        #[doc = "1. buffer_transform (wl_surface.set_buffer_transform)"]
+        #[doc = "2. buffer_scale (wl_surface.set_buffer_scale)"]
+        #[doc = "3. crop and scale (wp_viewport.set*)"]
+        #[doc = "This means, that the source rectangle coordinates of crop and scale"]
+        #[doc = "are given in the coordinates after the buffer transform and scale,"]
+        #[doc = "i.e. in the coordinates that would be the surface-local coordinates"]
+        #[doc = "if the crop and scale was not applied."]
+        #[doc = ""]
+        #[doc = "If src_x or src_y are negative, the bad_value protocol error is raised."]
+        #[doc = "Otherwise, if the source rectangle is partially or completely outside of"]
+        #[doc = "the non-NULL wl_buffer, then the out_of_buffer protocol error is raised"]
+        #[doc = "when the surface state is applied. A NULL wl_buffer does not raise the"]
+        #[doc = "out_of_buffer error."]
+        #[doc = ""]
+        #[doc = "If the wl_surface associated with the wp_viewport is destroyed,"]
+        #[doc = "all wp_viewport requests except 'destroy' raise the protocol error"]
+        #[doc = "no_surface."]
+        #[doc = ""]
+        #[doc = "If the wp_viewport object is destroyed, the crop and scale"]
+        #[doc = "state is removed from the wl_surface. The change will be applied"]
+        #[doc = "on the next wl_surface.commit."]
         pub trait WpViewport: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_viewport";
             const VERSION: u32 = 1u32;
@@ -8409,11 +8372,6 @@ pub mod viewporter {
     }
 }
 pub mod xdg_shell {
-    #[doc = "The xdg_wm_base interface is exposed as a global object enabling clients"]
-    #[doc = "to turn their wl_surfaces into windows in a desktop environment. It"]
-    #[doc = "defines the basic functionality needed for clients and the compositor to"]
-    #[doc = "create windows that can be dragged, resized, maximized, etc, as well as"]
-    #[doc = "creating transient windows such as popup menus."]
     pub mod xdg_wm_base {
         #[repr(u32)]
         #[non_exhaustive]
@@ -8449,7 +8407,11 @@ pub mod xdg_shell {
                 }
             }
         }
-        #[doc = "Trait to implement the xdg_wm_base interface. See the module level documentation for more info"]
+        #[doc = "The xdg_wm_base interface is exposed as a global object enabling clients"]
+        #[doc = "to turn their wl_surfaces into windows in a desktop environment. It"]
+        #[doc = "defines the basic functionality needed for clients and the compositor to"]
+        #[doc = "create windows that can be dragged, resized, maximized, etc, as well as"]
+        #[doc = "creating transient windows such as popup menus."]
         pub trait XdgWmBase: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_wm_base";
             const VERSION: u32 = 6u32;
@@ -8578,25 +8540,6 @@ pub mod xdg_shell {
             }
         }
     }
-    #[doc = "The xdg_positioner provides a collection of rules for the placement of a"]
-    #[doc = "child surface relative to a parent surface. Rules can be defined to ensure"]
-    #[doc = "the child surface remains within the visible area's borders, and to"]
-    #[doc = "specify how the child surface changes its position, such as sliding along"]
-    #[doc = "an axis, or flipping around a rectangle. These positioner-created rules are"]
-    #[doc = "constrained by the requirement that a child surface must intersect with or"]
-    #[doc = "be at least partially adjacent to its parent surface."]
-    #[doc = ""]
-    #[doc = "See the various requests for details about possible rules."]
-    #[doc = ""]
-    #[doc = "At the time of the request, the compositor makes a copy of the rules"]
-    #[doc = "specified by the xdg_positioner. Thus, after the request is complete the"]
-    #[doc = "xdg_positioner object can be destroyed or reused; further changes to the"]
-    #[doc = "object will have no effect on previous usages."]
-    #[doc = ""]
-    #[doc = "For an xdg_positioner object to be considered complete, it must have a"]
-    #[doc = "non-zero size set by set_size, and a non-zero anchor rectangle set by"]
-    #[doc = "set_anchor_rect. Passing an incomplete xdg_positioner object when"]
-    #[doc = "positioning a surface raises an invalid_positioner error."]
     pub mod xdg_positioner {
         #[repr(u32)]
         #[non_exhaustive]
@@ -8683,7 +8626,25 @@ pub mod xdg_shell {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
-        #[doc = "Trait to implement the xdg_positioner interface. See the module level documentation for more info"]
+        #[doc = "The xdg_positioner provides a collection of rules for the placement of a"]
+        #[doc = "child surface relative to a parent surface. Rules can be defined to ensure"]
+        #[doc = "the child surface remains within the visible area's borders, and to"]
+        #[doc = "specify how the child surface changes its position, such as sliding along"]
+        #[doc = "an axis, or flipping around a rectangle. These positioner-created rules are"]
+        #[doc = "constrained by the requirement that a child surface must intersect with or"]
+        #[doc = "be at least partially adjacent to its parent surface."]
+        #[doc = ""]
+        #[doc = "See the various requests for details about possible rules."]
+        #[doc = ""]
+        #[doc = "At the time of the request, the compositor makes a copy of the rules"]
+        #[doc = "specified by the xdg_positioner. Thus, after the request is complete the"]
+        #[doc = "xdg_positioner object can be destroyed or reused; further changes to the"]
+        #[doc = "object will have no effect on previous usages."]
+        #[doc = ""]
+        #[doc = "For an xdg_positioner object to be considered complete, it must have a"]
+        #[doc = "non-zero size set by set_size, and a non-zero anchor rectangle set by"]
+        #[doc = "set_anchor_rect. Passing an incomplete xdg_positioner object when"]
+        #[doc = "positioning a surface raises an invalid_positioner error."]
         pub trait XdgPositioner: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_positioner";
             const VERSION: u32 = 6u32;
@@ -8894,53 +8855,6 @@ pub mod xdg_shell {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An interface that may be implemented by a wl_surface, for"]
-    #[doc = "implementations that provide a desktop-style user interface."]
-    #[doc = ""]
-    #[doc = "It provides a base set of functionality required to construct user"]
-    #[doc = "interface elements requiring management by the compositor, such as"]
-    #[doc = "toplevel windows, menus, etc. The types of functionality are split into"]
-    #[doc = "xdg_surface roles."]
-    #[doc = ""]
-    #[doc = "Creating an xdg_surface does not set the role for a wl_surface. In order"]
-    #[doc = "to map an xdg_surface, the client must create a role-specific object"]
-    #[doc = "using, e.g., get_toplevel, get_popup. The wl_surface for any given"]
-    #[doc = "xdg_surface can have at most one role, and may not be assigned any role"]
-    #[doc = "not based on xdg_surface."]
-    #[doc = ""]
-    #[doc = "A role must be assigned before any other requests are made to the"]
-    #[doc = "xdg_surface object."]
-    #[doc = ""]
-    #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
-    #[doc = "for the xdg_surface state to take effect."]
-    #[doc = ""]
-    #[doc = "Creating an xdg_surface from a wl_surface which has a buffer attached or"]
-    #[doc = "committed is a client error, and any attempts by a client to attach or"]
-    #[doc = "manipulate a buffer prior to the first xdg_surface.configure call must"]
-    #[doc = "also be treated as errors."]
-    #[doc = ""]
-    #[doc = "After creating a role-specific object and setting it up, the client must"]
-    #[doc = "perform an initial commit without any buffer attached. The compositor"]
-    #[doc = "will reply with initial wl_surface state such as"]
-    #[doc = "wl_surface.preferred_buffer_scale followed by an xdg_surface.configure"]
-    #[doc = "event. The client must acknowledge it and is then allowed to attach a"]
-    #[doc = "buffer to map the surface."]
-    #[doc = ""]
-    #[doc = "Mapping an xdg_surface-based role surface is defined as making it"]
-    #[doc = "possible for the surface to be shown by the compositor. Note that"]
-    #[doc = "a mapped surface is not guaranteed to be visible once it is mapped."]
-    #[doc = ""]
-    #[doc = "For an xdg_surface to be mapped by the compositor, the following"]
-    #[doc = "conditions must be met:"]
-    #[doc = "(1) the client has assigned an xdg_surface-based role to the surface"]
-    #[doc = "(2) the client has set and committed the xdg_surface state and the"]
-    #[doc = "role-dependent state to the surface"]
-    #[doc = "(3) the client has committed a buffer to the surface"]
-    #[doc = ""]
-    #[doc = "A newly-unmapped surface is considered to have met condition (1) out"]
-    #[doc = "of the 3 required conditions for mapping a surface if its role surface"]
-    #[doc = "has not been destroyed, i.e. the client must perform the initial commit"]
-    #[doc = "again before attaching a buffer."]
     pub mod xdg_surface {
         #[repr(u32)]
         #[non_exhaustive]
@@ -8973,7 +8887,53 @@ pub mod xdg_shell {
                 }
             }
         }
-        #[doc = "Trait to implement the xdg_surface interface. See the module level documentation for more info"]
+        #[doc = "An interface that may be implemented by a wl_surface, for"]
+        #[doc = "implementations that provide a desktop-style user interface."]
+        #[doc = ""]
+        #[doc = "It provides a base set of functionality required to construct user"]
+        #[doc = "interface elements requiring management by the compositor, such as"]
+        #[doc = "toplevel windows, menus, etc. The types of functionality are split into"]
+        #[doc = "xdg_surface roles."]
+        #[doc = ""]
+        #[doc = "Creating an xdg_surface does not set the role for a wl_surface. In order"]
+        #[doc = "to map an xdg_surface, the client must create a role-specific object"]
+        #[doc = "using, e.g., get_toplevel, get_popup. The wl_surface for any given"]
+        #[doc = "xdg_surface can have at most one role, and may not be assigned any role"]
+        #[doc = "not based on xdg_surface."]
+        #[doc = ""]
+        #[doc = "A role must be assigned before any other requests are made to the"]
+        #[doc = "xdg_surface object."]
+        #[doc = ""]
+        #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
+        #[doc = "for the xdg_surface state to take effect."]
+        #[doc = ""]
+        #[doc = "Creating an xdg_surface from a wl_surface which has a buffer attached or"]
+        #[doc = "committed is a client error, and any attempts by a client to attach or"]
+        #[doc = "manipulate a buffer prior to the first xdg_surface.configure call must"]
+        #[doc = "also be treated as errors."]
+        #[doc = ""]
+        #[doc = "After creating a role-specific object and setting it up, the client must"]
+        #[doc = "perform an initial commit without any buffer attached. The compositor"]
+        #[doc = "will reply with initial wl_surface state such as"]
+        #[doc = "wl_surface.preferred_buffer_scale followed by an xdg_surface.configure"]
+        #[doc = "event. The client must acknowledge it and is then allowed to attach a"]
+        #[doc = "buffer to map the surface."]
+        #[doc = ""]
+        #[doc = "Mapping an xdg_surface-based role surface is defined as making it"]
+        #[doc = "possible for the surface to be shown by the compositor. Note that"]
+        #[doc = "a mapped surface is not guaranteed to be visible once it is mapped."]
+        #[doc = ""]
+        #[doc = "For an xdg_surface to be mapped by the compositor, the following"]
+        #[doc = "conditions must be met:"]
+        #[doc = "(1) the client has assigned an xdg_surface-based role to the surface"]
+        #[doc = "(2) the client has set and committed the xdg_surface state and the"]
+        #[doc = "role-dependent state to the surface"]
+        #[doc = "(3) the client has committed a buffer to the surface"]
+        #[doc = ""]
+        #[doc = "A newly-unmapped surface is considered to have met condition (1) out"]
+        #[doc = "of the 3 required conditions for mapping a surface if its role surface"]
+        #[doc = "has not been destroyed, i.e. the client must perform the initial commit"]
+        #[doc = "again before attaching a buffer."]
         pub trait XdgSurface: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_surface";
             const VERSION: u32 = 6u32;
@@ -9190,27 +9150,6 @@ pub mod xdg_shell {
             }
         }
     }
-    #[doc = "This interface defines an xdg_surface role which allows a surface to,"]
-    #[doc = "among other things, set window-like properties such as maximize,"]
-    #[doc = "fullscreen, and minimize, set application-specific metadata like title and"]
-    #[doc = "id, and well as trigger user interactive operations such as interactive"]
-    #[doc = "resize and move."]
-    #[doc = ""]
-    #[doc = "A xdg_toplevel by default is responsible for providing the full intended"]
-    #[doc = "visual representation of the toplevel, which depending on the window"]
-    #[doc = "state, may mean things like a title bar, window controls and drop shadow."]
-    #[doc = ""]
-    #[doc = "Unmapping an xdg_toplevel means that the surface cannot be shown"]
-    #[doc = "by the compositor until it is explicitly mapped again."]
-    #[doc = "All active operations (e.g., move, resize) are canceled and all"]
-    #[doc = "attributes (e.g. title, state, stacking, ...) are discarded for"]
-    #[doc = "an xdg_toplevel surface when it is unmapped. The xdg_toplevel returns to"]
-    #[doc = "the state it had right after xdg_surface.get_toplevel. The client"]
-    #[doc = "can re-map the toplevel by perfoming a commit without any buffer"]
-    #[doc = "attached, waiting for a configure event and handling it as usual (see"]
-    #[doc = "xdg_surface description)."]
-    #[doc = ""]
-    #[doc = "Attaching a null buffer to a toplevel unmaps the surface."]
     pub mod xdg_toplevel {
         #[repr(u32)]
         #[non_exhaustive]
@@ -9335,7 +9274,27 @@ pub mod xdg_shell {
                 }
             }
         }
-        #[doc = "Trait to implement the xdg_toplevel interface. See the module level documentation for more info"]
+        #[doc = "This interface defines an xdg_surface role which allows a surface to,"]
+        #[doc = "among other things, set window-like properties such as maximize,"]
+        #[doc = "fullscreen, and minimize, set application-specific metadata like title and"]
+        #[doc = "id, and well as trigger user interactive operations such as interactive"]
+        #[doc = "resize and move."]
+        #[doc = ""]
+        #[doc = "A xdg_toplevel by default is responsible for providing the full intended"]
+        #[doc = "visual representation of the toplevel, which depending on the window"]
+        #[doc = "state, may mean things like a title bar, window controls and drop shadow."]
+        #[doc = ""]
+        #[doc = "Unmapping an xdg_toplevel means that the surface cannot be shown"]
+        #[doc = "by the compositor until it is explicitly mapped again."]
+        #[doc = "All active operations (e.g., move, resize) are canceled and all"]
+        #[doc = "attributes (e.g. title, state, stacking, ...) are discarded for"]
+        #[doc = "an xdg_toplevel surface when it is unmapped. The xdg_toplevel returns to"]
+        #[doc = "the state it had right after xdg_surface.get_toplevel. The client"]
+        #[doc = "can re-map the toplevel by perfoming a commit without any buffer"]
+        #[doc = "attached, waiting for a configure event and handling it as usual (see"]
+        #[doc = "xdg_surface description)."]
+        #[doc = ""]
+        #[doc = "Attaching a null buffer to a toplevel unmaps the surface."]
         pub trait XdgToplevel: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_toplevel";
             const VERSION: u32 = 6u32;
@@ -9935,30 +9894,6 @@ pub mod xdg_shell {
             }
         }
     }
-    #[doc = "A popup surface is a short-lived, temporary surface. It can be used to"]
-    #[doc = "implement for example menus, popovers, tooltips and other similar user"]
-    #[doc = "interface concepts."]
-    #[doc = ""]
-    #[doc = "A popup can be made to take an explicit grab. See xdg_popup.grab for"]
-    #[doc = "details."]
-    #[doc = ""]
-    #[doc = "When the popup is dismissed, a popup_done event will be sent out, and at"]
-    #[doc = "the same time the surface will be unmapped. See the xdg_popup.popup_done"]
-    #[doc = "event for details."]
-    #[doc = ""]
-    #[doc = "Explicitly destroying the xdg_popup object will also dismiss the popup and"]
-    #[doc = "unmap the surface. Clients that want to dismiss the popup when another"]
-    #[doc = "surface of their own is clicked should dismiss the popup using the destroy"]
-    #[doc = "request."]
-    #[doc = ""]
-    #[doc = "A newly created xdg_popup will be stacked on top of all previously created"]
-    #[doc = "xdg_popup surfaces associated with the same xdg_toplevel."]
-    #[doc = ""]
-    #[doc = "The parent of an xdg_popup must be mapped (see the xdg_surface"]
-    #[doc = "description) before the xdg_popup itself."]
-    #[doc = ""]
-    #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
-    #[doc = "for the xdg_popup state to take effect."]
     pub mod xdg_popup {
         #[repr(u32)]
         #[non_exhaustive]
@@ -9976,7 +9911,30 @@ pub mod xdg_shell {
                 }
             }
         }
-        #[doc = "Trait to implement the xdg_popup interface. See the module level documentation for more info"]
+        #[doc = "A popup surface is a short-lived, temporary surface. It can be used to"]
+        #[doc = "implement for example menus, popovers, tooltips and other similar user"]
+        #[doc = "interface concepts."]
+        #[doc = ""]
+        #[doc = "A popup can be made to take an explicit grab. See xdg_popup.grab for"]
+        #[doc = "details."]
+        #[doc = ""]
+        #[doc = "When the popup is dismissed, a popup_done event will be sent out, and at"]
+        #[doc = "the same time the surface will be unmapped. See the xdg_popup.popup_done"]
+        #[doc = "event for details."]
+        #[doc = ""]
+        #[doc = "Explicitly destroying the xdg_popup object will also dismiss the popup and"]
+        #[doc = "unmap the surface. Clients that want to dismiss the popup when another"]
+        #[doc = "surface of their own is clicked should dismiss the popup using the destroy"]
+        #[doc = "request."]
+        #[doc = ""]
+        #[doc = "A newly created xdg_popup will be stacked on top of all previously created"]
+        #[doc = "xdg_popup surfaces associated with the same xdg_toplevel."]
+        #[doc = ""]
+        #[doc = "The parent of an xdg_popup must be mapped (see the xdg_surface"]
+        #[doc = "description) before the xdg_popup itself."]
+        #[doc = ""]
+        #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
+        #[doc = "for the xdg_popup state to take effect."]
         pub trait XdgPopup: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_popup";
             const VERSION: u32 = 6u32;
@@ -10188,14 +10146,6 @@ pub mod xdg_shell {
     }
 }
 pub mod alpha_modifier_v1 {
-    #[doc = "This interface allows a client to set a factor for the alpha values on a"]
-    #[doc = "surface, which can be used to offload such operations to the compositor,"]
-    #[doc = "which can in turn for example offload them to KMS."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_alpha_modifier_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -10213,7 +10163,14 @@ pub mod alpha_modifier_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_alpha_modifier_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface allows a client to set a factor for the alpha values on a"]
+        #[doc = "surface, which can be used to offload such operations to the compositor,"]
+        #[doc = "which can in turn for example offload them to KMS."]
+        #[doc = ""]
+        #[doc = "Warning! The protocol described in this file is currently in the testing"]
+        #[doc = "phase. Backward compatible changes may be added together with the"]
+        #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+        #[doc = "only be done by creating a new major version of the extension."]
         pub trait WpAlphaModifierV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_alpha_modifier_v1";
             const VERSION: u32 = 1u32;
@@ -10270,13 +10227,6 @@ pub mod alpha_modifier_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "This interface allows the client to set a factor for the alpha values on"]
-    #[doc = "a surface, which can be used to offload such operations to the compositor."]
-    #[doc = "The default factor is UINT32_MAX."]
-    #[doc = ""]
-    #[doc = "This object has to be destroyed before the associated wl_surface. Once the"]
-    #[doc = "wl_surface is destroyed, all request on this object will raise the"]
-    #[doc = "no_surface error."]
     pub mod wp_alpha_modifier_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -10294,7 +10244,13 @@ pub mod alpha_modifier_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_alpha_modifier_surface_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface allows the client to set a factor for the alpha values on"]
+        #[doc = "a surface, which can be used to offload such operations to the compositor."]
+        #[doc = "The default factor is UINT32_MAX."]
+        #[doc = ""]
+        #[doc = "This object has to be destroyed before the associated wl_surface. Once the"]
+        #[doc = "wl_surface is destroyed, all request on this object will raise the"]
+        #[doc = "no_surface error."]
         pub trait WpAlphaModifierSurfaceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_alpha_modifier_surface_v1";
             const VERSION: u32 = 1u32;
@@ -10356,13 +10312,6 @@ pub mod alpha_modifier_v1 {
     }
 }
 pub mod content_type_v1 {
-    #[doc = "This interface allows a client to describe the kind of content a surface"]
-    #[doc = "will display, to allow the compositor to optimize its behavior for it."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_content_type_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -10380,7 +10329,13 @@ pub mod content_type_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_content_type_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface allows a client to describe the kind of content a surface"]
+        #[doc = "will display, to allow the compositor to optimize its behavior for it."]
+        #[doc = ""]
+        #[doc = "Warning! The protocol described in this file is currently in the testing"]
+        #[doc = "phase. Backward compatible changes may be added together with the"]
+        #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+        #[doc = "only be done by creating a new major version of the extension."]
         pub trait WpContentTypeManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_content_type_manager_v1";
             const VERSION: u32 = 1u32;
@@ -10441,13 +10396,6 @@ pub mod content_type_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "The content type object allows the compositor to optimize for the kind"]
-    #[doc = "of content shown on the surface. A compositor may for example use it to"]
-    #[doc = "set relevant drm properties like \"content type\"."]
-    #[doc = ""]
-    #[doc = "The client may request to switch to another content type at any time."]
-    #[doc = "When the associated surface gets destroyed, this object becomes inert and"]
-    #[doc = "the client should destroy it."]
     pub mod wp_content_type_v1 {
         #[doc = "These values describe the available content types for a surface."]
         #[repr(u32)]
@@ -10471,7 +10419,13 @@ pub mod content_type_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_content_type_v1 interface. See the module level documentation for more info"]
+        #[doc = "The content type object allows the compositor to optimize for the kind"]
+        #[doc = "of content shown on the surface. A compositor may for example use it to"]
+        #[doc = "set relevant drm properties like \"content type\"."]
+        #[doc = ""]
+        #[doc = "The client may request to switch to another content type at any time."]
+        #[doc = "When the associated surface gets destroyed, this object becomes inert and"]
+        #[doc = "the client should destroy it."]
         pub trait WpContentTypeV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_content_type_v1";
             const VERSION: u32 = 1u32;
@@ -10526,16 +10480,15 @@ pub mod content_type_v1 {
     }
 }
 pub mod cursor_shape_v1 {
-    #[doc = "This global offers an alternative, optional way to set cursor images. This"]
-    #[doc = "new way uses enumerated cursors instead of a wl_surface like"]
-    #[doc = "wl_pointer.set_cursor does."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_cursor_shape_manager_v1 {
-        #[doc = "Trait to implement the wp_cursor_shape_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "This global offers an alternative, optional way to set cursor images. This"]
+        #[doc = "new way uses enumerated cursors instead of a wl_surface like"]
+        #[doc = "wl_pointer.set_cursor does."]
+        #[doc = ""]
+        #[doc = "Warning! The protocol described in this file is currently in the testing"]
+        #[doc = "phase. Backward compatible changes may be added together with the"]
+        #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+        #[doc = "only be done by creating a new major version of the extension."]
         pub trait WpCursorShapeManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_cursor_shape_manager_v1";
             const VERSION: u32 = 1u32;
@@ -10614,7 +10567,6 @@ pub mod cursor_shape_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "This interface allows clients to set the cursor shape."]
     pub mod wp_cursor_shape_device_v1 {
         #[doc = "This enum describes cursor shapes."]
         #[doc = ""]
@@ -10751,7 +10703,7 @@ pub mod cursor_shape_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_cursor_shape_device_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface allows clients to set the cursor shape."]
         pub trait WpCursorShapeDeviceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_cursor_shape_device_v1";
             const VERSION: u32 = 1u32;
@@ -10817,38 +10769,37 @@ pub mod cursor_shape_v1 {
     }
 }
 pub mod drm_lease_v1 {
-    #[doc = "This protocol is used by Wayland compositors which act as Direct"]
-    #[doc = "Rendering Manager (DRM) masters to lease DRM resources to Wayland"]
-    #[doc = "clients."]
-    #[doc = ""]
-    #[doc = "The compositor will advertise one wp_drm_lease_device_v1 global for each"]
-    #[doc = "DRM node. Some time after a client binds to the wp_drm_lease_device_v1"]
-    #[doc = "global, the compositor will send a drm_fd event followed by zero, one or"]
-    #[doc = "more connector events. After all currently available connectors have been"]
-    #[doc = "sent, the compositor will send a wp_drm_lease_device_v1.done event."]
-    #[doc = ""]
-    #[doc = "When the list of connectors available for lease changes the compositor"]
-    #[doc = "will send wp_drm_lease_device_v1.connector events for added connectors and"]
-    #[doc = "wp_drm_lease_connector_v1.withdrawn events for removed connectors,"]
-    #[doc = "followed by a wp_drm_lease_device_v1.done event."]
-    #[doc = ""]
-    #[doc = "The compositor will indicate when a device is gone by removing the global"]
-    #[doc = "via a wl_registry.global_remove event. Upon receiving this event, the"]
-    #[doc = "client should destroy any matching wp_drm_lease_device_v1 object."]
-    #[doc = ""]
-    #[doc = "To destroy a wp_drm_lease_device_v1 object, the client must first issue"]
-    #[doc = "a release request. Upon receiving this request, the compositor will"]
-    #[doc = "immediately send a released event and destroy the object. The client must"]
-    #[doc = "continue to process and discard drm_fd and connector events until it"]
-    #[doc = "receives the released event. Upon receiving the released event, the"]
-    #[doc = "client can safely cleanup any client-side resources."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_drm_lease_device_v1 {
-        #[doc = "Trait to implement the wp_drm_lease_device_v1 interface. See the module level documentation for more info"]
+        #[doc = "This protocol is used by Wayland compositors which act as Direct"]
+        #[doc = "Rendering Manager (DRM) masters to lease DRM resources to Wayland"]
+        #[doc = "clients."]
+        #[doc = ""]
+        #[doc = "The compositor will advertise one wp_drm_lease_device_v1 global for each"]
+        #[doc = "DRM node. Some time after a client binds to the wp_drm_lease_device_v1"]
+        #[doc = "global, the compositor will send a drm_fd event followed by zero, one or"]
+        #[doc = "more connector events. After all currently available connectors have been"]
+        #[doc = "sent, the compositor will send a wp_drm_lease_device_v1.done event."]
+        #[doc = ""]
+        #[doc = "When the list of connectors available for lease changes the compositor"]
+        #[doc = "will send wp_drm_lease_device_v1.connector events for added connectors and"]
+        #[doc = "wp_drm_lease_connector_v1.withdrawn events for removed connectors,"]
+        #[doc = "followed by a wp_drm_lease_device_v1.done event."]
+        #[doc = ""]
+        #[doc = "The compositor will indicate when a device is gone by removing the global"]
+        #[doc = "via a wl_registry.global_remove event. Upon receiving this event, the"]
+        #[doc = "client should destroy any matching wp_drm_lease_device_v1 object."]
+        #[doc = ""]
+        #[doc = "To destroy a wp_drm_lease_device_v1 object, the client must first issue"]
+        #[doc = "a release request. Upon receiving this request, the compositor will"]
+        #[doc = "immediately send a released event and destroy the object. The client must"]
+        #[doc = "continue to process and discard drm_fd and connector events until it"]
+        #[doc = "receives the released event. Upon receiving the released event, the"]
+        #[doc = "client can safely cleanup any client-side resources."]
+        #[doc = ""]
+        #[doc = "Warning! The protocol described in this file is currently in the testing"]
+        #[doc = "phase. Backward compatible changes may be added together with the"]
+        #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+        #[doc = "only be done by creating a new major version of the extension."]
         pub trait WpDrmLeaseDeviceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_drm_lease_device_v1";
             const VERSION: u32 = 1u32;
@@ -10989,15 +10940,14 @@ pub mod drm_lease_v1 {
             }
         }
     }
-    #[doc = "Represents a DRM connector which is available for lease. These objects are"]
-    #[doc = "created via wp_drm_lease_device_v1.connector events, and should be passed"]
-    #[doc = "to lease requests via wp_drm_lease_request_v1.request_connector."]
-    #[doc = "Immediately after the wp_drm_lease_connector_v1 object is created the"]
-    #[doc = "compositor will send a name, a description, a connector_id and a done"]
-    #[doc = "event. When the description is updated the compositor will send a"]
-    #[doc = "description event followed by a done event."]
     pub mod wp_drm_lease_connector_v1 {
-        #[doc = "Trait to implement the wp_drm_lease_connector_v1 interface. See the module level documentation for more info"]
+        #[doc = "Represents a DRM connector which is available for lease. These objects are"]
+        #[doc = "created via wp_drm_lease_device_v1.connector events, and should be passed"]
+        #[doc = "to lease requests via wp_drm_lease_request_v1.request_connector."]
+        #[doc = "Immediately after the wp_drm_lease_connector_v1 object is created the"]
+        #[doc = "compositor will send a name, a description, a connector_id and a done"]
+        #[doc = "event. When the description is updated the compositor will send a"]
+        #[doc = "description event followed by a done event."]
         pub trait WpDrmLeaseConnectorV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_drm_lease_connector_v1";
             const VERSION: u32 = 1u32;
@@ -11128,10 +11078,6 @@ pub mod drm_lease_v1 {
             }
         }
     }
-    #[doc = "A client that wishes to lease DRM resources will attach the list of"]
-    #[doc = "connectors advertised with wp_drm_lease_device_v1.connector that they"]
-    #[doc = "wish to lease, then use wp_drm_lease_request_v1.submit to submit the"]
-    #[doc = "request."]
     pub mod wp_drm_lease_request_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -11155,7 +11101,10 @@ pub mod drm_lease_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_drm_lease_request_v1 interface. See the module level documentation for more info"]
+        #[doc = "A client that wishes to lease DRM resources will attach the list of"]
+        #[doc = "connectors advertised with wp_drm_lease_device_v1.connector that they"]
+        #[doc = "wish to lease, then use wp_drm_lease_request_v1.submit to submit the"]
+        #[doc = "request."]
         pub trait WpDrmLeaseRequestV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_drm_lease_request_v1";
             const VERSION: u32 = 1u32;
@@ -11231,16 +11180,15 @@ pub mod drm_lease_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "A DRM lease object is used to transfer the DRM file descriptor to the"]
-    #[doc = "client and manage the lifetime of the lease."]
-    #[doc = ""]
-    #[doc = "Some time after the wp_drm_lease_v1 object is created, the compositor"]
-    #[doc = "will reply with the lease request's result. If the lease request is"]
-    #[doc = "granted, the compositor will send a lease_fd event. If the lease request"]
-    #[doc = "is denied, the compositor will send a finished event without a lease_fd"]
-    #[doc = "event."]
     pub mod wp_drm_lease_v1 {
-        #[doc = "Trait to implement the wp_drm_lease_v1 interface. See the module level documentation for more info"]
+        #[doc = "A DRM lease object is used to transfer the DRM file descriptor to the"]
+        #[doc = "client and manage the lifetime of the lease."]
+        #[doc = ""]
+        #[doc = "Some time after the wp_drm_lease_v1 object is created, the compositor"]
+        #[doc = "will reply with the lease request's result. If the lease request is"]
+        #[doc = "granted, the compositor will send a lease_fd event. If the lease request"]
+        #[doc = "is denied, the compositor will send a finished event without a lease_fd"]
+        #[doc = "event."]
         pub trait WpDrmLeaseV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_drm_lease_v1";
             const VERSION: u32 = 1u32;
@@ -11339,24 +11287,23 @@ pub mod drm_lease_v1 {
 #[doc = "corresponding interface version bump. Backward incompatible changes can"]
 #[doc = "only be done by creating a new major version of the extension."]
 pub mod ext_foreign_toplevel_list_v1 {
-    #[doc = "A toplevel is defined as a surface with a role similar to xdg_toplevel."]
-    #[doc = "XWayland surfaces may be treated like toplevels in this protocol."]
-    #[doc = ""]
-    #[doc = "After a client binds the ext_foreign_toplevel_list_v1, each mapped"]
-    #[doc = "toplevel window will be sent using the ext_foreign_toplevel_list_v1.toplevel"]
-    #[doc = "event."]
-    #[doc = ""]
-    #[doc = "Clients which only care about the current state can perform a roundtrip after"]
-    #[doc = "binding this global."]
-    #[doc = ""]
-    #[doc = "For each instance of ext_foreign_toplevel_list_v1, the compositor must"]
-    #[doc = "create a new ext_foreign_toplevel_handle_v1 object for each mapped toplevel."]
-    #[doc = ""]
-    #[doc = "If a compositor implementation sends the ext_foreign_toplevel_list_v1.finished"]
-    #[doc = "event after the global is bound, the compositor must not send any"]
-    #[doc = "ext_foreign_toplevel_list_v1.toplevel events."]
     pub mod ext_foreign_toplevel_list_v1 {
-        #[doc = "Trait to implement the ext_foreign_toplevel_list_v1 interface. See the module level documentation for more info"]
+        #[doc = "A toplevel is defined as a surface with a role similar to xdg_toplevel."]
+        #[doc = "XWayland surfaces may be treated like toplevels in this protocol."]
+        #[doc = ""]
+        #[doc = "After a client binds the ext_foreign_toplevel_list_v1, each mapped"]
+        #[doc = "toplevel window will be sent using the ext_foreign_toplevel_list_v1.toplevel"]
+        #[doc = "event."]
+        #[doc = ""]
+        #[doc = "Clients which only care about the current state can perform a roundtrip after"]
+        #[doc = "binding this global."]
+        #[doc = ""]
+        #[doc = "For each instance of ext_foreign_toplevel_list_v1, the compositor must"]
+        #[doc = "create a new ext_foreign_toplevel_handle_v1 object for each mapped toplevel."]
+        #[doc = ""]
+        #[doc = "If a compositor implementation sends the ext_foreign_toplevel_list_v1.finished"]
+        #[doc = "event after the global is bound, the compositor must not send any"]
+        #[doc = "ext_foreign_toplevel_list_v1.toplevel events."]
         pub trait ExtForeignToplevelListV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_foreign_toplevel_list_v1";
             const VERSION: u32 = 1u32;
@@ -11450,10 +11397,9 @@ pub mod ext_foreign_toplevel_list_v1 {
             }
         }
     }
-    #[doc = "A ext_foreign_toplevel_handle_v1 object represents a mapped toplevel"]
-    #[doc = "window. A single app may have multiple mapped toplevels."]
     pub mod ext_foreign_toplevel_handle_v1 {
-        #[doc = "Trait to implement the ext_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
+        #[doc = "A ext_foreign_toplevel_handle_v1 object represents a mapped toplevel"]
+        #[doc = "window. A single app may have multiple mapped toplevels."]
         pub trait ExtForeignToplevelHandleV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_foreign_toplevel_handle_v1";
             const VERSION: u32 = 1u32;
@@ -11615,12 +11561,11 @@ pub mod ext_foreign_toplevel_list_v1 {
     }
 }
 pub mod ext_idle_notify_v1 {
-    #[doc = "This interface allows clients to monitor user idle status."]
-    #[doc = ""]
-    #[doc = "After binding to this global, clients can create ext_idle_notification_v1"]
-    #[doc = "objects to get notified when the user is idle for a given amount of time."]
     pub mod ext_idle_notifier_v1 {
-        #[doc = "Trait to implement the ext_idle_notifier_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface allows clients to monitor user idle status."]
+        #[doc = ""]
+        #[doc = "After binding to this global, clients can create ext_idle_notification_v1"]
+        #[doc = "objects to get notified when the user is idle for a given amount of time."]
         pub trait ExtIdleNotifierV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_idle_notifier_v1";
             const VERSION: u32 = 1u32;
@@ -11687,22 +11632,21 @@ pub mod ext_idle_notify_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "This interface is used by the compositor to send idle notification events"]
-    #[doc = "to clients."]
-    #[doc = ""]
-    #[doc = "Initially the notification object is not idle. The notification object"]
-    #[doc = "becomes idle when no user activity has happened for at least the timeout"]
-    #[doc = "duration, starting from the creation of the notification object. User"]
-    #[doc = "activity may include input events or a presence sensor, but is"]
-    #[doc = "compositor-specific. If an idle inhibitor is active (e.g. another client"]
-    #[doc = "has created a zwp_idle_inhibitor_v1 on a visible surface), the compositor"]
-    #[doc = "must not make the notification object idle."]
-    #[doc = ""]
-    #[doc = "When the notification object becomes idle, an idled event is sent. When"]
-    #[doc = "user activity starts again, the notification object stops being idle,"]
-    #[doc = "a resumed event is sent and the timeout is restarted."]
     pub mod ext_idle_notification_v1 {
-        #[doc = "Trait to implement the ext_idle_notification_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface is used by the compositor to send idle notification events"]
+        #[doc = "to clients."]
+        #[doc = ""]
+        #[doc = "Initially the notification object is not idle. The notification object"]
+        #[doc = "becomes idle when no user activity has happened for at least the timeout"]
+        #[doc = "duration, starting from the creation of the notification object. User"]
+        #[doc = "activity may include input events or a presence sensor, but is"]
+        #[doc = "compositor-specific. If an idle inhibitor is active (e.g. another client"]
+        #[doc = "has created a zwp_idle_inhibitor_v1 on a visible surface), the compositor"]
+        #[doc = "must not make the notification object idle."]
+        #[doc = ""]
+        #[doc = "When the notification object becomes idle, an idled event is sent. When"]
+        #[doc = "user activity starts again, the notification object stops being idle,"]
+        #[doc = "a resumed event is sent and the timeout is restarted."]
         pub trait ExtIdleNotificationV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_idle_notification_v1";
             const VERSION: u32 = 1u32;
@@ -11789,9 +11733,8 @@ pub mod ext_idle_notify_v1 {
 #[doc = "the corresponding interface version bump. Backward incompatible changes"]
 #[doc = "can only be done by creating a new major version of the extension."]
 pub mod ext_session_lock_v1 {
-    #[doc = "This interface is used to request that the session be locked."]
     pub mod ext_session_lock_manager_v1 {
-        #[doc = "Trait to implement the ext_session_lock_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface is used to request that the session be locked."]
         pub trait ExtSessionLockManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_session_lock_manager_v1";
             const VERSION: u32 = 1u32;
@@ -11846,54 +11789,6 @@ pub mod ext_session_lock_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "In response to the creation of this object the compositor must send"]
-    #[doc = "either the locked or finished event."]
-    #[doc = ""]
-    #[doc = "The locked event indicates that the session is locked. This means"]
-    #[doc = "that the compositor must stop rendering and providing input to normal"]
-    #[doc = "clients. Instead the compositor must blank all outputs with an opaque"]
-    #[doc = "color such that their normal content is fully hidden."]
-    #[doc = ""]
-    #[doc = "The only surfaces that should be rendered while the session is locked"]
-    #[doc = "are the lock surfaces created through this interface and optionally,"]
-    #[doc = "at the compositor's discretion, special privileged surfaces such as"]
-    #[doc = "input methods or portions of desktop shell UIs."]
-    #[doc = ""]
-    #[doc = "The locked event must not be sent until a new \"locked\" frame (either"]
-    #[doc = "from a session lock surface or the compositor blanking the output) has"]
-    #[doc = "been presented on all outputs and no security sensitive normal/unlocked"]
-    #[doc = "content is possibly visible."]
-    #[doc = ""]
-    #[doc = "The finished event should be sent immediately on creation of this"]
-    #[doc = "object if the compositor decides that the locked event will not be sent."]
-    #[doc = ""]
-    #[doc = "The compositor may wait for the client to create and render session lock"]
-    #[doc = "surfaces before sending the locked event to avoid displaying intermediate"]
-    #[doc = "blank frames. However, it must impose a reasonable time limit if"]
-    #[doc = "waiting and send the locked event as soon as the hard requirements"]
-    #[doc = "described above can be met if the time limit expires. Clients should"]
-    #[doc = "immediately create lock surfaces for all outputs on creation of this"]
-    #[doc = "object to make this possible."]
-    #[doc = ""]
-    #[doc = "This behavior of the locked event is required in order to prevent"]
-    #[doc = "possible race conditions with clients that wish to suspend the system"]
-    #[doc = "or similar after locking the session. Without these semantics, clients"]
-    #[doc = "triggering a suspend after receiving the locked event would race with"]
-    #[doc = "the first \"locked\" frame being presented and normal/unlocked frames"]
-    #[doc = "might be briefly visible as the system is resumed if the suspend"]
-    #[doc = "operation wins the race."]
-    #[doc = ""]
-    #[doc = "If the client dies while the session is locked, the compositor must not"]
-    #[doc = "unlock the session in response. It is acceptable for the session to be"]
-    #[doc = "permanently locked if this happens. The compositor may choose to continue"]
-    #[doc = "to display the lock surfaces the client had mapped before it died or"]
-    #[doc = "alternatively fall back to a solid color, this is compositor policy."]
-    #[doc = ""]
-    #[doc = "Compositors may also allow a secure way to recover the session, the"]
-    #[doc = "details of this are compositor policy. Compositors may allow a new"]
-    #[doc = "client to create a ext_session_lock_v1 object and take responsibility"]
-    #[doc = "for unlocking the session, they may even start a new lock client"]
-    #[doc = "instance automatically."]
     pub mod ext_session_lock_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -11923,7 +11818,54 @@ pub mod ext_session_lock_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the ext_session_lock_v1 interface. See the module level documentation for more info"]
+        #[doc = "In response to the creation of this object the compositor must send"]
+        #[doc = "either the locked or finished event."]
+        #[doc = ""]
+        #[doc = "The locked event indicates that the session is locked. This means"]
+        #[doc = "that the compositor must stop rendering and providing input to normal"]
+        #[doc = "clients. Instead the compositor must blank all outputs with an opaque"]
+        #[doc = "color such that their normal content is fully hidden."]
+        #[doc = ""]
+        #[doc = "The only surfaces that should be rendered while the session is locked"]
+        #[doc = "are the lock surfaces created through this interface and optionally,"]
+        #[doc = "at the compositor's discretion, special privileged surfaces such as"]
+        #[doc = "input methods or portions of desktop shell UIs."]
+        #[doc = ""]
+        #[doc = "The locked event must not be sent until a new \"locked\" frame (either"]
+        #[doc = "from a session lock surface or the compositor blanking the output) has"]
+        #[doc = "been presented on all outputs and no security sensitive normal/unlocked"]
+        #[doc = "content is possibly visible."]
+        #[doc = ""]
+        #[doc = "The finished event should be sent immediately on creation of this"]
+        #[doc = "object if the compositor decides that the locked event will not be sent."]
+        #[doc = ""]
+        #[doc = "The compositor may wait for the client to create and render session lock"]
+        #[doc = "surfaces before sending the locked event to avoid displaying intermediate"]
+        #[doc = "blank frames. However, it must impose a reasonable time limit if"]
+        #[doc = "waiting and send the locked event as soon as the hard requirements"]
+        #[doc = "described above can be met if the time limit expires. Clients should"]
+        #[doc = "immediately create lock surfaces for all outputs on creation of this"]
+        #[doc = "object to make this possible."]
+        #[doc = ""]
+        #[doc = "This behavior of the locked event is required in order to prevent"]
+        #[doc = "possible race conditions with clients that wish to suspend the system"]
+        #[doc = "or similar after locking the session. Without these semantics, clients"]
+        #[doc = "triggering a suspend after receiving the locked event would race with"]
+        #[doc = "the first \"locked\" frame being presented and normal/unlocked frames"]
+        #[doc = "might be briefly visible as the system is resumed if the suspend"]
+        #[doc = "operation wins the race."]
+        #[doc = ""]
+        #[doc = "If the client dies while the session is locked, the compositor must not"]
+        #[doc = "unlock the session in response. It is acceptable for the session to be"]
+        #[doc = "permanently locked if this happens. The compositor may choose to continue"]
+        #[doc = "to display the lock surfaces the client had mapped before it died or"]
+        #[doc = "alternatively fall back to a solid color, this is compositor policy."]
+        #[doc = ""]
+        #[doc = "Compositors may also allow a secure way to recover the session, the"]
+        #[doc = "details of this are compositor policy. Compositors may allow a new"]
+        #[doc = "client to create a ext_session_lock_v1 object and take responsibility"]
+        #[doc = "for unlocking the session, they may even start a new lock client"]
+        #[doc = "instance automatically."]
         pub trait ExtSessionLockV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_session_lock_v1";
             const VERSION: u32 = 1u32;
@@ -12086,21 +12028,6 @@ pub mod ext_session_lock_v1 {
             }
         }
     }
-    #[doc = "The client may use lock surfaces to display a screensaver, render a"]
-    #[doc = "dialog to enter a password and unlock the session, or however else it"]
-    #[doc = "sees fit."]
-    #[doc = ""]
-    #[doc = "On binding this interface the compositor will immediately send the"]
-    #[doc = "first configure event. After making the ack_configure request in"]
-    #[doc = "response to this event the client should attach and commit the first"]
-    #[doc = "buffer. Committing the surface before acking the first configure is a"]
-    #[doc = "protocol error. Committing the surface with a null buffer at any time"]
-    #[doc = "is a protocol error."]
-    #[doc = ""]
-    #[doc = "The compositor is free to handle keyboard/pointer focus for lock"]
-    #[doc = "surfaces however it chooses. A reasonable way to do this would be to"]
-    #[doc = "give the first lock surface created keyboard focus and change keyboard"]
-    #[doc = "focus if the user clicks on other surfaces."]
     pub mod ext_session_lock_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -12127,7 +12054,21 @@ pub mod ext_session_lock_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the ext_session_lock_surface_v1 interface. See the module level documentation for more info"]
+        #[doc = "The client may use lock surfaces to display a screensaver, render a"]
+        #[doc = "dialog to enter a password and unlock the session, or however else it"]
+        #[doc = "sees fit."]
+        #[doc = ""]
+        #[doc = "On binding this interface the compositor will immediately send the"]
+        #[doc = "first configure event. After making the ack_configure request in"]
+        #[doc = "response to this event the client should attach and commit the first"]
+        #[doc = "buffer. Committing the surface before acking the first configure is a"]
+        #[doc = "protocol error. Committing the surface with a null buffer at any time"]
+        #[doc = "is a protocol error."]
+        #[doc = ""]
+        #[doc = "The compositor is free to handle keyboard/pointer focus for lock"]
+        #[doc = "surfaces however it chooses. A reasonable way to do this would be to"]
+        #[doc = "give the first lock surface created keyboard focus and change keyboard"]
+        #[doc = "focus if the user clicks on other surfaces."]
         pub trait ExtSessionLockSurfaceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_session_lock_surface_v1";
             const VERSION: u32 = 1u32;
@@ -12249,9 +12190,8 @@ pub mod ext_session_lock_v1 {
 #[doc = "* Locate a \"wl_seat\" global with a matching name"]
 #[doc = "* Create virtual inputs using the resulting \"wl_seat\" global"]
 pub mod ext_transient_seat_v1 {
-    #[doc = "The transient seat manager creates short-lived seats."]
     pub mod ext_transient_seat_manager_v1 {
-        #[doc = "Trait to implement the ext_transient_seat_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "The transient seat manager creates short-lived seats."]
         pub trait ExtTransientSeatManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_transient_seat_manager_v1";
             const VERSION: u32 = 1u32;
@@ -12308,10 +12248,9 @@ pub mod ext_transient_seat_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "When the transient seat handle is destroyed, the seat itself will also be"]
-    #[doc = "destroyed."]
     pub mod ext_transient_seat_v1 {
-        #[doc = "Trait to implement the ext_transient_seat_v1 interface. See the module level documentation for more info"]
+        #[doc = "When the transient seat handle is destroyed, the seat itself will also be"]
+        #[doc = "destroyed."]
         pub trait ExtTransientSeatV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_transient_seat_v1";
             const VERSION: u32 = 1u32;
@@ -12404,7 +12343,6 @@ pub mod ext_transient_seat_v1 {
 #[doc = "For toplevel surfaces, the size is rounded halfway away from zero. The"]
 #[doc = "rounding algorithm for subsurface position and size is not defined."]
 pub mod fractional_scale_v1 {
-    #[doc = "A global interface for requesting surfaces to use fractional scales."]
     pub mod wp_fractional_scale_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -12422,7 +12360,7 @@ pub mod fractional_scale_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_fractional_scale_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "A global interface for requesting surfaces to use fractional scales."]
         pub trait WpFractionalScaleManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_fractional_scale_manager_v1";
             const VERSION: u32 = 1u32;
@@ -12484,10 +12422,9 @@ pub mod fractional_scale_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An additional interface to a wl_surface object which allows the compositor"]
-    #[doc = "to inform the client of the preferred scale."]
     pub mod wp_fractional_scale_v1 {
-        #[doc = "Trait to implement the wp_fractional_scale_v1 interface. See the module level documentation for more info"]
+        #[doc = "An additional interface to a wl_surface object which allows the compositor"]
+        #[doc = "to inform the client of the preferred scale."]
         pub trait WpFractionalScaleV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_fractional_scale_v1";
             const VERSION: u32 = 1u32;
@@ -12565,10 +12502,6 @@ pub mod fractional_scale_v1 {
 #[doc = "corresponding interface version bump. Backward incompatible changes can"]
 #[doc = "only be done by creating a new major version of the extension."]
 pub mod linux_drm_syncobj_v1 {
-    #[doc = "This global is a factory interface, allowing clients to request"]
-    #[doc = "explicit synchronization for buffers on a per-surface basis."]
-    #[doc = ""]
-    #[doc = "See wp_linux_drm_syncobj_surface_v1 for more information."]
     pub mod wp_linux_drm_syncobj_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -12589,7 +12522,10 @@ pub mod linux_drm_syncobj_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_linux_drm_syncobj_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "This global is a factory interface, allowing clients to request"]
+        #[doc = "explicit synchronization for buffers on a per-surface basis."]
+        #[doc = ""]
+        #[doc = "See wp_linux_drm_syncobj_surface_v1 for more information."]
         pub trait WpLinuxDrmSyncobjManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_manager_v1";
             const VERSION: u32 = 1u32;
@@ -12682,10 +12618,9 @@ pub mod linux_drm_syncobj_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "This object represents an explicit synchronization object timeline"]
-    #[doc = "imported by the client to the compositor."]
     pub mod wp_linux_drm_syncobj_timeline_v1 {
-        #[doc = "Trait to implement the wp_linux_drm_syncobj_timeline_v1 interface. See the module level documentation for more info"]
+        #[doc = "This object represents an explicit synchronization object timeline"]
+        #[doc = "imported by the client to the compositor."]
         pub trait WpLinuxDrmSyncobjTimelineV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_timeline_v1";
             const VERSION: u32 = 1u32;
@@ -12719,31 +12654,6 @@ pub mod linux_drm_syncobj_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "This object is an add-on interface for wl_surface to enable explicit"]
-    #[doc = "synchronization."]
-    #[doc = ""]
-    #[doc = "Each surface can be associated with only one object of this interface at"]
-    #[doc = "any time."]
-    #[doc = ""]
-    #[doc = "Explicit synchronization is guaranteed to be supported for buffers"]
-    #[doc = "created with any version of the linux-dmabuf protocol. Compositors are"]
-    #[doc = "free to support explicit synchronization for additional buffer types."]
-    #[doc = "If at surface commit time the attached buffer does not support explicit"]
-    #[doc = "synchronization, an unsupported_buffer error is raised."]
-    #[doc = ""]
-    #[doc = "As long as the wp_linux_drm_syncobj_surface_v1 object is alive, the"]
-    #[doc = "compositor may ignore implicit synchronization for buffers attached and"]
-    #[doc = "committed to the wl_surface. The delivery of wl_buffer.release events"]
-    #[doc = "for buffers attached to the surface becomes undefined."]
-    #[doc = ""]
-    #[doc = "Clients must set both acquire and release points if and only if a"]
-    #[doc = "non-null buffer is attached in the same surface commit. See the"]
-    #[doc = "no_buffer, no_acquire_point and no_release_point protocol errors."]
-    #[doc = ""]
-    #[doc = "If at surface commit time the acquire and release DRM syncobj timelines"]
-    #[doc = "are identical, the acquire point value must be strictly less than the"]
-    #[doc = "release point value, or else the conflicting_points protocol error is"]
-    #[doc = "raised."]
     pub mod wp_linux_drm_syncobj_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -12776,7 +12686,31 @@ pub mod linux_drm_syncobj_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_linux_drm_syncobj_surface_v1 interface. See the module level documentation for more info"]
+        #[doc = "This object is an add-on interface for wl_surface to enable explicit"]
+        #[doc = "synchronization."]
+        #[doc = ""]
+        #[doc = "Each surface can be associated with only one object of this interface at"]
+        #[doc = "any time."]
+        #[doc = ""]
+        #[doc = "Explicit synchronization is guaranteed to be supported for buffers"]
+        #[doc = "created with any version of the linux-dmabuf protocol. Compositors are"]
+        #[doc = "free to support explicit synchronization for additional buffer types."]
+        #[doc = "If at surface commit time the attached buffer does not support explicit"]
+        #[doc = "synchronization, an unsupported_buffer error is raised."]
+        #[doc = ""]
+        #[doc = "As long as the wp_linux_drm_syncobj_surface_v1 object is alive, the"]
+        #[doc = "compositor may ignore implicit synchronization for buffers attached and"]
+        #[doc = "committed to the wl_surface. The delivery of wl_buffer.release events"]
+        #[doc = "for buffers attached to the surface becomes undefined."]
+        #[doc = ""]
+        #[doc = "Clients must set both acquire and release points if and only if a"]
+        #[doc = "non-null buffer is attached in the same surface commit. See the"]
+        #[doc = "no_buffer, no_acquire_point and no_release_point protocol errors."]
+        #[doc = ""]
+        #[doc = "If at surface commit time the acquire and release DRM syncobj timelines"]
+        #[doc = "are identical, the acquire point value must be strictly less than the"]
+        #[doc = "release point value, or else the conflicting_points protocol error is"]
+        #[doc = "raised."]
         pub trait WpLinuxDrmSyncobjSurfaceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_surface_v1";
             const VERSION: u32 = 1u32;
@@ -12928,24 +12862,6 @@ pub mod linux_drm_syncobj_v1 {
     }
 }
 pub mod security_context_v1 {
-    #[doc = "This interface allows a client to register a new Wayland connection to"]
-    #[doc = "the compositor and attach a security context to it."]
-    #[doc = ""]
-    #[doc = "This is intended to be used by sandboxes. Sandbox engines attach a"]
-    #[doc = "security context to all connections coming from inside the sandbox. The"]
-    #[doc = "compositor can then restrict the features that the sandboxed connections"]
-    #[doc = "can use."]
-    #[doc = ""]
-    #[doc = "Compositors should forbid nesting multiple security contexts by not"]
-    #[doc = "exposing wp_security_context_manager_v1 global to clients with a security"]
-    #[doc = "context attached, or by sending the nested protocol error. Nested"]
-    #[doc = "security contexts are dangerous because they can potentially allow"]
-    #[doc = "privilege escalation of a sandboxed client."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_security_context_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -12966,7 +12882,24 @@ pub mod security_context_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_security_context_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface allows a client to register a new Wayland connection to"]
+        #[doc = "the compositor and attach a security context to it."]
+        #[doc = ""]
+        #[doc = "This is intended to be used by sandboxes. Sandbox engines attach a"]
+        #[doc = "security context to all connections coming from inside the sandbox. The"]
+        #[doc = "compositor can then restrict the features that the sandboxed connections"]
+        #[doc = "can use."]
+        #[doc = ""]
+        #[doc = "Compositors should forbid nesting multiple security contexts by not"]
+        #[doc = "exposing wp_security_context_manager_v1 global to clients with a security"]
+        #[doc = "context attached, or by sending the nested protocol error. Nested"]
+        #[doc = "security contexts are dangerous because they can potentially allow"]
+        #[doc = "privilege escalation of a sandboxed client."]
+        #[doc = ""]
+        #[doc = "Warning! The protocol described in this file is currently in the testing"]
+        #[doc = "phase. Backward compatible changes may be added together with the"]
+        #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+        #[doc = "only be done by creating a new major version of the extension."]
         pub trait WpSecurityContextManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_security_context_manager_v1";
             const VERSION: u32 = 1u32;
@@ -13038,16 +12971,6 @@ pub mod security_context_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "The security context allows a client to register a new client and attach"]
-    #[doc = "security context metadata to the connections."]
-    #[doc = ""]
-    #[doc = "When both are set, the combination of the application ID and the sandbox"]
-    #[doc = "engine must uniquely identify an application. The same application ID"]
-    #[doc = "will be used across instances (e.g. if the application is restarted, or"]
-    #[doc = "if the application is started multiple times)."]
-    #[doc = ""]
-    #[doc = "When both are set, the combination of the instance ID and the sandbox"]
-    #[doc = "engine must uniquely identify a running instance of an application."]
     pub mod wp_security_context_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -13071,7 +12994,16 @@ pub mod security_context_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_security_context_v1 interface. See the module level documentation for more info"]
+        #[doc = "The security context allows a client to register a new client and attach"]
+        #[doc = "security context metadata to the connections."]
+        #[doc = ""]
+        #[doc = "When both are set, the combination of the application ID and the sandbox"]
+        #[doc = "engine must uniquely identify an application. The same application ID"]
+        #[doc = "will be used across instances (e.g. if the application is restarted, or"]
+        #[doc = "if the application is started multiple times)."]
+        #[doc = ""]
+        #[doc = "When both are set, the combination of the instance ID and the sandbox"]
+        #[doc = "engine must uniquely identify a running instance of an application."]
         pub trait WpSecurityContextV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_security_context_v1";
             const VERSION: u32 = 1u32;
@@ -13220,10 +13152,9 @@ pub mod security_context_v1 {
 #[doc = "corresponding interface version bump. Backward incompatible changes can"]
 #[doc = "only be done by creating a new major version of the extension."]
 pub mod single_pixel_buffer_v1 {
-    #[doc = "The wp_single_pixel_buffer_manager_v1 interface is a factory for"]
-    #[doc = "single-pixel buffers."]
     pub mod wp_single_pixel_buffer_manager_v1 {
-        #[doc = "Trait to implement the wp_single_pixel_buffer_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "The wp_single_pixel_buffer_manager_v1 interface is a factory for"]
+        #[doc = "single-pixel buffers."]
         pub trait WpSinglePixelBufferManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_single_pixel_buffer_manager_v1";
             const VERSION: u32 = 1u32;
@@ -13296,21 +13227,6 @@ pub mod single_pixel_buffer_v1 {
     }
 }
 pub mod tearing_control_v1 {
-    #[doc = "For some use cases like games or drawing tablets it can make sense to"]
-    #[doc = "reduce latency by accepting tearing with the use of asynchronous page"]
-    #[doc = "flips. This global is a factory interface, allowing clients to inform"]
-    #[doc = "which type of presentation the content of their surfaces is suitable for."]
-    #[doc = ""]
-    #[doc = "Graphics APIs like EGL or Vulkan, that manage the buffer queue and commits"]
-    #[doc = "of a wl_surface themselves, are likely to be using this extension"]
-    #[doc = "internally. If a client is using such an API for a wl_surface, it should"]
-    #[doc = "not directly use this extension on that surface, to avoid raising a"]
-    #[doc = "tearing_control_exists protocol error."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_tearing_control_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -13328,7 +13244,21 @@ pub mod tearing_control_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_tearing_control_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "For some use cases like games or drawing tablets it can make sense to"]
+        #[doc = "reduce latency by accepting tearing with the use of asynchronous page"]
+        #[doc = "flips. This global is a factory interface, allowing clients to inform"]
+        #[doc = "which type of presentation the content of their surfaces is suitable for."]
+        #[doc = ""]
+        #[doc = "Graphics APIs like EGL or Vulkan, that manage the buffer queue and commits"]
+        #[doc = "of a wl_surface themselves, are likely to be using this extension"]
+        #[doc = "internally. If a client is using such an API for a wl_surface, it should"]
+        #[doc = "not directly use this extension on that surface, to avoid raising a"]
+        #[doc = "tearing_control_exists protocol error."]
+        #[doc = ""]
+        #[doc = "Warning! The protocol described in this file is currently in the testing"]
+        #[doc = "phase. Backward compatible changes may be added together with the"]
+        #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+        #[doc = "only be done by creating a new major version of the extension."]
         pub trait WpTearingControlManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_tearing_control_manager_v1";
             const VERSION: u32 = 1u32;
@@ -13391,11 +13321,6 @@ pub mod tearing_control_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An additional interface to a wl_surface object, which allows the client"]
-    #[doc = "to hint to the compositor if the content on the surface is suitable for"]
-    #[doc = "presentation with tearing."]
-    #[doc = "The default presentation hint is vsync. See presentation_hint for more"]
-    #[doc = "details."]
     pub mod wp_tearing_control_v1 {
         #[doc = "This enum provides information for if submitted frames from the client"]
         #[doc = "may be presented with tearing."]
@@ -13416,7 +13341,11 @@ pub mod tearing_control_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the wp_tearing_control_v1 interface. See the module level documentation for more info"]
+        #[doc = "An additional interface to a wl_surface object, which allows the client"]
+        #[doc = "to hint to the compositor if the content on the surface is suitable for"]
+        #[doc = "presentation with tearing."]
+        #[doc = "The default presentation hint is vsync. See presentation_hint for more"]
+        #[doc = "details."]
         pub trait WpTearingControlV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_tearing_control_v1";
             const VERSION: u32 = 1u32;
@@ -13509,11 +13438,10 @@ pub mod tearing_control_v1 {
 #[doc = "corresponding interface version bump. Backward incompatible changes can"]
 #[doc = "only be done by creating a new major version of the extension."]
 pub mod xdg_activation_v1 {
-    #[doc = "A global interface used for informing the compositor about applications"]
-    #[doc = "being activated or started, or for applications to request to be"]
-    #[doc = "activated."]
     pub mod xdg_activation_v1 {
-        #[doc = "Trait to implement the xdg_activation_v1 interface. See the module level documentation for more info"]
+        #[doc = "A global interface used for informing the compositor about applications"]
+        #[doc = "being activated or started, or for applications to request to be"]
+        #[doc = "activated."]
         pub trait XdgActivationV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_activation_v1";
             const VERSION: u32 = 1u32;
@@ -13600,14 +13528,6 @@ pub mod xdg_activation_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An object for setting up a token and receiving a token handle that can"]
-    #[doc = "be passed as an activation token to another client."]
-    #[doc = ""]
-    #[doc = "The object is created using the xdg_activation_v1.get_activation_token"]
-    #[doc = "request. This object should then be populated with the app_id, surface"]
-    #[doc = "and serial information and committed. The compositor shall then issue a"]
-    #[doc = "done event with the token. In case the request's parameters are invalid,"]
-    #[doc = "the compositor will provide an invalid token."]
     pub mod xdg_activation_token_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -13625,7 +13545,14 @@ pub mod xdg_activation_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the xdg_activation_token_v1 interface. See the module level documentation for more info"]
+        #[doc = "An object for setting up a token and receiving a token handle that can"]
+        #[doc = "be passed as an activation token to another client."]
+        #[doc = ""]
+        #[doc = "The object is created using the xdg_activation_v1.get_activation_token"]
+        #[doc = "request. This object should then be populated with the app_id, surface"]
+        #[doc = "and serial information and committed. The compositor shall then issue a"]
+        #[doc = "done event with the token. In case the request's parameters are invalid,"]
+        #[doc = "the compositor will provide an invalid token."]
         pub trait XdgActivationTokenV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_activation_token_v1";
             const VERSION: u32 = 1u32;
@@ -13764,17 +13691,6 @@ pub mod xdg_activation_v1 {
     }
 }
 pub mod xdg_dialog_v1 {
-    #[doc = "The xdg_wm_dialog_v1 interface is exposed as a global object allowing"]
-    #[doc = "to register surfaces with a xdg_toplevel role as \"dialogs\" relative to"]
-    #[doc = "another toplevel."]
-    #[doc = ""]
-    #[doc = "The compositor may let this relation influence how the surface is"]
-    #[doc = "placed, displayed or interacted with."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
     pub mod xdg_wm_dialog_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -13792,7 +13708,17 @@ pub mod xdg_dialog_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the xdg_wm_dialog_v1 interface. See the module level documentation for more info"]
+        #[doc = "The xdg_wm_dialog_v1 interface is exposed as a global object allowing"]
+        #[doc = "to register surfaces with a xdg_toplevel role as \"dialogs\" relative to"]
+        #[doc = "another toplevel."]
+        #[doc = ""]
+        #[doc = "The compositor may let this relation influence how the surface is"]
+        #[doc = "placed, displayed or interacted with."]
+        #[doc = ""]
+        #[doc = "Warning! The protocol described in this file is currently in the testing"]
+        #[doc = "phase. Backward compatible changes may be added together with the"]
+        #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+        #[doc = "only be done by creating a new major version of the extension."]
         pub trait XdgWmDialogV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_wm_dialog_v1";
             const VERSION: u32 = 1u32;
@@ -13851,17 +13777,16 @@ pub mod xdg_dialog_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "A xdg_dialog_v1 object is an ancillary object tied to a xdg_toplevel. Its"]
-    #[doc = "purpose is hinting the compositor that the toplevel is a \"dialog\" (e.g. a"]
-    #[doc = "temporary window) relative to another toplevel (see"]
-    #[doc = "xdg_toplevel.set_parent). If the xdg_toplevel is destroyed, the xdg_dialog_v1"]
-    #[doc = "becomes inert."]
-    #[doc = ""]
-    #[doc = "Through this object, the client may provide additional hints about"]
-    #[doc = "the purpose of the secondary toplevel. This interface has no effect"]
-    #[doc = "on toplevels that are not attached to a parent toplevel."]
     pub mod xdg_dialog_v1 {
-        #[doc = "Trait to implement the xdg_dialog_v1 interface. See the module level documentation for more info"]
+        #[doc = "A xdg_dialog_v1 object is an ancillary object tied to a xdg_toplevel. Its"]
+        #[doc = "purpose is hinting the compositor that the toplevel is a \"dialog\" (e.g. a"]
+        #[doc = "temporary window) relative to another toplevel (see"]
+        #[doc = "xdg_toplevel.set_parent). If the xdg_toplevel is destroyed, the xdg_dialog_v1"]
+        #[doc = "becomes inert."]
+        #[doc = ""]
+        #[doc = "Through this object, the client may provide additional hints about"]
+        #[doc = "the purpose of the secondary toplevel. This interface has no effect"]
+        #[doc = "on toplevels that are not attached to a parent toplevel."]
         pub trait XdgDialogV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_dialog_v1";
             const VERSION: u32 = 1u32;
@@ -13928,39 +13853,6 @@ pub mod xdg_dialog_v1 {
     }
 }
 pub mod xdg_toplevel_drag_v1 {
-    #[doc = "This protocol enhances normal drag and drop with the ability to move a"]
-    #[doc = "window at the same time. This allows having detachable parts of a window"]
-    #[doc = "that when dragged out of it become a new window and can be dragged over"]
-    #[doc = "an existing window to be reattached."]
-    #[doc = ""]
-    #[doc = "A typical workflow would be when the user starts dragging on top of a"]
-    #[doc = "detachable part of a window, the client would create a wl_data_source and"]
-    #[doc = "a xdg_toplevel_drag_v1 object and start the drag as normal via"]
-    #[doc = "wl_data_device.start_drag. Once the client determines that the detachable"]
-    #[doc = "window contents should be detached from the originating window, it creates"]
-    #[doc = "a new xdg_toplevel with these contents and issues a"]
-    #[doc = "xdg_toplevel_drag_v1.attach request before mapping it. From now on the new"]
-    #[doc = "window is moved by the compositor during the drag as if the client called"]
-    #[doc = "xdg_toplevel.move."]
-    #[doc = ""]
-    #[doc = "Dragging an existing window is similar. The client creates a"]
-    #[doc = "xdg_toplevel_drag_v1 object and attaches the existing toplevel before"]
-    #[doc = "starting the drag."]
-    #[doc = ""]
-    #[doc = "Clients use the existing drag and drop mechanism to detect when a window"]
-    #[doc = "can be docked or undocked. If the client wants to snap a window into a"]
-    #[doc = "parent window it should delete or unmap the dragged top-level. If the"]
-    #[doc = "contents should be detached again it attaches a new toplevel as described"]
-    #[doc = "above. If a drag operation is cancelled without being dropped, clients"]
-    #[doc = "should revert to the previous state, deleting any newly created windows"]
-    #[doc = "as appropriate. When a drag operation ends as indicated by"]
-    #[doc = "wl_data_source.dnd_drop_performed the dragged toplevel window's final"]
-    #[doc = "position is determined as if a xdg_toplevel_move operation ended."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
     pub mod xdg_toplevel_drag_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -13978,7 +13870,39 @@ pub mod xdg_toplevel_drag_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the xdg_toplevel_drag_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "This protocol enhances normal drag and drop with the ability to move a"]
+        #[doc = "window at the same time. This allows having detachable parts of a window"]
+        #[doc = "that when dragged out of it become a new window and can be dragged over"]
+        #[doc = "an existing window to be reattached."]
+        #[doc = ""]
+        #[doc = "A typical workflow would be when the user starts dragging on top of a"]
+        #[doc = "detachable part of a window, the client would create a wl_data_source and"]
+        #[doc = "a xdg_toplevel_drag_v1 object and start the drag as normal via"]
+        #[doc = "wl_data_device.start_drag. Once the client determines that the detachable"]
+        #[doc = "window contents should be detached from the originating window, it creates"]
+        #[doc = "a new xdg_toplevel with these contents and issues a"]
+        #[doc = "xdg_toplevel_drag_v1.attach request before mapping it. From now on the new"]
+        #[doc = "window is moved by the compositor during the drag as if the client called"]
+        #[doc = "xdg_toplevel.move."]
+        #[doc = ""]
+        #[doc = "Dragging an existing window is similar. The client creates a"]
+        #[doc = "xdg_toplevel_drag_v1 object and attaches the existing toplevel before"]
+        #[doc = "starting the drag."]
+        #[doc = ""]
+        #[doc = "Clients use the existing drag and drop mechanism to detect when a window"]
+        #[doc = "can be docked or undocked. If the client wants to snap a window into a"]
+        #[doc = "parent window it should delete or unmap the dragged top-level. If the"]
+        #[doc = "contents should be detached again it attaches a new toplevel as described"]
+        #[doc = "above. If a drag operation is cancelled without being dropped, clients"]
+        #[doc = "should revert to the previous state, deleting any newly created windows"]
+        #[doc = "as appropriate. When a drag operation ends as indicated by"]
+        #[doc = "wl_data_source.dnd_drop_performed the dragged toplevel window's final"]
+        #[doc = "position is determined as if a xdg_toplevel_move operation ended."]
+        #[doc = ""]
+        #[doc = "Warning! The protocol described in this file is currently in the testing"]
+        #[doc = "phase. Backward compatible changes may be added together with the"]
+        #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+        #[doc = "only be done by creating a new major version of the extension."]
         pub trait XdgToplevelDragManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_toplevel_drag_manager_v1";
             const VERSION: u32 = 1u32;
@@ -14066,7 +13990,6 @@ pub mod xdg_toplevel_drag_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the xdg_toplevel_drag_v1 interface. See the module level documentation for more info"]
         pub trait XdgToplevelDragV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_toplevel_drag_v1";
             const VERSION: u32 = 1u32;
@@ -14167,21 +14090,6 @@ pub mod xdg_toplevel_drag_v1 {
 #[doc = "corresponding interface version bump. Backward incompatible changes can"]
 #[doc = "only be done by creating a new major version of the extension."]
 pub mod xwayland_shell_v1 {
-    #[doc = "xwayland_shell_v1 is a singleton global object that"]
-    #[doc = "provides the ability to create a xwayland_surface_v1 object"]
-    #[doc = "for a given wl_surface."]
-    #[doc = ""]
-    #[doc = "This interface is intended to be bound by the Xwayland server."]
-    #[doc = ""]
-    #[doc = "A compositor must not allow clients other than Xwayland to"]
-    #[doc = "bind to this interface. A compositor should hide this global"]
-    #[doc = "from other clients' wl_registry."]
-    #[doc = "A client the compositor does not consider to be an Xwayland"]
-    #[doc = "server attempting to bind this interface will result in"]
-    #[doc = "an implementation-defined error."]
-    #[doc = ""]
-    #[doc = "An Xwayland server that has bound this interface must not"]
-    #[doc = "set the `WL_SURFACE_ID` atom on a window."]
     pub mod xwayland_shell_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -14199,7 +14107,21 @@ pub mod xwayland_shell_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the xwayland_shell_v1 interface. See the module level documentation for more info"]
+        #[doc = "xwayland_shell_v1 is a singleton global object that"]
+        #[doc = "provides the ability to create a xwayland_surface_v1 object"]
+        #[doc = "for a given wl_surface."]
+        #[doc = ""]
+        #[doc = "This interface is intended to be bound by the Xwayland server."]
+        #[doc = ""]
+        #[doc = "A compositor must not allow clients other than Xwayland to"]
+        #[doc = "bind to this interface. A compositor should hide this global"]
+        #[doc = "from other clients' wl_registry."]
+        #[doc = "A client the compositor does not consider to be an Xwayland"]
+        #[doc = "server attempting to bind this interface will result in"]
+        #[doc = "an implementation-defined error."]
+        #[doc = ""]
+        #[doc = "An Xwayland server that has bound this interface must not"]
+        #[doc = "set the `WL_SURFACE_ID` atom on a window."]
         pub trait XwaylandShellV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xwayland_shell_v1";
             const VERSION: u32 = 1u32;
@@ -14263,14 +14185,6 @@ pub mod xwayland_shell_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An Xwayland surface is a surface managed by an Xwayland server."]
-    #[doc = "It is used for associating surfaces to Xwayland windows."]
-    #[doc = ""]
-    #[doc = "The Xwayland server associated with actions in this interface is"]
-    #[doc = "determined by the Wayland client making the request."]
-    #[doc = ""]
-    #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
-    #[doc = "for the xwayland_surface_v1 state to take effect."]
     pub mod xwayland_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -14291,7 +14205,14 @@ pub mod xwayland_shell_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the xwayland_surface_v1 interface. See the module level documentation for more info"]
+        #[doc = "An Xwayland surface is a surface managed by an Xwayland server."]
+        #[doc = "It is used for associating surfaces to Xwayland windows."]
+        #[doc = ""]
+        #[doc = "The Xwayland server associated with actions in this interface is"]
+        #[doc = "determined by the Wayland client making the request."]
+        #[doc = ""]
+        #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
+        #[doc = "for the xwayland_surface_v1 state to take effect."]
         pub trait XwaylandSurfaceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xwayland_surface_v1";
             const VERSION: u32 = 1u32;
@@ -14361,39 +14282,6 @@ pub mod xwayland_shell_v1 {
     }
 }
 pub mod fullscreen_shell_unstable_v1 {
-    #[doc = "Displays a single surface per output."]
-    #[doc = ""]
-    #[doc = "This interface provides a mechanism for a single client to display"]
-    #[doc = "simple full-screen surfaces.  While there technically may be multiple"]
-    #[doc = "clients bound to this interface, only one of those clients should be"]
-    #[doc = "shown at a time."]
-    #[doc = ""]
-    #[doc = "To present a surface, the client uses either the present_surface or"]
-    #[doc = "present_surface_for_mode requests.  Presenting a surface takes effect"]
-    #[doc = "on the next wl_surface.commit.  See the individual requests for"]
-    #[doc = "details about scaling and mode switches."]
-    #[doc = ""]
-    #[doc = "The client can have at most one surface per output at any time."]
-    #[doc = "Requesting a surface to be presented on an output that already has a"]
-    #[doc = "surface replaces the previously presented surface.  Presenting a null"]
-    #[doc = "surface removes its content and effectively disables the output."]
-    #[doc = "Exactly what happens when an output is \"disabled\" is"]
-    #[doc = "compositor-specific.  The same surface may be presented on multiple"]
-    #[doc = "outputs simultaneously."]
-    #[doc = ""]
-    #[doc = "Once a surface is presented on an output, it stays on that output"]
-    #[doc = "until either the client removes it or the compositor destroys the"]
-    #[doc = "output.  This way, the client can update the output's contents by"]
-    #[doc = "simply attaching a new buffer."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is experimental and"]
-    #[doc = "backward incompatible changes may be made. Backward compatible changes"]
-    #[doc = "may be added together with the corresponding interface version bump."]
-    #[doc = "Backward incompatible changes are done by bumping the version number in"]
-    #[doc = "the protocol and interface names and resetting the interface version."]
-    #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
-    #[doc = "version number in the protocol and interface names are removed and the"]
-    #[doc = "interface version number is reset."]
     pub mod zwp_fullscreen_shell_v1 {
         #[doc = "Various capabilities that can be advertised by the compositor.  They"]
         #[doc = "are advertised one-at-a-time when the wl_fullscreen_shell interface is"]
@@ -14486,7 +14374,39 @@ pub mod fullscreen_shell_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_fullscreen_shell_v1 interface. See the module level documentation for more info"]
+        #[doc = "Displays a single surface per output."]
+        #[doc = ""]
+        #[doc = "This interface provides a mechanism for a single client to display"]
+        #[doc = "simple full-screen surfaces.  While there technically may be multiple"]
+        #[doc = "clients bound to this interface, only one of those clients should be"]
+        #[doc = "shown at a time."]
+        #[doc = ""]
+        #[doc = "To present a surface, the client uses either the present_surface or"]
+        #[doc = "present_surface_for_mode requests.  Presenting a surface takes effect"]
+        #[doc = "on the next wl_surface.commit.  See the individual requests for"]
+        #[doc = "details about scaling and mode switches."]
+        #[doc = ""]
+        #[doc = "The client can have at most one surface per output at any time."]
+        #[doc = "Requesting a surface to be presented on an output that already has a"]
+        #[doc = "surface replaces the previously presented surface.  Presenting a null"]
+        #[doc = "surface removes its content and effectively disables the output."]
+        #[doc = "Exactly what happens when an output is \"disabled\" is"]
+        #[doc = "compositor-specific.  The same surface may be presented on multiple"]
+        #[doc = "outputs simultaneously."]
+        #[doc = ""]
+        #[doc = "Once a surface is presented on an output, it stays on that output"]
+        #[doc = "until either the client removes it or the compositor destroys the"]
+        #[doc = "output.  This way, the client can update the output's contents by"]
+        #[doc = "simply attaching a new buffer."]
+        #[doc = ""]
+        #[doc = "Warning! The protocol described in this file is experimental and"]
+        #[doc = "backward incompatible changes may be made. Backward compatible changes"]
+        #[doc = "may be added together with the corresponding interface version bump."]
+        #[doc = "Backward incompatible changes are done by bumping the version number in"]
+        #[doc = "the protocol and interface names and resetting the interface version."]
+        #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
+        #[doc = "version number in the protocol and interface names are removed and the"]
+        #[doc = "interface version number is reset."]
         pub trait ZwpFullscreenShellV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_fullscreen_shell_v1";
             const VERSION: u32 = 1u32;
@@ -14657,7 +14577,6 @@ pub mod fullscreen_shell_unstable_v1 {
         }
     }
     pub mod zwp_fullscreen_shell_mode_feedback_v1 {
-        #[doc = "Trait to implement the zwp_fullscreen_shell_mode_feedback_v1 interface. See the module level documentation for more info"]
         pub trait ZwpFullscreenShellModeFeedbackV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_fullscreen_shell_mode_feedback_v1";
             const VERSION: u32 = 1u32;
@@ -14744,20 +14663,19 @@ pub mod fullscreen_shell_unstable_v1 {
     }
 }
 pub mod idle_inhibit_unstable_v1 {
-    #[doc = "This interface permits inhibiting the idle behavior such as screen"]
-    #[doc = "blanking, locking, and screensaving.  The client binds the idle manager"]
-    #[doc = "globally, then creates idle-inhibitor objects for each surface."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is experimental and"]
-    #[doc = "backward incompatible changes may be made. Backward compatible changes"]
-    #[doc = "may be added together with the corresponding interface version bump."]
-    #[doc = "Backward incompatible changes are done by bumping the version number in"]
-    #[doc = "the protocol and interface names and resetting the interface version."]
-    #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
-    #[doc = "version number in the protocol and interface names are removed and the"]
-    #[doc = "interface version number is reset."]
     pub mod zwp_idle_inhibit_manager_v1 {
-        #[doc = "Trait to implement the zwp_idle_inhibit_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface permits inhibiting the idle behavior such as screen"]
+        #[doc = "blanking, locking, and screensaving.  The client binds the idle manager"]
+        #[doc = "globally, then creates idle-inhibitor objects for each surface."]
+        #[doc = ""]
+        #[doc = "Warning! The protocol described in this file is experimental and"]
+        #[doc = "backward incompatible changes may be made. Backward compatible changes"]
+        #[doc = "may be added together with the corresponding interface version bump."]
+        #[doc = "Backward incompatible changes are done by bumping the version number in"]
+        #[doc = "the protocol and interface names and resetting the interface version."]
+        #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
+        #[doc = "version number in the protocol and interface names are removed and the"]
+        #[doc = "interface version number is reset."]
         pub trait ZwpIdleInhibitManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_idle_inhibit_manager_v1";
             const VERSION: u32 = 1u32;
@@ -14814,20 +14732,19 @@ pub mod idle_inhibit_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An idle inhibitor prevents the output that the associated surface is"]
-    #[doc = "visible on from being set to a state where it is not visually usable due"]
-    #[doc = "to lack of user interaction (e.g. blanked, dimmed, locked, set to power"]
-    #[doc = "save, etc.)  Any screensaver processes are also blocked from displaying."]
-    #[doc = ""]
-    #[doc = "If the surface is destroyed, unmapped, becomes occluded, loses"]
-    #[doc = "visibility, or otherwise becomes not visually relevant for the user, the"]
-    #[doc = "idle inhibitor will not be honored by the compositor; if the surface"]
-    #[doc = "subsequently regains visibility the inhibitor takes effect once again."]
-    #[doc = "Likewise, the inhibitor isn't honored if the system was already idled at"]
-    #[doc = "the time the inhibitor was established, although if the system later"]
-    #[doc = "de-idles and re-idles the inhibitor will take effect."]
     pub mod zwp_idle_inhibitor_v1 {
-        #[doc = "Trait to implement the zwp_idle_inhibitor_v1 interface. See the module level documentation for more info"]
+        #[doc = "An idle inhibitor prevents the output that the associated surface is"]
+        #[doc = "visible on from being set to a state where it is not visually usable due"]
+        #[doc = "to lack of user interaction (e.g. blanked, dimmed, locked, set to power"]
+        #[doc = "save, etc.)  Any screensaver processes are also blocked from displaying."]
+        #[doc = ""]
+        #[doc = "If the surface is destroyed, unmapped, becomes occluded, loses"]
+        #[doc = "visibility, or otherwise becomes not visually relevant for the user, the"]
+        #[doc = "idle inhibitor will not be honored by the compositor; if the surface"]
+        #[doc = "subsequently regains visibility the inhibitor takes effect once again."]
+        #[doc = "Likewise, the inhibitor isn't honored if the system was already idled at"]
+        #[doc = "the time the inhibitor was established, although if the system later"]
+        #[doc = "de-idles and re-idles the inhibitor will take effect."]
         pub trait ZwpIdleInhibitorV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_idle_inhibitor_v1";
             const VERSION: u32 = 1u32;
@@ -14861,31 +14778,30 @@ pub mod idle_inhibit_unstable_v1 {
     }
 }
 pub mod input_method_unstable_v1 {
-    #[doc = "Corresponds to a text input on the input method side. An input method context"]
-    #[doc = "is created on text input activation on the input method side. It allows"]
-    #[doc = "receiving information about the text input from the application via events."]
-    #[doc = "Input method contexts do not keep state after deactivation and should be"]
-    #[doc = "destroyed after deactivation is handled."]
-    #[doc = ""]
-    #[doc = "Text is generally UTF-8 encoded, indices and lengths are in bytes."]
-    #[doc = ""]
-    #[doc = "Serials are used to synchronize the state between the text input and"]
-    #[doc = "an input method. New serials are sent by the text input in the"]
-    #[doc = "commit_state request and are used by the input method to indicate"]
-    #[doc = "the known text input state in events like preedit_string, commit_string,"]
-    #[doc = "and keysym. The text input can then ignore events from the input method"]
-    #[doc = "which are based on an outdated state (for example after a reset)."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is experimental and"]
-    #[doc = "backward incompatible changes may be made. Backward compatible changes"]
-    #[doc = "may be added together with the corresponding interface version bump."]
-    #[doc = "Backward incompatible changes are done by bumping the version number in"]
-    #[doc = "the protocol and interface names and resetting the interface version."]
-    #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
-    #[doc = "version number in the protocol and interface names are removed and the"]
-    #[doc = "interface version number is reset."]
     pub mod zwp_input_method_context_v1 {
-        #[doc = "Trait to implement the zwp_input_method_context_v1 interface. See the module level documentation for more info"]
+        #[doc = "Corresponds to a text input on the input method side. An input method context"]
+        #[doc = "is created on text input activation on the input method side. It allows"]
+        #[doc = "receiving information about the text input from the application via events."]
+        #[doc = "Input method contexts do not keep state after deactivation and should be"]
+        #[doc = "destroyed after deactivation is handled."]
+        #[doc = ""]
+        #[doc = "Text is generally UTF-8 encoded, indices and lengths are in bytes."]
+        #[doc = ""]
+        #[doc = "Serials are used to synchronize the state between the text input and"]
+        #[doc = "an input method. New serials are sent by the text input in the"]
+        #[doc = "commit_state request and are used by the input method to indicate"]
+        #[doc = "the known text input state in events like preedit_string, commit_string,"]
+        #[doc = "and keysym. The text input can then ignore events from the input method"]
+        #[doc = "which are based on an outdated state (for example after a reset)."]
+        #[doc = ""]
+        #[doc = "Warning! The protocol described in this file is experimental and"]
+        #[doc = "backward incompatible changes may be made. Backward compatible changes"]
+        #[doc = "may be added together with the corresponding interface version bump."]
+        #[doc = "Backward incompatible changes are done by bumping the version number in"]
+        #[doc = "the protocol and interface names and resetting the interface version."]
+        #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
+        #[doc = "version number in the protocol and interface names are removed and the"]
+        #[doc = "interface version number is reset."]
         pub trait ZwpInputMethodContextV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_input_method_context_v1";
             const VERSION: u32 = 1u32;
@@ -15341,12 +15257,11 @@ pub mod input_method_unstable_v1 {
             }
         }
     }
-    #[doc = "An input method object is responsible for composing text in response to"]
-    #[doc = "input from hardware or virtual keyboards. There is one input method"]
-    #[doc = "object per seat. On activate there is a new input method context object"]
-    #[doc = "created which allows the input method to communicate with the text input."]
     pub mod zwp_input_method_v1 {
-        #[doc = "Trait to implement the zwp_input_method_v1 interface. See the module level documentation for more info"]
+        #[doc = "An input method object is responsible for composing text in response to"]
+        #[doc = "input from hardware or virtual keyboards. There is one input method"]
+        #[doc = "object per seat. On activate there is a new input method context object"]
+        #[doc = "created which allows the input method to communicate with the text input."]
         pub trait ZwpInputMethodV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_input_method_v1";
             const VERSION: u32 = 1u32;
@@ -15403,9 +15318,8 @@ pub mod input_method_unstable_v1 {
             }
         }
     }
-    #[doc = "Only one client can bind this interface at a time."]
     pub mod zwp_input_panel_v1 {
-        #[doc = "Trait to implement the zwp_input_panel_v1 interface. See the module level documentation for more info"]
+        #[doc = "Only one client can bind this interface at a time."]
         pub trait ZwpInputPanelV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_input_panel_v1";
             const VERSION: u32 = 1u32;
@@ -15467,7 +15381,6 @@ pub mod input_method_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_input_panel_surface_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputPanelSurfaceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_input_panel_surface_v1";
             const VERSION: u32 = 1u32;
@@ -15540,10 +15453,9 @@ pub mod input_method_unstable_v1 {
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
 pub mod input_timestamps_unstable_v1 {
-    #[doc = "A global interface used for requesting high-resolution timestamps"]
-    #[doc = "for input events."]
     pub mod zwp_input_timestamps_manager_v1 {
-        #[doc = "Trait to implement the zwp_input_timestamps_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "A global interface used for requesting high-resolution timestamps"]
+        #[doc = "for input events."]
         pub trait ZwpInputTimestampsManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_input_timestamps_manager_v1";
             const VERSION: u32 = 1u32;
@@ -15673,11 +15585,10 @@ pub mod input_timestamps_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "Provides high-resolution timestamp events for a set of subscribed input"]
-    #[doc = "events. The set of subscribed input events is determined by the"]
-    #[doc = "zwp_input_timestamps_manager_v1 request used to create this object."]
     pub mod zwp_input_timestamps_v1 {
-        #[doc = "Trait to implement the zwp_input_timestamps_v1 interface. See the module level documentation for more info"]
+        #[doc = "Provides high-resolution timestamp events for a set of subscribed input"]
+        #[doc = "events. The set of subscribed input events is determined by the"]
+        #[doc = "zwp_input_timestamps_manager_v1 request used to create this object."]
         pub trait ZwpInputTimestampsV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_input_timestamps_v1";
             const VERSION: u32 = 1u32;
@@ -15760,7 +15671,6 @@ pub mod input_timestamps_unstable_v1 {
 #[doc = "interface names are removed and the interface version number is"]
 #[doc = "reset."]
 pub mod keyboard_shortcuts_inhibit_unstable_v1 {
-    #[doc = "A global interface used for inhibiting the compositor keyboard shortcuts."]
     pub mod zwp_keyboard_shortcuts_inhibit_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -15778,7 +15688,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_keyboard_shortcuts_inhibit_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "A global interface used for inhibiting the compositor keyboard shortcuts."]
         pub trait ZwpKeyboardShortcutsInhibitManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_keyboard_shortcuts_inhibit_manager_v1";
             const VERSION: u32 = 1u32;
@@ -15846,41 +15756,40 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "A keyboard shortcuts inhibitor instructs the compositor to ignore"]
-    #[doc = "its own keyboard shortcuts when the associated surface has keyboard"]
-    #[doc = "focus. As a result, when the surface has keyboard focus on the given"]
-    #[doc = "seat, it will receive all key events originating from the specified"]
-    #[doc = "seat, even those which would normally be caught by the compositor for"]
-    #[doc = "its own shortcuts."]
-    #[doc = ""]
-    #[doc = "The Wayland compositor is however under no obligation to disable"]
-    #[doc = "all of its shortcuts, and may keep some special key combo for its own"]
-    #[doc = "use, including but not limited to one allowing the user to forcibly"]
-    #[doc = "restore normal keyboard events routing in the case of an unwilling"]
-    #[doc = "client. The compositor may also use the same key combo to reactivate"]
-    #[doc = "an existing shortcut inhibitor that was previously deactivated on"]
-    #[doc = "user request."]
-    #[doc = ""]
-    #[doc = "When the compositor restores its own keyboard shortcuts, an"]
-    #[doc = "\"inactive\" event is emitted to notify the client that the keyboard"]
-    #[doc = "shortcuts inhibitor is not effectively active for the surface and"]
-    #[doc = "seat any more, and the client should not expect to receive all"]
-    #[doc = "keyboard events."]
-    #[doc = ""]
-    #[doc = "When the keyboard shortcuts inhibitor is inactive, the client has"]
-    #[doc = "no way to forcibly reactivate the keyboard shortcuts inhibitor."]
-    #[doc = ""]
-    #[doc = "The user can chose to re-enable a previously deactivated keyboard"]
-    #[doc = "shortcuts inhibitor using any mechanism the compositor may offer,"]
-    #[doc = "in which case the compositor will send an \"active\" event to notify"]
-    #[doc = "the client."]
-    #[doc = ""]
-    #[doc = "If the surface is destroyed, unmapped, or loses the seat's keyboard"]
-    #[doc = "focus, the keyboard shortcuts inhibitor becomes irrelevant and the"]
-    #[doc = "compositor will restore its own keyboard shortcuts but no \"inactive\""]
-    #[doc = "event is emitted in this case."]
     pub mod zwp_keyboard_shortcuts_inhibitor_v1 {
-        #[doc = "Trait to implement the zwp_keyboard_shortcuts_inhibitor_v1 interface. See the module level documentation for more info"]
+        #[doc = "A keyboard shortcuts inhibitor instructs the compositor to ignore"]
+        #[doc = "its own keyboard shortcuts when the associated surface has keyboard"]
+        #[doc = "focus. As a result, when the surface has keyboard focus on the given"]
+        #[doc = "seat, it will receive all key events originating from the specified"]
+        #[doc = "seat, even those which would normally be caught by the compositor for"]
+        #[doc = "its own shortcuts."]
+        #[doc = ""]
+        #[doc = "The Wayland compositor is however under no obligation to disable"]
+        #[doc = "all of its shortcuts, and may keep some special key combo for its own"]
+        #[doc = "use, including but not limited to one allowing the user to forcibly"]
+        #[doc = "restore normal keyboard events routing in the case of an unwilling"]
+        #[doc = "client. The compositor may also use the same key combo to reactivate"]
+        #[doc = "an existing shortcut inhibitor that was previously deactivated on"]
+        #[doc = "user request."]
+        #[doc = ""]
+        #[doc = "When the compositor restores its own keyboard shortcuts, an"]
+        #[doc = "\"inactive\" event is emitted to notify the client that the keyboard"]
+        #[doc = "shortcuts inhibitor is not effectively active for the surface and"]
+        #[doc = "seat any more, and the client should not expect to receive all"]
+        #[doc = "keyboard events."]
+        #[doc = ""]
+        #[doc = "When the keyboard shortcuts inhibitor is inactive, the client has"]
+        #[doc = "no way to forcibly reactivate the keyboard shortcuts inhibitor."]
+        #[doc = ""]
+        #[doc = "The user can chose to re-enable a previously deactivated keyboard"]
+        #[doc = "shortcuts inhibitor using any mechanism the compositor may offer,"]
+        #[doc = "in which case the compositor will send an \"active\" event to notify"]
+        #[doc = "the client."]
+        #[doc = ""]
+        #[doc = "If the surface is destroyed, unmapped, or loses the seat's keyboard"]
+        #[doc = "focus, the keyboard shortcuts inhibitor becomes irrelevant and the"]
+        #[doc = "compositor will restore its own keyboard shortcuts but no \"inactive\""]
+        #[doc = "event is emitted in this case."]
         pub trait ZwpKeyboardShortcutsInhibitorV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_keyboard_shortcuts_inhibitor_v1";
             const VERSION: u32 = 1u32;
@@ -15960,76 +15869,75 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
     }
 }
 pub mod linux_dmabuf_unstable_v1 {
-    #[doc = "Following the interfaces from:"]
-    #[doc = "https://www.khronos.org/registry/egl/extensions/EXT/EGL_EXT_image_dma_buf_import.txt"]
-    #[doc = "https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_image_dma_buf_import_modifiers.txt"]
-    #[doc = "and the Linux DRM sub-system's AddFb2 ioctl."]
-    #[doc = ""]
-    #[doc = "This interface offers ways to create generic dmabuf-based wl_buffers."]
-    #[doc = ""]
-    #[doc = "Clients can use the get_surface_feedback request to get dmabuf feedback"]
-    #[doc = "for a particular surface. If the client wants to retrieve feedback not"]
-    #[doc = "tied to a surface, they can use the get_default_feedback request."]
-    #[doc = ""]
-    #[doc = "The following are required from clients:"]
-    #[doc = ""]
-    #[doc = "- Clients must ensure that either all data in the dma-buf is"]
-    #[doc = "coherent for all subsequent read access or that coherency is"]
-    #[doc = "correctly handled by the underlying kernel-side dma-buf"]
-    #[doc = "implementation."]
-    #[doc = ""]
-    #[doc = "- Don't make any more attachments after sending the buffer to the"]
-    #[doc = "compositor. Making more attachments later increases the risk of"]
-    #[doc = "the compositor not being able to use (re-import) an existing"]
-    #[doc = "dmabuf-based wl_buffer."]
-    #[doc = ""]
-    #[doc = "The underlying graphics stack must ensure the following:"]
-    #[doc = ""]
-    #[doc = "- The dmabuf file descriptors relayed to the server will stay valid"]
-    #[doc = "for the whole lifetime of the wl_buffer. This means the server may"]
-    #[doc = "at any time use those fds to import the dmabuf into any kernel"]
-    #[doc = "sub-system that might accept it."]
-    #[doc = ""]
-    #[doc = "However, when the underlying graphics stack fails to deliver the"]
-    #[doc = "promise, because of e.g. a device hot-unplug which raises internal"]
-    #[doc = "errors, after the wl_buffer has been successfully created the"]
-    #[doc = "compositor must not raise protocol errors to the client when dmabuf"]
-    #[doc = "import later fails."]
-    #[doc = ""]
-    #[doc = "To create a wl_buffer from one or more dmabufs, a client creates a"]
-    #[doc = "zwp_linux_dmabuf_params_v1 object with a zwp_linux_dmabuf_v1.create_params"]
-    #[doc = "request. All planes required by the intended format are added with"]
-    #[doc = "the 'add' request. Finally, a 'create' or 'create_immed' request is"]
-    #[doc = "issued, which has the following outcome depending on the import success."]
-    #[doc = ""]
-    #[doc = "The 'create' request,"]
-    #[doc = "- on success, triggers a 'created' event which provides the final"]
-    #[doc = "wl_buffer to the client."]
-    #[doc = "- on failure, triggers a 'failed' event to convey that the server"]
-    #[doc = "cannot use the dmabufs received from the client."]
-    #[doc = ""]
-    #[doc = "For the 'create_immed' request,"]
-    #[doc = "- on success, the server immediately imports the added dmabufs to"]
-    #[doc = "create a wl_buffer. No event is sent from the server in this case."]
-    #[doc = "- on failure, the server can choose to either:"]
-    #[doc = "- terminate the client by raising a fatal error."]
-    #[doc = "- mark the wl_buffer as failed, and send a 'failed' event to the"]
-    #[doc = "client. If the client uses a failed wl_buffer as an argument to any"]
-    #[doc = "request, the behaviour is compositor implementation-defined."]
-    #[doc = ""]
-    #[doc = "For all DRM formats and unless specified in another protocol extension,"]
-    #[doc = "pre-multiplied alpha is used for pixel values."]
-    #[doc = ""]
-    #[doc = "Unless specified otherwise in another protocol extension, implicit"]
-    #[doc = "synchronization is used. In other words, compositors and clients must"]
-    #[doc = "wait and signal fences implicitly passed via the DMA-BUF's reservation"]
-    #[doc = "mechanism."]
-    #[doc = ""]
-    #[doc = "Disclaimer: This protocol extension has been marked stable. This copy is"]
-    #[doc = "no longer used and only retained for backwards compatibility. The"]
-    #[doc = "canonical version can be found in the stable/ directory."]
     pub mod zwp_linux_dmabuf_v1 {
-        #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
+        #[doc = "Following the interfaces from:"]
+        #[doc = "https://www.khronos.org/registry/egl/extensions/EXT/EGL_EXT_image_dma_buf_import.txt"]
+        #[doc = "https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_image_dma_buf_import_modifiers.txt"]
+        #[doc = "and the Linux DRM sub-system's AddFb2 ioctl."]
+        #[doc = ""]
+        #[doc = "This interface offers ways to create generic dmabuf-based wl_buffers."]
+        #[doc = ""]
+        #[doc = "Clients can use the get_surface_feedback request to get dmabuf feedback"]
+        #[doc = "for a particular surface. If the client wants to retrieve feedback not"]
+        #[doc = "tied to a surface, they can use the get_default_feedback request."]
+        #[doc = ""]
+        #[doc = "The following are required from clients:"]
+        #[doc = ""]
+        #[doc = "- Clients must ensure that either all data in the dma-buf is"]
+        #[doc = "coherent for all subsequent read access or that coherency is"]
+        #[doc = "correctly handled by the underlying kernel-side dma-buf"]
+        #[doc = "implementation."]
+        #[doc = ""]
+        #[doc = "- Don't make any more attachments after sending the buffer to the"]
+        #[doc = "compositor. Making more attachments later increases the risk of"]
+        #[doc = "the compositor not being able to use (re-import) an existing"]
+        #[doc = "dmabuf-based wl_buffer."]
+        #[doc = ""]
+        #[doc = "The underlying graphics stack must ensure the following:"]
+        #[doc = ""]
+        #[doc = "- The dmabuf file descriptors relayed to the server will stay valid"]
+        #[doc = "for the whole lifetime of the wl_buffer. This means the server may"]
+        #[doc = "at any time use those fds to import the dmabuf into any kernel"]
+        #[doc = "sub-system that might accept it."]
+        #[doc = ""]
+        #[doc = "However, when the underlying graphics stack fails to deliver the"]
+        #[doc = "promise, because of e.g. a device hot-unplug which raises internal"]
+        #[doc = "errors, after the wl_buffer has been successfully created the"]
+        #[doc = "compositor must not raise protocol errors to the client when dmabuf"]
+        #[doc = "import later fails."]
+        #[doc = ""]
+        #[doc = "To create a wl_buffer from one or more dmabufs, a client creates a"]
+        #[doc = "zwp_linux_dmabuf_params_v1 object with a zwp_linux_dmabuf_v1.create_params"]
+        #[doc = "request. All planes required by the intended format are added with"]
+        #[doc = "the 'add' request. Finally, a 'create' or 'create_immed' request is"]
+        #[doc = "issued, which has the following outcome depending on the import success."]
+        #[doc = ""]
+        #[doc = "The 'create' request,"]
+        #[doc = "- on success, triggers a 'created' event which provides the final"]
+        #[doc = "wl_buffer to the client."]
+        #[doc = "- on failure, triggers a 'failed' event to convey that the server"]
+        #[doc = "cannot use the dmabufs received from the client."]
+        #[doc = ""]
+        #[doc = "For the 'create_immed' request,"]
+        #[doc = "- on success, the server immediately imports the added dmabufs to"]
+        #[doc = "create a wl_buffer. No event is sent from the server in this case."]
+        #[doc = "- on failure, the server can choose to either:"]
+        #[doc = "- terminate the client by raising a fatal error."]
+        #[doc = "- mark the wl_buffer as failed, and send a 'failed' event to the"]
+        #[doc = "client. If the client uses a failed wl_buffer as an argument to any"]
+        #[doc = "request, the behaviour is compositor implementation-defined."]
+        #[doc = ""]
+        #[doc = "For all DRM formats and unless specified in another protocol extension,"]
+        #[doc = "pre-multiplied alpha is used for pixel values."]
+        #[doc = ""]
+        #[doc = "Unless specified otherwise in another protocol extension, implicit"]
+        #[doc = "synchronization is used. In other words, compositors and clients must"]
+        #[doc = "wait and signal fences implicitly passed via the DMA-BUF's reservation"]
+        #[doc = "mechanism."]
+        #[doc = ""]
+        #[doc = "Disclaimer: This protocol extension has been marked stable. This copy is"]
+        #[doc = "no longer used and only retained for backwards compatibility. The"]
+        #[doc = "canonical version can be found in the stable/ directory."]
         pub trait ZwpLinuxDmabufV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_linux_dmabuf_v1";
             const VERSION: u32 = 5u32;
@@ -16197,20 +16105,6 @@ pub mod linux_dmabuf_unstable_v1 {
             }
         }
     }
-    #[doc = "This temporary object is a collection of dmabufs and other"]
-    #[doc = "parameters that together form a single logical buffer. The temporary"]
-    #[doc = "object may eventually create one wl_buffer unless cancelled by"]
-    #[doc = "destroying it before requesting 'create'."]
-    #[doc = ""]
-    #[doc = "Single-planar formats only require one dmabuf, however"]
-    #[doc = "multi-planar formats may require more than one dmabuf. For all"]
-    #[doc = "formats, an 'add' request must be called once per plane (even if the"]
-    #[doc = "underlying dmabuf fd is identical)."]
-    #[doc = ""]
-    #[doc = "You must use consecutive plane indices ('plane_idx' argument for 'add')"]
-    #[doc = "from zero to the number of planes used by the drm_fourcc format code."]
-    #[doc = "All planes required by the format must be given exactly once, but can"]
-    #[doc = "be given in any order. Each plane index can be set only once."]
     pub mod zwp_linux_buffer_params_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -16257,7 +16151,20 @@ pub mod linux_dmabuf_unstable_v1 {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
-        #[doc = "Trait to implement the zwp_linux_buffer_params_v1 interface. See the module level documentation for more info"]
+        #[doc = "This temporary object is a collection of dmabufs and other"]
+        #[doc = "parameters that together form a single logical buffer. The temporary"]
+        #[doc = "object may eventually create one wl_buffer unless cancelled by"]
+        #[doc = "destroying it before requesting 'create'."]
+        #[doc = ""]
+        #[doc = "Single-planar formats only require one dmabuf, however"]
+        #[doc = "multi-planar formats may require more than one dmabuf. For all"]
+        #[doc = "formats, an 'add' request must be called once per plane (even if the"]
+        #[doc = "underlying dmabuf fd is identical)."]
+        #[doc = ""]
+        #[doc = "You must use consecutive plane indices ('plane_idx' argument for 'add')"]
+        #[doc = "from zero to the number of planes used by the drm_fourcc format code."]
+        #[doc = "All planes required by the format must be given exactly once, but can"]
+        #[doc = "be given in any order. Each plane index can be set only once."]
         pub trait ZwpLinuxBufferParamsV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_linux_buffer_params_v1";
             const VERSION: u32 = 5u32;
@@ -16500,31 +16407,6 @@ pub mod linux_dmabuf_unstable_v1 {
             }
         }
     }
-    #[doc = "This object advertises dmabuf parameters feedback. This includes the"]
-    #[doc = "preferred devices and the supported formats/modifiers."]
-    #[doc = ""]
-    #[doc = "The parameters are sent once when this object is created and whenever they"]
-    #[doc = "change. The done event is always sent once after all parameters have been"]
-    #[doc = "sent. When a single parameter changes, all parameters are re-sent by the"]
-    #[doc = "compositor."]
-    #[doc = ""]
-    #[doc = "Compositors can re-send the parameters when the current client buffer"]
-    #[doc = "allocations are sub-optimal. Compositors should not re-send the"]
-    #[doc = "parameters if re-allocating the buffers would not result in a more optimal"]
-    #[doc = "configuration. In particular, compositors should avoid sending the exact"]
-    #[doc = "same parameters multiple times in a row."]
-    #[doc = ""]
-    #[doc = "The tranche_target_device and tranche_formats events are grouped by"]
-    #[doc = "tranches of preference. For each tranche, a tranche_target_device, one"]
-    #[doc = "tranche_flags and one or more tranche_formats events are sent, followed"]
-    #[doc = "by a tranche_done event finishing the list. The tranches are sent in"]
-    #[doc = "descending order of preference. All formats and modifiers in the same"]
-    #[doc = "tranche have the same preference."]
-    #[doc = ""]
-    #[doc = "To send parameters, the compositor sends one main_device event, tranches"]
-    #[doc = "(each consisting of one tranche_target_device event, one tranche_flags"]
-    #[doc = "event, tranche_formats events and then a tranche_done event), then one"]
-    #[doc = "done event."]
     pub mod zwp_linux_dmabuf_feedback_v1 {
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { # [doc = "direct scan-out tranche"] const Scanout = 1u32 ; } }
         impl TryFrom<u32> for TrancheFlags {
@@ -16533,7 +16415,31 @@ pub mod linux_dmabuf_unstable_v1 {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
-        #[doc = "Trait to implement the zwp_linux_dmabuf_feedback_v1 interface. See the module level documentation for more info"]
+        #[doc = "This object advertises dmabuf parameters feedback. This includes the"]
+        #[doc = "preferred devices and the supported formats/modifiers."]
+        #[doc = ""]
+        #[doc = "The parameters are sent once when this object is created and whenever they"]
+        #[doc = "change. The done event is always sent once after all parameters have been"]
+        #[doc = "sent. When a single parameter changes, all parameters are re-sent by the"]
+        #[doc = "compositor."]
+        #[doc = ""]
+        #[doc = "Compositors can re-send the parameters when the current client buffer"]
+        #[doc = "allocations are sub-optimal. Compositors should not re-send the"]
+        #[doc = "parameters if re-allocating the buffers would not result in a more optimal"]
+        #[doc = "configuration. In particular, compositors should avoid sending the exact"]
+        #[doc = "same parameters multiple times in a row."]
+        #[doc = ""]
+        #[doc = "The tranche_target_device and tranche_formats events are grouped by"]
+        #[doc = "tranches of preference. For each tranche, a tranche_target_device, one"]
+        #[doc = "tranche_flags and one or more tranche_formats events are sent, followed"]
+        #[doc = "by a tranche_done event finishing the list. The tranches are sent in"]
+        #[doc = "descending order of preference. All formats and modifiers in the same"]
+        #[doc = "tranche have the same preference."]
+        #[doc = ""]
+        #[doc = "To send parameters, the compositor sends one main_device event, tranches"]
+        #[doc = "(each consisting of one tranche_target_device event, one tranche_flags"]
+        #[doc = "event, tranche_formats events and then a tranche_done event), then one"]
+        #[doc = "done event."]
         pub trait ZwpLinuxDmabufFeedbackV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_linux_dmabuf_feedback_v1";
             const VERSION: u32 = 5u32;
@@ -16787,24 +16693,6 @@ pub mod linux_dmabuf_unstable_v1 {
     }
 }
 pub mod zwp_linux_explicit_synchronization_unstable_v1 {
-    #[doc = "This global is a factory interface, allowing clients to request"]
-    #[doc = "explicit synchronization for buffers on a per-surface basis."]
-    #[doc = ""]
-    #[doc = "See zwp_linux_surface_synchronization_v1 for more information."]
-    #[doc = ""]
-    #[doc = "This interface is derived from Chromium's"]
-    #[doc = "zcr_linux_explicit_synchronization_v1."]
-    #[doc = ""]
-    #[doc = "Note: this protocol is superseded by linux-drm-syncobj."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is experimental and"]
-    #[doc = "backward incompatible changes may be made. Backward compatible changes"]
-    #[doc = "may be added together with the corresponding interface version bump."]
-    #[doc = "Backward incompatible changes are done by bumping the version number in"]
-    #[doc = "the protocol and interface names and resetting the interface version."]
-    #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
-    #[doc = "version number in the protocol and interface names are removed and the"]
-    #[doc = "interface version number is reset."]
     pub mod zwp_linux_explicit_synchronization_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -16822,7 +16710,24 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_linux_explicit_synchronization_v1 interface. See the module level documentation for more info"]
+        #[doc = "This global is a factory interface, allowing clients to request"]
+        #[doc = "explicit synchronization for buffers on a per-surface basis."]
+        #[doc = ""]
+        #[doc = "See zwp_linux_surface_synchronization_v1 for more information."]
+        #[doc = ""]
+        #[doc = "This interface is derived from Chromium's"]
+        #[doc = "zcr_linux_explicit_synchronization_v1."]
+        #[doc = ""]
+        #[doc = "Note: this protocol is superseded by linux-drm-syncobj."]
+        #[doc = ""]
+        #[doc = "Warning! The protocol described in this file is experimental and"]
+        #[doc = "backward incompatible changes may be made. Backward compatible changes"]
+        #[doc = "may be added together with the corresponding interface version bump."]
+        #[doc = "Backward incompatible changes are done by bumping the version number in"]
+        #[doc = "the protocol and interface names and resetting the interface version."]
+        #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
+        #[doc = "version number in the protocol and interface names are removed and the"]
+        #[doc = "interface version number is reset."]
         pub trait ZwpLinuxExplicitSynchronizationV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_linux_explicit_synchronization_v1";
             const VERSION: u32 = 2u32;
@@ -16894,36 +16799,6 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "This object implements per-surface explicit synchronization."]
-    #[doc = ""]
-    #[doc = "Synchronization refers to co-ordination of pipelined operations performed"]
-    #[doc = "on buffers. Most GPU clients will schedule an asynchronous operation to"]
-    #[doc = "render to the buffer, then immediately send the buffer to the compositor"]
-    #[doc = "to be attached to a surface."]
-    #[doc = ""]
-    #[doc = "In implicit synchronization, ensuring that the rendering operation is"]
-    #[doc = "complete before the compositor displays the buffer is an implementation"]
-    #[doc = "detail handled by either the kernel or userspace graphics driver."]
-    #[doc = ""]
-    #[doc = "By contrast, in explicit synchronization, dma_fence objects mark when the"]
-    #[doc = "asynchronous operations are complete. When submitting a buffer, the"]
-    #[doc = "client provides an acquire fence which will be waited on before the"]
-    #[doc = "compositor accesses the buffer. The Wayland server, through a"]
-    #[doc = "zwp_linux_buffer_release_v1 object, will inform the client with an event"]
-    #[doc = "which may be accompanied by a release fence, when the compositor will no"]
-    #[doc = "longer access the buffer contents due to the specific commit that"]
-    #[doc = "requested the release event."]
-    #[doc = ""]
-    #[doc = "Each surface can be associated with only one object of this interface at"]
-    #[doc = "any time."]
-    #[doc = ""]
-    #[doc = "In version 1 of this interface, explicit synchronization is only"]
-    #[doc = "guaranteed to be supported for buffers created with any version of the"]
-    #[doc = "wp_linux_dmabuf buffer factory. Version 2 additionally guarantees"]
-    #[doc = "explicit synchronization support for opaque EGL buffers, which is a type"]
-    #[doc = "of platform specific buffers described in the EGL_WL_bind_wayland_display"]
-    #[doc = "extension. Compositors are free to support explicit synchronization for"]
-    #[doc = "additional buffer types."]
     pub mod zwp_linux_surface_synchronization_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -16956,7 +16831,36 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_linux_surface_synchronization_v1 interface. See the module level documentation for more info"]
+        #[doc = "This object implements per-surface explicit synchronization."]
+        #[doc = ""]
+        #[doc = "Synchronization refers to co-ordination of pipelined operations performed"]
+        #[doc = "on buffers. Most GPU clients will schedule an asynchronous operation to"]
+        #[doc = "render to the buffer, then immediately send the buffer to the compositor"]
+        #[doc = "to be attached to a surface."]
+        #[doc = ""]
+        #[doc = "In implicit synchronization, ensuring that the rendering operation is"]
+        #[doc = "complete before the compositor displays the buffer is an implementation"]
+        #[doc = "detail handled by either the kernel or userspace graphics driver."]
+        #[doc = ""]
+        #[doc = "By contrast, in explicit synchronization, dma_fence objects mark when the"]
+        #[doc = "asynchronous operations are complete. When submitting a buffer, the"]
+        #[doc = "client provides an acquire fence which will be waited on before the"]
+        #[doc = "compositor accesses the buffer. The Wayland server, through a"]
+        #[doc = "zwp_linux_buffer_release_v1 object, will inform the client with an event"]
+        #[doc = "which may be accompanied by a release fence, when the compositor will no"]
+        #[doc = "longer access the buffer contents due to the specific commit that"]
+        #[doc = "requested the release event."]
+        #[doc = ""]
+        #[doc = "Each surface can be associated with only one object of this interface at"]
+        #[doc = "any time."]
+        #[doc = ""]
+        #[doc = "In version 1 of this interface, explicit synchronization is only"]
+        #[doc = "guaranteed to be supported for buffers created with any version of the"]
+        #[doc = "wp_linux_dmabuf buffer factory. Version 2 additionally guarantees"]
+        #[doc = "explicit synchronization support for opaque EGL buffers, which is a type"]
+        #[doc = "of platform specific buffers described in the EGL_WL_bind_wayland_display"]
+        #[doc = "extension. Compositors are free to support explicit synchronization for"]
+        #[doc = "additional buffer types."]
         pub trait ZwpLinuxSurfaceSynchronizationV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_linux_surface_synchronization_v1";
             const VERSION: u32 = 2u32;
@@ -17071,25 +16975,24 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "This object is instantiated in response to a"]
-    #[doc = "zwp_linux_surface_synchronization_v1.get_release request."]
-    #[doc = ""]
-    #[doc = "It provides an alternative to wl_buffer.release events, providing a"]
-    #[doc = "unique release from a single wl_surface.commit request. The release event"]
-    #[doc = "also supports explicit synchronization, providing a fence FD for the"]
-    #[doc = "client to synchronize against."]
-    #[doc = ""]
-    #[doc = "Exactly one event, either a fenced_release or an immediate_release, will"]
-    #[doc = "be emitted for the wl_surface.commit request. The compositor can choose"]
-    #[doc = "release by release which event it uses."]
-    #[doc = ""]
-    #[doc = "This event does not replace wl_buffer.release events; servers are still"]
-    #[doc = "required to send those events."]
-    #[doc = ""]
-    #[doc = "Once a buffer release object has delivered a 'fenced_release' or an"]
-    #[doc = "'immediate_release' event it is automatically destroyed."]
     pub mod zwp_linux_buffer_release_v1 {
-        #[doc = "Trait to implement the zwp_linux_buffer_release_v1 interface. See the module level documentation for more info"]
+        #[doc = "This object is instantiated in response to a"]
+        #[doc = "zwp_linux_surface_synchronization_v1.get_release request."]
+        #[doc = ""]
+        #[doc = "It provides an alternative to wl_buffer.release events, providing a"]
+        #[doc = "unique release from a single wl_surface.commit request. The release event"]
+        #[doc = "also supports explicit synchronization, providing a fence FD for the"]
+        #[doc = "client to synchronize against."]
+        #[doc = ""]
+        #[doc = "Exactly one event, either a fenced_release or an immediate_release, will"]
+        #[doc = "be emitted for the wl_surface.commit request. The compositor can choose"]
+        #[doc = "release by release which event it uses."]
+        #[doc = ""]
+        #[doc = "This event does not replace wl_buffer.release events; servers are still"]
+        #[doc = "required to send those events."]
+        #[doc = ""]
+        #[doc = "Once a buffer release object has delivered a 'fenced_release' or an"]
+        #[doc = "'immediate_release' event it is automatically destroyed."]
         pub trait ZwpLinuxBufferReleaseV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_linux_buffer_release_v1";
             const VERSION: u32 = 1u32;
@@ -17184,19 +17087,6 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
 #[doc = "protocol and interface names are removed and the interface version number is"]
 #[doc = "reset."]
 pub mod pointer_constraints_unstable_v1 {
-    #[doc = "The global interface exposing pointer constraining functionality. It"]
-    #[doc = "exposes two requests: lock_pointer for locking the pointer to its"]
-    #[doc = "position, and confine_pointer for locking the pointer to a region."]
-    #[doc = ""]
-    #[doc = "The lock_pointer and confine_pointer requests create the objects"]
-    #[doc = "wp_locked_pointer and wp_confined_pointer respectively, and the client can"]
-    #[doc = "use these objects to interact with the lock."]
-    #[doc = ""]
-    #[doc = "For any surface, only one lock or confinement may be active across all"]
-    #[doc = "wl_pointer objects of the same seat. If a lock or confinement is requested"]
-    #[doc = "when another lock or confinement is active or requested on the same surface"]
-    #[doc = "and with any of the wl_pointer objects of the same seat, an"]
-    #[doc = "'already_constrained' error will be raised."]
     pub mod zwp_pointer_constraints_v1 {
         #[doc = "These errors can be emitted in response to wp_pointer_constraints"]
         #[doc = "requests."]
@@ -17236,7 +17126,19 @@ pub mod pointer_constraints_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_pointer_constraints_v1 interface. See the module level documentation for more info"]
+        #[doc = "The global interface exposing pointer constraining functionality. It"]
+        #[doc = "exposes two requests: lock_pointer for locking the pointer to its"]
+        #[doc = "position, and confine_pointer for locking the pointer to a region."]
+        #[doc = ""]
+        #[doc = "The lock_pointer and confine_pointer requests create the objects"]
+        #[doc = "wp_locked_pointer and wp_confined_pointer respectively, and the client can"]
+        #[doc = "use these objects to interact with the lock."]
+        #[doc = ""]
+        #[doc = "For any surface, only one lock or confinement may be active across all"]
+        #[doc = "wl_pointer objects of the same seat. If a lock or confinement is requested"]
+        #[doc = "when another lock or confinement is active or requested on the same surface"]
+        #[doc = "and with any of the wl_pointer objects of the same seat, an"]
+        #[doc = "'already_constrained' error will be raised."]
         pub trait ZwpPointerConstraintsV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_pointer_constraints_v1";
             const VERSION: u32 = 1u32;
@@ -17381,31 +17283,30 @@ pub mod pointer_constraints_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "The wp_locked_pointer interface represents a locked pointer state."]
-    #[doc = ""]
-    #[doc = "While the lock of this object is active, the wl_pointer objects of the"]
-    #[doc = "associated seat will not emit any wl_pointer.motion events."]
-    #[doc = ""]
-    #[doc = "This object will send the event 'locked' when the lock is activated."]
-    #[doc = "Whenever the lock is activated, it is guaranteed that the locked surface"]
-    #[doc = "will already have received pointer focus and that the pointer will be"]
-    #[doc = "within the region passed to the request creating this object."]
-    #[doc = ""]
-    #[doc = "To unlock the pointer, send the destroy request. This will also destroy"]
-    #[doc = "the wp_locked_pointer object."]
-    #[doc = ""]
-    #[doc = "If the compositor decides to unlock the pointer the unlocked event is"]
-    #[doc = "sent. See wp_locked_pointer.unlock for details."]
-    #[doc = ""]
-    #[doc = "When unlocking, the compositor may warp the cursor position to the set"]
-    #[doc = "cursor position hint. If it does, it will not result in any relative"]
-    #[doc = "motion events emitted via wp_relative_pointer."]
-    #[doc = ""]
-    #[doc = "If the surface the lock was requested on is destroyed and the lock is not"]
-    #[doc = "yet activated, the wp_locked_pointer object is now defunct and must be"]
-    #[doc = "destroyed."]
     pub mod zwp_locked_pointer_v1 {
-        #[doc = "Trait to implement the zwp_locked_pointer_v1 interface. See the module level documentation for more info"]
+        #[doc = "The wp_locked_pointer interface represents a locked pointer state."]
+        #[doc = ""]
+        #[doc = "While the lock of this object is active, the wl_pointer objects of the"]
+        #[doc = "associated seat will not emit any wl_pointer.motion events."]
+        #[doc = ""]
+        #[doc = "This object will send the event 'locked' when the lock is activated."]
+        #[doc = "Whenever the lock is activated, it is guaranteed that the locked surface"]
+        #[doc = "will already have received pointer focus and that the pointer will be"]
+        #[doc = "within the region passed to the request creating this object."]
+        #[doc = ""]
+        #[doc = "To unlock the pointer, send the destroy request. This will also destroy"]
+        #[doc = "the wp_locked_pointer object."]
+        #[doc = ""]
+        #[doc = "If the compositor decides to unlock the pointer the unlocked event is"]
+        #[doc = "sent. See wp_locked_pointer.unlock for details."]
+        #[doc = ""]
+        #[doc = "When unlocking, the compositor may warp the cursor position to the set"]
+        #[doc = "cursor position hint. If it does, it will not result in any relative"]
+        #[doc = "motion events emitted via wp_relative_pointer."]
+        #[doc = ""]
+        #[doc = "If the surface the lock was requested on is destroyed and the lock is not"]
+        #[doc = "yet activated, the wp_locked_pointer object is now defunct and must be"]
+        #[doc = "destroyed."]
         pub trait ZwpLockedPointerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_locked_pointer_v1";
             const VERSION: u32 = 1u32;
@@ -17517,24 +17418,23 @@ pub mod pointer_constraints_unstable_v1 {
             }
         }
     }
-    #[doc = "The wp_confined_pointer interface represents a confined pointer state."]
-    #[doc = ""]
-    #[doc = "This object will send the event 'confined' when the confinement is"]
-    #[doc = "activated. Whenever the confinement is activated, it is guaranteed that"]
-    #[doc = "the surface the pointer is confined to will already have received pointer"]
-    #[doc = "focus and that the pointer will be within the region passed to the request"]
-    #[doc = "creating this object. It is up to the compositor to decide whether this"]
-    #[doc = "requires some user interaction and if the pointer will warp to within the"]
-    #[doc = "passed region if outside."]
-    #[doc = ""]
-    #[doc = "To unconfine the pointer, send the destroy request. This will also destroy"]
-    #[doc = "the wp_confined_pointer object."]
-    #[doc = ""]
-    #[doc = "If the compositor decides to unconfine the pointer the unconfined event is"]
-    #[doc = "sent. The wp_confined_pointer object is at this point defunct and should"]
-    #[doc = "be destroyed."]
     pub mod zwp_confined_pointer_v1 {
-        #[doc = "Trait to implement the zwp_confined_pointer_v1 interface. See the module level documentation for more info"]
+        #[doc = "The wp_confined_pointer interface represents a confined pointer state."]
+        #[doc = ""]
+        #[doc = "This object will send the event 'confined' when the confinement is"]
+        #[doc = "activated. Whenever the confinement is activated, it is guaranteed that"]
+        #[doc = "the surface the pointer is confined to will already have received pointer"]
+        #[doc = "focus and that the pointer will be within the region passed to the request"]
+        #[doc = "creating this object. It is up to the compositor to decide whether this"]
+        #[doc = "requires some user interaction and if the pointer will warp to within the"]
+        #[doc = "passed region if outside."]
+        #[doc = ""]
+        #[doc = "To unconfine the pointer, send the destroy request. This will also destroy"]
+        #[doc = "the wp_confined_pointer object."]
+        #[doc = ""]
+        #[doc = "If the compositor decides to unconfine the pointer the unconfined event is"]
+        #[doc = "sent. The wp_confined_pointer object is at this point defunct and should"]
+        #[doc = "be destroyed."]
         pub trait ZwpConfinedPointerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_confined_pointer_v1";
             const VERSION: u32 = 1u32;
@@ -17627,24 +17527,23 @@ pub mod pointer_constraints_unstable_v1 {
     }
 }
 pub mod pointer_gestures_unstable_v1 {
-    #[doc = "A global interface to provide semantic touchpad gestures for a given"]
-    #[doc = "pointer."]
-    #[doc = ""]
-    #[doc = "Three gestures are currently supported: swipe, pinch, and hold."]
-    #[doc = "Pinch and swipe gestures follow a three-stage cycle: begin, update,"]
-    #[doc = "end, hold gestures follow a two-stage cycle: begin and end. All"]
-    #[doc = "gestures are identified by a unique id."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is experimental and"]
-    #[doc = "backward incompatible changes may be made. Backward compatible changes"]
-    #[doc = "may be added together with the corresponding interface version bump."]
-    #[doc = "Backward incompatible changes are done by bumping the version number in"]
-    #[doc = "the protocol and interface names and resetting the interface version."]
-    #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
-    #[doc = "version number in the protocol and interface names are removed and the"]
-    #[doc = "interface version number is reset."]
     pub mod zwp_pointer_gestures_v1 {
-        #[doc = "Trait to implement the zwp_pointer_gestures_v1 interface. See the module level documentation for more info"]
+        #[doc = "A global interface to provide semantic touchpad gestures for a given"]
+        #[doc = "pointer."]
+        #[doc = ""]
+        #[doc = "Three gestures are currently supported: swipe, pinch, and hold."]
+        #[doc = "Pinch and swipe gestures follow a three-stage cycle: begin, update,"]
+        #[doc = "end, hold gestures follow a two-stage cycle: begin and end. All"]
+        #[doc = "gestures are identified by a unique id."]
+        #[doc = ""]
+        #[doc = "Warning! The protocol described in this file is experimental and"]
+        #[doc = "backward incompatible changes may be made. Backward compatible changes"]
+        #[doc = "may be added together with the corresponding interface version bump."]
+        #[doc = "Backward incompatible changes are done by bumping the version number in"]
+        #[doc = "the protocol and interface names and resetting the interface version."]
+        #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
+        #[doc = "version number in the protocol and interface names are removed and the"]
+        #[doc = "interface version number is reset."]
         pub trait ZwpPointerGesturesV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_pointer_gestures_v1";
             const VERSION: u32 = 3u32;
@@ -17752,23 +17651,22 @@ pub mod pointer_gestures_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "A swipe gesture object notifies a client about a multi-finger swipe"]
-    #[doc = "gesture detected on an indirect input device such as a touchpad."]
-    #[doc = "The gesture is usually initiated by multiple fingers moving in the"]
-    #[doc = "same direction but once initiated the direction may change."]
-    #[doc = "The precise conditions of when such a gesture is detected are"]
-    #[doc = "implementation-dependent."]
-    #[doc = ""]
-    #[doc = "A gesture consists of three stages: begin, update (optional) and end."]
-    #[doc = "There cannot be multiple simultaneous hold, pinch or swipe gestures on a"]
-    #[doc = "same pointer/seat, how compositors prevent these situations is"]
-    #[doc = "implementation-dependent."]
-    #[doc = ""]
-    #[doc = "A gesture may be cancelled by the compositor or the hardware."]
-    #[doc = "Clients should not consider performing permanent or irreversible"]
-    #[doc = "actions until the end of a gesture has been received."]
     pub mod zwp_pointer_gesture_swipe_v1 {
-        #[doc = "Trait to implement the zwp_pointer_gesture_swipe_v1 interface. See the module level documentation for more info"]
+        #[doc = "A swipe gesture object notifies a client about a multi-finger swipe"]
+        #[doc = "gesture detected on an indirect input device such as a touchpad."]
+        #[doc = "The gesture is usually initiated by multiple fingers moving in the"]
+        #[doc = "same direction but once initiated the direction may change."]
+        #[doc = "The precise conditions of when such a gesture is detected are"]
+        #[doc = "implementation-dependent."]
+        #[doc = ""]
+        #[doc = "A gesture consists of three stages: begin, update (optional) and end."]
+        #[doc = "There cannot be multiple simultaneous hold, pinch or swipe gestures on a"]
+        #[doc = "same pointer/seat, how compositors prevent these situations is"]
+        #[doc = "implementation-dependent."]
+        #[doc = ""]
+        #[doc = "A gesture may be cancelled by the compositor or the hardware."]
+        #[doc = "Clients should not consider performing permanent or irreversible"]
+        #[doc = "actions until the end of a gesture has been received."]
         pub trait ZwpPointerGestureSwipeV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_pointer_gesture_swipe_v1";
             const VERSION: u32 = 2u32;
@@ -17872,23 +17770,22 @@ pub mod pointer_gestures_unstable_v1 {
             }
         }
     }
-    #[doc = "A pinch gesture object notifies a client about a multi-finger pinch"]
-    #[doc = "gesture detected on an indirect input device such as a touchpad."]
-    #[doc = "The gesture is usually initiated by multiple fingers moving towards"]
-    #[doc = "each other or away from each other, or by two or more fingers rotating"]
-    #[doc = "around a logical center of gravity. The precise conditions of when"]
-    #[doc = "such a gesture is detected are implementation-dependent."]
-    #[doc = ""]
-    #[doc = "A gesture consists of three stages: begin, update (optional) and end."]
-    #[doc = "There cannot be multiple simultaneous hold, pinch or swipe gestures on a"]
-    #[doc = "same pointer/seat, how compositors prevent these situations is"]
-    #[doc = "implementation-dependent."]
-    #[doc = ""]
-    #[doc = "A gesture may be cancelled by the compositor or the hardware."]
-    #[doc = "Clients should not consider performing permanent or irreversible"]
-    #[doc = "actions until the end of a gesture has been received."]
     pub mod zwp_pointer_gesture_pinch_v1 {
-        #[doc = "Trait to implement the zwp_pointer_gesture_pinch_v1 interface. See the module level documentation for more info"]
+        #[doc = "A pinch gesture object notifies a client about a multi-finger pinch"]
+        #[doc = "gesture detected on an indirect input device such as a touchpad."]
+        #[doc = "The gesture is usually initiated by multiple fingers moving towards"]
+        #[doc = "each other or away from each other, or by two or more fingers rotating"]
+        #[doc = "around a logical center of gravity. The precise conditions of when"]
+        #[doc = "such a gesture is detected are implementation-dependent."]
+        #[doc = ""]
+        #[doc = "A gesture consists of three stages: begin, update (optional) and end."]
+        #[doc = "There cannot be multiple simultaneous hold, pinch or swipe gestures on a"]
+        #[doc = "same pointer/seat, how compositors prevent these situations is"]
+        #[doc = "implementation-dependent."]
+        #[doc = ""]
+        #[doc = "A gesture may be cancelled by the compositor or the hardware."]
+        #[doc = "Clients should not consider performing permanent or irreversible"]
+        #[doc = "actions until the end of a gesture has been received."]
         pub trait ZwpPointerGesturePinchV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_pointer_gesture_pinch_v1";
             const VERSION: u32 = 2u32;
@@ -18003,25 +17900,24 @@ pub mod pointer_gestures_unstable_v1 {
             }
         }
     }
-    #[doc = "A hold gesture object notifies a client about a single- or"]
-    #[doc = "multi-finger hold gesture detected on an indirect input device such as"]
-    #[doc = "a touchpad. The gesture is usually initiated by one or more fingers"]
-    #[doc = "being held down without significant movement. The precise conditions"]
-    #[doc = "of when such a gesture is detected are implementation-dependent."]
-    #[doc = ""]
-    #[doc = "In particular, this gesture may be used to cancel kinetic scrolling."]
-    #[doc = ""]
-    #[doc = "A hold gesture consists of two stages: begin and end. Unlike pinch and"]
-    #[doc = "swipe there is no update stage."]
-    #[doc = "There cannot be multiple simultaneous hold, pinch or swipe gestures on a"]
-    #[doc = "same pointer/seat, how compositors prevent these situations is"]
-    #[doc = "implementation-dependent."]
-    #[doc = ""]
-    #[doc = "A gesture may be cancelled by the compositor or the hardware."]
-    #[doc = "Clients should not consider performing permanent or irreversible"]
-    #[doc = "actions until the end of a gesture has been received."]
     pub mod zwp_pointer_gesture_hold_v1 {
-        #[doc = "Trait to implement the zwp_pointer_gesture_hold_v1 interface. See the module level documentation for more info"]
+        #[doc = "A hold gesture object notifies a client about a single- or"]
+        #[doc = "multi-finger hold gesture detected on an indirect input device such as"]
+        #[doc = "a touchpad. The gesture is usually initiated by one or more fingers"]
+        #[doc = "being held down without significant movement. The precise conditions"]
+        #[doc = "of when such a gesture is detected are implementation-dependent."]
+        #[doc = ""]
+        #[doc = "In particular, this gesture may be used to cancel kinetic scrolling."]
+        #[doc = ""]
+        #[doc = "A hold gesture consists of two stages: begin and end. Unlike pinch and"]
+        #[doc = "swipe there is no update stage."]
+        #[doc = "There cannot be multiple simultaneous hold, pinch or swipe gestures on a"]
+        #[doc = "same pointer/seat, how compositors prevent these situations is"]
+        #[doc = "implementation-dependent."]
+        #[doc = ""]
+        #[doc = "A gesture may be cancelled by the compositor or the hardware."]
+        #[doc = "Clients should not consider performing permanent or irreversible"]
+        #[doc = "actions until the end of a gesture has been received."]
         pub trait ZwpPointerGestureHoldV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_pointer_gesture_hold_v1";
             const VERSION: u32 = 3u32;
@@ -18145,12 +18041,11 @@ pub mod pointer_gestures_unstable_v1 {
 #[doc = "The primary selection owner should be checking for errors during"]
 #[doc = "writes, merely cancelling the ongoing transfer if any happened."]
 pub mod wp_primary_selection_unstable_v1 {
-    #[doc = "The primary selection device manager is a singleton global object that"]
-    #[doc = "provides access to the primary selection. It allows to create"]
-    #[doc = "wp_primary_selection_source objects, as well as retrieving the per-seat"]
-    #[doc = "wp_primary_selection_device objects."]
     pub mod zwp_primary_selection_device_manager_v1 {
-        #[doc = "Trait to implement the zwp_primary_selection_device_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "The primary selection device manager is a singleton global object that"]
+        #[doc = "provides access to the primary selection. It allows to create"]
+        #[doc = "wp_primary_selection_source objects, as well as retrieving the per-seat"]
+        #[doc = "wp_primary_selection_device objects."]
         pub trait ZwpPrimarySelectionDeviceManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_primary_selection_device_manager_v1";
             const VERSION: u32 = 1u32;
@@ -18232,7 +18127,6 @@ pub mod wp_primary_selection_unstable_v1 {
         }
     }
     pub mod zwp_primary_selection_device_v1 {
-        #[doc = "Trait to implement the zwp_primary_selection_device_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPrimarySelectionDeviceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_primary_selection_device_v1";
             const VERSION: u32 = 1u32;
@@ -18331,13 +18225,12 @@ pub mod wp_primary_selection_unstable_v1 {
             }
         }
     }
-    #[doc = "A wp_primary_selection_offer represents an offer to transfer the contents"]
-    #[doc = "of the primary selection clipboard to the client. Similar to"]
-    #[doc = "wl_data_offer, the offer also describes the mime types that the data can"]
-    #[doc = "be converted to and provides the mechanisms for transferring the data"]
-    #[doc = "directly to the client."]
     pub mod zwp_primary_selection_offer_v1 {
-        #[doc = "Trait to implement the zwp_primary_selection_offer_v1 interface. See the module level documentation for more info"]
+        #[doc = "A wp_primary_selection_offer represents an offer to transfer the contents"]
+        #[doc = "of the primary selection clipboard to the client. Similar to"]
+        #[doc = "wl_data_offer, the offer also describes the mime types that the data can"]
+        #[doc = "be converted to and provides the mechanisms for transferring the data"]
+        #[doc = "directly to the client."]
         pub trait ZwpPrimarySelectionOfferV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_primary_selection_offer_v1";
             const VERSION: u32 = 1u32;
@@ -18416,11 +18309,10 @@ pub mod wp_primary_selection_unstable_v1 {
             }
         }
     }
-    #[doc = "The source side of a wp_primary_selection_offer, it provides a way to"]
-    #[doc = "describe the offered data and respond to requests to transfer the"]
-    #[doc = "requested contents of the primary selection clipboard."]
     pub mod zwp_primary_selection_source_v1 {
-        #[doc = "Trait to implement the zwp_primary_selection_source_v1 interface. See the module level documentation for more info"]
+        #[doc = "The source side of a wp_primary_selection_offer, it provides a way to"]
+        #[doc = "describe the offered data and respond to requests to transfer the"]
+        #[doc = "requested contents of the primary selection clipboard."]
         pub trait ZwpPrimarySelectionSourceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_primary_selection_source_v1";
             const VERSION: u32 = 1u32;
@@ -18532,10 +18424,9 @@ pub mod wp_primary_selection_unstable_v1 {
 #[doc = "protocol and interface names are removed and the interface version number is"]
 #[doc = "reset."]
 pub mod relative_pointer_unstable_v1 {
-    #[doc = "A global interface used for getting the relative pointer object for a"]
-    #[doc = "given pointer."]
     pub mod zwp_relative_pointer_manager_v1 {
-        #[doc = "Trait to implement the zwp_relative_pointer_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "A global interface used for getting the relative pointer object for a"]
+        #[doc = "given pointer."]
         pub trait ZwpRelativePointerManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_relative_pointer_manager_v1";
             const VERSION: u32 = 1u32;
@@ -18594,12 +18485,11 @@ pub mod relative_pointer_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "A wp_relative_pointer object is an extension to the wl_pointer interface"]
-    #[doc = "used for emitting relative pointer events. It shares the same focus as"]
-    #[doc = "wl_pointer objects of the same seat and will only emit events when it has"]
-    #[doc = "focus."]
     pub mod zwp_relative_pointer_v1 {
-        #[doc = "Trait to implement the zwp_relative_pointer_v1 interface. See the module level documentation for more info"]
+        #[doc = "A wp_relative_pointer object is an extension to the wl_pointer interface"]
+        #[doc = "used for emitting relative pointer events. It shares the same focus as"]
+        #[doc = "wl_pointer objects of the same seat and will only emit events when it has"]
+        #[doc = "focus."]
         pub trait ZwpRelativePointerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_relative_pointer_v1";
             const VERSION: u32 = 1u32;
@@ -18772,11 +18662,10 @@ pub mod relative_pointer_unstable_v1 {
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
 pub mod tablet_unstable_v1 {
-    #[doc = "An object that provides access to the graphics tablets available on this"]
-    #[doc = "system. All tablets are associated with a seat, to get access to the"]
-    #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
     pub mod zwp_tablet_manager_v1 {
-        #[doc = "Trait to implement the zwp_tablet_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "An object that provides access to the graphics tablets available on this"]
+        #[doc = "system. All tablets are associated with a seat, to get access to the"]
+        #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
         pub trait ZwpTabletManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_manager_v1";
             const VERSION: u32 = 1u32;
@@ -18832,11 +18721,10 @@ pub mod tablet_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An object that provides access to the graphics tablets available on this"]
-    #[doc = "seat. After binding to this interface, the compositor sends a set of"]
-    #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
     pub mod zwp_tablet_seat_v1 {
-        #[doc = "Trait to implement the zwp_tablet_seat_v1 interface. See the module level documentation for more info"]
+        #[doc = "An object that provides access to the graphics tablets available on this"]
+        #[doc = "seat. After binding to this interface, the compositor sends a set of"]
+        #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
         pub trait ZwpTabletSeatV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_seat_v1";
             const VERSION: u32 = 1u32;
@@ -18907,26 +18795,6 @@ pub mod tablet_unstable_v1 {
             }
         }
     }
-    #[doc = "An object that represents a physical tool that has been, or is"]
-    #[doc = "currently in use with a tablet in this seat. Each wp_tablet_tool"]
-    #[doc = "object stays valid until the client destroys it; the compositor"]
-    #[doc = "reuses the wp_tablet_tool object to indicate that the object's"]
-    #[doc = "respective physical tool has come into proximity of a tablet again."]
-    #[doc = ""]
-    #[doc = "A wp_tablet_tool object's relation to a physical tool depends on the"]
-    #[doc = "tablet's ability to report serial numbers. If the tablet supports"]
-    #[doc = "this capability, then the object represents a specific physical tool"]
-    #[doc = "and can be identified even when used on multiple tablets."]
-    #[doc = ""]
-    #[doc = "A tablet tool has a number of static characteristics, e.g. tool type,"]
-    #[doc = "hardware_serial and capabilities. These capabilities are sent in an"]
-    #[doc = "event sequence after the wp_tablet_seat.tool_added event before any"]
-    #[doc = "actual events from this tool. This initial event sequence is"]
-    #[doc = "terminated by a wp_tablet_tool.done event."]
-    #[doc = ""]
-    #[doc = "Tablet tool events are grouped by wp_tablet_tool.frame events."]
-    #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
-    #[doc = "considered part of the same hardware state change."]
     pub mod zwp_tablet_tool_v1 {
         #[doc = "Describes the physical type of a tool. The physical type of a tool"]
         #[doc = "generally defines its base usage."]
@@ -19045,7 +18913,26 @@ pub mod tablet_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_tablet_tool_v1 interface. See the module level documentation for more info"]
+        #[doc = "An object that represents a physical tool that has been, or is"]
+        #[doc = "currently in use with a tablet in this seat. Each wp_tablet_tool"]
+        #[doc = "object stays valid until the client destroys it; the compositor"]
+        #[doc = "reuses the wp_tablet_tool object to indicate that the object's"]
+        #[doc = "respective physical tool has come into proximity of a tablet again."]
+        #[doc = ""]
+        #[doc = "A wp_tablet_tool object's relation to a physical tool depends on the"]
+        #[doc = "tablet's ability to report serial numbers. If the tablet supports"]
+        #[doc = "this capability, then the object represents a specific physical tool"]
+        #[doc = "and can be identified even when used on multiple tablets."]
+        #[doc = ""]
+        #[doc = "A tablet tool has a number of static characteristics, e.g. tool type,"]
+        #[doc = "hardware_serial and capabilities. These capabilities are sent in an"]
+        #[doc = "event sequence after the wp_tablet_seat.tool_added event before any"]
+        #[doc = "actual events from this tool. This initial event sequence is"]
+        #[doc = "terminated by a wp_tablet_tool.done event."]
+        #[doc = ""]
+        #[doc = "Tablet tool events are grouped by wp_tablet_tool.frame events."]
+        #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
+        #[doc = "considered part of the same hardware state change."]
         pub trait ZwpTabletToolV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_tool_v1";
             const VERSION: u32 = 1u32;
@@ -19561,16 +19448,15 @@ pub mod tablet_unstable_v1 {
             }
         }
     }
-    #[doc = "The wp_tablet interface represents one graphics tablet device. The"]
-    #[doc = "tablet interface itself does not generate events; all events are"]
-    #[doc = "generated by wp_tablet_tool objects when in proximity above a tablet."]
-    #[doc = ""]
-    #[doc = "A tablet has a number of static characteristics, e.g. device name and"]
-    #[doc = "pid/vid. These capabilities are sent in an event sequence after the"]
-    #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
-    #[doc = "terminated by a wp_tablet.done event."]
     pub mod zwp_tablet_v1 {
-        #[doc = "Trait to implement the zwp_tablet_v1 interface. See the module level documentation for more info"]
+        #[doc = "The wp_tablet interface represents one graphics tablet device. The"]
+        #[doc = "tablet interface itself does not generate events; all events are"]
+        #[doc = "generated by wp_tablet_tool objects when in proximity above a tablet."]
+        #[doc = ""]
+        #[doc = "A tablet has a number of static characteristics, e.g. device name and"]
+        #[doc = "pid/vid. These capabilities are sent in an event sequence after the"]
+        #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
+        #[doc = "terminated by a wp_tablet.done event."]
         pub trait ZwpTabletV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_v1";
             const VERSION: u32 = 1u32;
@@ -19782,11 +19668,10 @@ pub mod tablet_unstable_v1 {
 #[doc = "no longer used and only retained for backwards compatibility. The"]
 #[doc = "canonical version can be found in the stable/ directory."]
 pub mod tablet_unstable_v2 {
-    #[doc = "An object that provides access to the graphics tablets available on this"]
-    #[doc = "system. All tablets are associated with a seat, to get access to the"]
-    #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
     pub mod zwp_tablet_manager_v2 {
-        #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
+        #[doc = "An object that provides access to the graphics tablets available on this"]
+        #[doc = "system. All tablets are associated with a seat, to get access to the"]
+        #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
         pub trait ZwpTabletManagerV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_manager_v2";
             const VERSION: u32 = 1u32;
@@ -19842,11 +19727,10 @@ pub mod tablet_unstable_v2 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An object that provides access to the graphics tablets available on this"]
-    #[doc = "seat. After binding to this interface, the compositor sends a set of"]
-    #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
     pub mod zwp_tablet_seat_v2 {
-        #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
+        #[doc = "An object that provides access to the graphics tablets available on this"]
+        #[doc = "seat. After binding to this interface, the compositor sends a set of"]
+        #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
         pub trait ZwpTabletSeatV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_seat_v2";
             const VERSION: u32 = 1u32;
@@ -19942,26 +19826,6 @@ pub mod tablet_unstable_v2 {
             }
         }
     }
-    #[doc = "An object that represents a physical tool that has been, or is"]
-    #[doc = "currently in use with a tablet in this seat. Each wp_tablet_tool"]
-    #[doc = "object stays valid until the client destroys it; the compositor"]
-    #[doc = "reuses the wp_tablet_tool object to indicate that the object's"]
-    #[doc = "respective physical tool has come into proximity of a tablet again."]
-    #[doc = ""]
-    #[doc = "A wp_tablet_tool object's relation to a physical tool depends on the"]
-    #[doc = "tablet's ability to report serial numbers. If the tablet supports"]
-    #[doc = "this capability, then the object represents a specific physical tool"]
-    #[doc = "and can be identified even when used on multiple tablets."]
-    #[doc = ""]
-    #[doc = "A tablet tool has a number of static characteristics, e.g. tool type,"]
-    #[doc = "hardware_serial and capabilities. These capabilities are sent in an"]
-    #[doc = "event sequence after the wp_tablet_seat.tool_added event before any"]
-    #[doc = "actual events from this tool. This initial event sequence is"]
-    #[doc = "terminated by a wp_tablet_tool.done event."]
-    #[doc = ""]
-    #[doc = "Tablet tool events are grouped by wp_tablet_tool.frame events."]
-    #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
-    #[doc = "considered part of the same hardware state change."]
     pub mod zwp_tablet_tool_v2 {
         #[doc = "Describes the physical type of a tool. The physical type of a tool"]
         #[doc = "generally defines its base usage."]
@@ -20080,7 +19944,26 @@ pub mod tablet_unstable_v2 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_tablet_tool_v2 interface. See the module level documentation for more info"]
+        #[doc = "An object that represents a physical tool that has been, or is"]
+        #[doc = "currently in use with a tablet in this seat. Each wp_tablet_tool"]
+        #[doc = "object stays valid until the client destroys it; the compositor"]
+        #[doc = "reuses the wp_tablet_tool object to indicate that the object's"]
+        #[doc = "respective physical tool has come into proximity of a tablet again."]
+        #[doc = ""]
+        #[doc = "A wp_tablet_tool object's relation to a physical tool depends on the"]
+        #[doc = "tablet's ability to report serial numbers. If the tablet supports"]
+        #[doc = "this capability, then the object represents a specific physical tool"]
+        #[doc = "and can be identified even when used on multiple tablets."]
+        #[doc = ""]
+        #[doc = "A tablet tool has a number of static characteristics, e.g. tool type,"]
+        #[doc = "hardware_serial and capabilities. These capabilities are sent in an"]
+        #[doc = "event sequence after the wp_tablet_seat.tool_added event before any"]
+        #[doc = "actual events from this tool. This initial event sequence is"]
+        #[doc = "terminated by a wp_tablet_tool.done event."]
+        #[doc = ""]
+        #[doc = "Tablet tool events are grouped by wp_tablet_tool.frame events."]
+        #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
+        #[doc = "considered part of the same hardware state change."]
         pub trait ZwpTabletToolV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_tool_v2";
             const VERSION: u32 = 1u32;
@@ -20596,16 +20479,15 @@ pub mod tablet_unstable_v2 {
             }
         }
     }
-    #[doc = "The wp_tablet interface represents one graphics tablet device. The"]
-    #[doc = "tablet interface itself does not generate events; all events are"]
-    #[doc = "generated by wp_tablet_tool objects when in proximity above a tablet."]
-    #[doc = ""]
-    #[doc = "A tablet has a number of static characteristics, e.g. device name and"]
-    #[doc = "pid/vid. These capabilities are sent in an event sequence after the"]
-    #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
-    #[doc = "terminated by a wp_tablet.done event."]
     pub mod zwp_tablet_v2 {
-        #[doc = "Trait to implement the zwp_tablet_v2 interface. See the module level documentation for more info"]
+        #[doc = "The wp_tablet interface represents one graphics tablet device. The"]
+        #[doc = "tablet interface itself does not generate events; all events are"]
+        #[doc = "generated by wp_tablet_tool objects when in proximity above a tablet."]
+        #[doc = ""]
+        #[doc = "A tablet has a number of static characteristics, e.g. device name and"]
+        #[doc = "pid/vid. These capabilities are sent in an event sequence after the"]
+        #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
+        #[doc = "terminated by a wp_tablet.done event."]
         pub trait ZwpTabletV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_v2";
             const VERSION: u32 = 1u32;
@@ -20744,11 +20626,6 @@ pub mod tablet_unstable_v2 {
             }
         }
     }
-    #[doc = "A circular interaction area, such as the touch ring on the Wacom Intuos"]
-    #[doc = "Pro series tablets."]
-    #[doc = ""]
-    #[doc = "Events on a ring are logically grouped by the wl_tablet_pad_ring.frame"]
-    #[doc = "event."]
     pub mod zwp_tablet_pad_ring_v2 {
         #[doc = "Describes the source types for ring events. This indicates to the"]
         #[doc = "client how a ring event was physically generated; a client may"]
@@ -20770,7 +20647,11 @@ pub mod tablet_unstable_v2 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_tablet_pad_ring_v2 interface. See the module level documentation for more info"]
+        #[doc = "A circular interaction area, such as the touch ring on the Wacom Intuos"]
+        #[doc = "Pro series tablets."]
+        #[doc = ""]
+        #[doc = "Events on a ring are logically grouped by the wl_tablet_pad_ring.frame"]
+        #[doc = "event."]
         pub trait ZwpTabletPadRingV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_pad_ring_v2";
             const VERSION: u32 = 1u32;
@@ -20934,11 +20815,6 @@ pub mod tablet_unstable_v2 {
             }
         }
     }
-    #[doc = "A linear interaction area, such as the strips found in Wacom Cintiq"]
-    #[doc = "models."]
-    #[doc = ""]
-    #[doc = "Events on a strip are logically grouped by the wl_tablet_pad_strip.frame"]
-    #[doc = "event."]
     pub mod zwp_tablet_pad_strip_v2 {
         #[doc = "Describes the source types for strip events. This indicates to the"]
         #[doc = "client how a strip event was physically generated; a client may"]
@@ -20960,7 +20836,11 @@ pub mod tablet_unstable_v2 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_tablet_pad_strip_v2 interface. See the module level documentation for more info"]
+        #[doc = "A linear interaction area, such as the strips found in Wacom Cintiq"]
+        #[doc = "models."]
+        #[doc = ""]
+        #[doc = "Events on a strip are logically grouped by the wl_tablet_pad_strip.frame"]
+        #[doc = "event."]
         pub trait ZwpTabletPadStripV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_pad_strip_v2";
             const VERSION: u32 = 1u32;
@@ -21126,29 +21006,28 @@ pub mod tablet_unstable_v2 {
             }
         }
     }
-    #[doc = "A pad group describes a distinct (sub)set of buttons, rings and strips"]
-    #[doc = "present in the tablet. The criteria of this grouping is usually positional,"]
-    #[doc = "eg. if a tablet has buttons on the left and right side, 2 groups will be"]
-    #[doc = "presented. The physical arrangement of groups is undisclosed and may"]
-    #[doc = "change on the fly."]
-    #[doc = ""]
-    #[doc = "Pad groups will announce their features during pad initialization. Between"]
-    #[doc = "the corresponding wp_tablet_pad.group event and wp_tablet_pad_group.done, the"]
-    #[doc = "pad group will announce the buttons, rings and strips contained in it,"]
-    #[doc = "plus the number of supported modes."]
-    #[doc = ""]
-    #[doc = "Modes are a mechanism to allow multiple groups of actions for every element"]
-    #[doc = "in the pad group. The number of groups and available modes in each is"]
-    #[doc = "persistent across device plugs. The current mode is user-switchable, it"]
-    #[doc = "will be announced through the wp_tablet_pad_group.mode_switch event both"]
-    #[doc = "whenever it is switched, and after wp_tablet_pad.enter."]
-    #[doc = ""]
-    #[doc = "The current mode logically applies to all elements in the pad group,"]
-    #[doc = "although it is at clients' discretion whether to actually perform different"]
-    #[doc = "actions, and/or issue the respective .set_feedback requests to notify the"]
-    #[doc = "compositor. See the wp_tablet_pad_group.mode_switch event for more details."]
     pub mod zwp_tablet_pad_group_v2 {
-        #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
+        #[doc = "A pad group describes a distinct (sub)set of buttons, rings and strips"]
+        #[doc = "present in the tablet. The criteria of this grouping is usually positional,"]
+        #[doc = "eg. if a tablet has buttons on the left and right side, 2 groups will be"]
+        #[doc = "presented. The physical arrangement of groups is undisclosed and may"]
+        #[doc = "change on the fly."]
+        #[doc = ""]
+        #[doc = "Pad groups will announce their features during pad initialization. Between"]
+        #[doc = "the corresponding wp_tablet_pad.group event and wp_tablet_pad_group.done, the"]
+        #[doc = "pad group will announce the buttons, rings and strips contained in it,"]
+        #[doc = "plus the number of supported modes."]
+        #[doc = ""]
+        #[doc = "Modes are a mechanism to allow multiple groups of actions for every element"]
+        #[doc = "in the pad group. The number of groups and available modes in each is"]
+        #[doc = "persistent across device plugs. The current mode is user-switchable, it"]
+        #[doc = "will be announced through the wp_tablet_pad_group.mode_switch event both"]
+        #[doc = "whenever it is switched, and after wp_tablet_pad.enter."]
+        #[doc = ""]
+        #[doc = "The current mode logically applies to all elements in the pad group,"]
+        #[doc = "although it is at clients' discretion whether to actually perform different"]
+        #[doc = "actions, and/or issue the respective .set_feedback requests to notify the"]
+        #[doc = "compositor. See the wp_tablet_pad_group.mode_switch event for more details."]
         pub trait ZwpTabletPadGroupV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_pad_group_v2";
             const VERSION: u32 = 1u32;
@@ -21335,28 +21214,6 @@ pub mod tablet_unstable_v2 {
             }
         }
     }
-    #[doc = "A pad device is a set of buttons, rings and strips"]
-    #[doc = "usually physically present on the tablet device itself. Some"]
-    #[doc = "exceptions exist where the pad device is physically detached, e.g. the"]
-    #[doc = "Wacom ExpressKey Remote."]
-    #[doc = ""]
-    #[doc = "Pad devices have no axes that control the cursor and are generally"]
-    #[doc = "auxiliary devices to the tool devices used on the tablet surface."]
-    #[doc = ""]
-    #[doc = "A pad device has a number of static characteristics, e.g. the number"]
-    #[doc = "of rings. These capabilities are sent in an event sequence after the"]
-    #[doc = "wp_tablet_seat.pad_added event before any actual events from this pad."]
-    #[doc = "This initial event sequence is terminated by a wp_tablet_pad.done"]
-    #[doc = "event."]
-    #[doc = ""]
-    #[doc = "All pad features (buttons, rings and strips) are logically divided into"]
-    #[doc = "groups and all pads have at least one group. The available groups are"]
-    #[doc = "notified through the wp_tablet_pad.group event; the compositor will"]
-    #[doc = "emit one event per group before emitting wp_tablet_pad.done."]
-    #[doc = ""]
-    #[doc = "Groups may have multiple modes. Modes allow clients to map multiple"]
-    #[doc = "actions to a single pad feature. Only one mode can be active per group,"]
-    #[doc = "although different groups may have different active modes."]
     pub mod zwp_tablet_pad_v2 {
         #[doc = "Describes the physical state of a button that caused the button"]
         #[doc = "event."]
@@ -21379,7 +21236,28 @@ pub mod tablet_unstable_v2 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_tablet_pad_v2 interface. See the module level documentation for more info"]
+        #[doc = "A pad device is a set of buttons, rings and strips"]
+        #[doc = "usually physically present on the tablet device itself. Some"]
+        #[doc = "exceptions exist where the pad device is physically detached, e.g. the"]
+        #[doc = "Wacom ExpressKey Remote."]
+        #[doc = ""]
+        #[doc = "Pad devices have no axes that control the cursor and are generally"]
+        #[doc = "auxiliary devices to the tool devices used on the tablet surface."]
+        #[doc = ""]
+        #[doc = "A pad device has a number of static characteristics, e.g. the number"]
+        #[doc = "of rings. These capabilities are sent in an event sequence after the"]
+        #[doc = "wp_tablet_seat.pad_added event before any actual events from this pad."]
+        #[doc = "This initial event sequence is terminated by a wp_tablet_pad.done"]
+        #[doc = "event."]
+        #[doc = ""]
+        #[doc = "All pad features (buttons, rings and strips) are logically divided into"]
+        #[doc = "groups and all pads have at least one group. The available groups are"]
+        #[doc = "notified through the wp_tablet_pad.group event; the compositor will"]
+        #[doc = "emit one event per group before emitting wp_tablet_pad.done."]
+        #[doc = ""]
+        #[doc = "Groups may have multiple modes. Modes allow clients to map multiple"]
+        #[doc = "actions to a single pad feature. Only one mode can be active per group,"]
+        #[doc = "although different groups may have different active modes."]
         pub trait ZwpTabletPadV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_pad_v2";
             const VERSION: u32 = 1u32;
@@ -21615,35 +21493,6 @@ pub mod tablet_unstable_v2 {
     }
 }
 pub mod text_input_unstable_v1 {
-    #[doc = "An object used for text input. Adds support for text input and input"]
-    #[doc = "methods to applications. A text_input object is created from a"]
-    #[doc = "wl_text_input_manager and corresponds typically to a text entry in an"]
-    #[doc = "application."]
-    #[doc = ""]
-    #[doc = "Requests are used to activate/deactivate the text_input object and set"]
-    #[doc = "state information like surrounding and selected text or the content type."]
-    #[doc = "The information about entered text is sent to the text_input object via"]
-    #[doc = "the pre-edit and commit events. Using this interface removes the need"]
-    #[doc = "for applications to directly process hardware key events and compose text"]
-    #[doc = "out of them."]
-    #[doc = ""]
-    #[doc = "Text is generally UTF-8 encoded, indices and lengths are in bytes."]
-    #[doc = ""]
-    #[doc = "Serials are used to synchronize the state between the text input and"]
-    #[doc = "an input method. New serials are sent by the text input in the"]
-    #[doc = "commit_state request and are used by the input method to indicate"]
-    #[doc = "the known text input state in events like preedit_string, commit_string,"]
-    #[doc = "and keysym. The text input can then ignore events from the input method"]
-    #[doc = "which are based on an outdated state (for example after a reset)."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is experimental and"]
-    #[doc = "backward incompatible changes may be made. Backward compatible changes"]
-    #[doc = "may be added together with the corresponding interface version bump."]
-    #[doc = "Backward incompatible changes are done by bumping the version number in"]
-    #[doc = "the protocol and interface names and resetting the interface version."]
-    #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
-    #[doc = "version number in the protocol and interface names are removed and the"]
-    #[doc = "interface version number is reset."]
     pub mod zwp_text_input_v1 {
         bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behaviour"] const None = 0u32 ; # [doc = "auto completion, correction and capitalization"] const Default = 7u32 ; # [doc = "hidden and sensitive text"] const Password = 192u32 ; # [doc = "suggest word completions"] const AutoCompletion = 1u32 ; # [doc = "suggest word corrections"] const AutoCorrection = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; } }
         impl TryFrom<u32> for ContentHint {
@@ -21762,7 +21611,35 @@ pub mod text_input_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_text_input_v1 interface. See the module level documentation for more info"]
+        #[doc = "An object used for text input. Adds support for text input and input"]
+        #[doc = "methods to applications. A text_input object is created from a"]
+        #[doc = "wl_text_input_manager and corresponds typically to a text entry in an"]
+        #[doc = "application."]
+        #[doc = ""]
+        #[doc = "Requests are used to activate/deactivate the text_input object and set"]
+        #[doc = "state information like surrounding and selected text or the content type."]
+        #[doc = "The information about entered text is sent to the text_input object via"]
+        #[doc = "the pre-edit and commit events. Using this interface removes the need"]
+        #[doc = "for applications to directly process hardware key events and compose text"]
+        #[doc = "out of them."]
+        #[doc = ""]
+        #[doc = "Text is generally UTF-8 encoded, indices and lengths are in bytes."]
+        #[doc = ""]
+        #[doc = "Serials are used to synchronize the state between the text input and"]
+        #[doc = "an input method. New serials are sent by the text input in the"]
+        #[doc = "commit_state request and are used by the input method to indicate"]
+        #[doc = "the known text input state in events like preedit_string, commit_string,"]
+        #[doc = "and keysym. The text input can then ignore events from the input method"]
+        #[doc = "which are based on an outdated state (for example after a reset)."]
+        #[doc = ""]
+        #[doc = "Warning! The protocol described in this file is experimental and"]
+        #[doc = "backward incompatible changes may be made. Backward compatible changes"]
+        #[doc = "may be added together with the corresponding interface version bump."]
+        #[doc = "Backward incompatible changes are done by bumping the version number in"]
+        #[doc = "the protocol and interface names and resetting the interface version."]
+        #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
+        #[doc = "version number in the protocol and interface names are removed and the"]
+        #[doc = "interface version number is reset."]
         pub trait ZwpTextInputV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_text_input_v1";
             const VERSION: u32 = 1u32;
@@ -22258,9 +22135,8 @@ pub mod text_input_unstable_v1 {
             }
         }
     }
-    #[doc = "A factory for text_input objects. This object is a global singleton."]
     pub mod zwp_text_input_manager_v1 {
-        #[doc = "Trait to implement the zwp_text_input_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "A factory for text_input objects. This object is a global singleton."]
         pub trait ZwpTextInputManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_text_input_manager_v1";
             const VERSION: u32 = 1u32;
@@ -22320,32 +22196,6 @@ pub mod text_input_unstable_v1 {
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
 pub mod text_input_unstable_v3 {
-    #[doc = "The zwp_text_input_v3 interface represents text input and input methods"]
-    #[doc = "associated with a seat. It provides enter/leave events to follow the"]
-    #[doc = "text input focus for a seat."]
-    #[doc = ""]
-    #[doc = "Requests are used to enable/disable the text-input object and set"]
-    #[doc = "state information like surrounding and selected text or the content type."]
-    #[doc = "The information about the entered text is sent to the text-input object"]
-    #[doc = "via the preedit_string and commit_string events."]
-    #[doc = ""]
-    #[doc = "Text is valid UTF-8 encoded, indices and lengths are in bytes. Indices"]
-    #[doc = "must not point to middle bytes inside a code point: they must either"]
-    #[doc = "point to the first byte of a code point or to the end of the buffer."]
-    #[doc = "Lengths must be measured between two valid indices."]
-    #[doc = ""]
-    #[doc = "Focus moving throughout surfaces will result in the emission of"]
-    #[doc = "zwp_text_input_v3.enter and zwp_text_input_v3.leave events. The focused"]
-    #[doc = "surface must commit zwp_text_input_v3.enable and"]
-    #[doc = "zwp_text_input_v3.disable requests as the keyboard focus moves across"]
-    #[doc = "editable and non-editable elements of the UI. Those two requests are not"]
-    #[doc = "expected to be paired with each other, the compositor must be able to"]
-    #[doc = "handle consecutive series of the same request."]
-    #[doc = ""]
-    #[doc = "State is sent by the state requests (set_surrounding_text,"]
-    #[doc = "set_content_type and set_cursor_rectangle) and a commit request. After an"]
-    #[doc = "enter event or disable request all state information is invalidated and"]
-    #[doc = "needs to be resent by the client."]
     pub mod zwp_text_input_v3 {
         #[doc = "Reason for the change of surrounding text or cursor posision."]
         #[repr(u32)]
@@ -22434,7 +22284,32 @@ pub mod text_input_unstable_v3 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwp_text_input_v3 interface. See the module level documentation for more info"]
+        #[doc = "The zwp_text_input_v3 interface represents text input and input methods"]
+        #[doc = "associated with a seat. It provides enter/leave events to follow the"]
+        #[doc = "text input focus for a seat."]
+        #[doc = ""]
+        #[doc = "Requests are used to enable/disable the text-input object and set"]
+        #[doc = "state information like surrounding and selected text or the content type."]
+        #[doc = "The information about the entered text is sent to the text-input object"]
+        #[doc = "via the preedit_string and commit_string events."]
+        #[doc = ""]
+        #[doc = "Text is valid UTF-8 encoded, indices and lengths are in bytes. Indices"]
+        #[doc = "must not point to middle bytes inside a code point: they must either"]
+        #[doc = "point to the first byte of a code point or to the end of the buffer."]
+        #[doc = "Lengths must be measured between two valid indices."]
+        #[doc = ""]
+        #[doc = "Focus moving throughout surfaces will result in the emission of"]
+        #[doc = "zwp_text_input_v3.enter and zwp_text_input_v3.leave events. The focused"]
+        #[doc = "surface must commit zwp_text_input_v3.enable and"]
+        #[doc = "zwp_text_input_v3.disable requests as the keyboard focus moves across"]
+        #[doc = "editable and non-editable elements of the UI. Those two requests are not"]
+        #[doc = "expected to be paired with each other, the compositor must be able to"]
+        #[doc = "handle consecutive series of the same request."]
+        #[doc = ""]
+        #[doc = "State is sent by the state requests (set_surrounding_text,"]
+        #[doc = "set_content_type and set_cursor_rectangle) and a commit request. After an"]
+        #[doc = "enter event or disable request all state information is invalidated and"]
+        #[doc = "needs to be resent by the client."]
         pub trait ZwpTextInputV3: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_text_input_v3";
             const VERSION: u32 = 1u32;
@@ -22875,9 +22750,8 @@ pub mod text_input_unstable_v3 {
             }
         }
     }
-    #[doc = "A factory for text-input objects. This object is a global singleton."]
     pub mod zwp_text_input_manager_v3 {
-        #[doc = "Trait to implement the zwp_text_input_manager_v3 interface. See the module level documentation for more info"]
+        #[doc = "A factory for text-input objects. This object is a global singleton."]
         pub trait ZwpTextInputManagerV3: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_text_input_manager_v3";
             const VERSION: u32 = 1u32;
@@ -22933,30 +22807,29 @@ pub mod text_input_unstable_v3 {
     }
 }
 pub mod xdg_decoration_unstable_v1 {
-    #[doc = "This interface allows a compositor to announce support for server-side"]
-    #[doc = "decorations."]
-    #[doc = ""]
-    #[doc = "A window decoration is a set of window controls as deemed appropriate by"]
-    #[doc = "the party managing them, such as user interface components used to move,"]
-    #[doc = "resize and change a window's state."]
-    #[doc = ""]
-    #[doc = "A client can use this protocol to request being decorated by a supporting"]
-    #[doc = "compositor."]
-    #[doc = ""]
-    #[doc = "If compositor and client do not negotiate the use of a server-side"]
-    #[doc = "decoration using this protocol, clients continue to self-decorate as they"]
-    #[doc = "see fit."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is experimental and"]
-    #[doc = "backward incompatible changes may be made. Backward compatible changes"]
-    #[doc = "may be added together with the corresponding interface version bump."]
-    #[doc = "Backward incompatible changes are done by bumping the version number in"]
-    #[doc = "the protocol and interface names and resetting the interface version."]
-    #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
-    #[doc = "version number in the protocol and interface names are removed and the"]
-    #[doc = "interface version number is reset."]
     pub mod zxdg_decoration_manager_v1 {
-        #[doc = "Trait to implement the zxdg_decoration_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface allows a compositor to announce support for server-side"]
+        #[doc = "decorations."]
+        #[doc = ""]
+        #[doc = "A window decoration is a set of window controls as deemed appropriate by"]
+        #[doc = "the party managing them, such as user interface components used to move,"]
+        #[doc = "resize and change a window's state."]
+        #[doc = ""]
+        #[doc = "A client can use this protocol to request being decorated by a supporting"]
+        #[doc = "compositor."]
+        #[doc = ""]
+        #[doc = "If compositor and client do not negotiate the use of a server-side"]
+        #[doc = "decoration using this protocol, clients continue to self-decorate as they"]
+        #[doc = "see fit."]
+        #[doc = ""]
+        #[doc = "Warning! The protocol described in this file is experimental and"]
+        #[doc = "backward incompatible changes may be made. Backward compatible changes"]
+        #[doc = "may be added together with the corresponding interface version bump."]
+        #[doc = "Backward incompatible changes are done by bumping the version number in"]
+        #[doc = "the protocol and interface names and resetting the interface version."]
+        #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
+        #[doc = "version number in the protocol and interface names are removed and the"]
+        #[doc = "interface version number is reset."]
         pub trait ZxdgDecorationManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_decoration_manager_v1";
             const VERSION: u32 = 1u32;
@@ -23020,12 +22893,6 @@ pub mod xdg_decoration_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "The decoration object allows the compositor to toggle server-side window"]
-    #[doc = "decorations for a toplevel surface. The client can request to switch to"]
-    #[doc = "another mode."]
-    #[doc = ""]
-    #[doc = "The xdg_toplevel_decoration object must be destroyed before its"]
-    #[doc = "xdg_toplevel."]
     pub mod zxdg_toplevel_decoration_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -23069,7 +22936,12 @@ pub mod xdg_decoration_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zxdg_toplevel_decoration_v1 interface. See the module level documentation for more info"]
+        #[doc = "The decoration object allows the compositor to toggle server-side window"]
+        #[doc = "decorations for a toplevel surface. The client can request to switch to"]
+        #[doc = "another mode."]
+        #[doc = ""]
+        #[doc = "The xdg_toplevel_decoration object must be destroyed before its"]
+        #[doc = "xdg_toplevel."]
         pub trait ZxdgToplevelDecorationV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_toplevel_decoration_v1";
             const VERSION: u32 = 1u32;
@@ -23197,10 +23069,9 @@ pub mod xdg_decoration_unstable_v1 {
 #[doc = "protocol and interface names are removed and the interface version number is"]
 #[doc = "reset."]
 pub mod xdg_foreign_unstable_v1 {
-    #[doc = "A global interface used for exporting surfaces that can later be imported"]
-    #[doc = "using xdg_importer."]
     pub mod zxdg_exporter_v1 {
-        #[doc = "Trait to implement the zxdg_exporter_v1 interface. See the module level documentation for more info"]
+        #[doc = "A global interface used for exporting surfaces that can later be imported"]
+        #[doc = "using xdg_importer."]
         pub trait ZxdgExporterV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_exporter_v1";
             const VERSION: u32 = 1u32;
@@ -23262,11 +23133,10 @@ pub mod xdg_foreign_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "A global interface used for importing surfaces exported by xdg_exporter."]
-    #[doc = "With this interface, a client can create a reference to a surface of"]
-    #[doc = "another client."]
     pub mod zxdg_importer_v1 {
-        #[doc = "Trait to implement the zxdg_importer_v1 interface. See the module level documentation for more info"]
+        #[doc = "A global interface used for importing surfaces exported by xdg_exporter."]
+        #[doc = "With this interface, a client can create a reference to a surface of"]
+        #[doc = "another client."]
         pub trait ZxdgImporterV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_importer_v1";
             const VERSION: u32 = 1u32;
@@ -23325,12 +23195,11 @@ pub mod xdg_foreign_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An xdg_exported object represents an exported reference to a surface. The"]
-    #[doc = "exported surface may be referenced as long as the xdg_exported object not"]
-    #[doc = "destroyed. Destroying the xdg_exported invalidates any relationship the"]
-    #[doc = "importer may have established using xdg_imported."]
     pub mod zxdg_exported_v1 {
-        #[doc = "Trait to implement the zxdg_exported_v1 interface. See the module level documentation for more info"]
+        #[doc = "An xdg_exported object represents an exported reference to a surface. The"]
+        #[doc = "exported surface may be referenced as long as the xdg_exported object not"]
+        #[doc = "destroyed. Destroying the xdg_exported invalidates any relationship the"]
+        #[doc = "importer may have established using xdg_imported."]
         pub trait ZxdgExportedV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_exported_v1";
             const VERSION: u32 = 1u32;
@@ -23383,11 +23252,10 @@ pub mod xdg_foreign_unstable_v1 {
             }
         }
     }
-    #[doc = "An xdg_imported object represents an imported reference to surface exported"]
-    #[doc = "by some client. A client can use this interface to manipulate"]
-    #[doc = "relationships between its own surfaces and the imported surface."]
     pub mod zxdg_imported_v1 {
-        #[doc = "Trait to implement the zxdg_imported_v1 interface. See the module level documentation for more info"]
+        #[doc = "An xdg_imported object represents an imported reference to surface exported"]
+        #[doc = "by some client. A client can use this interface to manipulate"]
+        #[doc = "relationships between its own surfaces and the imported surface."]
         pub trait ZxdgImportedV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_imported_v1";
             const VERSION: u32 = 1u32;
@@ -23489,8 +23357,6 @@ pub mod xdg_foreign_unstable_v1 {
 #[doc = "protocol and interface names are removed and the interface version number is"]
 #[doc = "reset."]
 pub mod xdg_foreign_unstable_v2 {
-    #[doc = "A global interface used for exporting surfaces that can later be imported"]
-    #[doc = "using xdg_importer."]
     pub mod zxdg_exporter_v2 {
         #[doc = "These errors can be emitted in response to invalid xdg_exporter"]
         #[doc = "requests."]
@@ -23510,7 +23376,8 @@ pub mod xdg_foreign_unstable_v2 {
                 }
             }
         }
-        #[doc = "Trait to implement the zxdg_exporter_v2 interface. See the module level documentation for more info"]
+        #[doc = "A global interface used for exporting surfaces that can later be imported"]
+        #[doc = "using xdg_importer."]
         pub trait ZxdgExporterV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_exporter_v2";
             const VERSION: u32 = 1u32;
@@ -23573,11 +23440,10 @@ pub mod xdg_foreign_unstable_v2 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "A global interface used for importing surfaces exported by xdg_exporter."]
-    #[doc = "With this interface, a client can create a reference to a surface of"]
-    #[doc = "another client."]
     pub mod zxdg_importer_v2 {
-        #[doc = "Trait to implement the zxdg_importer_v2 interface. See the module level documentation for more info"]
+        #[doc = "A global interface used for importing surfaces exported by xdg_exporter."]
+        #[doc = "With this interface, a client can create a reference to a surface of"]
+        #[doc = "another client."]
         pub trait ZxdgImporterV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_importer_v2";
             const VERSION: u32 = 1u32;
@@ -23636,12 +23502,11 @@ pub mod xdg_foreign_unstable_v2 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An xdg_exported object represents an exported reference to a surface. The"]
-    #[doc = "exported surface may be referenced as long as the xdg_exported object not"]
-    #[doc = "destroyed. Destroying the xdg_exported invalidates any relationship the"]
-    #[doc = "importer may have established using xdg_imported."]
     pub mod zxdg_exported_v2 {
-        #[doc = "Trait to implement the zxdg_exported_v2 interface. See the module level documentation for more info"]
+        #[doc = "An xdg_exported object represents an exported reference to a surface. The"]
+        #[doc = "exported surface may be referenced as long as the xdg_exported object not"]
+        #[doc = "destroyed. Destroying the xdg_exported invalidates any relationship the"]
+        #[doc = "importer may have established using xdg_imported."]
         pub trait ZxdgExportedV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_exported_v2";
             const VERSION: u32 = 1u32;
@@ -23694,9 +23559,6 @@ pub mod xdg_foreign_unstable_v2 {
             }
         }
     }
-    #[doc = "An xdg_imported object represents an imported reference to surface exported"]
-    #[doc = "by some client. A client can use this interface to manipulate"]
-    #[doc = "relationships between its own surfaces and the imported surface."]
     pub mod zxdg_imported_v2 {
         #[doc = "These errors can be emitted in response to invalid xdg_imported"]
         #[doc = "requests."]
@@ -23716,7 +23578,9 @@ pub mod xdg_foreign_unstable_v2 {
                 }
             }
         }
-        #[doc = "Trait to implement the zxdg_imported_v2 interface. See the module level documentation for more info"]
+        #[doc = "An xdg_imported object represents an imported reference to surface exported"]
+        #[doc = "by some client. A client can use this interface to manipulate"]
+        #[doc = "relationships between its own surfaces and the imported surface."]
         pub trait ZxdgImportedV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_imported_v2";
             const VERSION: u32 = 1u32;
@@ -23817,9 +23681,8 @@ pub mod xdg_foreign_unstable_v2 {
 #[doc = "interface names are removed and the interface version number is"]
 #[doc = "reset."]
 pub mod xdg_output_unstable_v1 {
-    #[doc = "A global factory interface for xdg_output objects."]
     pub mod zxdg_output_manager_v1 {
-        #[doc = "Trait to implement the zxdg_output_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "A global factory interface for xdg_output objects."]
         pub trait ZxdgOutputManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_output_manager_v1";
             const VERSION: u32 = 3u32;
@@ -23876,17 +23739,16 @@ pub mod xdg_output_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An xdg_output describes part of the compositor geometry."]
-    #[doc = ""]
-    #[doc = "This typically corresponds to a monitor that displays part of the"]
-    #[doc = "compositor space."]
-    #[doc = ""]
-    #[doc = "For objects version 3 onwards, after all xdg_output properties have been"]
-    #[doc = "sent (when the object is created and when properties are updated), a"]
-    #[doc = "wl_output.done event is sent. This allows changes to the output"]
-    #[doc = "properties to be seen as atomic, even if they happen via multiple events."]
     pub mod zxdg_output_v1 {
-        #[doc = "Trait to implement the zxdg_output_v1 interface. See the module level documentation for more info"]
+        #[doc = "An xdg_output describes part of the compositor geometry."]
+        #[doc = ""]
+        #[doc = "This typically corresponds to a monitor that displays part of the"]
+        #[doc = "compositor space."]
+        #[doc = ""]
+        #[doc = "For objects version 3 onwards, after all xdg_output properties have been"]
+        #[doc = "sent (when the object is created and when properties are updated), a"]
+        #[doc = "wl_output.done event is sent. This allows changes to the output"]
+        #[doc = "properties to be seen as atomic, even if they happen via multiple events."]
         pub trait ZxdgOutputV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_output_v1";
             const VERSION: u32 = 3u32;
@@ -24081,10 +23943,6 @@ pub mod xdg_output_unstable_v1 {
     }
 }
 pub mod xdg_shell_unstable_v5 {
-    #[doc = "xdg_shell allows clients to turn a wl_surface into a \"real window\""]
-    #[doc = "which can be dragged, resized, stacked, and moved around by the"]
-    #[doc = "user. Everything about this interface is suited towards traditional"]
-    #[doc = "desktop environments."]
     pub mod xdg_shell {
         #[doc = "The 'current' member of this enum gives the version of the"]
         #[doc = "protocol.  Implementations can compare this to the version"]
@@ -24131,7 +23989,10 @@ pub mod xdg_shell_unstable_v5 {
                 }
             }
         }
-        #[doc = "Trait to implement the xdg_shell interface. See the module level documentation for more info"]
+        #[doc = "xdg_shell allows clients to turn a wl_surface into a \"real window\""]
+        #[doc = "which can be dragged, resized, stacked, and moved around by the"]
+        #[doc = "user. Everything about this interface is suited towards traditional"]
+        #[doc = "desktop environments."]
         pub trait XdgShell: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_shell";
             const VERSION: u32 = 1u32;
@@ -24294,25 +24155,6 @@ pub mod xdg_shell_unstable_v5 {
             }
         }
     }
-    #[doc = "An interface that may be implemented by a wl_surface, for"]
-    #[doc = "implementations that provide a desktop-style user interface."]
-    #[doc = ""]
-    #[doc = "It provides requests to treat surfaces like windows, allowing to set"]
-    #[doc = "properties like maximized, fullscreen, minimized, and to move and resize"]
-    #[doc = "them, and associate metadata like title and app id."]
-    #[doc = ""]
-    #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
-    #[doc = "for the xdg_surface state to take effect. Prior to committing the new"]
-    #[doc = "state, it can set up initial configuration, such as maximizing or setting"]
-    #[doc = "a window geometry."]
-    #[doc = ""]
-    #[doc = "Even without attaching a buffer the compositor must respond to initial"]
-    #[doc = "committed configuration, for instance sending a configure event with"]
-    #[doc = "expected window geometry if the client maximized its surface during"]
-    #[doc = "initialization."]
-    #[doc = ""]
-    #[doc = "For a surface to be mapped by the compositor the client must have"]
-    #[doc = "committed both an xdg_surface state and a buffer."]
     pub mod xdg_surface {
         #[doc = "These values are used to indicate which edge of a surface"]
         #[doc = "is being dragged in a resize operation."]
@@ -24391,7 +24233,25 @@ pub mod xdg_shell_unstable_v5 {
                 }
             }
         }
-        #[doc = "Trait to implement the xdg_surface interface. See the module level documentation for more info"]
+        #[doc = "An interface that may be implemented by a wl_surface, for"]
+        #[doc = "implementations that provide a desktop-style user interface."]
+        #[doc = ""]
+        #[doc = "It provides requests to treat surfaces like windows, allowing to set"]
+        #[doc = "properties like maximized, fullscreen, minimized, and to move and resize"]
+        #[doc = "them, and associate metadata like title and app id."]
+        #[doc = ""]
+        #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
+        #[doc = "for the xdg_surface state to take effect. Prior to committing the new"]
+        #[doc = "state, it can set up initial configuration, such as maximizing or setting"]
+        #[doc = "a window geometry."]
+        #[doc = ""]
+        #[doc = "Even without attaching a buffer the compositor must respond to initial"]
+        #[doc = "committed configuration, for instance sending a configure event with"]
+        #[doc = "expected window geometry if the client maximized its surface during"]
+        #[doc = "initialization."]
+        #[doc = ""]
+        #[doc = "For a surface to be mapped by the compositor the client must have"]
+        #[doc = "committed both an xdg_surface state and a buffer."]
         pub trait XdgSurface: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_surface";
             const VERSION: u32 = 1u32;
@@ -24869,59 +24729,58 @@ pub mod xdg_shell_unstable_v5 {
             }
         }
     }
-    #[doc = "A popup surface is a short-lived, temporary surface that can be"]
-    #[doc = "used to implement menus. It takes an explicit grab on the surface"]
-    #[doc = "that will be dismissed when the user dismisses the popup. This can"]
-    #[doc = "be done by the user clicking outside the surface, using the keyboard,"]
-    #[doc = "or even locking the screen through closing the lid or a timeout."]
-    #[doc = ""]
-    #[doc = "When the popup is dismissed, a popup_done event will be sent out,"]
-    #[doc = "and at the same time the surface will be unmapped. The xdg_popup"]
-    #[doc = "object is now inert and cannot be reactivated, so clients should"]
-    #[doc = "destroy it. Explicitly destroying the xdg_popup object will also"]
-    #[doc = "dismiss the popup and unmap the surface."]
-    #[doc = ""]
-    #[doc = "Clients will receive events for all their surfaces during this"]
-    #[doc = "grab (which is an \"owner-events\" grab in X11 parlance). This is"]
-    #[doc = "done so that users can navigate through submenus and other"]
-    #[doc = "\"nested\" popup windows without having to dismiss the topmost"]
-    #[doc = "popup."]
-    #[doc = ""]
-    #[doc = "Clients that want to dismiss the popup when another surface of"]
-    #[doc = "their own is clicked should dismiss the popup using the destroy"]
-    #[doc = "request."]
-    #[doc = ""]
-    #[doc = "The parent surface must have either an xdg_surface or xdg_popup"]
-    #[doc = "role."]
-    #[doc = ""]
-    #[doc = "Specifying an xdg_popup for the parent means that the popups are"]
-    #[doc = "nested, with this popup now being the topmost popup. Nested"]
-    #[doc = "popups must be destroyed in the reverse order they were created"]
-    #[doc = "in, e.g. the only popup you are allowed to destroy at all times"]
-    #[doc = "is the topmost one."]
-    #[doc = ""]
-    #[doc = "If there is an existing popup when creating a new popup, the"]
-    #[doc = "parent must be the current topmost popup."]
-    #[doc = ""]
-    #[doc = "A parent surface must be mapped before the new popup is mapped."]
-    #[doc = ""]
-    #[doc = "When compositors choose to dismiss a popup, they will likely"]
-    #[doc = "dismiss every nested popup as well. When a compositor dismisses"]
-    #[doc = "popups, it will follow the same dismissing order as required"]
-    #[doc = "from the client."]
-    #[doc = ""]
-    #[doc = "The x and y arguments passed when creating the popup object specify"]
-    #[doc = "where the top left of the popup should be placed, relative to the"]
-    #[doc = "local surface coordinates of the parent surface. See"]
-    #[doc = "xdg_shell.get_xdg_popup."]
-    #[doc = ""]
-    #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
-    #[doc = "for the xdg_popup state to take effect."]
-    #[doc = ""]
-    #[doc = "For a surface to be mapped by the compositor the client must have"]
-    #[doc = "committed both the xdg_popup state and a buffer."]
     pub mod xdg_popup {
-        #[doc = "Trait to implement the xdg_popup interface. See the module level documentation for more info"]
+        #[doc = "A popup surface is a short-lived, temporary surface that can be"]
+        #[doc = "used to implement menus. It takes an explicit grab on the surface"]
+        #[doc = "that will be dismissed when the user dismisses the popup. This can"]
+        #[doc = "be done by the user clicking outside the surface, using the keyboard,"]
+        #[doc = "or even locking the screen through closing the lid or a timeout."]
+        #[doc = ""]
+        #[doc = "When the popup is dismissed, a popup_done event will be sent out,"]
+        #[doc = "and at the same time the surface will be unmapped. The xdg_popup"]
+        #[doc = "object is now inert and cannot be reactivated, so clients should"]
+        #[doc = "destroy it. Explicitly destroying the xdg_popup object will also"]
+        #[doc = "dismiss the popup and unmap the surface."]
+        #[doc = ""]
+        #[doc = "Clients will receive events for all their surfaces during this"]
+        #[doc = "grab (which is an \"owner-events\" grab in X11 parlance). This is"]
+        #[doc = "done so that users can navigate through submenus and other"]
+        #[doc = "\"nested\" popup windows without having to dismiss the topmost"]
+        #[doc = "popup."]
+        #[doc = ""]
+        #[doc = "Clients that want to dismiss the popup when another surface of"]
+        #[doc = "their own is clicked should dismiss the popup using the destroy"]
+        #[doc = "request."]
+        #[doc = ""]
+        #[doc = "The parent surface must have either an xdg_surface or xdg_popup"]
+        #[doc = "role."]
+        #[doc = ""]
+        #[doc = "Specifying an xdg_popup for the parent means that the popups are"]
+        #[doc = "nested, with this popup now being the topmost popup. Nested"]
+        #[doc = "popups must be destroyed in the reverse order they were created"]
+        #[doc = "in, e.g. the only popup you are allowed to destroy at all times"]
+        #[doc = "is the topmost one."]
+        #[doc = ""]
+        #[doc = "If there is an existing popup when creating a new popup, the"]
+        #[doc = "parent must be the current topmost popup."]
+        #[doc = ""]
+        #[doc = "A parent surface must be mapped before the new popup is mapped."]
+        #[doc = ""]
+        #[doc = "When compositors choose to dismiss a popup, they will likely"]
+        #[doc = "dismiss every nested popup as well. When a compositor dismisses"]
+        #[doc = "popups, it will follow the same dismissing order as required"]
+        #[doc = "from the client."]
+        #[doc = ""]
+        #[doc = "The x and y arguments passed when creating the popup object specify"]
+        #[doc = "where the top left of the popup should be placed, relative to the"]
+        #[doc = "local surface coordinates of the parent surface. See"]
+        #[doc = "xdg_shell.get_xdg_popup."]
+        #[doc = ""]
+        #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
+        #[doc = "for the xdg_popup state to take effect."]
+        #[doc = ""]
+        #[doc = "For a surface to be mapped by the compositor the client must have"]
+        #[doc = "committed both the xdg_popup state and a buffer."]
         pub trait XdgPopup: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_popup";
             const VERSION: u32 = 1u32;
@@ -24974,10 +24833,6 @@ pub mod xdg_shell_unstable_v5 {
     }
 }
 pub mod xdg_shell_unstable_v6 {
-    #[doc = "xdg_shell allows clients to turn a wl_surface into a \"real window\""]
-    #[doc = "which can be dragged, resized, stacked, and moved around by the"]
-    #[doc = "user. Everything about this interface is suited towards traditional"]
-    #[doc = "desktop environments."]
     pub mod zxdg_shell_v6 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -25010,7 +24865,10 @@ pub mod xdg_shell_unstable_v6 {
                 }
             }
         }
-        #[doc = "Trait to implement the zxdg_shell_v6 interface. See the module level documentation for more info"]
+        #[doc = "xdg_shell allows clients to turn a wl_surface into a \"real window\""]
+        #[doc = "which can be dragged, resized, stacked, and moved around by the"]
+        #[doc = "user. Everything about this interface is suited towards traditional"]
+        #[doc = "desktop environments."]
         pub trait ZxdgShellV6: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_shell_v6";
             const VERSION: u32 = 1u32;
@@ -25134,25 +24992,6 @@ pub mod xdg_shell_unstable_v6 {
             }
         }
     }
-    #[doc = "The xdg_positioner provides a collection of rules for the placement of a"]
-    #[doc = "child surface relative to a parent surface. Rules can be defined to ensure"]
-    #[doc = "the child surface remains within the visible area's borders, and to"]
-    #[doc = "specify how the child surface changes its position, such as sliding along"]
-    #[doc = "an axis, or flipping around a rectangle. These positioner-created rules are"]
-    #[doc = "constrained by the requirement that a child surface must intersect with or"]
-    #[doc = "be at least partially adjacent to its parent surface."]
-    #[doc = ""]
-    #[doc = "See the various requests for details about possible rules."]
-    #[doc = ""]
-    #[doc = "At the time of the request, the compositor makes a copy of the rules"]
-    #[doc = "specified by the xdg_positioner. Thus, after the request is complete the"]
-    #[doc = "xdg_positioner object can be destroyed or reused; further changes to the"]
-    #[doc = "object will have no effect on previous usages."]
-    #[doc = ""]
-    #[doc = "For an xdg_positioner object to be considered complete, it must have a"]
-    #[doc = "non-zero size set by set_size, and a non-zero anchor rectangle set by"]
-    #[doc = "set_anchor_rect. Passing an incomplete xdg_positioner object when"]
-    #[doc = "positioning a surface raises an error."]
     pub mod zxdg_positioner_v6 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -25191,7 +25030,25 @@ pub mod xdg_shell_unstable_v6 {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
-        #[doc = "Trait to implement the zxdg_positioner_v6 interface. See the module level documentation for more info"]
+        #[doc = "The xdg_positioner provides a collection of rules for the placement of a"]
+        #[doc = "child surface relative to a parent surface. Rules can be defined to ensure"]
+        #[doc = "the child surface remains within the visible area's borders, and to"]
+        #[doc = "specify how the child surface changes its position, such as sliding along"]
+        #[doc = "an axis, or flipping around a rectangle. These positioner-created rules are"]
+        #[doc = "constrained by the requirement that a child surface must intersect with or"]
+        #[doc = "be at least partially adjacent to its parent surface."]
+        #[doc = ""]
+        #[doc = "See the various requests for details about possible rules."]
+        #[doc = ""]
+        #[doc = "At the time of the request, the compositor makes a copy of the rules"]
+        #[doc = "specified by the xdg_positioner. Thus, after the request is complete the"]
+        #[doc = "xdg_positioner object can be destroyed or reused; further changes to the"]
+        #[doc = "object will have no effect on previous usages."]
+        #[doc = ""]
+        #[doc = "For an xdg_positioner object to be considered complete, it must have a"]
+        #[doc = "non-zero size set by set_size, and a non-zero anchor rectangle set by"]
+        #[doc = "set_anchor_rect. Passing an incomplete xdg_positioner object when"]
+        #[doc = "positioning a surface raises an error."]
         pub trait ZxdgPositionerV6: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_positioner_v6";
             const VERSION: u32 = 1u32;
@@ -25362,36 +25219,6 @@ pub mod xdg_shell_unstable_v6 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An interface that may be implemented by a wl_surface, for"]
-    #[doc = "implementations that provide a desktop-style user interface."]
-    #[doc = ""]
-    #[doc = "It provides a base set of functionality required to construct user"]
-    #[doc = "interface elements requiring management by the compositor, such as"]
-    #[doc = "toplevel windows, menus, etc. The types of functionality are split into"]
-    #[doc = "xdg_surface roles."]
-    #[doc = ""]
-    #[doc = "Creating an xdg_surface does not set the role for a wl_surface. In order"]
-    #[doc = "to map an xdg_surface, the client must create a role-specific object"]
-    #[doc = "using, e.g., get_toplevel, get_popup. The wl_surface for any given"]
-    #[doc = "xdg_surface can have at most one role, and may not be assigned any role"]
-    #[doc = "not based on xdg_surface."]
-    #[doc = ""]
-    #[doc = "A role must be assigned before any other requests are made to the"]
-    #[doc = "xdg_surface object."]
-    #[doc = ""]
-    #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
-    #[doc = "for the xdg_surface state to take effect."]
-    #[doc = ""]
-    #[doc = "Creating an xdg_surface from a wl_surface which has a buffer attached or"]
-    #[doc = "committed is a client error, and any attempts by a client to attach or"]
-    #[doc = "manipulate a buffer prior to the first xdg_surface.configure call must"]
-    #[doc = "also be treated as errors."]
-    #[doc = ""]
-    #[doc = "For a surface to be mapped by the compositor, the following conditions"]
-    #[doc = "must be met: (1) the client has assigned an xdg_surface based role to the"]
-    #[doc = "surface, (2) the client has set and committed the xdg_surface state and"]
-    #[doc = "the role dependent state to the surface and (3) the client has committed a"]
-    #[doc = "buffer to the surface."]
     pub mod zxdg_surface_v6 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -25412,7 +25239,36 @@ pub mod xdg_shell_unstable_v6 {
                 }
             }
         }
-        #[doc = "Trait to implement the zxdg_surface_v6 interface. See the module level documentation for more info"]
+        #[doc = "An interface that may be implemented by a wl_surface, for"]
+        #[doc = "implementations that provide a desktop-style user interface."]
+        #[doc = ""]
+        #[doc = "It provides a base set of functionality required to construct user"]
+        #[doc = "interface elements requiring management by the compositor, such as"]
+        #[doc = "toplevel windows, menus, etc. The types of functionality are split into"]
+        #[doc = "xdg_surface roles."]
+        #[doc = ""]
+        #[doc = "Creating an xdg_surface does not set the role for a wl_surface. In order"]
+        #[doc = "to map an xdg_surface, the client must create a role-specific object"]
+        #[doc = "using, e.g., get_toplevel, get_popup. The wl_surface for any given"]
+        #[doc = "xdg_surface can have at most one role, and may not be assigned any role"]
+        #[doc = "not based on xdg_surface."]
+        #[doc = ""]
+        #[doc = "A role must be assigned before any other requests are made to the"]
+        #[doc = "xdg_surface object."]
+        #[doc = ""]
+        #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
+        #[doc = "for the xdg_surface state to take effect."]
+        #[doc = ""]
+        #[doc = "Creating an xdg_surface from a wl_surface which has a buffer attached or"]
+        #[doc = "committed is a client error, and any attempts by a client to attach or"]
+        #[doc = "manipulate a buffer prior to the first xdg_surface.configure call must"]
+        #[doc = "also be treated as errors."]
+        #[doc = ""]
+        #[doc = "For a surface to be mapped by the compositor, the following conditions"]
+        #[doc = "must be met: (1) the client has assigned an xdg_surface based role to the"]
+        #[doc = "surface, (2) the client has set and committed the xdg_surface state and"]
+        #[doc = "the role dependent state to the surface and (3) the client has committed a"]
+        #[doc = "buffer to the surface."]
         pub trait ZxdgSurfaceV6: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_surface_v6";
             const VERSION: u32 = 1u32;
@@ -25607,11 +25463,6 @@ pub mod xdg_shell_unstable_v6 {
             }
         }
     }
-    #[doc = "This interface defines an xdg_surface role which allows a surface to,"]
-    #[doc = "among other things, set window-like properties such as maximize,"]
-    #[doc = "fullscreen, and minimize, set application-specific metadata like title and"]
-    #[doc = "id, and well as trigger user interactive operations such as interactive"]
-    #[doc = "resize and move."]
     pub mod zxdg_toplevel_v6 {
         #[doc = "These values are used to indicate which edge of a surface"]
         #[doc = "is being dragged in a resize operation."]
@@ -25678,7 +25529,11 @@ pub mod xdg_shell_unstable_v6 {
                 }
             }
         }
-        #[doc = "Trait to implement the zxdg_toplevel_v6 interface. See the module level documentation for more info"]
+        #[doc = "This interface defines an xdg_surface role which allows a surface to,"]
+        #[doc = "among other things, set window-like properties such as maximize,"]
+        #[doc = "fullscreen, and minimize, set application-specific metadata like title and"]
+        #[doc = "id, and well as trigger user interactive operations such as interactive"]
+        #[doc = "resize and move."]
         pub trait ZxdgToplevelV6: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_toplevel_v6";
             const VERSION: u32 = 1u32;
@@ -26166,39 +26021,6 @@ pub mod xdg_shell_unstable_v6 {
             }
         }
     }
-    #[doc = "A popup surface is a short-lived, temporary surface. It can be used to"]
-    #[doc = "implement for example menus, popovers, tooltips and other similar user"]
-    #[doc = "interface concepts."]
-    #[doc = ""]
-    #[doc = "A popup can be made to take an explicit grab. See xdg_popup.grab for"]
-    #[doc = "details."]
-    #[doc = ""]
-    #[doc = "When the popup is dismissed, a popup_done event will be sent out, and at"]
-    #[doc = "the same time the surface will be unmapped. See the xdg_popup.popup_done"]
-    #[doc = "event for details."]
-    #[doc = ""]
-    #[doc = "Explicitly destroying the xdg_popup object will also dismiss the popup and"]
-    #[doc = "unmap the surface. Clients that want to dismiss the popup when another"]
-    #[doc = "surface of their own is clicked should dismiss the popup using the destroy"]
-    #[doc = "request."]
-    #[doc = ""]
-    #[doc = "The parent surface must have either the xdg_toplevel or xdg_popup surface"]
-    #[doc = "role."]
-    #[doc = ""]
-    #[doc = "A newly created xdg_popup will be stacked on top of all previously created"]
-    #[doc = "xdg_popup surfaces associated with the same xdg_toplevel."]
-    #[doc = ""]
-    #[doc = "The parent of an xdg_popup must be mapped (see the xdg_surface"]
-    #[doc = "description) before the xdg_popup itself."]
-    #[doc = ""]
-    #[doc = "The x and y arguments passed when creating the popup object specify"]
-    #[doc = "where the top left of the popup should be placed, relative to the"]
-    #[doc = "local surface coordinates of the parent surface. See"]
-    #[doc = "xdg_surface.get_popup. An xdg_popup must intersect with or be at least"]
-    #[doc = "partially adjacent to its parent surface."]
-    #[doc = ""]
-    #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
-    #[doc = "for the xdg_popup state to take effect."]
     pub mod zxdg_popup_v6 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -26216,7 +26038,39 @@ pub mod xdg_shell_unstable_v6 {
                 }
             }
         }
-        #[doc = "Trait to implement the zxdg_popup_v6 interface. See the module level documentation for more info"]
+        #[doc = "A popup surface is a short-lived, temporary surface. It can be used to"]
+        #[doc = "implement for example menus, popovers, tooltips and other similar user"]
+        #[doc = "interface concepts."]
+        #[doc = ""]
+        #[doc = "A popup can be made to take an explicit grab. See xdg_popup.grab for"]
+        #[doc = "details."]
+        #[doc = ""]
+        #[doc = "When the popup is dismissed, a popup_done event will be sent out, and at"]
+        #[doc = "the same time the surface will be unmapped. See the xdg_popup.popup_done"]
+        #[doc = "event for details."]
+        #[doc = ""]
+        #[doc = "Explicitly destroying the xdg_popup object will also dismiss the popup and"]
+        #[doc = "unmap the surface. Clients that want to dismiss the popup when another"]
+        #[doc = "surface of their own is clicked should dismiss the popup using the destroy"]
+        #[doc = "request."]
+        #[doc = ""]
+        #[doc = "The parent surface must have either the xdg_toplevel or xdg_popup surface"]
+        #[doc = "role."]
+        #[doc = ""]
+        #[doc = "A newly created xdg_popup will be stacked on top of all previously created"]
+        #[doc = "xdg_popup surfaces associated with the same xdg_toplevel."]
+        #[doc = ""]
+        #[doc = "The parent of an xdg_popup must be mapped (see the xdg_surface"]
+        #[doc = "description) before the xdg_popup itself."]
+        #[doc = ""]
+        #[doc = "The x and y arguments passed when creating the popup object specify"]
+        #[doc = "where the top left of the popup should be placed, relative to the"]
+        #[doc = "local surface coordinates of the parent surface. See"]
+        #[doc = "xdg_surface.get_popup. An xdg_popup must intersect with or be at least"]
+        #[doc = "partially adjacent to its parent surface."]
+        #[doc = ""]
+        #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
+        #[doc = "for the xdg_popup state to take effect."]
         pub trait ZxdgPopupV6: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zxdg_popup_v6";
             const VERSION: u32 = 1u32;
@@ -26369,10 +26223,9 @@ pub mod xdg_shell_unstable_v6 {
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
 pub mod wlr_data_control_unstable_v1 {
-    #[doc = "This interface is a manager that allows creating per-seat data device"]
-    #[doc = "controls."]
     pub mod zwlr_data_control_manager_v1 {
-        #[doc = "Trait to implement the zwlr_data_control_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface is a manager that allows creating per-seat data device"]
+        #[doc = "controls."]
         pub trait ZwlrDataControlManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_data_control_manager_v1";
             const VERSION: u32 = 2u32;
@@ -26451,9 +26304,6 @@ pub mod wlr_data_control_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "This interface allows a client to manage a seat's selection."]
-    #[doc = ""]
-    #[doc = "When the seat is destroyed, this object becomes inert."]
     pub mod zwlr_data_control_device_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -26471,7 +26321,9 @@ pub mod wlr_data_control_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwlr_data_control_device_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface allows a client to manage a seat's selection."]
+        #[doc = ""]
+        #[doc = "When the seat is destroyed, this object becomes inert."]
         pub trait ZwlrDataControlDeviceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_data_control_device_v1";
             const VERSION: u32 = 2u32;
@@ -26640,10 +26492,6 @@ pub mod wlr_data_control_unstable_v1 {
             }
         }
     }
-    #[doc = "The wlr_data_control_source object is the source side of a"]
-    #[doc = "wlr_data_control_offer. It is created by the source client in a data"]
-    #[doc = "transfer and provides a way to describe the offered data and a way to"]
-    #[doc = "respond to requests to transfer the data."]
     pub mod zwlr_data_control_source_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -26661,7 +26509,10 @@ pub mod wlr_data_control_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwlr_data_control_source_v1 interface. See the module level documentation for more info"]
+        #[doc = "The wlr_data_control_source object is the source side of a"]
+        #[doc = "wlr_data_control_offer. It is created by the source client in a data"]
+        #[doc = "transfer and provides a way to describe the offered data and a way to"]
+        #[doc = "respond to requests to transfer the data."]
         pub trait ZwlrDataControlSourceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_data_control_source_v1";
             const VERSION: u32 = 1u32;
@@ -26750,12 +26601,11 @@ pub mod wlr_data_control_unstable_v1 {
             }
         }
     }
-    #[doc = "A wlr_data_control_offer represents a piece of data offered for transfer"]
-    #[doc = "by another client (the source client). The offer describes the different"]
-    #[doc = "MIME types that the data can be converted to and provides the mechanism"]
-    #[doc = "for transferring the data directly from the source client."]
     pub mod zwlr_data_control_offer_v1 {
-        #[doc = "Trait to implement the zwlr_data_control_offer_v1 interface. See the module level documentation for more info"]
+        #[doc = "A wlr_data_control_offer represents a piece of data offered for transfer"]
+        #[doc = "by another client (the source client). The offer describes the different"]
+        #[doc = "MIME types that the data can be converted to and provides the mechanism"]
+        #[doc = "for transferring the data directly from the source client."]
         pub trait ZwlrDataControlOfferV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_data_control_offer_v1";
             const VERSION: u32 = 1u32;
@@ -26845,9 +26695,8 @@ pub mod wlr_data_control_unstable_v1 {
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
 pub mod wlr_export_dmabuf_unstable_v1 {
-    #[doc = "This object is a manager with which to start capturing from sources."]
     pub mod zwlr_export_dmabuf_manager_v1 {
-        #[doc = "Trait to implement the zwlr_export_dmabuf_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "This object is a manager with which to start capturing from sources."]
         pub trait ZwlrExportDmabufManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_export_dmabuf_manager_v1";
             const VERSION: u32 = 1u32;
@@ -26907,20 +26756,6 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "This object represents a single DMA-BUF frame."]
-    #[doc = ""]
-    #[doc = "If the capture is successful, the compositor will first send a \"frame\""]
-    #[doc = "event, followed by one or several \"object\". When the frame is available"]
-    #[doc = "for readout, the \"ready\" event is sent."]
-    #[doc = ""]
-    #[doc = "If the capture failed, the \"cancel\" event is sent. This can happen anytime"]
-    #[doc = "before the \"ready\" event."]
-    #[doc = ""]
-    #[doc = "Once either a \"ready\" or a \"cancel\" event is received, the client should"]
-    #[doc = "destroy the frame. Once an \"object\" event is received, the client is"]
-    #[doc = "responsible for closing the associated file descriptor."]
-    #[doc = ""]
-    #[doc = "All frames are read-only and may not be written into or altered."]
     pub mod zwlr_export_dmabuf_frame_v1 {
         #[doc = "Special flags that should be respected by the client."]
         #[repr(u32)]
@@ -26962,7 +26797,20 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwlr_export_dmabuf_frame_v1 interface. See the module level documentation for more info"]
+        #[doc = "This object represents a single DMA-BUF frame."]
+        #[doc = ""]
+        #[doc = "If the capture is successful, the compositor will first send a \"frame\""]
+        #[doc = "event, followed by one or several \"object\". When the frame is available"]
+        #[doc = "for readout, the \"ready\" event is sent."]
+        #[doc = ""]
+        #[doc = "If the capture failed, the \"cancel\" event is sent. This can happen anytime"]
+        #[doc = "before the \"ready\" event."]
+        #[doc = ""]
+        #[doc = "Once either a \"ready\" or a \"cancel\" event is received, the client should"]
+        #[doc = "destroy the frame. Once an \"object\" event is received, the client is"]
+        #[doc = "responsible for closing the associated file descriptor."]
+        #[doc = ""]
+        #[doc = "All frames are read-only and may not be written into or altered."]
         pub trait ZwlrExportDmabufFrameV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_export_dmabuf_frame_v1";
             const VERSION: u32 = 1u32;
@@ -27124,14 +26972,13 @@ pub mod wlr_export_dmabuf_unstable_v1 {
     }
 }
 pub mod wlr_foreign_toplevel_management_unstable_v1 {
-    #[doc = "The purpose of this protocol is to enable the creation of taskbars"]
-    #[doc = "and docks by providing them with a list of opened applications and"]
-    #[doc = "letting them request certain actions on them, like maximizing, etc."]
-    #[doc = ""]
-    #[doc = "After a client binds the zwlr_foreign_toplevel_manager_v1, each opened"]
-    #[doc = "toplevel window will be sent via the toplevel event"]
     pub mod zwlr_foreign_toplevel_manager_v1 {
-        #[doc = "Trait to implement the zwlr_foreign_toplevel_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "The purpose of this protocol is to enable the creation of taskbars"]
+        #[doc = "and docks by providing them with a list of opened applications and"]
+        #[doc = "letting them request certain actions on them, like maximizing, etc."]
+        #[doc = ""]
+        #[doc = "After a client binds the zwlr_foreign_toplevel_manager_v1, each opened"]
+        #[doc = "toplevel window will be sent via the toplevel event"]
         pub trait ZwlrForeignToplevelManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_foreign_toplevel_manager_v1";
             const VERSION: u32 = 3u32;
@@ -27211,11 +27058,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             }
         }
     }
-    #[doc = "A zwlr_foreign_toplevel_handle_v1 object represents an opened toplevel"]
-    #[doc = "window. Each app may have multiple opened toplevels."]
-    #[doc = ""]
-    #[doc = "Each toplevel has a list of outputs it is visible on, conveyed to the"]
-    #[doc = "client with the output_enter and output_leave events."]
     pub mod zwlr_foreign_toplevel_handle_v1 {
         #[doc = "The different states that a toplevel can have. These have the same meaning"]
         #[doc = "as the states with the same names defined in xdg-toplevel"]
@@ -27260,7 +27102,11 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwlr_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
+        #[doc = "A zwlr_foreign_toplevel_handle_v1 object represents an opened toplevel"]
+        #[doc = "window. Each app may have multiple opened toplevels."]
+        #[doc = ""]
+        #[doc = "Each toplevel has a list of outputs it is visible on, conveyed to the"]
+        #[doc = "client with the output_enter and output_leave events."]
         pub trait ZwlrForeignToplevelHandleV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_foreign_toplevel_handle_v1";
             const VERSION: u32 = 3u32;
@@ -27613,10 +27459,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
 pub mod wlr_gamma_control_unstable_v1 {
-    #[doc = "This interface is a manager that allows creating per-output gamma"]
-    #[doc = "controls."]
     pub mod zwlr_gamma_control_manager_v1 {
-        #[doc = "Trait to implement the zwlr_gamma_control_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface is a manager that allows creating per-output gamma"]
+        #[doc = "controls."]
         pub trait ZwlrGammaControlManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_gamma_control_manager_v1";
             const VERSION: u32 = 1u32;
@@ -27675,16 +27520,6 @@ pub mod wlr_gamma_control_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "This interface allows a client to adjust gamma tables for a particular"]
-    #[doc = "output."]
-    #[doc = ""]
-    #[doc = "The client will receive the gamma size, and will then be able to set gamma"]
-    #[doc = "tables. At any time the compositor can send a failed event indicating that"]
-    #[doc = "this object is no longer valid."]
-    #[doc = ""]
-    #[doc = "There can only be at most one gamma control object per output, which"]
-    #[doc = "has exclusive access to this particular output. When the gamma control"]
-    #[doc = "object is destroyed, the gamma table is restored to its original value."]
     pub mod zwlr_gamma_control_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -27702,7 +27537,16 @@ pub mod wlr_gamma_control_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwlr_gamma_control_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface allows a client to adjust gamma tables for a particular"]
+        #[doc = "output."]
+        #[doc = ""]
+        #[doc = "The client will receive the gamma size, and will then be able to set gamma"]
+        #[doc = "tables. At any time the compositor can send a failed event indicating that"]
+        #[doc = "this object is no longer valid."]
+        #[doc = ""]
+        #[doc = "There can only be at most one gamma control object per output, which"]
+        #[doc = "has exclusive access to this particular output. When the gamma control"]
+        #[doc = "object is destroyed, the gamma table is restored to its original value."]
         pub trait ZwlrGammaControlV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_gamma_control_v1";
             const VERSION: u32 = 1u32;
@@ -27790,13 +27634,6 @@ pub mod wlr_gamma_control_unstable_v1 {
     }
 }
 pub mod wlr_input_inhibit_unstable_v1 {
-    #[doc = "Clients can use this interface to prevent input events from being sent to"]
-    #[doc = "any surfaces but its own, which is useful for example in lock screen"]
-    #[doc = "software. It is assumed that access to this interface will be locked down"]
-    #[doc = "to whitelisted clients by the compositor."]
-    #[doc = ""]
-    #[doc = "Note! This protocol is deprecated and not intended for production use."]
-    #[doc = "For screen lockers, use the ext-session-lock-v1 protocol."]
     pub mod zwlr_input_inhibit_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -27814,7 +27651,13 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwlr_input_inhibit_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "Clients can use this interface to prevent input events from being sent to"]
+        #[doc = "any surfaces but its own, which is useful for example in lock screen"]
+        #[doc = "software. It is assumed that access to this interface will be locked down"]
+        #[doc = "to whitelisted clients by the compositor."]
+        #[doc = ""]
+        #[doc = "Note! This protocol is deprecated and not intended for production use."]
+        #[doc = "For screen lockers, use the ext-session-lock-v1 protocol."]
         pub trait ZwlrInputInhibitManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_input_inhibit_manager_v1";
             const VERSION: u32 = 1u32;
@@ -27858,17 +27701,16 @@ pub mod wlr_input_inhibit_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "While this resource exists, input to clients other than the owner of the"]
-    #[doc = "inhibitor resource will not receive input events. Any client which"]
-    #[doc = "previously had focus will receive a leave event and will not be given"]
-    #[doc = "focus again. The client that owns this resource will receive all input"]
-    #[doc = "events normally. The compositor will also disable all of its own input"]
-    #[doc = "processing (such as keyboard shortcuts) while the inhibitor is active."]
-    #[doc = ""]
-    #[doc = "The compositor may continue to send input events to selected clients,"]
-    #[doc = "such as an on-screen keyboard (via the input-method protocol)."]
     pub mod zwlr_input_inhibitor_v1 {
-        #[doc = "Trait to implement the zwlr_input_inhibitor_v1 interface. See the module level documentation for more info"]
+        #[doc = "While this resource exists, input to clients other than the owner of the"]
+        #[doc = "inhibitor resource will not receive input events. Any client which"]
+        #[doc = "previously had focus will receive a leave event and will not be given"]
+        #[doc = "focus again. The client that owns this resource will receive all input"]
+        #[doc = "events normally. The compositor will also disable all of its own input"]
+        #[doc = "processing (such as keyboard shortcuts) while the inhibitor is active."]
+        #[doc = ""]
+        #[doc = "The compositor may continue to send input events to selected clients,"]
+        #[doc = "such as an on-screen keyboard (via the input-method protocol)."]
         pub trait ZwlrInputInhibitorV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_input_inhibitor_v1";
             const VERSION: u32 = 1u32;
@@ -27902,13 +27744,6 @@ pub mod wlr_input_inhibit_unstable_v1 {
     }
 }
 pub mod wlr_layer_shell_unstable_v1 {
-    #[doc = "Clients can use this interface to assign the surface_layer role to"]
-    #[doc = "wl_surfaces. Such surfaces are assigned to a \"layer\" of the output and"]
-    #[doc = "rendered with a defined z-depth respective to each other. They may also be"]
-    #[doc = "anchored to the edges and corners of a screen and specify input handling"]
-    #[doc = "semantics. This interface should be suitable for the implementation of"]
-    #[doc = "many desktop shell components, and a broad number of other applications"]
-    #[doc = "that interact with the desktop."]
     pub mod zwlr_layer_shell_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -27959,7 +27794,13 @@ pub mod wlr_layer_shell_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwlr_layer_shell_v1 interface. See the module level documentation for more info"]
+        #[doc = "Clients can use this interface to assign the surface_layer role to"]
+        #[doc = "wl_surfaces. Such surfaces are assigned to a \"layer\" of the output and"]
+        #[doc = "rendered with a defined z-depth respective to each other. They may also be"]
+        #[doc = "anchored to the edges and corners of a screen and specify input handling"]
+        #[doc = "semantics. This interface should be suitable for the implementation of"]
+        #[doc = "many desktop shell components, and a broad number of other applications"]
+        #[doc = "that interact with the desktop."]
         pub trait ZwlrLayerShellV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_layer_shell_v1";
             const VERSION: u32 = 5u32;
@@ -28043,21 +27884,6 @@ pub mod wlr_layer_shell_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An interface that may be implemented by a wl_surface, for surfaces that"]
-    #[doc = "are designed to be rendered as a layer of a stacked desktop-like"]
-    #[doc = "environment."]
-    #[doc = ""]
-    #[doc = "Layer surface state (layer, size, anchor, exclusive zone,"]
-    #[doc = "margin, interactivity) is double-buffered, and will be applied at the"]
-    #[doc = "time wl_surface.commit of the corresponding wl_surface is called."]
-    #[doc = ""]
-    #[doc = "Attaching a null buffer to a layer surface unmaps it."]
-    #[doc = ""]
-    #[doc = "Unmapping a layer_surface means that the surface cannot be shown by the"]
-    #[doc = "compositor until it is explicitly mapped again. The layer_surface"]
-    #[doc = "returns to the state it had right after layer_shell.get_layer_surface."]
-    #[doc = "The client can re-map the surface by performing a commit without any"]
-    #[doc = "buffer attached, waiting for a configure event and handling it as usual."]
     pub mod zwlr_layer_surface_v1 {
         #[doc = "Types of keyboard interaction possible for layer shell surfaces. The"]
         #[doc = "rationale for this is twofold: (1) some applications are not interested"]
@@ -28118,7 +27944,21 @@ pub mod wlr_layer_shell_unstable_v1 {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
-        #[doc = "Trait to implement the zwlr_layer_surface_v1 interface. See the module level documentation for more info"]
+        #[doc = "An interface that may be implemented by a wl_surface, for surfaces that"]
+        #[doc = "are designed to be rendered as a layer of a stacked desktop-like"]
+        #[doc = "environment."]
+        #[doc = ""]
+        #[doc = "Layer surface state (layer, size, anchor, exclusive zone,"]
+        #[doc = "margin, interactivity) is double-buffered, and will be applied at the"]
+        #[doc = "time wl_surface.commit of the corresponding wl_surface is called."]
+        #[doc = ""]
+        #[doc = "Attaching a null buffer to a layer surface unmaps it."]
+        #[doc = ""]
+        #[doc = "Unmapping a layer_surface means that the surface cannot be shown by the"]
+        #[doc = "compositor until it is explicitly mapped again. The layer_surface"]
+        #[doc = "returns to the state it had right after layer_shell.get_layer_surface."]
+        #[doc = "The client can re-map the surface by performing a commit without any"]
+        #[doc = "buffer attached, waiting for a configure event and handling it as usual."]
         pub trait ZwlrLayerSurfaceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_layer_surface_v1";
             const VERSION: u32 = 5u32;
@@ -28438,35 +28278,34 @@ pub mod wlr_layer_shell_unstable_v1 {
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
 pub mod wlr_output_management_unstable_v1 {
-    #[doc = "This interface is a manager that allows reading and writing the current"]
-    #[doc = "output device configuration."]
-    #[doc = ""]
-    #[doc = "Output devices that display pixels (e.g. a physical monitor or a virtual"]
-    #[doc = "output in a window) are represented as heads. Heads cannot be created nor"]
-    #[doc = "destroyed by the client, but they can be enabled or disabled and their"]
-    #[doc = "properties can be changed. Each head may have one or more available modes."]
-    #[doc = ""]
-    #[doc = "Whenever a head appears (e.g. a monitor is plugged in), it will be"]
-    #[doc = "advertised via the head event. Immediately after the output manager is"]
-    #[doc = "bound, all current heads are advertised."]
-    #[doc = ""]
-    #[doc = "Whenever a head's properties change, the relevant wlr_output_head events"]
-    #[doc = "will be sent. Not all head properties will be sent: only properties that"]
-    #[doc = "have changed need to."]
-    #[doc = ""]
-    #[doc = "Whenever a head disappears (e.g. a monitor is unplugged), a"]
-    #[doc = "wlr_output_head.finished event will be sent."]
-    #[doc = ""]
-    #[doc = "After one or more heads appear, change or disappear, the done event will"]
-    #[doc = "be sent. It carries a serial which can be used in a create_configuration"]
-    #[doc = "request to update heads properties."]
-    #[doc = ""]
-    #[doc = "The information obtained from this protocol should only be used for output"]
-    #[doc = "configuration purposes. This protocol is not designed to be a generic"]
-    #[doc = "output property advertisement protocol for regular clients. Instead,"]
-    #[doc = "protocols such as xdg-output should be used."]
     pub mod zwlr_output_manager_v1 {
-        #[doc = "Trait to implement the zwlr_output_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface is a manager that allows reading and writing the current"]
+        #[doc = "output device configuration."]
+        #[doc = ""]
+        #[doc = "Output devices that display pixels (e.g. a physical monitor or a virtual"]
+        #[doc = "output in a window) are represented as heads. Heads cannot be created nor"]
+        #[doc = "destroyed by the client, but they can be enabled or disabled and their"]
+        #[doc = "properties can be changed. Each head may have one or more available modes."]
+        #[doc = ""]
+        #[doc = "Whenever a head appears (e.g. a monitor is plugged in), it will be"]
+        #[doc = "advertised via the head event. Immediately after the output manager is"]
+        #[doc = "bound, all current heads are advertised."]
+        #[doc = ""]
+        #[doc = "Whenever a head's properties change, the relevant wlr_output_head events"]
+        #[doc = "will be sent. Not all head properties will be sent: only properties that"]
+        #[doc = "have changed need to."]
+        #[doc = ""]
+        #[doc = "Whenever a head disappears (e.g. a monitor is unplugged), a"]
+        #[doc = "wlr_output_head.finished event will be sent."]
+        #[doc = ""]
+        #[doc = "After one or more heads appear, change or disappear, the done event will"]
+        #[doc = "be sent. It carries a serial which can be used in a create_configuration"]
+        #[doc = "request to update heads properties."]
+        #[doc = ""]
+        #[doc = "The information obtained from this protocol should only be used for output"]
+        #[doc = "configuration purposes. This protocol is not designed to be a generic"]
+        #[doc = "output property advertisement protocol for regular clients. Instead,"]
+        #[doc = "protocols such as xdg-output should be used."]
         pub trait ZwlrOutputManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_output_manager_v1";
             const VERSION: u32 = 4u32;
@@ -28584,19 +28423,6 @@ pub mod wlr_output_management_unstable_v1 {
             }
         }
     }
-    #[doc = "A head is an output device. The difference between a wl_output object and"]
-    #[doc = "a head is that heads are advertised even if they are turned off. A head"]
-    #[doc = "object only advertises properties and cannot be used directly to change"]
-    #[doc = "them."]
-    #[doc = ""]
-    #[doc = "A head has some read-only properties: modes, name, description and"]
-    #[doc = "physical_size. These cannot be changed by clients."]
-    #[doc = ""]
-    #[doc = "Other properties can be updated via a wlr_output_configuration object."]
-    #[doc = ""]
-    #[doc = "Properties sent via this interface are applied atomically via the"]
-    #[doc = "wlr_output_manager.done event. No guarantees are made regarding the order"]
-    #[doc = "in which properties are sent."]
     pub mod zwlr_output_head_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -28617,7 +28443,19 @@ pub mod wlr_output_management_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwlr_output_head_v1 interface. See the module level documentation for more info"]
+        #[doc = "A head is an output device. The difference between a wl_output object and"]
+        #[doc = "a head is that heads are advertised even if they are turned off. A head"]
+        #[doc = "object only advertises properties and cannot be used directly to change"]
+        #[doc = "them."]
+        #[doc = ""]
+        #[doc = "A head has some read-only properties: modes, name, description and"]
+        #[doc = "physical_size. These cannot be changed by clients."]
+        #[doc = ""]
+        #[doc = "Other properties can be updated via a wlr_output_configuration object."]
+        #[doc = ""]
+        #[doc = "Properties sent via this interface are applied atomically via the"]
+        #[doc = "wlr_output_manager.done event. No guarantees are made regarding the order"]
+        #[doc = "in which properties are sent."]
         pub trait ZwlrOutputHeadV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_output_head_v1";
             const VERSION: u32 = 4u32;
@@ -28965,16 +28803,15 @@ pub mod wlr_output_management_unstable_v1 {
             }
         }
     }
-    #[doc = "This object describes an output mode."]
-    #[doc = ""]
-    #[doc = "Some heads don't support output modes, in which case modes won't be"]
-    #[doc = "advertised."]
-    #[doc = ""]
-    #[doc = "Properties sent via this interface are applied atomically via the"]
-    #[doc = "wlr_output_manager.done event. No guarantees are made regarding the order"]
-    #[doc = "in which properties are sent."]
     pub mod zwlr_output_mode_v1 {
-        #[doc = "Trait to implement the zwlr_output_mode_v1 interface. See the module level documentation for more info"]
+        #[doc = "This object describes an output mode."]
+        #[doc = ""]
+        #[doc = "Some heads don't support output modes, in which case modes won't be"]
+        #[doc = "advertised."]
+        #[doc = ""]
+        #[doc = "Properties sent via this interface are applied atomically via the"]
+        #[doc = "wlr_output_manager.done event. No guarantees are made regarding the order"]
+        #[doc = "in which properties are sent."]
         pub trait ZwlrOutputModeV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_output_mode_v1";
             const VERSION: u32 = 3u32;
@@ -29071,16 +28908,6 @@ pub mod wlr_output_management_unstable_v1 {
             }
         }
     }
-    #[doc = "This object is used by the client to describe a full output configuration."]
-    #[doc = ""]
-    #[doc = "First, the client needs to setup the output configuration. Each head can"]
-    #[doc = "be either enabled (and configured) or disabled. It is a protocol error to"]
-    #[doc = "send two enable_head or disable_head requests with the same head. It is a"]
-    #[doc = "protocol error to omit a head in a configuration."]
-    #[doc = ""]
-    #[doc = "Then, the client can apply or test the configuration. The compositor will"]
-    #[doc = "then reply with a succeeded, failed or cancelled event. Finally the client"]
-    #[doc = "should destroy the configuration object."]
     pub mod zwlr_output_configuration_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -29104,7 +28931,16 @@ pub mod wlr_output_management_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwlr_output_configuration_v1 interface. See the module level documentation for more info"]
+        #[doc = "This object is used by the client to describe a full output configuration."]
+        #[doc = ""]
+        #[doc = "First, the client needs to setup the output configuration. Each head can"]
+        #[doc = "be either enabled (and configured) or disabled. It is a protocol error to"]
+        #[doc = "send two enable_head or disable_head requests with the same head. It is a"]
+        #[doc = "protocol error to omit a head in a configuration."]
+        #[doc = ""]
+        #[doc = "Then, the client can apply or test the configuration. The compositor will"]
+        #[doc = "then reply with a succeeded, failed or cancelled event. Finally the client"]
+        #[doc = "should destroy the configuration object."]
         pub trait ZwlrOutputConfigurationV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_output_configuration_v1";
             const VERSION: u32 = 4u32;
@@ -29278,9 +29114,6 @@ pub mod wlr_output_management_unstable_v1 {
             }
         }
     }
-    #[doc = "This object is used by the client to update a single head's configuration."]
-    #[doc = ""]
-    #[doc = "It is a protocol error to set the same property twice."]
     pub mod zwlr_output_configuration_head_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -29313,7 +29146,9 @@ pub mod wlr_output_management_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwlr_output_configuration_head_v1 interface. See the module level documentation for more info"]
+        #[doc = "This object is used by the client to update a single head's configuration."]
+        #[doc = ""]
+        #[doc = "It is a protocol error to set the same property twice."]
         pub trait ZwlrOutputConfigurationHeadV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_output_configuration_head_v1";
             const VERSION: u32 = 4u32;
@@ -29462,10 +29297,9 @@ pub mod wlr_output_management_unstable_v1 {
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
 pub mod wlr_output_power_management_unstable_v1 {
-    #[doc = "This interface is a manager that allows creating per-output power"]
-    #[doc = "management mode controls."]
     pub mod zwlr_output_power_manager_v1 {
-        #[doc = "Trait to implement the zwlr_output_power_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "This interface is a manager that allows creating per-output power"]
+        #[doc = "management mode controls."]
         pub trait ZwlrOutputPowerManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_output_power_manager_v1";
             const VERSION: u32 = 1u32;
@@ -29524,8 +29358,6 @@ pub mod wlr_output_power_management_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "This object offers requests to set the power management mode of"]
-    #[doc = "an output."]
     pub mod zwlr_output_power_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -29562,7 +29394,8 @@ pub mod wlr_output_power_management_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwlr_output_power_v1 interface. See the module level documentation for more info"]
+        #[doc = "This object offers requests to set the power management mode of"]
+        #[doc = "an output."]
         pub trait ZwlrOutputPowerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_output_power_v1";
             const VERSION: u32 = 1u32;
@@ -29664,10 +29497,9 @@ pub mod wlr_output_power_management_unstable_v1 {
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
 pub mod wlr_screencopy_unstable_v1 {
-    #[doc = "This object is a manager which offers requests to start capturing from a"]
-    #[doc = "source."]
     pub mod zwlr_screencopy_manager_v1 {
-        #[doc = "Trait to implement the zwlr_screencopy_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "This object is a manager which offers requests to start capturing from a"]
+        #[doc = "source."]
         pub trait ZwlrScreencopyManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_screencopy_manager_v1";
             const VERSION: u32 = 3u32;
@@ -29766,22 +29598,6 @@ pub mod wlr_screencopy_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "This object represents a single frame."]
-    #[doc = ""]
-    #[doc = "When created, a series of buffer events will be sent, each representing a"]
-    #[doc = "supported buffer type. The \"buffer_done\" event is sent afterwards to"]
-    #[doc = "indicate that all supported buffer types have been enumerated. The client"]
-    #[doc = "will then be able to send a \"copy\" request. If the capture is successful,"]
-    #[doc = "the compositor will send a \"flags\" followed by a \"ready\" event."]
-    #[doc = ""]
-    #[doc = "For objects version 2 or lower, wl_shm buffers are always supported, ie."]
-    #[doc = "the \"buffer\" event is guaranteed to be sent."]
-    #[doc = ""]
-    #[doc = "If the capture failed, the \"failed\" event is sent. This can happen anytime"]
-    #[doc = "before the \"ready\" event."]
-    #[doc = ""]
-    #[doc = "Once either a \"ready\" or a \"failed\" event is received, the client should"]
-    #[doc = "destroy the frame."]
     pub mod zwlr_screencopy_frame_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -29809,7 +29625,22 @@ pub mod wlr_screencopy_unstable_v1 {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
-        #[doc = "Trait to implement the zwlr_screencopy_frame_v1 interface. See the module level documentation for more info"]
+        #[doc = "This object represents a single frame."]
+        #[doc = ""]
+        #[doc = "When created, a series of buffer events will be sent, each representing a"]
+        #[doc = "supported buffer type. The \"buffer_done\" event is sent afterwards to"]
+        #[doc = "indicate that all supported buffer types have been enumerated. The client"]
+        #[doc = "will then be able to send a \"copy\" request. If the capture is successful,"]
+        #[doc = "the compositor will send a \"flags\" followed by a \"ready\" event."]
+        #[doc = ""]
+        #[doc = "For objects version 2 or lower, wl_shm buffers are always supported, ie."]
+        #[doc = "the \"buffer\" event is guaranteed to be sent."]
+        #[doc = ""]
+        #[doc = "If the capture failed, the \"failed\" event is sent. This can happen anytime"]
+        #[doc = "before the \"ready\" event."]
+        #[doc = ""]
+        #[doc = "Once either a \"ready\" or a \"failed\" event is received, the client should"]
+        #[doc = "destroy the frame."]
         pub trait ZwlrScreencopyFrameV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_screencopy_frame_v1";
             const VERSION: u32 = 3u32;
@@ -30044,8 +29875,6 @@ pub mod wlr_screencopy_unstable_v1 {
     }
 }
 pub mod wlr_virtual_pointer_unstable_v1 {
-    #[doc = "This protocol allows clients to emulate a physical pointer device. The"]
-    #[doc = "requests are mostly mirror opposites of those specified in wl_pointer."]
     pub mod zwlr_virtual_pointer_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -30066,7 +29895,8 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 }
             }
         }
-        #[doc = "Trait to implement the zwlr_virtual_pointer_v1 interface. See the module level documentation for more info"]
+        #[doc = "This protocol allows clients to emulate a physical pointer device. The"]
+        #[doc = "requests are mostly mirror opposites of those specified in wl_pointer."]
         pub trait ZwlrVirtualPointerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_virtual_pointer_v1";
             const VERSION: u32 = 2u32;
@@ -30246,9 +30076,8 @@ pub mod wlr_virtual_pointer_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "This object allows clients to create individual virtual pointer objects."]
     pub mod zwlr_virtual_pointer_manager_v1 {
-        #[doc = "Trait to implement the zwlr_virtual_pointer_manager_v1 interface. See the module level documentation for more info"]
+        #[doc = "This object allows clients to create individual virtual pointer objects."]
         pub trait ZwlrVirtualPointerManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_virtual_pointer_manager_v1";
             const VERSION: u32 = 2u32;

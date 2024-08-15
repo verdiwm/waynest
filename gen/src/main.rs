@@ -358,23 +358,21 @@ fn main() -> Result<()> {
             let docs = description_to_docs(interface.description.as_ref());
             let module_name = make_ident(&interface.name);
             let trait_name = make_ident(interface.name.to_upper_camel_case());
-
-            let trait_docs = format!("Trait to implement the {} interface. See the module level documentation for more info", interface.name);
-
+            let _trait_docs = format!("Trait to implement the {} interface. See the module level documentation for more info", interface.name);
             let name = &interface.name;
             let version = &interface.version;
 
             let dispatchers = write_dispatchers(&interface);
             let requests = write_requests(&protocols, &protocol, &interface);
             let events = write_events(&protocols, &protocol, &interface);
+
             let enums = write_enums(&interface);
 
             inner_modules.push(quote! {
-                #(#docs)*
                 pub mod #module_name {
                     #(#enums)*
 
-                    #[doc = #trait_docs]
+                    #(#docs)*
                     pub trait #trait_name: crate::server::Dispatcher {
                         const INTERFACE: &'static str = #name;
                         const VERSION: u32 = #version;
