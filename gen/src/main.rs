@@ -446,11 +446,19 @@ fn value_to_u32(value: &str) -> u32 {
 }
 
 fn make_ident<D: Display>(ident: D) -> Ident {
-    if KEYWORDS.contains(&ident.to_string().as_str()) {
-        return format_ident!("r#{ident}");
+    let mut prefix = "";
+
+    if ident.to_string().chars().next().unwrap().is_numeric() {
+        prefix = "_"
     }
 
-    format_ident!("{ident}")
+    let mut raw: &str = "";
+
+    if KEYWORDS.contains(&ident.to_string().as_str()) {
+        raw = "r#"
+    }
+
+    format_ident!("{raw}{prefix}{ident}")
 }
 
 fn write_enums(interface: &Interface) -> Vec<TokenStream> {
@@ -465,14 +473,8 @@ fn write_enums(interface: &Interface) -> Vec<TokenStream> {
             let mut match_variants = Vec::new();
 
             for entry in &e.entries {
-                let mut prefix = "";
-
-                if entry.name.chars().next().unwrap().is_numeric() {
-                    prefix = "_"
-                }
-
                 let docs = description_to_docs(entry.description.as_ref());
-                let name = make_ident(format!("{prefix}{}", entry.name.to_upper_camel_case()));
+                let name = make_ident(entry.name.to_upper_camel_case());
                 let value = value_to_u32(&entry.value);
 
                 // match_variants.push_str(&format!("{value} => Ok(Self::{prefix}{name}),"));
@@ -508,13 +510,7 @@ fn write_enums(interface: &Interface) -> Vec<TokenStream> {
             let mut variants = Vec::new();
 
             for entry in &e.entries {
-                let mut prefix = "";
-
-                if entry.name.chars().next().unwrap().is_numeric() {
-                    prefix = "_"
-                }
-
-                let name = make_ident(format!("{prefix}{}", entry.name.to_upper_camel_case()));
+                let name = make_ident(entry.name.to_upper_camel_case());
 
                 let docs = description_to_docs(entry.summary.as_ref());
 
