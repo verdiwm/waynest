@@ -120,7 +120,11 @@ pub mod wayland {
                 message: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_display#{}.error()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(object_id))
+                    .put_uint(code)
+                    .put_string(Some(message))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -138,7 +142,7 @@ pub mod wayland {
                 id: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_display#{}.delete_id()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -214,7 +218,11 @@ pub mod wayland {
                 version: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_registry#{}.global()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(name)
+                    .put_string(Some(interface))
+                    .put_uint(version)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -237,7 +245,7 @@ pub mod wayland {
                 name: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_registry#{}.global_remove()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(name).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -278,7 +286,9 @@ pub mod wayland {
                 callback_data: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_callback#{}.done()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(callback_data)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -931,7 +941,9 @@ pub mod wayland {
                 format: Format,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_shm#{}.format()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(format as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -1214,7 +1226,9 @@ pub mod wayland {
                 mime_type: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_data_offer#{}.offer()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(mime_type))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -1231,7 +1245,9 @@ pub mod wayland {
                 source_actions: super::super::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_data_offer#{}.source_actions()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(source_actions.bits())
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -1279,7 +1295,9 @@ pub mod wayland {
                 dnd_action: super::super::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_data_offer#{}.action()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(dnd_action.bits())
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -1395,7 +1413,9 @@ pub mod wayland {
                 mime_type: Option<String>,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_data_source#{}.target()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(mime_type)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -1412,7 +1432,10 @@ pub mod wayland {
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_data_source#{}.send()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(mime_type))
+                    .put_fd(fd)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -1521,7 +1544,9 @@ pub mod wayland {
                 dnd_action: super::super::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_data_source#{}.action()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(dnd_action.bits())
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
@@ -1669,7 +1694,9 @@ pub mod wayland {
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_data_device#{}.data_offer()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -1690,7 +1717,13 @@ pub mod wayland {
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_data_device#{}.enter()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(surface))
+                    .put_fixed(x)
+                    .put_fixed(y)
+                    .put_object(id)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -1724,7 +1757,11 @@ pub mod wayland {
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_data_device#{}.motion()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_fixed(x)
+                    .put_fixed(y)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -1774,7 +1811,7 @@ pub mod wayland {
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_data_device#{}.selection()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
@@ -2298,7 +2335,7 @@ pub mod wayland {
                 serial: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_shell_surface#{}.ping()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -2330,7 +2367,11 @@ pub mod wayland {
                 height: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_shell_surface#{}.configure()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(edges.bits())
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -2888,7 +2929,9 @@ pub mod wayland {
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_surface#{}.enter()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -2910,7 +2953,9 @@ pub mod wayland {
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_surface#{}.leave()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -2935,7 +2980,7 @@ pub mod wayland {
                 factor: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_surface#{}.preferred_buffer_scale()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(factor).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -2957,7 +3002,9 @@ pub mod wayland {
                 transform: super::super::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_surface#{}.preferred_buffer_transform()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(transform as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -3130,7 +3177,9 @@ pub mod wayland {
                 capabilities: Capability,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_seat#{}.capabilities()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(capabilities.bits())
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -3159,7 +3208,9 @@ pub mod wayland {
                 name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_seat#{}.name()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -3398,7 +3449,12 @@ pub mod wayland {
                 surface_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_pointer#{}.enter()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(surface))
+                    .put_fixed(surface_x)
+                    .put_fixed(surface_y)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -3417,7 +3473,10 @@ pub mod wayland {
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_pointer#{}.leave()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(surface))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -3435,7 +3494,11 @@ pub mod wayland {
                 surface_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_pointer#{}.motion()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_fixed(surface_x)
+                    .put_fixed(surface_y)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -3465,7 +3528,12 @@ pub mod wayland {
                 state: ButtonState,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_pointer#{}.button()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(time)
+                    .put_uint(button)
+                    .put_uint(state as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -3496,7 +3564,11 @@ pub mod wayland {
                 value: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_pointer#{}.axis()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_uint(axis as u32)
+                    .put_fixed(value)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
                     .await
@@ -3580,7 +3652,9 @@ pub mod wayland {
                 axis_source: AxisSource,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_pointer#{}.axis_source()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(axis_source as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
                     .await
@@ -3608,7 +3682,10 @@ pub mod wayland {
                 axis: Axis,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_pointer#{}.axis_stop()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_uint(axis as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
                     .await
@@ -3652,7 +3729,10 @@ pub mod wayland {
                 discrete: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_pointer#{}.axis_discrete()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(axis as u32)
+                    .put_int(discrete)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
                     .await
@@ -3687,7 +3767,10 @@ pub mod wayland {
                 value120: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_pointer#{}.axis_value120()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(axis as u32)
+                    .put_int(value120)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 9u16, payload, fds))
                     .await
@@ -3736,7 +3819,10 @@ pub mod wayland {
                 direction: AxisRelativeDirection,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_pointer#{}.axis_relative_direction()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(axis as u32)
+                    .put_uint(direction as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 10u16, payload, fds))
                     .await
@@ -3841,7 +3927,11 @@ pub mod wayland {
                 size: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_keyboard#{}.keymap()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(format as u32)
+                    .put_fd(fd)
+                    .put_uint(size)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -3866,7 +3956,11 @@ pub mod wayland {
                 keys: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_keyboard#{}.enter()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(surface))
+                    .put_array(keys)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -3890,7 +3984,10 @@ pub mod wayland {
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_keyboard#{}.leave()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(surface))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -3924,7 +4021,12 @@ pub mod wayland {
                 state: KeyState,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_keyboard#{}.key()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(time)
+                    .put_uint(key)
+                    .put_uint(state as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -3954,7 +4056,13 @@ pub mod wayland {
                 group: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_keyboard#{}.modifiers()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(mods_depressed)
+                    .put_uint(mods_latched)
+                    .put_uint(mods_locked)
+                    .put_uint(group)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
                     .await
@@ -3980,7 +4088,10 @@ pub mod wayland {
                 delay: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_keyboard#{}.repeat_info()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(rate)
+                    .put_int(delay)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
@@ -4041,7 +4152,14 @@ pub mod wayland {
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_touch#{}.down()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(time)
+                    .put_object(Some(surface))
+                    .put_int(id)
+                    .put_fixed(x)
+                    .put_fixed(y)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -4059,7 +4177,11 @@ pub mod wayland {
                 id: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_touch#{}.up()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(time)
+                    .put_int(id)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -4076,7 +4198,12 @@ pub mod wayland {
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_touch#{}.motion()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_int(id)
+                    .put_fixed(x)
+                    .put_fixed(y)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -4156,7 +4283,11 @@ pub mod wayland {
                 minor: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_touch#{}.shape()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(id)
+                    .put_fixed(major)
+                    .put_fixed(minor)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
@@ -4193,7 +4324,10 @@ pub mod wayland {
                 orientation: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_touch#{}.orientation()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(id)
+                    .put_fixed(orientation)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
                     .await
@@ -4359,7 +4493,16 @@ pub mod wayland {
                 transform: Transform,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_output#{}.geometry()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .put_int(physical_width)
+                    .put_int(physical_height)
+                    .put_uint(subpixel as u32)
+                    .put_string(Some(make))
+                    .put_string(Some(model))
+                    .put_uint(transform as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -4408,7 +4551,12 @@ pub mod wayland {
                 refresh: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_output#{}.mode()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(flags.bits())
+                    .put_int(width)
+                    .put_int(height)
+                    .put_int(refresh)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -4456,7 +4604,7 @@ pub mod wayland {
                 factor: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_output#{}.scale()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(factor).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -4497,7 +4645,9 @@ pub mod wayland {
                 name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_output#{}.name()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
                     .await
@@ -4524,7 +4674,9 @@ pub mod wayland {
                 description: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_output#{}.description()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(description))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
@@ -5140,7 +5292,7 @@ pub mod linux_dmabuf_v1 {
                 format: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_linux_dmabuf_v1#{}.format()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(format).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -5178,7 +5330,11 @@ pub mod linux_dmabuf_v1 {
                 modifier_lo: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_linux_dmabuf_v1#{}.modifier()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(format)
+                    .put_uint(modifier_hi)
+                    .put_uint(modifier_lo)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -5460,7 +5616,9 @@ pub mod linux_dmabuf_v1 {
                 buffer: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_linux_buffer_params_v1#{}.created()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(buffer))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -5591,7 +5749,10 @@ pub mod linux_dmabuf_v1 {
                     "-> zwp_linux_dmabuf_feedback_v1#{}.format_table()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fd(fd)
+                    .put_uint(size)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -5630,7 +5791,7 @@ pub mod linux_dmabuf_v1 {
                     "-> zwp_linux_dmabuf_feedback_v1#{}.main_device()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -5691,7 +5852,7 @@ pub mod linux_dmabuf_v1 {
                     "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_target_device()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
                     .await
@@ -5731,7 +5892,9 @@ pub mod linux_dmabuf_v1 {
                     "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_formats()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_array(indices)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
@@ -5755,7 +5918,9 @@ pub mod linux_dmabuf_v1 {
                     "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_flags()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(flags.bits())
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
                     .await
@@ -5901,7 +6066,7 @@ pub mod presentation_time {
                 clk_id: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wp_presentation#{}.clock_id()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(clk_id).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -5962,7 +6127,9 @@ pub mod presentation_time {
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wp_presentation_feedback#{}.sync_output()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -6022,7 +6189,15 @@ pub mod presentation_time {
                 flags: Kind,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wp_presentation_feedback#{}.presented()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(tv_sec_hi)
+                    .put_uint(tv_sec_lo)
+                    .put_uint(tv_nsec)
+                    .put_uint(refresh)
+                    .put_uint(seq_hi)
+                    .put_uint(seq_lo)
+                    .put_uint(flags.bits())
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -6225,7 +6400,9 @@ pub mod tablet_v2 {
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_seat_v2#{}.tablet_added()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -6242,7 +6419,9 @@ pub mod tablet_v2 {
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_seat_v2#{}.tool_added()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -6265,7 +6444,9 @@ pub mod tablet_v2 {
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_seat_v2#{}.pad_added()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -6503,7 +6684,9 @@ pub mod tablet_v2 {
                 tool_type: Type,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.type()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(tool_type as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -6532,7 +6715,10 @@ pub mod tablet_v2 {
                 hardware_serial_lo: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.hardware_serial()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(hardware_serial_hi)
+                    .put_uint(hardware_serial_lo)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -6556,7 +6742,10 @@ pub mod tablet_v2 {
                 hardware_id_lo: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.hardware_id_wacom()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(hardware_id_hi)
+                    .put_uint(hardware_id_lo)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -6576,7 +6765,9 @@ pub mod tablet_v2 {
                 capability: Capability,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.capability()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(capability as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -6641,7 +6832,11 @@ pub mod tablet_v2 {
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.proximity_in()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(tablet))
+                    .put_object(Some(surface))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
                     .await
@@ -6690,7 +6885,7 @@ pub mod tablet_v2 {
                 serial: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.down()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
                     .await
@@ -6733,7 +6928,10 @@ pub mod tablet_v2 {
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.motion()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fixed(x)
+                    .put_fixed(y)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 10u16, payload, fds))
                     .await
@@ -6751,7 +6949,9 @@ pub mod tablet_v2 {
                 pressure: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.pressure()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(pressure)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 11u16, payload, fds))
                     .await
@@ -6769,7 +6969,9 @@ pub mod tablet_v2 {
                 distance: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.distance()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(distance)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 12u16, payload, fds))
                     .await
@@ -6787,7 +6989,10 @@ pub mod tablet_v2 {
                 tilt_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.tilt()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fixed(tilt_x)
+                    .put_fixed(tilt_y)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 13u16, payload, fds))
                     .await
@@ -6803,7 +7008,9 @@ pub mod tablet_v2 {
                 degrees: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.rotation()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fixed(degrees)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 14u16, payload, fds))
                     .await
@@ -6821,7 +7028,7 @@ pub mod tablet_v2 {
                 position: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.slider()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(position).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 15u16, payload, fds))
                     .await
@@ -6847,7 +7054,10 @@ pub mod tablet_v2 {
                 clicks: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.wheel()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fixed(degrees)
+                    .put_int(clicks)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 16u16, payload, fds))
                     .await
@@ -6868,7 +7078,11 @@ pub mod tablet_v2 {
                 state: ButtonState,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.button()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(button)
+                    .put_uint(state as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 17u16, payload, fds))
                     .await
@@ -6885,7 +7099,7 @@ pub mod tablet_v2 {
                 time: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.frame()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(time).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 18u16, payload, fds))
                     .await
@@ -6944,7 +7158,9 @@ pub mod tablet_v2 {
                 name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_v2#{}.name()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -6965,7 +7181,10 @@ pub mod tablet_v2 {
                 pid: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_v2#{}.id()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(vid)
+                    .put_uint(pid)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -6992,7 +7211,9 @@ pub mod tablet_v2 {
                 path: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_v2#{}.path()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(path))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -7145,7 +7366,9 @@ pub mod tablet_v2 {
                 source: Source,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.source()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(source as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -7162,7 +7385,9 @@ pub mod tablet_v2 {
                 degrees: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.angle()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fixed(degrees)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -7210,7 +7435,7 @@ pub mod tablet_v2 {
                 time: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.frame()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(time).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -7330,7 +7555,9 @@ pub mod tablet_v2 {
                 source: Source,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.source()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(source as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -7348,7 +7575,9 @@ pub mod tablet_v2 {
                 position: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.position()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(position)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -7397,7 +7626,7 @@ pub mod tablet_v2 {
                 time: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.frame()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(time).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -7476,7 +7705,9 @@ pub mod tablet_v2 {
                 buttons: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_group_v2#{}.buttons()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_array(buttons)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -7494,7 +7725,9 @@ pub mod tablet_v2 {
                 ring: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_group_v2#{}.ring()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(ring))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -7512,7 +7745,9 @@ pub mod tablet_v2 {
                 strip: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_group_v2#{}.strip()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(strip))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -7537,7 +7772,7 @@ pub mod tablet_v2 {
                 modes: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_group_v2#{}.modes()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(modes).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -7595,7 +7830,11 @@ pub mod tablet_v2 {
                 mode: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_group_v2#{}.mode_switch()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_uint(serial)
+                    .put_uint(mode)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
@@ -7734,7 +7973,9 @@ pub mod tablet_v2 {
                 pad_group: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_v2#{}.group()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(pad_group))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -7757,7 +7998,9 @@ pub mod tablet_v2 {
                 path: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_v2#{}.path()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(path))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -7776,7 +8019,7 @@ pub mod tablet_v2 {
                 buttons: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_v2#{}.buttons()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(buttons).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -7807,7 +8050,11 @@ pub mod tablet_v2 {
                 state: ButtonState,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_v2#{}.button()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_uint(button)
+                    .put_uint(state as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
                     .await
@@ -7823,7 +8070,11 @@ pub mod tablet_v2 {
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_v2#{}.enter()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(tablet))
+                    .put_object(Some(surface))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
@@ -7839,7 +8090,10 @@ pub mod tablet_v2 {
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_v2#{}.leave()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(surface))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
                     .await
@@ -8278,7 +8532,7 @@ pub mod xdg_shell {
                 serial: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> xdg_wm_base#{}.ping()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -8888,7 +9142,7 @@ pub mod xdg_shell {
                 serial: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> xdg_surface#{}.configure()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -9541,7 +9795,11 @@ pub mod xdg_shell {
                 states: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> xdg_toplevel#{}.configure()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(width)
+                    .put_int(height)
+                    .put_array(states)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -9590,7 +9848,10 @@ pub mod xdg_shell {
                 height: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> xdg_toplevel#{}.configure_bounds()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -9623,7 +9884,9 @@ pub mod xdg_shell {
                 capabilities: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> xdg_toplevel#{}.wm_capabilities()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_array(capabilities)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -9825,7 +10088,12 @@ pub mod xdg_shell {
                 height: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> xdg_popup#{}.configure()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -9868,7 +10136,7 @@ pub mod xdg_shell {
                 token: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> xdg_popup#{}.repositioned()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(token).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -10604,7 +10872,7 @@ pub mod drm_lease_v1 {
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wp_drm_lease_device_v1#{}.drm_fd()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(fd).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -10627,7 +10895,9 @@ pub mod drm_lease_v1 {
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wp_drm_lease_device_v1#{}.connector()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -10726,7 +10996,9 @@ pub mod drm_lease_v1 {
                 name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wp_drm_lease_connector_v1#{}.name()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -10743,7 +11015,9 @@ pub mod drm_lease_v1 {
                 description: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wp_drm_lease_connector_v1#{}.description()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(description))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -10760,7 +11034,9 @@ pub mod drm_lease_v1 {
                 connector_id: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wp_drm_lease_connector_v1#{}.connector_id()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(connector_id)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -10961,7 +11237,7 @@ pub mod drm_lease_v1 {
                 leased_fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wp_drm_lease_v1#{}.lease_fd()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(leased_fd).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -11094,7 +11370,9 @@ pub mod ext_foreign_toplevel_list_v1 {
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.toplevel()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(toplevel))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -11214,7 +11492,9 @@ pub mod ext_foreign_toplevel_list_v1 {
                 title: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.title()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(title))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -11231,7 +11511,9 @@ pub mod ext_foreign_toplevel_list_v1 {
                 app_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.app_id()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(app_id))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -11267,7 +11549,9 @@ pub mod ext_foreign_toplevel_list_v1 {
                     "-> ext_foreign_toplevel_handle_v1#{}.identifier()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(identifier))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
                     .await
@@ -11874,7 +12158,11 @@ pub mod ext_session_lock_v1 {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> ext_session_lock_surface_v1#{}.configure()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(width)
+                    .put_uint(height)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -12006,7 +12294,9 @@ pub mod ext_transient_seat_v1 {
                 global_name: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> ext_transient_seat_v1#{}.ready()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(global_name)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -12176,7 +12466,7 @@ pub mod fractional_scale_v1 {
                 scale: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wp_fractional_scale_v1#{}.preferred_scale()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(scale).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -13389,7 +13679,9 @@ pub mod xdg_activation_v1 {
                 token: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> xdg_activation_token_v1#{}.done()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(token))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -14274,7 +14566,9 @@ pub mod fullscreen_shell_unstable_v1 {
                 capability: Capability,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_fullscreen_shell_v1#{}.capability()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(capability as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -14865,7 +15159,11 @@ pub mod input_method_unstable_v1 {
                     "-> zwp_input_method_context_v1#{}.surrounding_text()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(text))
+                    .put_uint(cursor)
+                    .put_uint(anchor)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -14894,7 +15192,10 @@ pub mod input_method_unstable_v1 {
                     "-> zwp_input_method_context_v1#{}.content_type()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(hint)
+                    .put_uint(purpose)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -14911,7 +15212,10 @@ pub mod input_method_unstable_v1 {
                     "-> zwp_input_method_context_v1#{}.invoke_action()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(button)
+                    .put_uint(index)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -14927,7 +15231,7 @@ pub mod input_method_unstable_v1 {
                     "-> zwp_input_method_context_v1#{}.commit_state()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
                     .await
@@ -14943,7 +15247,9 @@ pub mod input_method_unstable_v1 {
                     "-> zwp_input_method_context_v1#{}.preferred_language()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(language))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
@@ -14984,7 +15290,9 @@ pub mod input_method_unstable_v1 {
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_input_method_v1#{}.activate()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -15000,7 +15308,9 @@ pub mod input_method_unstable_v1 {
                 context: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_input_method_v1#{}.deactivate()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(context))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -15333,7 +15643,11 @@ pub mod input_timestamps_unstable_v1 {
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_input_timestamps_v1#{}.timestamp()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(tv_sec_hi)
+                    .put_uint(tv_sec_lo)
+                    .put_uint(tv_nsec)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -15741,7 +16055,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 format: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_linux_dmabuf_v1#{}.format()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(format).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -15779,7 +16093,11 @@ pub mod linux_dmabuf_unstable_v1 {
                 modifier_lo: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_linux_dmabuf_v1#{}.modifier()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(format)
+                    .put_uint(modifier_hi)
+                    .put_uint(modifier_lo)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -16061,7 +16379,9 @@ pub mod linux_dmabuf_unstable_v1 {
                 buffer: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_linux_buffer_params_v1#{}.created()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(buffer))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -16192,7 +16512,10 @@ pub mod linux_dmabuf_unstable_v1 {
                     "-> zwp_linux_dmabuf_feedback_v1#{}.format_table()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fd(fd)
+                    .put_uint(size)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -16231,7 +16554,7 @@ pub mod linux_dmabuf_unstable_v1 {
                     "-> zwp_linux_dmabuf_feedback_v1#{}.main_device()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -16292,7 +16615,7 @@ pub mod linux_dmabuf_unstable_v1 {
                     "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_target_device()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
                     .await
@@ -16332,7 +16655,9 @@ pub mod linux_dmabuf_unstable_v1 {
                     "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_formats()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_array(indices)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
@@ -16356,7 +16681,9 @@ pub mod linux_dmabuf_unstable_v1 {
                     "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_flags()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(flags.bits())
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
                     .await
@@ -16706,7 +17033,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                     "-> zwp_linux_buffer_release_v1#{}.fenced_release()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(fence).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -17380,7 +17707,12 @@ pub mod pointer_gestures_unstable_v1 {
                 fingers: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_pointer_gesture_swipe_v1#{}.begin()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(time)
+                    .put_object(Some(surface))
+                    .put_uint(fingers)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -17400,7 +17732,11 @@ pub mod pointer_gestures_unstable_v1 {
                 dy: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_pointer_gesture_swipe_v1#{}.update()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_fixed(dx)
+                    .put_fixed(dy)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -17422,7 +17758,11 @@ pub mod pointer_gestures_unstable_v1 {
                 cancelled: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_pointer_gesture_swipe_v1#{}.end()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(time)
+                    .put_int(cancelled)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -17486,7 +17826,12 @@ pub mod pointer_gestures_unstable_v1 {
                 fingers: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_pointer_gesture_pinch_v1#{}.begin()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(time)
+                    .put_object(Some(surface))
+                    .put_uint(fingers)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -17515,7 +17860,13 @@ pub mod pointer_gestures_unstable_v1 {
                 rotation: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_pointer_gesture_pinch_v1#{}.update()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_fixed(dx)
+                    .put_fixed(dy)
+                    .put_fixed(scale)
+                    .put_fixed(rotation)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -17537,7 +17888,11 @@ pub mod pointer_gestures_unstable_v1 {
                 cancelled: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_pointer_gesture_pinch_v1#{}.end()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(time)
+                    .put_int(cancelled)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -17602,7 +17957,12 @@ pub mod pointer_gestures_unstable_v1 {
                 fingers: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_pointer_gesture_hold_v1#{}.begin()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(time)
+                    .put_object(Some(surface))
+                    .put_uint(fingers)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -17626,7 +17986,11 @@ pub mod pointer_gestures_unstable_v1 {
                 cancelled: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_pointer_gesture_hold_v1#{}.end()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(time)
+                    .put_int(cancelled)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -17826,7 +18190,9 @@ pub mod wp_primary_selection_unstable_v1 {
                     "-> zwp_primary_selection_device_v1#{}.data_offer()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(offer))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -17851,7 +18217,7 @@ pub mod wp_primary_selection_unstable_v1 {
                     "-> zwp_primary_selection_device_v1#{}.selection()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -17933,7 +18299,9 @@ pub mod wp_primary_selection_unstable_v1 {
                 mime_type: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_primary_selection_offer_v1#{}.offer()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(mime_type))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -18004,7 +18372,10 @@ pub mod wp_primary_selection_unstable_v1 {
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_primary_selection_source_v1#{}.send()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(mime_type))
+                    .put_fd(fd)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -18189,7 +18560,14 @@ pub mod relative_pointer_unstable_v1 {
                 dy_unaccel: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_relative_pointer_v1#{}.relative_motion()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(utime_hi)
+                    .put_uint(utime_lo)
+                    .put_fixed(dx)
+                    .put_fixed(dy)
+                    .put_fixed(dx_unaccel)
+                    .put_fixed(dy_unaccel)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -18388,7 +18766,9 @@ pub mod tablet_unstable_v1 {
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_seat_v1#{}.tablet_added()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -18405,7 +18785,9 @@ pub mod tablet_unstable_v1 {
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_seat_v1#{}.tool_added()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -18645,7 +19027,9 @@ pub mod tablet_unstable_v1 {
                 tool_type: Type,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v1#{}.type()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(tool_type as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -18674,7 +19058,10 @@ pub mod tablet_unstable_v1 {
                 hardware_serial_lo: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v1#{}.hardware_serial()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(hardware_serial_hi)
+                    .put_uint(hardware_serial_lo)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -18698,7 +19085,10 @@ pub mod tablet_unstable_v1 {
                 hardware_id_lo: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v1#{}.hardware_id_wacom()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(hardware_id_hi)
+                    .put_uint(hardware_id_lo)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -18718,7 +19108,9 @@ pub mod tablet_unstable_v1 {
                 capability: Capability,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v1#{}.capability()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(capability as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -18783,7 +19175,11 @@ pub mod tablet_unstable_v1 {
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v1#{}.proximity_in()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(tablet))
+                    .put_object(Some(surface))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
                     .await
@@ -18832,7 +19228,7 @@ pub mod tablet_unstable_v1 {
                 serial: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v1#{}.down()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
                     .await
@@ -18875,7 +19271,10 @@ pub mod tablet_unstable_v1 {
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v1#{}.motion()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fixed(x)
+                    .put_fixed(y)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 10u16, payload, fds))
                     .await
@@ -18893,7 +19292,9 @@ pub mod tablet_unstable_v1 {
                 pressure: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v1#{}.pressure()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(pressure)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 11u16, payload, fds))
                     .await
@@ -18911,7 +19312,9 @@ pub mod tablet_unstable_v1 {
                 distance: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v1#{}.distance()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(distance)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 12u16, payload, fds))
                     .await
@@ -18929,7 +19332,10 @@ pub mod tablet_unstable_v1 {
                 tilt_y: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v1#{}.tilt()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(tilt_x)
+                    .put_int(tilt_y)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 13u16, payload, fds))
                     .await
@@ -18945,7 +19351,7 @@ pub mod tablet_unstable_v1 {
                 degrees: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v1#{}.rotation()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(degrees).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 14u16, payload, fds))
                     .await
@@ -18963,7 +19369,7 @@ pub mod tablet_unstable_v1 {
                 position: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v1#{}.slider()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(position).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 15u16, payload, fds))
                     .await
@@ -18989,7 +19395,10 @@ pub mod tablet_unstable_v1 {
                 clicks: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v1#{}.wheel()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(degrees)
+                    .put_int(clicks)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 16u16, payload, fds))
                     .await
@@ -19010,7 +19419,11 @@ pub mod tablet_unstable_v1 {
                 state: ButtonState,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v1#{}.button()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(button)
+                    .put_uint(state as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 17u16, payload, fds))
                     .await
@@ -19027,7 +19440,7 @@ pub mod tablet_unstable_v1 {
                 time: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v1#{}.frame()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(time).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 18u16, payload, fds))
                     .await
@@ -19082,7 +19495,9 @@ pub mod tablet_unstable_v1 {
                 name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_v1#{}.name()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -19098,7 +19513,10 @@ pub mod tablet_unstable_v1 {
                 pid: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_v1#{}.id()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(vid)
+                    .put_uint(pid)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -19125,7 +19543,9 @@ pub mod tablet_unstable_v1 {
                 path: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_v1#{}.path()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(path))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -19352,7 +19772,9 @@ pub mod tablet_unstable_v2 {
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_seat_v2#{}.tablet_added()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -19369,7 +19791,9 @@ pub mod tablet_unstable_v2 {
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_seat_v2#{}.tool_added()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -19392,7 +19816,9 @@ pub mod tablet_unstable_v2 {
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_seat_v2#{}.pad_added()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -19630,7 +20056,9 @@ pub mod tablet_unstable_v2 {
                 tool_type: Type,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.type()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(tool_type as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -19659,7 +20087,10 @@ pub mod tablet_unstable_v2 {
                 hardware_serial_lo: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.hardware_serial()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(hardware_serial_hi)
+                    .put_uint(hardware_serial_lo)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -19683,7 +20114,10 @@ pub mod tablet_unstable_v2 {
                 hardware_id_lo: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.hardware_id_wacom()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(hardware_id_hi)
+                    .put_uint(hardware_id_lo)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -19703,7 +20137,9 @@ pub mod tablet_unstable_v2 {
                 capability: Capability,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.capability()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(capability as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -19768,7 +20204,11 @@ pub mod tablet_unstable_v2 {
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.proximity_in()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(tablet))
+                    .put_object(Some(surface))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
                     .await
@@ -19817,7 +20257,7 @@ pub mod tablet_unstable_v2 {
                 serial: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.down()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
                     .await
@@ -19860,7 +20300,10 @@ pub mod tablet_unstable_v2 {
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.motion()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fixed(x)
+                    .put_fixed(y)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 10u16, payload, fds))
                     .await
@@ -19878,7 +20321,9 @@ pub mod tablet_unstable_v2 {
                 pressure: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.pressure()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(pressure)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 11u16, payload, fds))
                     .await
@@ -19896,7 +20341,9 @@ pub mod tablet_unstable_v2 {
                 distance: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.distance()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(distance)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 12u16, payload, fds))
                     .await
@@ -19914,7 +20361,10 @@ pub mod tablet_unstable_v2 {
                 tilt_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.tilt()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fixed(tilt_x)
+                    .put_fixed(tilt_y)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 13u16, payload, fds))
                     .await
@@ -19930,7 +20380,9 @@ pub mod tablet_unstable_v2 {
                 degrees: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.rotation()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fixed(degrees)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 14u16, payload, fds))
                     .await
@@ -19948,7 +20400,7 @@ pub mod tablet_unstable_v2 {
                 position: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.slider()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(position).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 15u16, payload, fds))
                     .await
@@ -19974,7 +20426,10 @@ pub mod tablet_unstable_v2 {
                 clicks: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.wheel()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fixed(degrees)
+                    .put_int(clicks)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 16u16, payload, fds))
                     .await
@@ -19995,7 +20450,11 @@ pub mod tablet_unstable_v2 {
                 state: ButtonState,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.button()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(button)
+                    .put_uint(state as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 17u16, payload, fds))
                     .await
@@ -20012,7 +20471,7 @@ pub mod tablet_unstable_v2 {
                 time: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_tool_v2#{}.frame()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(time).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 18u16, payload, fds))
                     .await
@@ -20071,7 +20530,9 @@ pub mod tablet_unstable_v2 {
                 name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_v2#{}.name()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -20092,7 +20553,10 @@ pub mod tablet_unstable_v2 {
                 pid: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_v2#{}.id()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(vid)
+                    .put_uint(pid)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -20119,7 +20583,9 @@ pub mod tablet_unstable_v2 {
                 path: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_v2#{}.path()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(path))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -20272,7 +20738,9 @@ pub mod tablet_unstable_v2 {
                 source: Source,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.source()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(source as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -20289,7 +20757,9 @@ pub mod tablet_unstable_v2 {
                 degrees: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.angle()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fixed(degrees)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -20337,7 +20807,7 @@ pub mod tablet_unstable_v2 {
                 time: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.frame()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(time).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -20457,7 +20927,9 @@ pub mod tablet_unstable_v2 {
                 source: Source,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.source()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(source as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -20475,7 +20947,9 @@ pub mod tablet_unstable_v2 {
                 position: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.position()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(position)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -20524,7 +20998,7 @@ pub mod tablet_unstable_v2 {
                 time: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.frame()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(time).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -20603,7 +21077,9 @@ pub mod tablet_unstable_v2 {
                 buttons: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_group_v2#{}.buttons()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_array(buttons)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -20621,7 +21097,9 @@ pub mod tablet_unstable_v2 {
                 ring: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_group_v2#{}.ring()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(ring))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -20639,7 +21117,9 @@ pub mod tablet_unstable_v2 {
                 strip: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_group_v2#{}.strip()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(strip))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -20664,7 +21144,7 @@ pub mod tablet_unstable_v2 {
                 modes: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_group_v2#{}.modes()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(modes).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -20722,7 +21202,11 @@ pub mod tablet_unstable_v2 {
                 mode: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_group_v2#{}.mode_switch()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_uint(serial)
+                    .put_uint(mode)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
@@ -20861,7 +21345,9 @@ pub mod tablet_unstable_v2 {
                 pad_group: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_v2#{}.group()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(pad_group))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -20884,7 +21370,9 @@ pub mod tablet_unstable_v2 {
                 path: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_v2#{}.path()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(path))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -20903,7 +21391,7 @@ pub mod tablet_unstable_v2 {
                 buttons: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_v2#{}.buttons()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(buttons).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -20934,7 +21422,11 @@ pub mod tablet_unstable_v2 {
                 state: ButtonState,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_v2#{}.button()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_uint(button)
+                    .put_uint(state as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
                     .await
@@ -20950,7 +21442,11 @@ pub mod tablet_unstable_v2 {
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_v2#{}.enter()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(tablet))
+                    .put_object(Some(surface))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
@@ -20966,7 +21462,10 @@ pub mod tablet_unstable_v2 {
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_tablet_pad_v2#{}.leave()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(surface))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
                     .await
@@ -21366,7 +21865,9 @@ pub mod text_input_unstable_v1 {
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v1#{}.enter()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(surface))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -21397,7 +21898,7 @@ pub mod text_input_unstable_v1 {
                 map: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v1#{}.modifiers_map()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(map).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -21411,7 +21912,7 @@ pub mod text_input_unstable_v1 {
                 state: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v1#{}.input_panel_state()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(state).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -21435,7 +21936,11 @@ pub mod text_input_unstable_v1 {
                 commit: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v1#{}.preedit_string()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_string(Some(text))
+                    .put_string(Some(commit))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
                     .await
@@ -21457,7 +21962,11 @@ pub mod text_input_unstable_v1 {
                 style: PreeditStyle,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v1#{}.preedit_styling()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(index)
+                    .put_uint(length)
+                    .put_uint(style as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
@@ -21475,7 +21984,7 @@ pub mod text_input_unstable_v1 {
                 index: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v1#{}.preedit_cursor()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(index).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
                     .await
@@ -21496,7 +22005,10 @@ pub mod text_input_unstable_v1 {
                 text: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v1#{}.commit_string()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_string(Some(text))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
                     .await
@@ -21514,7 +22026,10 @@ pub mod text_input_unstable_v1 {
                 anchor: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v1#{}.cursor_position()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(index)
+                    .put_int(anchor)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
                     .await
@@ -21539,7 +22054,10 @@ pub mod text_input_unstable_v1 {
                     "-> zwp_text_input_v1#{}.delete_surrounding_text()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(index)
+                    .put_uint(length)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 9u16, payload, fds))
                     .await
@@ -21562,7 +22080,13 @@ pub mod text_input_unstable_v1 {
                 modifiers: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v1#{}.keysym()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(time)
+                    .put_uint(sym)
+                    .put_uint(state)
+                    .put_uint(modifiers)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 10u16, payload, fds))
                     .await
@@ -21578,7 +22102,10 @@ pub mod text_input_unstable_v1 {
                 language: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v1#{}.language()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_string(Some(language))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 11u16, payload, fds))
                     .await
@@ -21597,7 +22124,10 @@ pub mod text_input_unstable_v1 {
                 direction: TextDirection,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v1#{}.text_direction()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(direction as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 12u16, payload, fds))
                     .await
@@ -22052,7 +22582,9 @@ pub mod text_input_unstable_v3 {
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v3#{}.enter()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(surface))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -22076,7 +22608,9 @@ pub mod text_input_unstable_v3 {
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v3#{}.leave()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(surface))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -22109,7 +22643,11 @@ pub mod text_input_unstable_v3 {
                 cursor_end: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v3#{}.preedit_string()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(text)
+                    .put_int(cursor_begin)
+                    .put_int(cursor_end)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -22130,7 +22668,7 @@ pub mod text_input_unstable_v3 {
                 text: Option<String>,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v3#{}.commit_string()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_string(text).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -22161,7 +22699,10 @@ pub mod text_input_unstable_v3 {
                     "-> zwp_text_input_v3#{}.delete_surrounding_text()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(before_length)
+                    .put_uint(after_length)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
                     .await
@@ -22201,7 +22742,7 @@ pub mod text_input_unstable_v3 {
                 serial: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwp_text_input_v3#{}.done()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
@@ -22487,7 +23028,9 @@ pub mod xdg_decoration_unstable_v1 {
                 mode: Mode,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zxdg_toplevel_decoration_v1#{}.configure()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(mode as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -22699,7 +23242,9 @@ pub mod xdg_foreign_unstable_v1 {
                 handle: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zxdg_exported_v1#{}.handle()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(handle))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -23004,7 +23549,9 @@ pub mod xdg_foreign_unstable_v2 {
                 handle: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zxdg_exported_v2#{}.handle()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(handle))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -23246,7 +23793,10 @@ pub mod xdg_output_unstable_v1 {
                 y: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zxdg_output_v1#{}.logical_position()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -23290,7 +23840,10 @@ pub mod xdg_output_unstable_v1 {
                 height: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zxdg_output_v1#{}.logical_size()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -23345,7 +23898,9 @@ pub mod xdg_output_unstable_v1 {
                 name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zxdg_output_v1#{}.name()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -23376,7 +23931,9 @@ pub mod xdg_output_unstable_v1 {
                 description: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zxdg_output_v1#{}.description()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(description))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
                     .await
@@ -23590,7 +24147,7 @@ pub mod xdg_shell_unstable_v5 {
                 serial: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> xdg_shell#{}.ping()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -24139,7 +24696,12 @@ pub mod xdg_shell_unstable_v5 {
                 serial: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> xdg_surface#{}.configure()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(width)
+                    .put_int(height)
+                    .put_array(states)
+                    .put_uint(serial)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -24422,7 +24984,7 @@ pub mod xdg_shell_unstable_v6 {
                 serial: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zxdg_shell_v6#{}.ping()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -24893,7 +25455,7 @@ pub mod xdg_shell_unstable_v6 {
                 serial: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zxdg_surface_v6#{}.configure()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -25427,7 +25989,11 @@ pub mod xdg_shell_unstable_v6 {
                 states: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zxdg_toplevel_v6#{}.configure()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(width)
+                    .put_int(height)
+                    .put_array(states)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -25615,7 +26181,12 @@ pub mod xdg_shell_unstable_v6 {
                 height: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zxdg_popup_v6#{}.configure()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -25843,7 +26414,9 @@ pub mod wlr_data_control_unstable_v1 {
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_data_control_device_v1#{}.data_offer()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -25868,7 +26441,7 @@ pub mod wlr_data_control_unstable_v1 {
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_data_control_device_v1#{}.selection()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -25911,7 +26484,7 @@ pub mod wlr_data_control_unstable_v1 {
                     "-> zwlr_data_control_device_v1#{}.primary_selection()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -26001,7 +26574,10 @@ pub mod wlr_data_control_unstable_v1 {
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_data_control_source_v1#{}.send()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(mime_type))
+                    .put_fd(fd)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -26097,7 +26673,9 @@ pub mod wlr_data_control_unstable_v1 {
                 mime_type: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_data_control_offer_v1#{}.offer()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(mime_type))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -26288,7 +26866,18 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 num_objects: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_export_dmabuf_frame_v1#{}.frame()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(width)
+                    .put_uint(height)
+                    .put_uint(offset_x)
+                    .put_uint(offset_y)
+                    .put_uint(buffer_flags)
+                    .put_uint(flags as u32)
+                    .put_uint(format)
+                    .put_uint(mod_high)
+                    .put_uint(mod_low)
+                    .put_uint(num_objects)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -26311,7 +26900,14 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 plane_index: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_export_dmabuf_frame_v1#{}.object()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(index)
+                    .put_fd(fd)
+                    .put_uint(size)
+                    .put_uint(offset)
+                    .put_uint(stride)
+                    .put_uint(plane_index)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -26338,7 +26934,11 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_export_dmabuf_frame_v1#{}.ready()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(tv_sec_hi)
+                    .put_uint(tv_sec_lo)
+                    .put_uint(tv_nsec)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -26360,7 +26960,9 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 reason: CancelReason,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_export_dmabuf_frame_v1#{}.cancel()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(reason as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -26427,7 +27029,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                     "-> zwlr_foreign_toplevel_manager_v1#{}.toplevel()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(toplevel))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -26708,7 +27312,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 title: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.title()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(title))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -26722,7 +27328,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 app_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.app_id()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(app_id))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -26740,7 +27348,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                     "-> zwlr_foreign_toplevel_handle_v1#{}.output_enter()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -26759,7 +27369,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                     "-> zwlr_foreign_toplevel_handle_v1#{}.output_leave()",
                     object.id
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -26775,7 +27387,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 state: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.state()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(state).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
                     .await
@@ -26824,7 +27436,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 parent: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.parent()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(parent)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
                     .await
@@ -26990,7 +27604,7 @@ pub mod wlr_gamma_control_unstable_v1 {
                 size: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_gamma_control_v1#{}.gamma_size()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(size).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -27622,7 +28236,11 @@ pub mod wlr_layer_shell_unstable_v1 {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_layer_surface_v1#{}.configure()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(width)
+                    .put_uint(height)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -27755,7 +28373,9 @@ pub mod wlr_output_management_unstable_v1 {
                 head: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_manager_v1#{}.head()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(head))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -27779,7 +28399,7 @@ pub mod wlr_output_management_unstable_v1 {
                 serial: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_manager_v1#{}.done()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -27891,7 +28511,9 @@ pub mod wlr_output_management_unstable_v1 {
                 name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_head_v1#{}.name()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -27918,7 +28540,9 @@ pub mod wlr_output_management_unstable_v1 {
                 description: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_head_v1#{}.description()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(description))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -27935,7 +28559,10 @@ pub mod wlr_output_management_unstable_v1 {
                 height: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_head_v1#{}.physical_size()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -27950,7 +28577,9 @@ pub mod wlr_output_management_unstable_v1 {
                 mode: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_head_v1#{}.mode()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(mode))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
@@ -27968,7 +28597,7 @@ pub mod wlr_output_management_unstable_v1 {
                 enabled: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_head_v1#{}.enabled()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(enabled).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
                     .await
@@ -27983,7 +28612,9 @@ pub mod wlr_output_management_unstable_v1 {
                 mode: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_head_v1#{}.current_mode()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(mode))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
@@ -27999,7 +28630,10 @@ pub mod wlr_output_management_unstable_v1 {
                 y: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_head_v1#{}.position()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
                     .await
@@ -28014,7 +28648,9 @@ pub mod wlr_output_management_unstable_v1 {
                 transform: super::super::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_head_v1#{}.transform()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(transform as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
                     .await
@@ -28029,7 +28665,7 @@ pub mod wlr_output_management_unstable_v1 {
                 scale: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_head_v1#{}.scale()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_fixed(scale).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
                     .await
@@ -28075,7 +28711,9 @@ pub mod wlr_output_management_unstable_v1 {
                 make: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_head_v1#{}.make()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(make))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 10u16, payload, fds))
                     .await
@@ -28106,7 +28744,9 @@ pub mod wlr_output_management_unstable_v1 {
                 model: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_head_v1#{}.model()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(model))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 11u16, payload, fds))
                     .await
@@ -28135,7 +28775,9 @@ pub mod wlr_output_management_unstable_v1 {
                 serial_number: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_head_v1#{}.serial_number()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(serial_number))
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 12u16, payload, fds))
                     .await
@@ -28151,7 +28793,9 @@ pub mod wlr_output_management_unstable_v1 {
                 state: AdaptiveSyncState,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_head_v1#{}.adaptive_sync()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(state as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 13u16, payload, fds))
                     .await
@@ -28210,7 +28854,10 @@ pub mod wlr_output_management_unstable_v1 {
                 height: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_mode_v1#{}.size()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -28225,7 +28872,7 @@ pub mod wlr_output_management_unstable_v1 {
                 refresh: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_mode_v1#{}.refresh()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(refresh).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -28806,7 +29453,9 @@ pub mod wlr_output_power_management_unstable_v1 {
                 mode: Mode,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_power_v1#{}.mode()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(mode as u32)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -29079,7 +29728,12 @@ pub mod wlr_screencopy_unstable_v1 {
                 stride: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_screencopy_frame_v1#{}.buffer()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(format as u32)
+                    .put_uint(width)
+                    .put_uint(height)
+                    .put_uint(stride)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await
@@ -29094,7 +29748,9 @@ pub mod wlr_screencopy_unstable_v1 {
                 flags: Flags,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_screencopy_frame_v1#{}.flags()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(flags.bits())
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
@@ -29121,7 +29777,11 @@ pub mod wlr_screencopy_unstable_v1 {
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_screencopy_frame_v1#{}.ready()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(tv_sec_hi)
+                    .put_uint(tv_sec_lo)
+                    .put_uint(tv_nsec)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
                     .await
@@ -29162,7 +29822,12 @@ pub mod wlr_screencopy_unstable_v1 {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_screencopy_frame_v1#{}.damage()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(x)
+                    .put_uint(y)
+                    .put_uint(width)
+                    .put_uint(height)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
                     .await
@@ -29180,7 +29845,11 @@ pub mod wlr_screencopy_unstable_v1 {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_screencopy_frame_v1#{}.linux_dmabuf()", object.id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(format)
+                    .put_uint(width)
+                    .put_uint(height)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
