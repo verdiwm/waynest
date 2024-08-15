@@ -1151,13 +1151,6 @@ pub mod wayland {
         }
     }
     pub mod wl_data_device_manager {
-        bitflags::bitflags! { # [doc = "This is a bitmask of the available/preferred actions in a"] # [doc = "drag-and-drop operation."] # [doc = ""] # [doc = "In the compositor, the selected action is a result of matching the"] # [doc = "actions offered by the source and destination sides.  \"action\" events"] # [doc = "with a \"none\" action will be sent to both source and destination if"] # [doc = "there is no match. All further checks will effectively happen on"] # [doc = "(source actions ∩ destination actions)."] # [doc = ""] # [doc = "In addition, compositors may also pick different actions in"] # [doc = "reaction to key modifiers being pressed. One common design that"] # [doc = "is used in major toolkits (and the behavior recommended for"] # [doc = "compositors) is:"] # [doc = ""] # [doc = "- If no modifiers are pressed, the first match (in bit order)"] # [doc = "will be used."] # [doc = "- Pressing Shift selects \"move\", if enabled in the mask."] # [doc = "- Pressing Control selects \"copy\", if enabled in the mask."] # [doc = ""] # [doc = "Behavior beyond that is considered implementation-dependent."] # [doc = "Compositors may for example bind other modifiers (like Alt/Meta)"] # [doc = "or drags initiated with other buttons than BTN_LEFT to specific"] # [doc = "actions (e.g. \"ask\")."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct DndAction : u32 { const None = 0u32 ; const Copy = 1u32 ; const Move = 2u32 ; const Ask = 4u32 } }
-        impl TryFrom<u32> for DndAction {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
         #[doc = "The wl_data_device_manager is a singleton global object that"]
         #[doc = "provides access to inter-client data transfer mechanisms such as"]
         #[doc = "copy-and-paste and drag-and-drop.  These mechanisms are tied to"]
@@ -1290,20 +1283,6 @@ pub mod wayland {
         }
     }
     pub mod wl_shell_surface {
-        bitflags::bitflags! { # [doc = "These values are used to indicate which edge of a surface"] # [doc = "is being dragged in a resize operation. The server may"] # [doc = "use this information to adapt its behavior, e.g. choose"] # [doc = "an appropriate cursor image."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Resize : u32 { const None = 0u32 ; const Top = 1u32 ; const Bottom = 2u32 ; const Left = 4u32 ; const TopLeft = 5u32 ; const BottomLeft = 6u32 ; const Right = 8u32 ; const TopRight = 9u32 ; const BottomRight = 10u32 } }
-        impl TryFrom<u32> for Resize {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
-        bitflags::bitflags! { # [doc = "These flags specify details of the expected behaviour"] # [doc = "of transient surfaces. Used in the set_transient request."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Transient : u32 { const Inactive = 1u32 } }
-        impl TryFrom<u32> for Transient {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
         #[doc = "An interface that may be implemented by a wl_surface, for"]
         #[doc = "implementations that provide a desktop-style user interface."]
         #[doc = ""]
@@ -2218,13 +2197,6 @@ pub mod wayland {
         }
     }
     pub mod wl_seat {
-        bitflags::bitflags! { # [doc = "This is a bitmask of capabilities this seat has; if a member is"] # [doc = "set, then it is present on the seat."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { const Pointer = 1u32 ; const Keyboard = 2u32 ; const Touch = 4u32 } }
-        impl TryFrom<u32> for Capability {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
         #[doc = "A seat is a group of keyboards, pointer and touch devices. This"]
         #[doc = "object is published as a global during start up, or when such a"]
         #[doc = "device is hot plugged.  A seat typically has a pointer and"]
@@ -3083,13 +3055,6 @@ pub mod wayland {
         }
     }
     pub mod wl_output {
-        bitflags::bitflags! { # [doc = "These flags describe properties of an output mode."] # [doc = "They are used in the flags bitfield of the mode event."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Mode : u32 { const Current = 1u32 ; const Preferred = 2u32 } }
-        impl TryFrom<u32> for Mode {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
         #[doc = "An output describes part of the compositor geometry.  The"]
         #[doc = "compositor works in the 'compositor coordinate system' and an"]
         #[doc = "output corresponds to a rectangular area in that space that is"]
@@ -3894,13 +3859,6 @@ pub mod linux_dmabuf_v1 {
         }
     }
     pub mod zwp_linux_buffer_params_v1 {
-        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { const YInvert = 1u32 ; const Interlaced = 2u32 ; const BottomFirst = 4u32 } }
-        impl TryFrom<u32> for Flags {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
         #[doc = "This temporary object is a collection of dmabufs and other"]
         #[doc = "parameters that together form a single logical buffer. The temporary"]
         #[doc = "object may eventually create one wl_buffer unless cancelled by"]
@@ -4145,13 +4103,6 @@ pub mod linux_dmabuf_v1 {
         }
     }
     pub mod zwp_linux_dmabuf_feedback_v1 {
-        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { const Scanout = 1u32 } }
-        impl TryFrom<u32> for TrancheFlags {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
         #[doc = "This object advertises dmabuf parameters feedback. This includes the"]
         #[doc = "preferred devices and the supported formats/modifiers."]
         #[doc = ""]
@@ -4482,13 +4433,6 @@ pub mod presentation_time {
         }
     }
     pub mod wp_presentation_feedback {
-        bitflags::bitflags! { # [doc = "These flags provide information about how the presentation of"] # [doc = "the related content update was done. The intent is to help"] # [doc = "clients assess the reliability of the feedback and the visual"] # [doc = "quality with respect to possible tearing and timings."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Kind : u32 { const Vsync = 1u32 ; const HwClock = 2u32 ; const HwCompletion = 4u32 ; const ZeroCopy = 8u32 } }
-        impl TryFrom<u32> for Kind {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
         #[doc = "A presentation_feedback object returns an indication that a"]
         #[doc = "wl_surface content update has become visible to the user."]
         #[doc = "One object corresponds to one content update submission"]
@@ -6277,13 +6221,6 @@ pub mod xdg_shell {
         }
     }
     pub mod xdg_positioner {
-        bitflags::bitflags! { # [doc = "The constraint adjustment value define ways the compositor will adjust"] # [doc = "the position of the surface, if the unadjusted position would result"] # [doc = "in the surface being partly constrained."] # [doc = ""] # [doc = "Whether a surface is considered 'constrained' is left to the compositor"] # [doc = "to determine. For example, the surface may be partly outside the"] # [doc = "compositor's defined 'work area', thus necessitating the child surface's"] # [doc = "position be adjusted until it is entirely inside the work area."] # [doc = ""] # [doc = "The adjustments can be combined, according to a defined precedence: 1)"] # [doc = "Flip, 2) Slide, 3) Resize."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ConstraintAdjustment : u32 { const None = 0u32 ; const SlideX = 1u32 ; const SlideY = 2u32 ; const FlipX = 4u32 ; const FlipY = 8u32 ; const ResizeX = 16u32 ; const ResizeY = 32u32 } }
-        impl TryFrom<u32> for ConstraintAdjustment {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
         #[doc = "The xdg_positioner provides a collection of rules for the placement of a"]
         #[doc = "child surface relative to a parent surface. Rules can be defined to ensure"]
         #[doc = "the child surface remains within the visible area's borders, and to"]
@@ -12544,13 +12481,6 @@ pub mod linux_dmabuf_unstable_v1 {
         }
     }
     pub mod zwp_linux_buffer_params_v1 {
-        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { const YInvert = 1u32 ; const Interlaced = 2u32 ; const BottomFirst = 4u32 } }
-        impl TryFrom<u32> for Flags {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
         #[doc = "This temporary object is a collection of dmabufs and other"]
         #[doc = "parameters that together form a single logical buffer. The temporary"]
         #[doc = "object may eventually create one wl_buffer unless cancelled by"]
@@ -12795,13 +12725,6 @@ pub mod linux_dmabuf_unstable_v1 {
         }
     }
     pub mod zwp_linux_dmabuf_feedback_v1 {
-        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { const Scanout = 1u32 } }
-        impl TryFrom<u32> for TrancheFlags {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
         #[doc = "This object advertises dmabuf parameters feedback. This includes the"]
         #[doc = "preferred devices and the supported formats/modifiers."]
         #[doc = ""]
@@ -16647,13 +16570,6 @@ pub mod tablet_unstable_v2 {
 }
 pub mod text_input_unstable_v1 {
     pub mod zwp_text_input_v1 {
-        bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { const None = 0u32 ; const Default = 7u32 ; const Password = 192u32 ; const AutoCompletion = 1u32 ; const AutoCorrection = 2u32 ; const AutoCapitalization = 4u32 ; const Lowercase = 8u32 ; const Uppercase = 16u32 ; const Titlecase = 32u32 ; const HiddenText = 64u32 ; const SensitiveData = 128u32 ; const Latin = 256u32 ; const Multiline = 512u32 } }
-        impl TryFrom<u32> for ContentHint {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
         #[doc = "An object used for text input. Adds support for text input and input"]
         #[doc = "methods to applications. A text_input object is created from a"]
         #[doc = "wl_text_input_manager and corresponds typically to a text entry in an"]
@@ -17116,13 +17032,6 @@ pub mod text_input_unstable_v1 {
 #[doc = "interface version number is reset."]
 pub mod text_input_unstable_v3 {
     pub mod zwp_text_input_v3 {
-        bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { const None = 0u32 ; const Completion = 1u32 ; const Spellcheck = 2u32 ; const AutoCapitalization = 4u32 ; const Lowercase = 8u32 ; const Uppercase = 16u32 ; const Titlecase = 32u32 ; const HiddenText = 64u32 ; const SensitiveData = 128u32 ; const Latin = 256u32 ; const Multiline = 512u32 } }
-        impl TryFrom<u32> for ContentHint {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
         #[doc = "The zwp_text_input_v3 interface represents text input and input methods"]
         #[doc = "associated with a seat. It provides enter/leave events to follow the"]
         #[doc = "text input focus for a seat."]
@@ -19437,27 +19346,6 @@ pub mod xdg_shell_unstable_v6 {
         }
     }
     pub mod zxdg_positioner_v6 {
-        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Anchor : u32 { const None = 0u32 ; const Top = 1u32 ; const Bottom = 2u32 ; const Left = 4u32 ; const Right = 8u32 } }
-        impl TryFrom<u32> for Anchor {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
-        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Gravity : u32 { const None = 0u32 ; const Top = 1u32 ; const Bottom = 2u32 ; const Left = 4u32 ; const Right = 8u32 } }
-        impl TryFrom<u32> for Gravity {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
-        bitflags::bitflags! { # [doc = "The constraint adjustment value define ways the compositor will adjust"] # [doc = "the position of the surface, if the unadjusted position would result"] # [doc = "in the surface being partly constrained."] # [doc = ""] # [doc = "Whether a surface is considered 'constrained' is left to the compositor"] # [doc = "to determine. For example, the surface may be partly outside the"] # [doc = "compositor's defined 'work area', thus necessitating the child surface's"] # [doc = "position be adjusted until it is entirely inside the work area."] # [doc = ""] # [doc = "The adjustments can be combined, according to a defined precedence: 1)"] # [doc = "Flip, 2) Slide, 3) Resize."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ConstraintAdjustment : u32 { const None = 0u32 ; const SlideX = 1u32 ; const SlideY = 2u32 ; const FlipX = 4u32 ; const FlipY = 8u32 ; const ResizeX = 16u32 ; const ResizeY = 32u32 } }
-        impl TryFrom<u32> for ConstraintAdjustment {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
         #[doc = "The xdg_positioner provides a collection of rules for the placement of a"]
         #[doc = "child surface relative to a parent surface. Rules can be defined to ensure"]
         #[doc = "the child surface remains within the visible area's borders, and to"]
@@ -21768,13 +21656,6 @@ pub mod wlr_layer_shell_unstable_v1 {
         }
     }
     pub mod zwlr_layer_surface_v1 {
-        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Anchor : u32 { const Top = 1u32 ; const Bottom = 2u32 ; const Left = 4u32 ; const Right = 8u32 } }
-        impl TryFrom<u32> for Anchor {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
         #[doc = "An interface that may be implemented by a wl_surface, for surfaces that"]
         #[doc = "are designed to be rendered as a layer of a stacked desktop-like"]
         #[doc = "environment."]
@@ -23124,13 +23005,6 @@ pub mod wlr_screencopy_unstable_v1 {
         }
     }
     pub mod zwlr_screencopy_frame_v1 {
-        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { const YInvert = 1u32 } }
-        impl TryFrom<u32> for Flags {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
         #[doc = "This object represents a single frame."]
         #[doc = ""]
         #[doc = "When created, a series of buffer events will be sent, each representing a"]
