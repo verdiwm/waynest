@@ -308,15 +308,21 @@ fn main() -> Result<()> {
         .map(|path| quick_xml::de::from_str(&fs::read_to_string(path).unwrap()).unwrap())
         .collect();
 
-    let mut generated_path = OpenOptions::new()
+    let mut server_path = OpenOptions::new()
         .truncate(true)
         .write(true)
         .create(true)
         .open("src/server/protocol.rs")?;
 
+    write!(&mut server_path, "{}", generate_server_code(&protocols))?;
+
+    Ok(())
+}
+
+fn generate_server_code(protocols: &[Protocol]) -> TokenStream {
     let mut modules = Vec::new();
 
-    for protocol in &protocols {
+    for protocol in protocols {
         debug!("Generating server code for \"{}\"", &protocol.name);
 
         let mut inner_modules = Vec::new();
@@ -381,15 +387,11 @@ fn main() -> Result<()> {
         })
     }
 
-    let tokens = quote! {
+    quote! {
         #![allow(unused)]
         #![allow(async_fn_in_trait)]
         #(#modules)*
-    };
-
-    write!(&mut generated_path, "{tokens}")?;
-
-    Ok(())
+    }
 }
 
 fn description_to_docs(description: Option<&String>) -> Vec<TokenStream> {
