@@ -166,43 +166,6 @@ impl Arg {
         None
     }
 
-    fn to_rust_type_token(&self, protocol: &Protocol) -> TokenStream {
-        if let Some(e) = &self.r#enum {
-            if let Some((module, name)) = e.split_once('.') {
-                // return format!(
-                //     "super::super::{protocol_name}::{module}::{name}",
-                //     protocol_name = protocol.name,
-                //     name = name.to_upper_camel_case()
-                // );
-
-                let protocol_name = make_ident(&protocol.name);
-                let name = make_ident(name.to_upper_camel_case());
-                let module = make_ident(module);
-
-                return quote! {super::super::#protocol_name::#module::#name};
-            } else {
-                // return e.to_upper_camel_case();
-            }
-        }
-
-        match self.ty {
-            ArgType::Int => quote! { i32 },
-            ArgType::Uint => quote! { u32 },
-            ArgType::Fixed => quote! { crate::wire::Fixed },
-            ArgType::String => quote! { String },
-            ArgType::Object => quote! { crate::wire::ObjectId },
-            ArgType::NewId => {
-                if self.interface.is_some() {
-                    quote! { crate::wire::ObjectId }
-                } else {
-                    quote! { crate::wire::NewId }
-                }
-            }
-            ArgType::Array => quote! { Vec<u8> },
-            ArgType::Fd => quote! { rustix::fd::OwnedFd },
-        }
-    }
-
     fn to_rust_type(&self, protocol: &Protocol) -> String {
         if let Some(e) = &self.r#enum {
             if let Some((module, name)) = e.split_once('.') {
@@ -349,7 +312,7 @@ fn main() -> Result<()> {
 
     let mut modules = Vec::new();
 
-    for protocol in &protocols {
+    for protocol in protocols {
         debug!("Generating server code for \"{}\"", &protocol.name);
 
         let mut inner_modules = Vec::new();
@@ -372,63 +335,43 @@ fn main() -> Result<()> {
                 let tracing_inner =
                     format!("{}#{{}}.{}()", interface.name, request.name.to_snek_case());
 
-                let mut args = vec![quote! { object }, quote! { client }];
+                let mut args = Vec::new();
 
                 for arg in &request.args {
                     let mut optional = quote! {};
 
                     if !arg.allow_null && arg.is_return_option() {
-                        optional = quote! {.ok_or(crate::wire::DecodeError::MalformedPayload)?};
+                        optional = quote! {".ok_or(crate::wire::DecodeError::MalformedPayload)?"};
                     }
 
                     let mut tryinto = quote! {};
 
                     if arg.r#enum.is_some() {
-                        tryinto = quote! {.try_into()?}
+                        tryinto = quote!{".try_into()?"}
                     }
 
-                    let caller = make_ident(arg.to_caller());
-
-                    args.push(quote! {
-                        message.#caller()? #optional #tryinto
-                    })
+                    args.push(format!(
+                        "message.{caller}()?{optional}{tryinto},",
+                        caller = arg.to_caller()
+                    ))
                 }
 
                 dispatchers.push(quote! {
                     #opcode => {
                         tracing::debug!(#tracing_inner, object.id);
-                        self.#name(#(#args),*).await
-                    }                // let args = quote! {&self, object: &crate::server::Object, client: &mut crate::server::Client,};
-
+                        self.#name().await
+                    }
                 });
             }
 
             for request in &interface.requests {
                 let docs = description_to_docs(request.description.as_ref());
                 let name = make_ident(request.name.to_snek_case());
-                let mut args = vec![
-                    quote! {&self },
-                    quote! {object: &crate::server::Object},
-                    quote! {client: &mut crate::server::Client},
-                ];
-
-                for arg in &request.args {
-                    let mut ty = arg.to_rust_type_token(
-                        arg.find_protocol(&protocols).as_ref().unwrap_or(&protocol),
-                    );
-
-                    if arg.allow_null {
-                        ty = quote! {Option<#ty>};
-                    }
-
-                    let name = make_ident(arg.name.to_snek_case());
-
-                    args.push(quote! {#name: #ty})
-                }
+                let args = quote! {&self, object: &crate::server::Object, client: &mut crate::server::Client,};
 
                 requests.push(quote! {
                     #(#docs)*
-                    async fn #name(#(#args),*) -> crate::server::Result<()>;
+                    async fn #name(#args) -> crate::server::Result<()>;
                 });
             }
 
@@ -481,7 +424,7 @@ fn main() -> Result<()> {
         }
 
         let docs = description_to_docs(protocol.description.as_ref());
-        let module_name = make_ident(&protocol.name);
+        let module_name = make_ident(protocol.name);
 
         modules.push(quote! {
             #(#docs)*
