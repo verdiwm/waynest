@@ -437,14 +437,6 @@ fn description_to_docs(description: Option<&String>) -> Vec<TokenStream> {
     docs
 }
 
-fn value_to_u32(value: &str) -> u32 {
-    if let Some(s) = value.strip_prefix("0x") {
-        u32::from_str_radix(s, 16).expect("Invalid enum value")
-    } else {
-        value.parse().expect("Invalid enum value")
-    }
-}
-
 fn make_ident<D: Display>(ident: D) -> Ident {
     if KEYWORDS.contains(&ident.to_string().as_str()) {
         return format_ident!("r#{ident}");
@@ -454,6 +446,8 @@ fn make_ident<D: Display>(ident: D) -> Ident {
 }
 
 fn write_enums(interface: &Interface) -> Vec<TokenStream> {
+    // quote! {}
+
     let mut enums = Vec::new();
 
     for e in &interface.enums {
@@ -462,28 +456,8 @@ fn write_enums(interface: &Interface) -> Vec<TokenStream> {
 
         if !e.bitfield {
             let mut variants = Vec::new();
-            let mut match_variants = Vec::new();
 
-            for entry in &e.entries {
-                let mut prefix = "";
-
-                if entry.name.chars().next().unwrap().is_numeric() {
-                    prefix = "_"
-                }
-
-                let docs = description_to_docs(entry.description.as_ref());
-                let name = make_ident(format!("{prefix}{}", entry.name.to_upper_camel_case()));
-                let value = value_to_u32(&entry.value);
-
-                // match_variants.push_str(&format!("{value} => Ok(Self::{prefix}{name}),"));
-
-                variants.push(quote! {
-                    #(#docs)*
-                    #name = #value
-                });
-
-                match_variants.push(quote! {});
-            }
+            variants.push(quote! { Temp });
 
             enums.push(quote! {
                 #[repr(u32)]
@@ -498,7 +472,7 @@ fn write_enums(interface: &Interface) -> Vec<TokenStream> {
 
                     fn try_from(v: u32) -> Result<Self, Self::Error> {
                         match v {
-                            // #(#match_variants),*
+                            // {match_variants}
                             _ => Err(crate::wire::DecodeError::MalformedPayload)
                         }
                     }
@@ -518,7 +492,11 @@ fn write_enums(interface: &Interface) -> Vec<TokenStream> {
 
                 let docs = description_to_docs(entry.summary.as_ref());
 
-                let value = value_to_u32(&entry.value);
+                let value: u32 = if let Some(s) = entry.value.strip_prefix("0x") {
+                    u32::from_str_radix(s, 16).expect("Invalid enum value")
+                } else {
+                    entry.value.parse().expect("Invalid enum value")
+                };
 
                 variants.push(quote! {
                     #(#docs)*

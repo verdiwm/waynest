@@ -6,10 +6,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidObject = 0u32,
-            InvalidMethod = 1u32,
-            NoMemory = 2u32,
-            Implementation = 3u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -409,9 +406,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidFormat = 0u32,
-            InvalidStride = 1u32,
-            InvalidFd = 2u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -425,129 +420,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Format {
-            Argb8888 = 0u32,
-            Xrgb8888 = 1u32,
-            C8 = 538982467u32,
-            Rgb332 = 943867730u32,
-            Bgr233 = 944916290u32,
-            Xrgb4444 = 842093144u32,
-            Xbgr4444 = 842089048u32,
-            Rgbx4444 = 842094674u32,
-            Bgrx4444 = 842094658u32,
-            Argb4444 = 842093121u32,
-            Abgr4444 = 842089025u32,
-            Rgba4444 = 842088786u32,
-            Bgra4444 = 842088770u32,
-            Xrgb1555 = 892424792u32,
-            Xbgr1555 = 892420696u32,
-            Rgbx5551 = 892426322u32,
-            Bgrx5551 = 892426306u32,
-            Argb1555 = 892424769u32,
-            Abgr1555 = 892420673u32,
-            Rgba5551 = 892420434u32,
-            Bgra5551 = 892420418u32,
-            Rgb565 = 909199186u32,
-            Bgr565 = 909199170u32,
-            Rgb888 = 875710290u32,
-            Bgr888 = 875710274u32,
-            Xbgr8888 = 875709016u32,
-            Rgbx8888 = 875714642u32,
-            Bgrx8888 = 875714626u32,
-            Abgr8888 = 875708993u32,
-            Rgba8888 = 875708754u32,
-            Bgra8888 = 875708738u32,
-            Xrgb2101010 = 808669784u32,
-            Xbgr2101010 = 808665688u32,
-            Rgbx1010102 = 808671314u32,
-            Bgrx1010102 = 808671298u32,
-            Argb2101010 = 808669761u32,
-            Abgr2101010 = 808665665u32,
-            Rgba1010102 = 808665426u32,
-            Bgra1010102 = 808665410u32,
-            Yuyv = 1448695129u32,
-            Yvyu = 1431918169u32,
-            Uyvy = 1498831189u32,
-            Vyuy = 1498765654u32,
-            Ayuv = 1448433985u32,
-            Nv12 = 842094158u32,
-            Nv21 = 825382478u32,
-            Nv16 = 909203022u32,
-            Nv61 = 825644622u32,
-            Yuv410 = 961959257u32,
-            Yvu410 = 961893977u32,
-            Yuv411 = 825316697u32,
-            Yvu411 = 825316953u32,
-            Yuv420 = 842093913u32,
-            Yvu420 = 842094169u32,
-            Yuv422 = 909202777u32,
-            Yvu422 = 909203033u32,
-            Yuv444 = 875713881u32,
-            Yvu444 = 875714137u32,
-            R8 = 538982482u32,
-            R16 = 540422482u32,
-            Rg88 = 943212370u32,
-            Gr88 = 943215175u32,
-            Rg1616 = 842221394u32,
-            Gr1616 = 842224199u32,
-            Xrgb16161616f = 1211388504u32,
-            Xbgr16161616f = 1211384408u32,
-            Argb16161616f = 1211388481u32,
-            Abgr16161616f = 1211384385u32,
-            Xyuv8888 = 1448434008u32,
-            Vuy888 = 875713878u32,
-            Vuy101010 = 808670550u32,
-            Y210 = 808530521u32,
-            Y212 = 842084953u32,
-            Y216 = 909193817u32,
-            Y410 = 808531033u32,
-            Y412 = 842085465u32,
-            Y416 = 909194329u32,
-            Xvyu2101010 = 808670808u32,
-            Xvyu1216161616 = 909334104u32,
-            Xvyu16161616 = 942954072u32,
-            Y0l0 = 810299481u32,
-            X0l0 = 810299480u32,
-            Y0l2 = 843853913u32,
-            X0l2 = 843853912u32,
-            Yuv4208bit = 942691673u32,
-            Yuv42010bit = 808539481u32,
-            Xrgb8888A8 = 943805016u32,
-            Xbgr8888A8 = 943800920u32,
-            Rgbx8888A8 = 943806546u32,
-            Bgrx8888A8 = 943806530u32,
-            Rgb888A8 = 943798354u32,
-            Bgr888A8 = 943798338u32,
-            Rgb565A8 = 943797586u32,
-            Bgr565A8 = 943797570u32,
-            Nv24 = 875714126u32,
-            Nv42 = 842290766u32,
-            P210 = 808530512u32,
-            P010 = 808530000u32,
-            P012 = 842084432u32,
-            P016 = 909193296u32,
-            Axbxgxrx106106106106 = 808534593u32,
-            Nv15 = 892425806u32,
-            Q410 = 808531025u32,
-            Q401 = 825242705u32,
-            Xrgb16161616 = 942953048u32,
-            Xbgr16161616 = 942948952u32,
-            Argb16161616 = 942953025u32,
-            Abgr16161616 = 942948929u32,
-            C1 = 538980675u32,
-            C2 = 538980931u32,
-            C4 = 538981443u32,
-            D1 = 538980676u32,
-            D2 = 538980932u32,
-            D4 = 538981444u32,
-            D8 = 538982468u32,
-            R1 = 538980690u32,
-            R2 = 538980946u32,
-            R4 = 538981458u32,
-            R10 = 540029266u32,
-            R12 = 540160338u32,
-            Avuy8888 = 1498764865u32,
-            Xvuy8888 = 1498764888u32,
-            P030 = 808661072u32,
+            Temp,
         }
         impl TryFrom<u32> for Format {
             type Error = crate::wire::DecodeError;
@@ -710,10 +583,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidFinish = 0u32,
-            InvalidActionMask = 1u32,
-            InvalidAction = 2u32,
-            InvalidOffer = 3u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -958,8 +828,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidActionMask = 0u32,
-            InvalidSource = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -1162,8 +1031,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            Role = 0u32,
-            UsedSource = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -1453,7 +1321,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            Role = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -1538,10 +1406,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum FullscreenMethod {
-            Default = 0u32,
-            Scale = 1u32,
-            Driver = 2u32,
-            Fill = 3u32,
+            Temp,
         }
         impl TryFrom<u32> for FullscreenMethod {
             type Error = crate::wire::DecodeError;
@@ -1910,11 +1775,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidScale = 0u32,
-            InvalidTransform = 1u32,
-            InvalidSize = 2u32,
-            InvalidOffset = 3u32,
-            DefunctRoleObject = 4u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -2494,7 +2355,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            MissingCapability = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -2674,7 +2535,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            Role = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -2688,8 +2549,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ButtonState {
-            Released = 0u32,
-            Pressed = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for ButtonState {
             type Error = crate::wire::DecodeError;
@@ -2703,8 +2563,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Axis {
-            VerticalScroll = 0u32,
-            HorizontalScroll = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Axis {
             type Error = crate::wire::DecodeError;
@@ -2718,10 +2577,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum AxisSource {
-            Wheel = 0u32,
-            Finger = 1u32,
-            Continuous = 2u32,
-            WheelTilt = 3u32,
+            Temp,
         }
         impl TryFrom<u32> for AxisSource {
             type Error = crate::wire::DecodeError;
@@ -2735,8 +2591,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum AxisRelativeDirection {
-            Identical = 0u32,
-            Inverted = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for AxisRelativeDirection {
             type Error = crate::wire::DecodeError;
@@ -3128,8 +2983,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum KeymapFormat {
-            NoKeymap = 0u32,
-            XkbV1 = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for KeymapFormat {
             type Error = crate::wire::DecodeError;
@@ -3143,8 +2997,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum KeyState {
-            Released = 0u32,
-            Pressed = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for KeyState {
             type Error = crate::wire::DecodeError;
@@ -3472,12 +3325,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Subpixel {
-            Unknown = 0u32,
-            None = 1u32,
-            HorizontalRgb = 2u32,
-            HorizontalBgr = 3u32,
-            VerticalRgb = 4u32,
-            VerticalBgr = 5u32,
+            Temp,
         }
         impl TryFrom<u32> for Subpixel {
             type Error = crate::wire::DecodeError;
@@ -3491,14 +3339,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Transform {
-            Normal = 0u32,
-            _90 = 1u32,
-            _180 = 2u32,
-            _270 = 3u32,
-            Flipped = 4u32,
-            Flipped90 = 5u32,
-            Flipped180 = 6u32,
-            Flipped270 = 7u32,
+            Temp,
         }
         impl TryFrom<u32> for Transform {
             type Error = crate::wire::DecodeError;
@@ -3798,8 +3639,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            BadSurface = 0u32,
-            BadParent = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -3910,7 +3750,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            BadSurface = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -4352,14 +4192,7 @@ pub mod linux_dmabuf_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            AlreadyUsed = 0u32,
-            PlaneIdx = 1u32,
-            PlaneSet = 2u32,
-            Incomplete = 3u32,
-            InvalidFormat = 4u32,
-            InvalidDimensions = 5u32,
-            OutOfBounds = 6u32,
-            InvalidWlBuffer = 7u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -4844,8 +4677,7 @@ pub mod presentation_time {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidTimestamp = 0u32,
-            InvalidFlag = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -5299,14 +5131,7 @@ pub mod tablet_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Type {
-            Pen = 320u32,
-            Eraser = 321u32,
-            Brush = 322u32,
-            Pencil = 323u32,
-            Airbrush = 324u32,
-            Finger = 325u32,
-            Mouse = 326u32,
-            Lens = 327u32,
+            Temp,
         }
         impl TryFrom<u32> for Type {
             type Error = crate::wire::DecodeError;
@@ -5320,12 +5145,7 @@ pub mod tablet_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Capability {
-            Tilt = 1u32,
-            Pressure = 2u32,
-            Distance = 3u32,
-            Rotation = 4u32,
-            Slider = 5u32,
-            Wheel = 6u32,
+            Temp,
         }
         impl TryFrom<u32> for Capability {
             type Error = crate::wire::DecodeError;
@@ -5339,8 +5159,7 @@ pub mod tablet_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ButtonState {
-            Released = 0u32,
-            Pressed = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for ButtonState {
             type Error = crate::wire::DecodeError;
@@ -5354,7 +5173,7 @@ pub mod tablet_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            Role = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -5863,7 +5682,7 @@ pub mod tablet_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Source {
-            Finger = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Source {
             type Error = crate::wire::DecodeError;
@@ -6019,7 +5838,7 @@ pub mod tablet_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Source {
-            Finger = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Source {
             type Error = crate::wire::DecodeError;
@@ -6338,8 +6157,7 @@ pub mod tablet_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ButtonState {
-            Released = 0u32,
-            Pressed = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for ButtonState {
             type Error = crate::wire::DecodeError;
@@ -6545,7 +6363,7 @@ pub mod viewporter {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            ViewportExists = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -6624,10 +6442,7 @@ pub mod viewporter {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            BadValue = 0u32,
-            BadSize = 1u32,
-            OutOfBuffer = 2u32,
-            NoSurface = 3u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -6786,13 +6601,7 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            Role = 0u32,
-            DefunctSurfaces = 1u32,
-            NotTheTopmostPopup = 2u32,
-            InvalidPopupParent = 3u32,
-            InvalidSurfaceState = 4u32,
-            InvalidPositioner = 5u32,
-            Unresponsive = 6u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -6934,7 +6743,7 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidInput = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -6948,15 +6757,7 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Anchor {
-            None = 0u32,
-            Top = 1u32,
-            Bottom = 2u32,
-            Left = 3u32,
-            Right = 4u32,
-            TopLeft = 5u32,
-            BottomLeft = 6u32,
-            TopRight = 7u32,
-            BottomRight = 8u32,
+            Temp,
         }
         impl TryFrom<u32> for Anchor {
             type Error = crate::wire::DecodeError;
@@ -6970,15 +6771,7 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Gravity {
-            None = 0u32,
-            Top = 1u32,
-            Bottom = 2u32,
-            Left = 3u32,
-            Right = 4u32,
-            TopLeft = 5u32,
-            BottomLeft = 6u32,
-            TopRight = 7u32,
-            BottomRight = 8u32,
+            Temp,
         }
         impl TryFrom<u32> for Gravity {
             type Error = crate::wire::DecodeError;
@@ -7229,12 +7022,7 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            NotConstructed = 1u32,
-            AlreadyConstructed = 2u32,
-            UnconfiguredBuffer = 3u32,
-            InvalidSerial = 4u32,
-            InvalidSize = 5u32,
-            DefunctRoleObject = 6u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -7506,9 +7294,7 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidResizeEdge = 0u32,
-            InvalidParent = 1u32,
-            InvalidSize = 2u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -7522,15 +7308,7 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ResizeEdge {
-            None = 0u32,
-            Top = 1u32,
-            Bottom = 2u32,
-            Left = 4u32,
-            TopLeft = 5u32,
-            BottomLeft = 6u32,
-            Right = 8u32,
-            TopRight = 9u32,
-            BottomRight = 10u32,
+            Temp,
         }
         impl TryFrom<u32> for ResizeEdge {
             type Error = crate::wire::DecodeError;
@@ -7544,56 +7322,7 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum State {
-            #[doc = "The surface is maximized. The window geometry specified in the configure"]
-            #[doc = "event must be obeyed by the client, or the xdg_wm_base.invalid_surface_state"]
-            #[doc = "error is raised."]
-            #[doc = ""]
-            #[doc = "The client should draw without shadow or other"]
-            #[doc = "decoration outside of the window geometry."]
-            Maximized = 1u32,
-            #[doc = "The surface is fullscreen. The window geometry specified in the"]
-            #[doc = "configure event is a maximum; the client cannot resize beyond it. For"]
-            #[doc = "a surface to cover the whole fullscreened area, the geometry"]
-            #[doc = "dimensions must be obeyed by the client. For more details, see"]
-            #[doc = "xdg_toplevel.set_fullscreen."]
-            Fullscreen = 2u32,
-            #[doc = "The surface is being resized. The window geometry specified in the"]
-            #[doc = "configure event is a maximum; the client cannot resize beyond it."]
-            #[doc = "Clients that have aspect ratio or cell sizing configuration can use"]
-            #[doc = "a smaller size, however."]
-            Resizing = 3u32,
-            #[doc = "Client window decorations should be painted as if the window is"]
-            #[doc = "active. Do not assume this means that the window actually has"]
-            #[doc = "keyboard or pointer focus."]
-            Activated = 4u32,
-            #[doc = "The window is currently in a tiled layout and the left edge is"]
-            #[doc = "considered to be adjacent to another part of the tiling grid."]
-            #[doc = ""]
-            #[doc = "The client should draw without shadow or other decoration outside of"]
-            #[doc = "the window geometry on the left edge."]
-            TiledLeft = 5u32,
-            #[doc = "The window is currently in a tiled layout and the right edge is"]
-            #[doc = "considered to be adjacent to another part of the tiling grid."]
-            #[doc = ""]
-            #[doc = "The client should draw without shadow or other decoration outside of"]
-            #[doc = "the window geometry on the right edge."]
-            TiledRight = 6u32,
-            #[doc = "The window is currently in a tiled layout and the top edge is"]
-            #[doc = "considered to be adjacent to another part of the tiling grid."]
-            #[doc = ""]
-            #[doc = "The client should draw without shadow or other decoration outside of"]
-            #[doc = "the window geometry on the top edge."]
-            TiledTop = 7u32,
-            #[doc = "The window is currently in a tiled layout and the bottom edge is"]
-            #[doc = "considered to be adjacent to another part of the tiling grid."]
-            #[doc = ""]
-            #[doc = "The client should draw without shadow or other decoration outside of"]
-            #[doc = "the window geometry on the bottom edge."]
-            TiledBottom = 8u32,
-            #[doc = "The surface is currently not ordinarily being repainted; for"]
-            #[doc = "example because its content is occluded by another window, or its"]
-            #[doc = "outputs are switched off due to screen locking."]
-            Suspended = 9u32,
+            Temp,
         }
         impl TryFrom<u32> for State {
             type Error = crate::wire::DecodeError;
@@ -7607,10 +7336,7 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum WmCapabilities {
-            WindowMenu = 1u32,
-            Maximize = 2u32,
-            Fullscreen = 3u32,
-            Minimize = 4u32,
+            Temp,
         }
         impl TryFrom<u32> for WmCapabilities {
             type Error = crate::wire::DecodeError;
@@ -8210,7 +7936,7 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidGrab = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -8435,7 +8161,7 @@ pub mod alpha_modifier_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            AlreadyConstructed = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -8514,7 +8240,7 @@ pub mod alpha_modifier_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            NoSurface = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -8597,7 +8323,7 @@ pub mod content_type_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            AlreadyConstructed = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -8679,20 +8405,7 @@ pub mod content_type_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Type {
-            #[doc = "The content type none means that either the application has no data"]
-            #[doc = "about the content type, or that the content doesn't fit into one of"]
-            #[doc = "the other categories."]
-            None = 0u32,
-            #[doc = "The content type photo describes content derived from digital still"]
-            #[doc = "pictures and may be presented with minimal processing."]
-            Photo = 1u32,
-            #[doc = "The content type video describes a video or animation and may be"]
-            #[doc = "presented with more accurate timing to avoid stutter. Where scaling"]
-            #[doc = "is needed, scaling methods more appropriate for video may be used."]
-            Video = 2u32,
-            #[doc = "The content type game describes a running game. Its content may be"]
-            #[doc = "presented with reduced latency."]
-            Game = 3u32,
+            Temp,
         }
         impl TryFrom<u32> for Type {
             type Error = crate::wire::DecodeError;
@@ -8855,40 +8568,7 @@ pub mod cursor_shape_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Shape {
-            Default = 1u32,
-            ContextMenu = 2u32,
-            Help = 3u32,
-            Pointer = 4u32,
-            Progress = 5u32,
-            Wait = 6u32,
-            Cell = 7u32,
-            Crosshair = 8u32,
-            Text = 9u32,
-            VerticalText = 10u32,
-            Alias = 11u32,
-            Copy = 12u32,
-            Move = 13u32,
-            NoDrop = 14u32,
-            NotAllowed = 15u32,
-            Grab = 16u32,
-            Grabbing = 17u32,
-            EResize = 18u32,
-            NResize = 19u32,
-            NeResize = 20u32,
-            NwResize = 21u32,
-            SResize = 22u32,
-            SeResize = 23u32,
-            SwResize = 24u32,
-            WResize = 25u32,
-            EwResize = 26u32,
-            NsResize = 27u32,
-            NeswResize = 28u32,
-            NwseResize = 29u32,
-            ColResize = 30u32,
-            RowResize = 31u32,
-            AllScroll = 32u32,
-            ZoomIn = 33u32,
-            ZoomOut = 34u32,
+            Temp,
         }
         impl TryFrom<u32> for Shape {
             type Error = crate::wire::DecodeError;
@@ -8902,7 +8582,7 @@ pub mod cursor_shape_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidShape = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -9234,9 +8914,7 @@ pub mod drm_lease_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            WrongDevice = 0u32,
-            DuplicateConnector = 1u32,
-            EmptyLease = 2u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -9868,11 +9546,7 @@ pub mod ext_session_lock_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidDestroy = 0u32,
-            InvalidUnlock = 1u32,
-            Role = 2u32,
-            DuplicateOutput = 3u32,
-            AlreadyConstructed = 4u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -10087,10 +9761,7 @@ pub mod ext_session_lock_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            CommitBeforeFirstAck = 0u32,
-            NullBuffer = 1u32,
-            DimensionsMismatch = 2u32,
-            InvalidSerial = 3u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -10369,7 +10040,7 @@ pub mod fractional_scale_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            FractionalScaleExists = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -10520,8 +10191,7 @@ pub mod linux_drm_syncobj_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            SurfaceExists = 0u32,
-            InvalidTimeline = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -10668,12 +10338,7 @@ pub mod linux_drm_syncobj_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            NoSurface = 1u32,
-            UnsupportedBuffer = 2u32,
-            NoBuffer = 3u32,
-            NoAcquirePoint = 4u32,
-            NoReleasePoint = 5u32,
-            ConflictingPoints = 6u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -10864,8 +10529,7 @@ pub mod security_context_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidListenFd = 1u32,
-            Nested = 2u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -10969,9 +10633,7 @@ pub mod security_context_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            AlreadyUsed = 1u32,
-            AlreadySet = 2u32,
-            InvalidMetadata = 3u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -11219,7 +10881,7 @@ pub mod tearing_control_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            TearingControlExists = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -11311,13 +10973,7 @@ pub mod tearing_control_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum PresentationHint {
-            #[doc = "The content of this surface is meant to be synchronized to the"]
-            #[doc = "vertical blanking period. This should not result in visible tearing"]
-            #[doc = "and may result in a delay before a surface commit is presented."]
-            Vsync = 0u32,
-            #[doc = "The content of this surface is meant to be presented with minimal"]
-            #[doc = "latency and tearing is acceptable."]
-            Async = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for PresentationHint {
             type Error = crate::wire::DecodeError;
@@ -11519,7 +11175,7 @@ pub mod xdg_activation_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            AlreadyUsed = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -11672,7 +11328,7 @@ pub mod xdg_dialog_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            AlreadyUsed = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -11832,7 +11488,7 @@ pub mod xdg_toplevel_drag_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidSource = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -11947,8 +11603,7 @@ pub mod xdg_toplevel_drag_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            ToplevelAttached = 0u32,
-            OngoingDrag = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -12063,7 +11718,7 @@ pub mod xwayland_shell_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            Role = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -12156,8 +11811,7 @@ pub mod xwayland_shell_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            AlreadyAssociated = 0u32,
-            InvalidSerial = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -12249,8 +11903,7 @@ pub mod fullscreen_shell_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Capability {
-            ArbitraryModes = 1u32,
-            CursorPlane = 2u32,
+            Temp,
         }
         impl TryFrom<u32> for Capability {
             type Error = crate::wire::DecodeError;
@@ -12264,11 +11917,7 @@ pub mod fullscreen_shell_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum PresentMethod {
-            Default = 0u32,
-            Center = 1u32,
-            Zoom = 2u32,
-            ZoomCrop = 3u32,
-            Stretch = 4u32,
+            Temp,
         }
         impl TryFrom<u32> for PresentMethod {
             type Error = crate::wire::DecodeError;
@@ -12282,8 +11931,7 @@ pub mod fullscreen_shell_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidMethod = 0u32,
-            Role = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -13175,7 +12823,7 @@ pub mod input_method_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Position {
-            CenterBottom = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Position {
             type Error = crate::wire::DecodeError;
@@ -13468,7 +13116,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            AlreadyInhibited = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -13866,14 +13514,7 @@ pub mod linux_dmabuf_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            AlreadyUsed = 0u32,
-            PlaneIdx = 1u32,
-            PlaneSet = 2u32,
-            Incomplete = 3u32,
-            InvalidFormat = 4u32,
-            InvalidDimensions = 5u32,
-            OutOfBounds = 6u32,
-            InvalidWlBuffer = 7u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -14358,7 +13999,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            SynchronizationExists = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -14462,12 +14103,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidFence = 0u32,
-            DuplicateFence = 1u32,
-            DuplicateRelease = 2u32,
-            NoSurface = 3u32,
-            UnsupportedBuffer = 4u32,
-            NoBuffer = 5u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -14721,7 +14357,7 @@ pub mod pointer_constraints_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            AlreadyConstrained = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -14735,16 +14371,7 @@ pub mod pointer_constraints_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Lifetime {
-            #[doc = "A oneshot pointer constraint will never reactivate once it has been"]
-            #[doc = "deactivated. See the corresponding deactivation event"]
-            #[doc = "(wp_locked_pointer.unlocked and wp_confined_pointer.unconfined) for"]
-            #[doc = "details."]
-            Oneshot = 1u32,
-            #[doc = "A persistent pointer constraint may again reactivate once it has"]
-            #[doc = "been deactivated. See the corresponding deactivation event"]
-            #[doc = "(wp_locked_pointer.unlocked and wp_confined_pointer.unconfined) for"]
-            #[doc = "details."]
-            Persistent = 2u32,
+            Temp,
         }
         impl TryFrom<u32> for Lifetime {
             type Error = crate::wire::DecodeError;
@@ -16222,14 +15849,7 @@ pub mod tablet_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Type {
-            Pen = 320u32,
-            Eraser = 321u32,
-            Brush = 322u32,
-            Pencil = 323u32,
-            Airbrush = 324u32,
-            Finger = 325u32,
-            Mouse = 326u32,
-            Lens = 327u32,
+            Temp,
         }
         impl TryFrom<u32> for Type {
             type Error = crate::wire::DecodeError;
@@ -16243,12 +15863,7 @@ pub mod tablet_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Capability {
-            Tilt = 1u32,
-            Pressure = 2u32,
-            Distance = 3u32,
-            Rotation = 4u32,
-            Slider = 5u32,
-            Wheel = 6u32,
+            Temp,
         }
         impl TryFrom<u32> for Capability {
             type Error = crate::wire::DecodeError;
@@ -16262,8 +15877,7 @@ pub mod tablet_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ButtonState {
-            Released = 0u32,
-            Pressed = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for ButtonState {
             type Error = crate::wire::DecodeError;
@@ -16277,7 +15891,7 @@ pub mod tablet_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            Role = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -16995,14 +16609,7 @@ pub mod tablet_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Type {
-            Pen = 320u32,
-            Eraser = 321u32,
-            Brush = 322u32,
-            Pencil = 323u32,
-            Airbrush = 324u32,
-            Finger = 325u32,
-            Mouse = 326u32,
-            Lens = 327u32,
+            Temp,
         }
         impl TryFrom<u32> for Type {
             type Error = crate::wire::DecodeError;
@@ -17016,12 +16623,7 @@ pub mod tablet_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Capability {
-            Tilt = 1u32,
-            Pressure = 2u32,
-            Distance = 3u32,
-            Rotation = 4u32,
-            Slider = 5u32,
-            Wheel = 6u32,
+            Temp,
         }
         impl TryFrom<u32> for Capability {
             type Error = crate::wire::DecodeError;
@@ -17035,8 +16637,7 @@ pub mod tablet_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ButtonState {
-            Released = 0u32,
-            Pressed = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for ButtonState {
             type Error = crate::wire::DecodeError;
@@ -17050,7 +16651,7 @@ pub mod tablet_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            Role = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -17559,7 +17160,7 @@ pub mod tablet_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Source {
-            Finger = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Source {
             type Error = crate::wire::DecodeError;
@@ -17715,7 +17316,7 @@ pub mod tablet_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Source {
-            Finger = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Source {
             type Error = crate::wire::DecodeError;
@@ -18034,8 +17635,7 @@ pub mod tablet_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ButtonState {
-            Released = 0u32,
-            Pressed = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for ButtonState {
             type Error = crate::wire::DecodeError;
@@ -18248,19 +17848,7 @@ pub mod text_input_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ContentPurpose {
-            Normal = 0u32,
-            Alpha = 1u32,
-            Digits = 2u32,
-            Number = 3u32,
-            Phone = 4u32,
-            Url = 5u32,
-            Email = 6u32,
-            Name = 7u32,
-            Password = 8u32,
-            Date = 9u32,
-            Time = 10u32,
-            Datetime = 11u32,
-            Terminal = 12u32,
+            Temp,
         }
         impl TryFrom<u32> for ContentPurpose {
             type Error = crate::wire::DecodeError;
@@ -18274,14 +17862,7 @@ pub mod text_input_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum PreeditStyle {
-            Default = 0u32,
-            None = 1u32,
-            Active = 2u32,
-            Inactive = 3u32,
-            Highlight = 4u32,
-            Underline = 5u32,
-            Selection = 6u32,
-            Incorrect = 7u32,
+            Temp,
         }
         impl TryFrom<u32> for PreeditStyle {
             type Error = crate::wire::DecodeError;
@@ -18295,9 +17876,7 @@ pub mod text_input_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum TextDirection {
-            Auto = 0u32,
-            Ltr = 1u32,
-            Rtl = 2u32,
+            Temp,
         }
         impl TryFrom<u32> for TextDirection {
             type Error = crate::wire::DecodeError;
@@ -18773,8 +18352,7 @@ pub mod text_input_unstable_v3 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ChangeCause {
-            InputMethod = 0u32,
-            Other = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for ChangeCause {
             type Error = crate::wire::DecodeError;
@@ -18795,20 +18373,7 @@ pub mod text_input_unstable_v3 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ContentPurpose {
-            Normal = 0u32,
-            Alpha = 1u32,
-            Digits = 2u32,
-            Number = 3u32,
-            Phone = 4u32,
-            Url = 5u32,
-            Email = 6u32,
-            Name = 7u32,
-            Password = 8u32,
-            Pin = 9u32,
-            Date = 10u32,
-            Time = 11u32,
-            Datetime = 12u32,
-            Terminal = 13u32,
+            Temp,
         }
         impl TryFrom<u32> for ContentPurpose {
             type Error = crate::wire::DecodeError;
@@ -19379,9 +18944,7 @@ pub mod xdg_decoration_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            UnconfiguredBuffer = 0u32,
-            AlreadyConstructed = 1u32,
-            Orphaned = 2u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -19395,8 +18958,7 @@ pub mod xdg_decoration_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Mode {
-            ClientSide = 1u32,
-            ServerSide = 2u32,
+            Temp,
         }
         impl TryFrom<u32> for Mode {
             type Error = crate::wire::DecodeError;
@@ -19811,7 +19373,7 @@ pub mod xdg_foreign_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidSurface = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -20001,7 +19563,7 @@ pub mod xdg_foreign_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidSurface = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -20335,7 +19897,7 @@ pub mod xdg_shell_unstable_v5 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Version {
-            Current = 5u32,
+            Temp,
         }
         impl TryFrom<u32> for Version {
             type Error = crate::wire::DecodeError;
@@ -20349,10 +19911,7 @@ pub mod xdg_shell_unstable_v5 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            Role = 0u32,
-            DefunctSurfaces = 1u32,
-            NotTheTopmostPopup = 2u32,
-            InvalidPopupParent = 3u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -20527,15 +20086,7 @@ pub mod xdg_shell_unstable_v5 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ResizeEdge {
-            None = 0u32,
-            Top = 1u32,
-            Bottom = 2u32,
-            Left = 4u32,
-            TopLeft = 5u32,
-            BottomLeft = 6u32,
-            Right = 8u32,
-            TopRight = 9u32,
-            BottomRight = 10u32,
+            Temp,
         }
         impl TryFrom<u32> for ResizeEdge {
             type Error = crate::wire::DecodeError;
@@ -20549,21 +20100,7 @@ pub mod xdg_shell_unstable_v5 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum State {
-            #[doc = "The surface is maximized. The window geometry specified in the configure"]
-            #[doc = "event must be obeyed by the client."]
-            Maximized = 1u32,
-            #[doc = "The surface is fullscreen. The window geometry specified in the configure"]
-            #[doc = "event must be obeyed by the client."]
-            Fullscreen = 2u32,
-            #[doc = "The surface is being resized. The window geometry specified in the"]
-            #[doc = "configure event is a maximum; the client cannot resize beyond it."]
-            #[doc = "Clients that have aspect ratio or cell sizing configuration can use"]
-            #[doc = "a smaller size, however."]
-            Resizing = 3u32,
-            #[doc = "Client window decorations should be painted as if the window is"]
-            #[doc = "active. Do not assume this means that the window actually has"]
-            #[doc = "keyboard or pointer focus."]
-            Activated = 4u32,
+            Temp,
         }
         impl TryFrom<u32> for State {
             type Error = crate::wire::DecodeError;
@@ -21154,12 +20691,7 @@ pub mod xdg_shell_unstable_v6 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            Role = 0u32,
-            DefunctSurfaces = 1u32,
-            NotTheTopmostPopup = 2u32,
-            InvalidPopupParent = 3u32,
-            InvalidSurfaceState = 4u32,
-            InvalidPositioner = 5u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -21295,7 +20827,7 @@ pub mod xdg_shell_unstable_v6 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidInput = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -21520,9 +21052,7 @@ pub mod xdg_shell_unstable_v6 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            NotConstructed = 1u32,
-            AlreadyConstructed = 2u32,
-            UnconfiguredBuffer = 3u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -21755,15 +21285,7 @@ pub mod xdg_shell_unstable_v6 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ResizeEdge {
-            None = 0u32,
-            Top = 1u32,
-            Bottom = 2u32,
-            Left = 4u32,
-            TopLeft = 5u32,
-            BottomLeft = 6u32,
-            Right = 8u32,
-            TopRight = 9u32,
-            BottomRight = 10u32,
+            Temp,
         }
         impl TryFrom<u32> for ResizeEdge {
             type Error = crate::wire::DecodeError;
@@ -21777,23 +21299,7 @@ pub mod xdg_shell_unstable_v6 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum State {
-            #[doc = "The surface is maximized. The window geometry specified in the configure"]
-            #[doc = "event must be obeyed by the client. If the window geometry is not obyed,"]
-            #[doc = "the zxdg_shell_v6.invalid_surface_state error is raised."]
-            Maximized = 1u32,
-            #[doc = "The surface is fullscreen. See set_fullscreen for more information."]
-            Fullscreen = 2u32,
-            #[doc = "The surface is being resized. The window geometry specified in the"]
-            #[doc = "configure event is a maximum; the client cannot resize beyond it. If the"]
-            #[doc = "client attempts to resize above it, the zxdg_shell_v6.invalid_surface_state"]
-            #[doc = "error is raised."]
-            #[doc = "Clients that have aspect ratio or cell sizing configuration can use"]
-            #[doc = "a smaller size, however."]
-            Resizing = 3u32,
-            #[doc = "Client window decorations should be painted as if the window is"]
-            #[doc = "active. Do not assume this means that the window actually has"]
-            #[doc = "keyboard or pointer focus."]
-            Activated = 4u32,
+            Temp,
         }
         impl TryFrom<u32> for State {
             type Error = crate::wire::DecodeError;
@@ -22283,7 +21789,7 @@ pub mod xdg_shell_unstable_v6 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidGrab = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -22545,7 +22051,7 @@ pub mod wlr_data_control_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            UsedSource = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -22703,7 +22209,7 @@ pub mod wlr_data_control_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidOffer = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -22942,7 +22448,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Flags {
-            Transient = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Flags {
             type Error = crate::wire::DecodeError;
@@ -22956,9 +22462,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum CancelReason {
-            Temporary = 0u32,
-            Permanent = 1u32,
-            Resizing = 2u32,
+            Temp,
         }
         impl TryFrom<u32> for CancelReason {
             type Error = crate::wire::DecodeError;
@@ -23151,10 +22655,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum State {
-            Maximized = 0u32,
-            Minimized = 1u32,
-            Activated = 2u32,
-            Fullscreen = 3u32,
+            Temp,
         }
         impl TryFrom<u32> for State {
             type Error = crate::wire::DecodeError;
@@ -23168,7 +22669,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidRectangle = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -23539,7 +23040,7 @@ pub mod wlr_gamma_control_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidGamma = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -23640,7 +23141,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            AlreadyInhibited = 0u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -23748,9 +23249,7 @@ pub mod wlr_layer_shell_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            Role = 0u32,
-            InvalidLayer = 1u32,
-            AlreadyConstructed = 2u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -23764,10 +23263,7 @@ pub mod wlr_layer_shell_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Layer {
-            Background = 0u32,
-            Bottom = 1u32,
-            Top = 2u32,
-            Overlay = 3u32,
+            Temp,
         }
         impl TryFrom<u32> for Layer {
             type Error = crate::wire::DecodeError;
@@ -23872,49 +23368,7 @@ pub mod wlr_layer_shell_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum KeyboardInteractivity {
-            #[doc = "This value indicates that this surface is not interested in keyboard"]
-            #[doc = "events and the compositor should never assign it the keyboard focus."]
-            #[doc = ""]
-            #[doc = "This is the default value, set for newly created layer shell surfaces."]
-            #[doc = ""]
-            #[doc = "This is useful for e.g. desktop widgets that display information or"]
-            #[doc = "only have interaction with non-keyboard input devices."]
-            None = 0u32,
-            #[doc = "Request exclusive keyboard focus if this surface is above the shell surface layer."]
-            #[doc = ""]
-            #[doc = "For the top and overlay layers, the seat will always give"]
-            #[doc = "exclusive keyboard focus to the top-most layer which has keyboard"]
-            #[doc = "interactivity set to exclusive. If this layer contains multiple"]
-            #[doc = "surfaces with keyboard interactivity set to exclusive, the compositor"]
-            #[doc = "determines the one receiving keyboard events in an implementation-"]
-            #[doc = "defined manner. In this case, no guarantee is made when this surface"]
-            #[doc = "will receive keyboard focus (if ever)."]
-            #[doc = ""]
-            #[doc = "For the bottom and background layers, the compositor is allowed to use"]
-            #[doc = "normal focus semantics."]
-            #[doc = ""]
-            #[doc = "This setting is mainly intended for applications that need to ensure"]
-            #[doc = "they receive all keyboard events, such as a lock screen or a password"]
-            #[doc = "prompt."]
-            Exclusive = 1u32,
-            #[doc = "This requests the compositor to allow this surface to be focused and"]
-            #[doc = "unfocused by the user in an implementation-defined manner. The user"]
-            #[doc = "should be able to unfocus this surface even regardless of the layer"]
-            #[doc = "it is on."]
-            #[doc = ""]
-            #[doc = "Typically, the compositor will want to use its normal mechanism to"]
-            #[doc = "manage keyboard focus between layer shell surfaces with this setting"]
-            #[doc = "and regular toplevels on the desktop layer (e.g. click to focus)."]
-            #[doc = "Nevertheless, it is possible for a compositor to require a special"]
-            #[doc = "interaction to focus or unfocus layer shell surfaces (e.g. requiring"]
-            #[doc = "a click even if focus follows the mouse normally, or providing a"]
-            #[doc = "keybinding to switch focus between layers)."]
-            #[doc = ""]
-            #[doc = "This setting is mainly intended for desktop shell components (e.g."]
-            #[doc = "panels) that allow keyboard interaction. Using this option can allow"]
-            #[doc = "implementing a desktop shell that can be fully usable without the"]
-            #[doc = "mouse."]
-            OnDemand = 2u32,
+            Temp,
         }
         impl TryFrom<u32> for KeyboardInteractivity {
             type Error = crate::wire::DecodeError;
@@ -23928,11 +23382,7 @@ pub mod wlr_layer_shell_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidSurfaceState = 0u32,
-            InvalidSize = 1u32,
-            InvalidAnchor = 2u32,
-            InvalidKeyboardInteractivity = 3u32,
-            InvalidExclusiveEdge = 4u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -24397,8 +23847,7 @@ pub mod wlr_output_management_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum AdaptiveSyncState {
-            Disabled = 0u32,
-            Enabled = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for AdaptiveSyncState {
             type Error = crate::wire::DecodeError;
@@ -24743,9 +24192,7 @@ pub mod wlr_output_management_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            AlreadyConfiguredHead = 1u32,
-            UnconfiguredHead = 2u32,
-            AlreadyUsed = 3u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -24928,12 +24375,7 @@ pub mod wlr_output_management_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            AlreadySet = 1u32,
-            InvalidMode = 2u32,
-            InvalidCustomMode = 3u32,
-            InvalidTransform = 4u32,
-            InvalidScale = 5u32,
-            InvalidAdaptiveSyncState = 6u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -25160,8 +24602,7 @@ pub mod wlr_output_power_management_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Mode {
-            Off = 0u32,
-            On = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Mode {
             type Error = crate::wire::DecodeError;
@@ -25175,7 +24616,7 @@ pub mod wlr_output_power_management_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidMode = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -25381,8 +24822,7 @@ pub mod wlr_screencopy_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            AlreadyUsed = 0u32,
-            InvalidBuffer = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -25584,8 +25024,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            InvalidAxis = 0u32,
-            InvalidAxisSource = 1u32,
+            Temp,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
