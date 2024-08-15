@@ -4,7 +4,7 @@ use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote, ToTokens};
 use serde::{Deserialize, Serialize};
 use std::{
-    fmt::{Display, Write as _},
+    fmt::Display,
     fs::{self, OpenOptions},
     io::Write as _,
 };
@@ -201,39 +201,6 @@ impl Arg {
             ArgType::Array => quote! { Vec<u8> },
             ArgType::Fd => quote! { rustix::fd::OwnedFd },
         }
-    }
-
-    fn to_rust_type(&self, protocol: &Protocol) -> String {
-        if let Some(e) = &self.r#enum {
-            if let Some((module, name)) = e.split_once('.') {
-                return format!(
-                    "super::super::{protocol_name}::{module}::{name}",
-                    protocol_name = protocol.name,
-                    name = name.to_upper_camel_case()
-                );
-            } else {
-                return e.to_upper_camel_case();
-            }
-        }
-
-        let ret = match self.ty {
-            ArgType::Int => "i32",
-            ArgType::Uint => "u32",
-            ArgType::Fixed => "crate::wire::Fixed",
-            ArgType::String => "String",
-            ArgType::Object => "crate::wire::ObjectId",
-            ArgType::NewId => {
-                if self.interface.is_some() {
-                    "crate::wire::ObjectId"
-                } else {
-                    "crate::wire::NewId"
-                }
-            }
-            ArgType::Array => "Vec<u8>",
-            ArgType::Fd => "rustix::fd::OwnedFd",
-        };
-
-        ret.to_string()
     }
 
     fn is_return_option(&self) -> bool {
