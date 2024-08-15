@@ -2,20 +2,6 @@
 #![allow(async_fn_in_trait)]
 pub mod wayland {
     pub mod wl_display {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "The core global object.  This is a special singleton object.  It"]
         #[doc = "is used for internal Wayland protocol features."]
         pub trait WlDisplay: crate::server::Dispatcher {
@@ -402,34 +388,6 @@ pub mod wayland {
         }
     }
     pub mod wl_shm {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Format {
-            Temp,
-        }
-        impl TryFrom<u32> for Format {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A singleton global object that provides support for shared"]
         #[doc = "memory."]
         #[doc = ""]
@@ -579,20 +537,6 @@ pub mod wayland {
         }
     }
     pub mod wl_data_offer {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A wl_data_offer represents a piece of data offered for transfer"]
         #[doc = "by another client (the source client).  It is used by the"]
         #[doc = "copy-and-paste and drag-and-drop mechanisms.  The offer"]
@@ -824,20 +768,6 @@ pub mod wayland {
         }
     }
     pub mod wl_data_source {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "The wl_data_source object is the source side of a wl_data_offer."]
         #[doc = "It is created by the source client in a data transfer and"]
         #[doc = "provides a way to describe the offered data and a way to respond"]
@@ -1027,20 +957,6 @@ pub mod wayland {
         }
     }
     pub mod wl_data_device {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "There is one wl_data_device per seat which can be obtained"]
         #[doc = "from the global wl_data_device_manager singleton."]
         #[doc = ""]
@@ -1317,20 +1233,6 @@ pub mod wayland {
         }
     }
     pub mod wl_shell {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This interface is implemented by servers that provide"]
         #[doc = "desktop-style user interfaces."]
         #[doc = ""]
@@ -1400,20 +1302,6 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum FullscreenMethod {
-            Temp,
-        }
-        impl TryFrom<u32> for FullscreenMethod {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
             }
         }
         #[doc = "An interface that may be implemented by a wl_surface, for"]
@@ -1771,20 +1659,6 @@ pub mod wayland {
         }
     }
     pub mod wl_surface {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A surface is a rectangular area that may be displayed on zero"]
         #[doc = "or more outputs, and shown any number of times at the compositor's"]
         #[doc = "discretion. They can present wl_buffers, receive user input, and"]
@@ -2351,20 +2225,6 @@ pub mod wayland {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A seat is a group of keyboards, pointer and touch devices. This"]
         #[doc = "object is published as a global during start up, or when such a"]
         #[doc = "device is hot plugged.  A seat typically has a pointer and"]
@@ -2531,76 +2391,6 @@ pub mod wayland {
         }
     }
     pub mod wl_pointer {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ButtonState {
-            Temp,
-        }
-        impl TryFrom<u32> for ButtonState {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Axis {
-            Temp,
-        }
-        impl TryFrom<u32> for Axis {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum AxisSource {
-            Temp,
-        }
-        impl TryFrom<u32> for AxisSource {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum AxisRelativeDirection {
-            Temp,
-        }
-        impl TryFrom<u32> for AxisRelativeDirection {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "The wl_pointer interface represents one or more input devices,"]
         #[doc = "such as mice, which control the pointer location and pointer_focus"]
         #[doc = "of a seat."]
@@ -2979,34 +2769,6 @@ pub mod wayland {
         }
     }
     pub mod wl_keyboard {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum KeymapFormat {
-            Temp,
-        }
-        impl TryFrom<u32> for KeymapFormat {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum KeyState {
-            Temp,
-        }
-        impl TryFrom<u32> for KeyState {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "The wl_keyboard interface represents one or more keyboards"]
         #[doc = "associated with a seat."]
         #[doc = ""]
@@ -3321,34 +3083,6 @@ pub mod wayland {
         }
     }
     pub mod wl_output {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Subpixel {
-            Temp,
-        }
-        impl TryFrom<u32> for Subpixel {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Transform {
-            Temp,
-        }
-        impl TryFrom<u32> for Transform {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         bitflags::bitflags! { # [doc = "These flags describe properties of an output mode."] # [doc = "They are used in the flags bitfield of the mode event."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Mode : u32 { # [doc = "indicates this is the current mode"] const Current = 1u32 ; # [doc = "indicates this is the preferred mode"] const Preferred = 2u32 ; } }
         impl TryFrom<u32> for Mode {
             type Error = crate::wire::DecodeError;
@@ -3635,20 +3369,6 @@ pub mod wayland {
         }
     }
     pub mod wl_subcompositor {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "The global interface exposing sub-surface compositing capabilities."]
         #[doc = "A wl_surface, that has sub-surfaces associated, is called the"]
         #[doc = "parent surface. Sub-surfaces can be arbitrarily nested and create"]
@@ -3746,20 +3466,6 @@ pub mod wayland {
         }
     }
     pub mod wl_subsurface {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "An additional interface to a wl_surface object, which has been"]
         #[doc = "made a sub-surface. A sub-surface has one parent surface. A"]
         #[doc = "sub-surface's size and position are not limited to that of the parent."]
@@ -4188,20 +3894,6 @@ pub mod linux_dmabuf_v1 {
         }
     }
     pub mod zwp_linux_buffer_params_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInvert = 1u32 ; # [doc = "content is interlaced"] const Interlaced = 2u32 ; # [doc = "bottom field first"] const BottomFirst = 4u32 ; } }
         impl TryFrom<u32> for Flags {
             type Error = crate::wire::DecodeError;
@@ -4673,20 +4365,6 @@ pub mod linux_dmabuf_v1 {
 }
 pub mod presentation_time {
     pub mod wp_presentation {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "The main feature of this interface is accurate presentation"]
         #[doc = "timing feedback to ensure smooth video playback while maintaining"]
         #[doc = "audio/video synchronization. Some features use the concept of a"]
@@ -5127,62 +4805,6 @@ pub mod tablet_v2 {
         }
     }
     pub mod zwp_tablet_tool_v2 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Type {
-            Temp,
-        }
-        impl TryFrom<u32> for Type {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Capability {
-            Temp,
-        }
-        impl TryFrom<u32> for Capability {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ButtonState {
-            Temp,
-        }
-        impl TryFrom<u32> for ButtonState {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "An object that represents a physical tool that has been, or is"]
         #[doc = "currently in use with a tablet in this seat. Each wp_tablet_tool"]
         #[doc = "object stays valid until the client destroys it; the compositor"]
@@ -5678,20 +5300,6 @@ pub mod tablet_v2 {
         }
     }
     pub mod zwp_tablet_pad_ring_v2 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Source {
-            Temp,
-        }
-        impl TryFrom<u32> for Source {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A circular interaction area, such as the touch ring on the Wacom Intuos"]
         #[doc = "Pro series tablets."]
         #[doc = ""]
@@ -5834,20 +5442,6 @@ pub mod tablet_v2 {
         }
     }
     pub mod zwp_tablet_pad_strip_v2 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Source {
-            Temp,
-        }
-        impl TryFrom<u32> for Source {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A linear interaction area, such as the strips found in Wacom Cintiq"]
         #[doc = "models."]
         #[doc = ""]
@@ -6153,20 +5747,6 @@ pub mod tablet_v2 {
         }
     }
     pub mod zwp_tablet_pad_v2 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ButtonState {
-            Temp,
-        }
-        impl TryFrom<u32> for ButtonState {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A pad device is a set of buttons, rings and strips"]
         #[doc = "usually physically present on the tablet device itself. Some"]
         #[doc = "exceptions exist where the pad device is physically detached, e.g. the"]
@@ -6359,20 +5939,6 @@ pub mod tablet_v2 {
 }
 pub mod viewporter {
     pub mod wp_viewporter {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "The global interface exposing surface cropping and scaling"]
         #[doc = "capabilities is used to instantiate an interface extension for a"]
         #[doc = "wl_surface object. This extended interface will then allow"]
@@ -6438,20 +6004,6 @@ pub mod viewporter {
         }
     }
     pub mod wp_viewport {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "An additional interface to a wl_surface object, which allows the"]
         #[doc = "client to specify the cropping and scaling of the surface"]
         #[doc = "contents."]
@@ -6597,20 +6149,6 @@ pub mod viewporter {
 }
 pub mod xdg_shell {
     pub mod xdg_wm_base {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "The xdg_wm_base interface is exposed as a global object enabling clients"]
         #[doc = "to turn their wl_surfaces into windows in a desktop environment. It"]
         #[doc = "defines the basic functionality needed for clients and the compositor to"]
@@ -6739,48 +6277,6 @@ pub mod xdg_shell {
         }
     }
     pub mod xdg_positioner {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Anchor {
-            Temp,
-        }
-        impl TryFrom<u32> for Anchor {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Gravity {
-            Temp,
-        }
-        impl TryFrom<u32> for Gravity {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         bitflags::bitflags! { # [doc = "The constraint adjustment value define ways the compositor will adjust"] # [doc = "the position of the surface, if the unadjusted position would result"] # [doc = "in the surface being partly constrained."] # [doc = ""] # [doc = "Whether a surface is considered 'constrained' is left to the compositor"] # [doc = "to determine. For example, the surface may be partly outside the"] # [doc = "compositor's defined 'work area', thus necessitating the child surface's"] # [doc = "position be adjusted until it is entirely inside the work area."] # [doc = ""] # [doc = "The adjustments can be combined, according to a defined precedence: 1)"] # [doc = "Flip, 2) Slide, 3) Resize."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ConstraintAdjustment : u32 { const None = 0u32 ; const SlideX = 1u32 ; const SlideY = 2u32 ; const FlipX = 4u32 ; const FlipY = 8u32 ; const ResizeX = 16u32 ; const ResizeY = 32u32 ; } }
         impl TryFrom<u32> for ConstraintAdjustment {
             type Error = crate::wire::DecodeError;
@@ -7018,20 +6514,6 @@ pub mod xdg_shell {
         }
     }
     pub mod xdg_surface {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "An interface that may be implemented by a wl_surface, for"]
         #[doc = "implementations that provide a desktop-style user interface."]
         #[doc = ""]
@@ -7290,62 +6772,6 @@ pub mod xdg_shell {
         }
     }
     pub mod xdg_toplevel {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ResizeEdge {
-            Temp,
-        }
-        impl TryFrom<u32> for ResizeEdge {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum State {
-            Temp,
-        }
-        impl TryFrom<u32> for State {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum WmCapabilities {
-            Temp,
-        }
-        impl TryFrom<u32> for WmCapabilities {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This interface defines an xdg_surface role which allows a surface to,"]
         #[doc = "among other things, set window-like properties such as maximize,"]
         #[doc = "fullscreen, and minimize, set application-specific metadata like title and"]
@@ -7932,20 +7358,6 @@ pub mod xdg_shell {
         }
     }
     pub mod xdg_popup {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A popup surface is a short-lived, temporary surface. It can be used to"]
         #[doc = "implement for example menus, popovers, tooltips and other similar user"]
         #[doc = "interface concepts."]
@@ -8157,20 +7569,6 @@ pub mod xdg_shell {
 }
 pub mod alpha_modifier_v1 {
     pub mod wp_alpha_modifier_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This interface allows a client to set a factor for the alpha values on a"]
         #[doc = "surface, which can be used to offload such operations to the compositor,"]
         #[doc = "which can in turn for example offload them to KMS."]
@@ -8236,20 +7634,6 @@ pub mod alpha_modifier_v1 {
         }
     }
     pub mod wp_alpha_modifier_surface_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This interface allows the client to set a factor for the alpha values on"]
         #[doc = "a surface, which can be used to offload such operations to the compositor."]
         #[doc = "The default factor is UINT32_MAX."]
@@ -8319,20 +7703,6 @@ pub mod alpha_modifier_v1 {
 }
 pub mod content_type_v1 {
     pub mod wp_content_type_manager_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This interface allows a client to describe the kind of content a surface"]
         #[doc = "will display, to allow the compositor to optimize its behavior for it."]
         #[doc = ""]
@@ -8401,20 +7771,6 @@ pub mod content_type_v1 {
         }
     }
     pub mod wp_content_type_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Type {
-            Temp,
-        }
-        impl TryFrom<u32> for Type {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "The content type object allows the compositor to optimize for the kind"]
         #[doc = "of content shown on the surface. A compositor may for example use it to"]
         #[doc = "set relevant drm properties like \"content type\"."]
@@ -8564,34 +7920,6 @@ pub mod cursor_shape_v1 {
         }
     }
     pub mod wp_cursor_shape_device_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Shape {
-            Temp,
-        }
-        impl TryFrom<u32> for Shape {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This interface allows clients to set the cursor shape."]
         pub trait WpCursorShapeDeviceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_cursor_shape_device_v1";
@@ -8910,20 +8238,6 @@ pub mod drm_lease_v1 {
         }
     }
     pub mod wp_drm_lease_request_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A client that wishes to lease DRM resources will attach the list of"]
         #[doc = "connectors advertised with wp_drm_lease_device_v1.connector that they"]
         #[doc = "wish to lease, then use wp_drm_lease_request_v1.submit to submit the"]
@@ -9542,20 +8856,6 @@ pub mod ext_session_lock_v1 {
         }
     }
     pub mod ext_session_lock_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "In response to the creation of this object the compositor must send"]
         #[doc = "either the locked or finished event."]
         #[doc = ""]
@@ -9757,20 +9057,6 @@ pub mod ext_session_lock_v1 {
         }
     }
     pub mod ext_session_lock_surface_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "The client may use lock surfaces to display a screensaver, render a"]
         #[doc = "dialog to enter a password and unlock the session, or however else it"]
         #[doc = "sees fit."]
@@ -10036,20 +9322,6 @@ pub mod ext_transient_seat_v1 {
 #[doc = "rounding algorithm for subsurface position and size is not defined."]
 pub mod fractional_scale_v1 {
     pub mod wp_fractional_scale_manager_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A global interface for requesting surfaces to use fractional scales."]
         pub trait WpFractionalScaleManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_fractional_scale_manager_v1";
@@ -10187,20 +9459,6 @@ pub mod fractional_scale_v1 {
 #[doc = "only be done by creating a new major version of the extension."]
 pub mod linux_drm_syncobj_v1 {
     pub mod wp_linux_drm_syncobj_manager_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This global is a factory interface, allowing clients to request"]
         #[doc = "explicit synchronization for buffers on a per-surface basis."]
         #[doc = ""]
@@ -10334,20 +9592,6 @@ pub mod linux_drm_syncobj_v1 {
         }
     }
     pub mod wp_linux_drm_syncobj_surface_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This object is an add-on interface for wl_surface to enable explicit"]
         #[doc = "synchronization."]
         #[doc = ""]
@@ -10525,20 +9769,6 @@ pub mod linux_drm_syncobj_v1 {
 }
 pub mod security_context_v1 {
     pub mod wp_security_context_manager_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This interface allows a client to register a new Wayland connection to"]
         #[doc = "the compositor and attach a security context to it."]
         #[doc = ""]
@@ -10629,20 +9859,6 @@ pub mod security_context_v1 {
         }
     }
     pub mod wp_security_context_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "The security context allows a client to register a new client and attach"]
         #[doc = "security context metadata to the connections."]
         #[doc = ""]
@@ -10877,20 +10093,6 @@ pub mod single_pixel_buffer_v1 {
 }
 pub mod tearing_control_v1 {
     pub mod wp_tearing_control_manager_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "For some use cases like games or drawing tablets it can make sense to"]
         #[doc = "reduce latency by accepting tearing with the use of asynchronous page"]
         #[doc = "flips. This global is a factory interface, allowing clients to inform"]
@@ -10969,20 +10171,6 @@ pub mod tearing_control_v1 {
         }
     }
     pub mod wp_tearing_control_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum PresentationHint {
-            Temp,
-        }
-        impl TryFrom<u32> for PresentationHint {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "An additional interface to a wl_surface object, which allows the client"]
         #[doc = "to hint to the compositor if the content on the surface is suitable for"]
         #[doc = "presentation with tearing."]
@@ -11171,20 +10359,6 @@ pub mod xdg_activation_v1 {
         }
     }
     pub mod xdg_activation_token_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "An object for setting up a token and receiving a token handle that can"]
         #[doc = "be passed as an activation token to another client."]
         #[doc = ""]
@@ -11324,20 +10498,6 @@ pub mod xdg_activation_v1 {
 }
 pub mod xdg_dialog_v1 {
     pub mod xdg_wm_dialog_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "The xdg_wm_dialog_v1 interface is exposed as a global object allowing"]
         #[doc = "to register surfaces with a xdg_toplevel role as \"dialogs\" relative to"]
         #[doc = "another toplevel."]
@@ -11484,20 +10644,6 @@ pub mod xdg_dialog_v1 {
 }
 pub mod xdg_toplevel_drag_v1 {
     pub mod xdg_toplevel_drag_manager_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This protocol enhances normal drag and drop with the ability to move a"]
         #[doc = "window at the same time. This allows having detachable parts of a window"]
         #[doc = "that when dragged out of it become a new window and can be dragged over"]
@@ -11599,20 +10745,6 @@ pub mod xdg_toplevel_drag_v1 {
         }
     }
     pub mod xdg_toplevel_drag_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         pub trait XdgToplevelDragV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_toplevel_drag_v1";
             const VERSION: u32 = 1u32;
@@ -11714,20 +10846,6 @@ pub mod xdg_toplevel_drag_v1 {
 #[doc = "only be done by creating a new major version of the extension."]
 pub mod xwayland_shell_v1 {
     pub mod xwayland_shell_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "xwayland_shell_v1 is a singleton global object that"]
         #[doc = "provides the ability to create a xwayland_surface_v1 object"]
         #[doc = "for a given wl_surface."]
@@ -11807,20 +10925,6 @@ pub mod xwayland_shell_v1 {
         }
     }
     pub mod xwayland_surface_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "An Xwayland surface is a surface managed by an Xwayland server."]
         #[doc = "It is used for associating surfaces to Xwayland windows."]
         #[doc = ""]
@@ -11899,48 +11003,6 @@ pub mod xwayland_shell_v1 {
 }
 pub mod fullscreen_shell_unstable_v1 {
     pub mod zwp_fullscreen_shell_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Capability {
-            Temp,
-        }
-        impl TryFrom<u32> for Capability {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum PresentMethod {
-            Temp,
-        }
-        impl TryFrom<u32> for PresentMethod {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "Displays a single surface per output."]
         #[doc = ""]
         #[doc = "This interface provides a mechanism for a single client to display"]
@@ -12819,20 +11881,6 @@ pub mod input_method_unstable_v1 {
         }
     }
     pub mod zwp_input_panel_surface_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Position {
-            Temp,
-        }
-        impl TryFrom<u32> for Position {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         pub trait ZwpInputPanelSurfaceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_input_panel_surface_v1";
             const VERSION: u32 = 1u32;
@@ -13112,20 +12160,6 @@ pub mod input_timestamps_unstable_v1 {
 #[doc = "reset."]
 pub mod keyboard_shortcuts_inhibit_unstable_v1 {
     pub mod zwp_keyboard_shortcuts_inhibit_manager_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A global interface used for inhibiting the compositor keyboard shortcuts."]
         pub trait ZwpKeyboardShortcutsInhibitManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_keyboard_shortcuts_inhibit_manager_v1";
@@ -13510,20 +12544,6 @@ pub mod linux_dmabuf_unstable_v1 {
         }
     }
     pub mod zwp_linux_buffer_params_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInvert = 1u32 ; # [doc = "content is interlaced"] const Interlaced = 2u32 ; # [doc = "bottom field first"] const BottomFirst = 4u32 ; } }
         impl TryFrom<u32> for Flags {
             type Error = crate::wire::DecodeError;
@@ -13995,20 +13015,6 @@ pub mod linux_dmabuf_unstable_v1 {
 }
 pub mod zwp_linux_explicit_synchronization_unstable_v1 {
     pub mod zwp_linux_explicit_synchronization_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This global is a factory interface, allowing clients to request"]
         #[doc = "explicit synchronization for buffers on a per-surface basis."]
         #[doc = ""]
@@ -14099,20 +13105,6 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
         }
     }
     pub mod zwp_linux_surface_synchronization_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This object implements per-surface explicit synchronization."]
         #[doc = ""]
         #[doc = "Synchronization refers to co-ordination of pipelined operations performed"]
@@ -14353,34 +13345,6 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
 #[doc = "reset."]
 pub mod pointer_constraints_unstable_v1 {
     pub mod zwp_pointer_constraints_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Lifetime {
-            Temp,
-        }
-        impl TryFrom<u32> for Lifetime {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "The global interface exposing pointer constraining functionality. It"]
         #[doc = "exposes two requests: lock_pointer for locking the pointer to its"]
         #[doc = "position, and confine_pointer for locking the pointer to a region."]
@@ -15845,62 +14809,6 @@ pub mod tablet_unstable_v1 {
         }
     }
     pub mod zwp_tablet_tool_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Type {
-            Temp,
-        }
-        impl TryFrom<u32> for Type {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Capability {
-            Temp,
-        }
-        impl TryFrom<u32> for Capability {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ButtonState {
-            Temp,
-        }
-        impl TryFrom<u32> for ButtonState {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "An object that represents a physical tool that has been, or is"]
         #[doc = "currently in use with a tablet in this seat. Each wp_tablet_tool"]
         #[doc = "object stays valid until the client destroys it; the compositor"]
@@ -16605,62 +15513,6 @@ pub mod tablet_unstable_v2 {
         }
     }
     pub mod zwp_tablet_tool_v2 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Type {
-            Temp,
-        }
-        impl TryFrom<u32> for Type {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Capability {
-            Temp,
-        }
-        impl TryFrom<u32> for Capability {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ButtonState {
-            Temp,
-        }
-        impl TryFrom<u32> for ButtonState {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "An object that represents a physical tool that has been, or is"]
         #[doc = "currently in use with a tablet in this seat. Each wp_tablet_tool"]
         #[doc = "object stays valid until the client destroys it; the compositor"]
@@ -17156,20 +16008,6 @@ pub mod tablet_unstable_v2 {
         }
     }
     pub mod zwp_tablet_pad_ring_v2 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Source {
-            Temp,
-        }
-        impl TryFrom<u32> for Source {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A circular interaction area, such as the touch ring on the Wacom Intuos"]
         #[doc = "Pro series tablets."]
         #[doc = ""]
@@ -17312,20 +16150,6 @@ pub mod tablet_unstable_v2 {
         }
     }
     pub mod zwp_tablet_pad_strip_v2 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Source {
-            Temp,
-        }
-        impl TryFrom<u32> for Source {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A linear interaction area, such as the strips found in Wacom Cintiq"]
         #[doc = "models."]
         #[doc = ""]
@@ -17631,20 +16455,6 @@ pub mod tablet_unstable_v2 {
         }
     }
     pub mod zwp_tablet_pad_v2 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ButtonState {
-            Temp,
-        }
-        impl TryFrom<u32> for ButtonState {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A pad device is a set of buttons, rings and strips"]
         #[doc = "usually physically present on the tablet device itself. Some"]
         #[doc = "exceptions exist where the pad device is physically detached, e.g. the"]
@@ -17842,48 +16652,6 @@ pub mod text_input_unstable_v1 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ContentPurpose {
-            Temp,
-        }
-        impl TryFrom<u32> for ContentPurpose {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum PreeditStyle {
-            Temp,
-        }
-        impl TryFrom<u32> for PreeditStyle {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum TextDirection {
-            Temp,
-        }
-        impl TryFrom<u32> for TextDirection {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
             }
         }
         #[doc = "An object used for text input. Adds support for text input and input"]
@@ -18348,39 +17116,11 @@ pub mod text_input_unstable_v1 {
 #[doc = "interface version number is reset."]
 pub mod text_input_unstable_v3 {
     pub mod zwp_text_input_v3 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ChangeCause {
-            Temp,
-        }
-        impl TryFrom<u32> for ChangeCause {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behavior"] const None = 0u32 ; # [doc = "suggest word completions"] const Completion = 1u32 ; # [doc = "suggest word corrections"] const Spellcheck = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just Latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; } }
         impl TryFrom<u32> for ContentHint {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ContentPurpose {
-            Temp,
-        }
-        impl TryFrom<u32> for ContentPurpose {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
             }
         }
         #[doc = "The zwp_text_input_v3 interface represents text input and input methods"]
@@ -18940,34 +17680,6 @@ pub mod xdg_decoration_unstable_v1 {
         }
     }
     pub mod zxdg_toplevel_decoration_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Mode {
-            Temp,
-        }
-        impl TryFrom<u32> for Mode {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "The decoration object allows the compositor to toggle server-side window"]
         #[doc = "decorations for a toplevel surface. The client can request to switch to"]
         #[doc = "another mode."]
@@ -19369,20 +18081,6 @@ pub mod xdg_foreign_unstable_v1 {
 #[doc = "reset."]
 pub mod xdg_foreign_unstable_v2 {
     pub mod zxdg_exporter_v2 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A global interface used for exporting surfaces that can later be imported"]
         #[doc = "using xdg_importer."]
         pub trait ZxdgExporterV2: crate::server::Dispatcher {
@@ -19559,20 +18257,6 @@ pub mod xdg_foreign_unstable_v2 {
         }
     }
     pub mod zxdg_imported_v2 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "An xdg_imported object represents an imported reference to surface exported"]
         #[doc = "by some client. A client can use this interface to manipulate"]
         #[doc = "relationships between its own surfaces and the imported surface."]
@@ -19893,34 +18577,6 @@ pub mod xdg_output_unstable_v1 {
 }
 pub mod xdg_shell_unstable_v5 {
     pub mod xdg_shell {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Version {
-            Temp,
-        }
-        impl TryFrom<u32> for Version {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "xdg_shell allows clients to turn a wl_surface into a \"real window\""]
         #[doc = "which can be dragged, resized, stacked, and moved around by the"]
         #[doc = "user. Everything about this interface is suited towards traditional"]
@@ -20082,34 +18738,6 @@ pub mod xdg_shell_unstable_v5 {
         }
     }
     pub mod xdg_surface {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ResizeEdge {
-            Temp,
-        }
-        impl TryFrom<u32> for ResizeEdge {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum State {
-            Temp,
-        }
-        impl TryFrom<u32> for State {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "An interface that may be implemented by a wl_surface, for"]
         #[doc = "implementations that provide a desktop-style user interface."]
         #[doc = ""]
@@ -20687,20 +19315,6 @@ pub mod xdg_shell_unstable_v5 {
 }
 pub mod xdg_shell_unstable_v6 {
     pub mod zxdg_shell_v6 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "xdg_shell allows clients to turn a wl_surface into a \"real window\""]
         #[doc = "which can be dragged, resized, stacked, and moved around by the"]
         #[doc = "user. Everything about this interface is suited towards traditional"]
@@ -20823,20 +19437,6 @@ pub mod xdg_shell_unstable_v6 {
         }
     }
     pub mod zxdg_positioner_v6 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Anchor : u32 { # [doc = "the center of the anchor rectangle"] const None = 0u32 ; # [doc = "the top edge of the anchor rectangle"] const Top = 1u32 ; # [doc = "the bottom edge of the anchor rectangle"] const Bottom = 2u32 ; # [doc = "the left edge of the anchor rectangle"] const Left = 4u32 ; # [doc = "the right edge of the anchor rectangle"] const Right = 8u32 ; } }
         impl TryFrom<u32> for Anchor {
             type Error = crate::wire::DecodeError;
@@ -21048,20 +19648,6 @@ pub mod xdg_shell_unstable_v6 {
         }
     }
     pub mod zxdg_surface_v6 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "An interface that may be implemented by a wl_surface, for"]
         #[doc = "implementations that provide a desktop-style user interface."]
         #[doc = ""]
@@ -21281,34 +19867,6 @@ pub mod xdg_shell_unstable_v6 {
         }
     }
     pub mod zxdg_toplevel_v6 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ResizeEdge {
-            Temp,
-        }
-        impl TryFrom<u32> for ResizeEdge {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum State {
-            Temp,
-        }
-        impl TryFrom<u32> for State {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This interface defines an xdg_surface role which allows a surface to,"]
         #[doc = "among other things, set window-like properties such as maximize,"]
         #[doc = "fullscreen, and minimize, set application-specific metadata like title and"]
@@ -21785,20 +20343,6 @@ pub mod xdg_shell_unstable_v6 {
         }
     }
     pub mod zxdg_popup_v6 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A popup surface is a short-lived, temporary surface. It can be used to"]
         #[doc = "implement for example menus, popovers, tooltips and other similar user"]
         #[doc = "interface concepts."]
@@ -22047,20 +20591,6 @@ pub mod wlr_data_control_unstable_v1 {
         }
     }
     pub mod zwlr_data_control_device_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This interface allows a client to manage a seat's selection."]
         #[doc = ""]
         #[doc = "When the seat is destroyed, this object becomes inert."]
@@ -22205,20 +20735,6 @@ pub mod wlr_data_control_unstable_v1 {
         }
     }
     pub mod zwlr_data_control_source_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "The wlr_data_control_source object is the source side of a"]
         #[doc = "wlr_data_control_offer. It is created by the source client in a data"]
         #[doc = "transfer and provides a way to describe the offered data and a way to"]
@@ -22444,34 +20960,6 @@ pub mod wlr_export_dmabuf_unstable_v1 {
         }
     }
     pub mod zwlr_export_dmabuf_frame_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Flags {
-            Temp,
-        }
-        impl TryFrom<u32> for Flags {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum CancelReason {
-            Temp,
-        }
-        impl TryFrom<u32> for CancelReason {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This object represents a single DMA-BUF frame."]
         #[doc = ""]
         #[doc = "If the capture is successful, the compositor will first send a \"frame\""]
@@ -22651,34 +21139,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
         }
     }
     pub mod zwlr_foreign_toplevel_handle_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum State {
-            Temp,
-        }
-        impl TryFrom<u32> for State {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A zwlr_foreign_toplevel_handle_v1 object represents an opened toplevel"]
         #[doc = "window. Each app may have multiple opened toplevels."]
         #[doc = ""]
@@ -23036,20 +21496,6 @@ pub mod wlr_gamma_control_unstable_v1 {
         }
     }
     pub mod zwlr_gamma_control_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This interface allows a client to adjust gamma tables for a particular"]
         #[doc = "output."]
         #[doc = ""]
@@ -23137,20 +21583,6 @@ pub mod wlr_gamma_control_unstable_v1 {
 }
 pub mod wlr_input_inhibit_unstable_v1 {
     pub mod zwlr_input_inhibit_manager_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "Clients can use this interface to prevent input events from being sent to"]
         #[doc = "any surfaces but its own, which is useful for example in lock screen"]
         #[doc = "software. It is assumed that access to this interface will be locked down"]
@@ -23245,34 +21677,6 @@ pub mod wlr_input_inhibit_unstable_v1 {
 }
 pub mod wlr_layer_shell_unstable_v1 {
     pub mod zwlr_layer_shell_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Layer {
-            Temp,
-        }
-        impl TryFrom<u32> for Layer {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "Clients can use this interface to assign the surface_layer role to"]
         #[doc = "wl_surfaces. Such surfaces are assigned to a \"layer\" of the output and"]
         #[doc = "rendered with a defined z-depth respective to each other. They may also be"]
@@ -23364,34 +21768,6 @@ pub mod wlr_layer_shell_unstable_v1 {
         }
     }
     pub mod zwlr_layer_surface_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum KeyboardInteractivity {
-            Temp,
-        }
-        impl TryFrom<u32> for KeyboardInteractivity {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Anchor : u32 { # [doc = "the top edge of the anchor rectangle"] const Top = 1u32 ; # [doc = "the bottom edge of the anchor rectangle"] const Bottom = 2u32 ; # [doc = "the left edge of the anchor rectangle"] const Left = 4u32 ; # [doc = "the right edge of the anchor rectangle"] const Right = 8u32 ; } }
         impl TryFrom<u32> for Anchor {
             type Error = crate::wire::DecodeError;
@@ -23843,20 +22219,6 @@ pub mod wlr_output_management_unstable_v1 {
         }
     }
     pub mod zwlr_output_head_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum AdaptiveSyncState {
-            Temp,
-        }
-        impl TryFrom<u32> for AdaptiveSyncState {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "A head is an output device. The difference between a wl_output object and"]
         #[doc = "a head is that heads are advertised even if they are turned off. A head"]
         #[doc = "object only advertises properties and cannot be used directly to change"]
@@ -24188,20 +22550,6 @@ pub mod wlr_output_management_unstable_v1 {
         }
     }
     pub mod zwlr_output_configuration_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This object is used by the client to describe a full output configuration."]
         #[doc = ""]
         #[doc = "First, the client needs to setup the output configuration. Each head can"]
@@ -24371,20 +22719,6 @@ pub mod wlr_output_management_unstable_v1 {
         }
     }
     pub mod zwlr_output_configuration_head_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This object is used by the client to update a single head's configuration."]
         #[doc = ""]
         #[doc = "It is a protocol error to set the same property twice."]
@@ -24598,34 +22932,6 @@ pub mod wlr_output_power_management_unstable_v1 {
         }
     }
     pub mod zwlr_output_power_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Mode {
-            Temp,
-        }
-        impl TryFrom<u32> for Mode {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This object offers requests to set the power management mode of"]
         #[doc = "an output."]
         pub trait ZwlrOutputPowerV1: crate::server::Dispatcher {
@@ -24818,20 +23124,6 @@ pub mod wlr_screencopy_unstable_v1 {
         }
     }
     pub mod zwlr_screencopy_frame_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInvert = 1u32 ; } }
         impl TryFrom<u32> for Flags {
             type Error = crate::wire::DecodeError;
@@ -25020,20 +23312,6 @@ pub mod wlr_screencopy_unstable_v1 {
 }
 pub mod wlr_virtual_pointer_unstable_v1 {
     pub mod zwlr_virtual_pointer_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            Temp,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
         #[doc = "This protocol allows clients to emulate a physical pointer device. The"]
         #[doc = "requests are mostly mirror opposites of those specified in wl_pointer."]
         pub trait ZwlrVirtualPointerV1: crate::server::Dispatcher {
