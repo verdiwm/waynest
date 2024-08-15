@@ -486,6 +486,7 @@ fn write_enums(interface: &Interface) -> Vec<TokenStream> {
             }
 
             enums.push(quote! {
+                #(#docs)*
                 #[repr(u32)]
                 #[non_exhaustive]
                 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
