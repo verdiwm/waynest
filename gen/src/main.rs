@@ -630,7 +630,7 @@ fn write_events(
     let mut events = Vec::new();
 
     for (opcode, event) in interface.events.iter().enumerate() {
-        let opcode = opcode as u16;
+        let _opcode = opcode as u16;
 
         let docs = description_to_docs(event.description.as_ref());
         let name = make_ident(event.name.to_snek_case());
@@ -655,23 +655,11 @@ fn write_events(
             args.push(quote! {#name: #ty})
         }
 
-        let mut build_args = Vec::new();
-
-        build_args.push(quote! {});
-
         events.push(quote! {
             #(#docs)*
             async fn #name(#(#args),*) -> crate::server::Result<()> {
                 tracing::debug!(#tracing_inner, object.id);
-
-                let (payload,fds) = crate::wire::PayloadBuilder::new()
-                    #(#build_args)*
-                    .build();
-
-                client
-                    .send_message(crate::wire::Message::new(object.id, #opcode, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+                todo!()
             }
         });
     }
