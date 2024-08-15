@@ -8,9 +8,13 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "server couldn't find object"]
             InvalidObject = 0u32,
+            #[doc = "method doesn't exist on the specified interface or malformed request"]
             InvalidMethod = 1u32,
+            #[doc = "server is out of memory"]
             NoMemory = 2u32,
+            #[doc = "implementation error in compositor"]
             Implementation = 3u32,
         }
         impl TryFrom<u32> for Error {
@@ -450,8 +454,11 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "buffer format is not known"]
             InvalidFormat = 0u32,
+            #[doc = "invalid size or stride during pool or buffer creation"]
             InvalidStride = 1u32,
+            #[doc = "mmapping the file descriptor failed"]
             InvalidFd = 2u32,
         }
         impl TryFrom<u32> for Error {
@@ -481,89 +488,173 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Format {
+            #[doc = "32-bit ARGB format, [31:0] A:R:G:B 8:8:8:8 little endian"]
             Argb8888 = 0u32,
+            #[doc = "32-bit RGB format, [31:0] x:R:G:B 8:8:8:8 little endian"]
             Xrgb8888 = 1u32,
+            #[doc = "8-bit color index format, [7:0] C"]
             C8 = 538982467u32,
+            #[doc = "8-bit RGB format, [7:0] R:G:B 3:3:2"]
             Rgb332 = 943867730u32,
+            #[doc = "8-bit BGR format, [7:0] B:G:R 2:3:3"]
             Bgr233 = 944916290u32,
+            #[doc = "16-bit xRGB format, [15:0] x:R:G:B 4:4:4:4 little endian"]
             Xrgb4444 = 842093144u32,
+            #[doc = "16-bit xBGR format, [15:0] x:B:G:R 4:4:4:4 little endian"]
             Xbgr4444 = 842089048u32,
+            #[doc = "16-bit RGBx format, [15:0] R:G:B:x 4:4:4:4 little endian"]
             Rgbx4444 = 842094674u32,
+            #[doc = "16-bit BGRx format, [15:0] B:G:R:x 4:4:4:4 little endian"]
             Bgrx4444 = 842094658u32,
+            #[doc = "16-bit ARGB format, [15:0] A:R:G:B 4:4:4:4 little endian"]
             Argb4444 = 842093121u32,
+            #[doc = "16-bit ABGR format, [15:0] A:B:G:R 4:4:4:4 little endian"]
             Abgr4444 = 842089025u32,
+            #[doc = "16-bit RBGA format, [15:0] R:G:B:A 4:4:4:4 little endian"]
             Rgba4444 = 842088786u32,
+            #[doc = "16-bit BGRA format, [15:0] B:G:R:A 4:4:4:4 little endian"]
             Bgra4444 = 842088770u32,
+            #[doc = "16-bit xRGB format, [15:0] x:R:G:B 1:5:5:5 little endian"]
             Xrgb1555 = 892424792u32,
+            #[doc = "16-bit xBGR 1555 format, [15:0] x:B:G:R 1:5:5:5 little endian"]
             Xbgr1555 = 892420696u32,
+            #[doc = "16-bit RGBx 5551 format, [15:0] R:G:B:x 5:5:5:1 little endian"]
             Rgbx5551 = 892426322u32,
+            #[doc = "16-bit BGRx 5551 format, [15:0] B:G:R:x 5:5:5:1 little endian"]
             Bgrx5551 = 892426306u32,
+            #[doc = "16-bit ARGB 1555 format, [15:0] A:R:G:B 1:5:5:5 little endian"]
             Argb1555 = 892424769u32,
+            #[doc = "16-bit ABGR 1555 format, [15:0] A:B:G:R 1:5:5:5 little endian"]
             Abgr1555 = 892420673u32,
+            #[doc = "16-bit RGBA 5551 format, [15:0] R:G:B:A 5:5:5:1 little endian"]
             Rgba5551 = 892420434u32,
+            #[doc = "16-bit BGRA 5551 format, [15:0] B:G:R:A 5:5:5:1 little endian"]
             Bgra5551 = 892420418u32,
+            #[doc = "16-bit RGB 565 format, [15:0] R:G:B 5:6:5 little endian"]
             Rgb565 = 909199186u32,
+            #[doc = "16-bit BGR 565 format, [15:0] B:G:R 5:6:5 little endian"]
             Bgr565 = 909199170u32,
+            #[doc = "24-bit RGB format, [23:0] R:G:B little endian"]
             Rgb888 = 875710290u32,
+            #[doc = "24-bit BGR format, [23:0] B:G:R little endian"]
             Bgr888 = 875710274u32,
+            #[doc = "32-bit xBGR format, [31:0] x:B:G:R 8:8:8:8 little endian"]
             Xbgr8888 = 875709016u32,
+            #[doc = "32-bit RGBx format, [31:0] R:G:B:x 8:8:8:8 little endian"]
             Rgbx8888 = 875714642u32,
+            #[doc = "32-bit BGRx format, [31:0] B:G:R:x 8:8:8:8 little endian"]
             Bgrx8888 = 875714626u32,
+            #[doc = "32-bit ABGR format, [31:0] A:B:G:R 8:8:8:8 little endian"]
             Abgr8888 = 875708993u32,
+            #[doc = "32-bit RGBA format, [31:0] R:G:B:A 8:8:8:8 little endian"]
             Rgba8888 = 875708754u32,
+            #[doc = "32-bit BGRA format, [31:0] B:G:R:A 8:8:8:8 little endian"]
             Bgra8888 = 875708738u32,
+            #[doc = "32-bit xRGB format, [31:0] x:R:G:B 2:10:10:10 little endian"]
             Xrgb2101010 = 808669784u32,
+            #[doc = "32-bit xBGR format, [31:0] x:B:G:R 2:10:10:10 little endian"]
             Xbgr2101010 = 808665688u32,
+            #[doc = "32-bit RGBx format, [31:0] R:G:B:x 10:10:10:2 little endian"]
             Rgbx1010102 = 808671314u32,
+            #[doc = "32-bit BGRx format, [31:0] B:G:R:x 10:10:10:2 little endian"]
             Bgrx1010102 = 808671298u32,
+            #[doc = "32-bit ARGB format, [31:0] A:R:G:B 2:10:10:10 little endian"]
             Argb2101010 = 808669761u32,
+            #[doc = "32-bit ABGR format, [31:0] A:B:G:R 2:10:10:10 little endian"]
             Abgr2101010 = 808665665u32,
+            #[doc = "32-bit RGBA format, [31:0] R:G:B:A 10:10:10:2 little endian"]
             Rgba1010102 = 808665426u32,
+            #[doc = "32-bit BGRA format, [31:0] B:G:R:A 10:10:10:2 little endian"]
             Bgra1010102 = 808665410u32,
+            #[doc = "packed YCbCr format, [31:0] Cr0:Y1:Cb0:Y0 8:8:8:8 little endian"]
             Yuyv = 1448695129u32,
+            #[doc = "packed YCbCr format, [31:0] Cb0:Y1:Cr0:Y0 8:8:8:8 little endian"]
             Yvyu = 1431918169u32,
+            #[doc = "packed YCbCr format, [31:0] Y1:Cr0:Y0:Cb0 8:8:8:8 little endian"]
             Uyvy = 1498831189u32,
+            #[doc = "packed YCbCr format, [31:0] Y1:Cb0:Y0:Cr0 8:8:8:8 little endian"]
             Vyuy = 1498765654u32,
+            #[doc = "packed AYCbCr format, [31:0] A:Y:Cb:Cr 8:8:8:8 little endian"]
             Ayuv = 1448433985u32,
+            #[doc = "2 plane YCbCr Cr:Cb format, 2x2 subsampled Cr:Cb plane"]
             Nv12 = 842094158u32,
+            #[doc = "2 plane YCbCr Cb:Cr format, 2x2 subsampled Cb:Cr plane"]
             Nv21 = 825382478u32,
+            #[doc = "2 plane YCbCr Cr:Cb format, 2x1 subsampled Cr:Cb plane"]
             Nv16 = 909203022u32,
+            #[doc = "2 plane YCbCr Cb:Cr format, 2x1 subsampled Cb:Cr plane"]
             Nv61 = 825644622u32,
+            #[doc = "3 plane YCbCr format, 4x4 subsampled Cb (1) and Cr (2) planes"]
             Yuv410 = 961959257u32,
+            #[doc = "3 plane YCbCr format, 4x4 subsampled Cr (1) and Cb (2) planes"]
             Yvu410 = 961893977u32,
+            #[doc = "3 plane YCbCr format, 4x1 subsampled Cb (1) and Cr (2) planes"]
             Yuv411 = 825316697u32,
+            #[doc = "3 plane YCbCr format, 4x1 subsampled Cr (1) and Cb (2) planes"]
             Yvu411 = 825316953u32,
+            #[doc = "3 plane YCbCr format, 2x2 subsampled Cb (1) and Cr (2) planes"]
             Yuv420 = 842093913u32,
+            #[doc = "3 plane YCbCr format, 2x2 subsampled Cr (1) and Cb (2) planes"]
             Yvu420 = 842094169u32,
+            #[doc = "3 plane YCbCr format, 2x1 subsampled Cb (1) and Cr (2) planes"]
             Yuv422 = 909202777u32,
+            #[doc = "3 plane YCbCr format, 2x1 subsampled Cr (1) and Cb (2) planes"]
             Yvu422 = 909203033u32,
+            #[doc = "3 plane YCbCr format, non-subsampled Cb (1) and Cr (2) planes"]
             Yuv444 = 875713881u32,
+            #[doc = "3 plane YCbCr format, non-subsampled Cr (1) and Cb (2) planes"]
             Yvu444 = 875714137u32,
+            #[doc = "[7:0] R"]
             R8 = 538982482u32,
+            #[doc = "[15:0] R little endian"]
             R16 = 540422482u32,
+            #[doc = "[15:0] R:G 8:8 little endian"]
             Rg88 = 943212370u32,
+            #[doc = "[15:0] G:R 8:8 little endian"]
             Gr88 = 943215175u32,
+            #[doc = "[31:0] R:G 16:16 little endian"]
             Rg1616 = 842221394u32,
+            #[doc = "[31:0] G:R 16:16 little endian"]
             Gr1616 = 842224199u32,
+            #[doc = "[63:0] x:R:G:B 16:16:16:16 little endian"]
             Xrgb16161616f = 1211388504u32,
+            #[doc = "[63:0] x:B:G:R 16:16:16:16 little endian"]
             Xbgr16161616f = 1211384408u32,
+            #[doc = "[63:0] A:R:G:B 16:16:16:16 little endian"]
             Argb16161616f = 1211388481u32,
+            #[doc = "[63:0] A:B:G:R 16:16:16:16 little endian"]
             Abgr16161616f = 1211384385u32,
+            #[doc = "[31:0] X:Y:Cb:Cr 8:8:8:8 little endian"]
             Xyuv8888 = 1448434008u32,
+            #[doc = "[23:0] Cr:Cb:Y 8:8:8 little endian"]
             Vuy888 = 875713878u32,
+            #[doc = "Y followed by U then V, 10:10:10. Non-linear modifier only"]
             Vuy101010 = 808670550u32,
+            #[doc = "[63:0] Cr0:0:Y1:0:Cb0:0:Y0:0 10:6:10:6:10:6:10:6 little endian per 2 Y pixels"]
             Y210 = 808530521u32,
+            #[doc = "[63:0] Cr0:0:Y1:0:Cb0:0:Y0:0 12:4:12:4:12:4:12:4 little endian per 2 Y pixels"]
             Y212 = 842084953u32,
+            #[doc = "[63:0] Cr0:Y1:Cb0:Y0 16:16:16:16 little endian per 2 Y pixels"]
             Y216 = 909193817u32,
+            #[doc = "[31:0] A:Cr:Y:Cb 2:10:10:10 little endian"]
             Y410 = 808531033u32,
+            #[doc = "[63:0] A:0:Cr:0:Y:0:Cb:0 12:4:12:4:12:4:12:4 little endian"]
             Y412 = 842085465u32,
+            #[doc = "[63:0] A:Cr:Y:Cb 16:16:16:16 little endian"]
             Y416 = 909194329u32,
+            #[doc = "[31:0] X:Cr:Y:Cb 2:10:10:10 little endian"]
             Xvyu2101010 = 808670808u32,
+            #[doc = "[63:0] X:0:Cr:0:Y:0:Cb:0 12:4:12:4:12:4:12:4 little endian"]
             Xvyu1216161616 = 909334104u32,
+            #[doc = "[63:0] X:Cr:Y:Cb 16:16:16:16 little endian"]
             Xvyu16161616 = 942954072u32,
+            #[doc = "[63:0]   A3:A2:Y3:0:Cr0:0:Y2:0:A1:A0:Y1:0:Cb0:0:Y0:0  1:1:8:2:8:2:8:2:1:1:8:2:8:2:8:2 little endian"]
             Y0l0 = 810299481u32,
+            #[doc = "[63:0]   X3:X2:Y3:0:Cr0:0:Y2:0:X1:X0:Y1:0:Cb0:0:Y0:0  1:1:8:2:8:2:8:2:1:1:8:2:8:2:8:2 little endian"]
             X0l0 = 810299480u32,
+            #[doc = "[63:0]   A3:A2:Y3:Cr0:Y2:A1:A0:Y1:Cb0:Y0  1:1:10:10:10:1:1:10:10:10 little endian"]
             Y0l2 = 843853913u32,
+            #[doc = "[63:0]   X3:X2:Y3:Cr0:Y2:X1:X0:Y1:Cb0:Y0  1:1:10:10:10:1:1:10:10:10 little endian"]
             X0l2 = 843853912u32,
             Yuv4208bit = 942691673u32,
             Yuv42010bit = 808539481u32,
@@ -575,34 +666,61 @@ pub mod wayland {
             Bgr888A8 = 943798338u32,
             Rgb565A8 = 943797586u32,
             Bgr565A8 = 943797570u32,
+            #[doc = "non-subsampled Cr:Cb plane"]
             Nv24 = 875714126u32,
+            #[doc = "non-subsampled Cb:Cr plane"]
             Nv42 = 842290766u32,
+            #[doc = "2x1 subsampled Cr:Cb plane, 10 bit per channel"]
             P210 = 808530512u32,
+            #[doc = "2x2 subsampled Cr:Cb plane 10 bits per channel"]
             P010 = 808530000u32,
+            #[doc = "2x2 subsampled Cr:Cb plane 12 bits per channel"]
             P012 = 842084432u32,
+            #[doc = "2x2 subsampled Cr:Cb plane 16 bits per channel"]
             P016 = 909193296u32,
+            #[doc = "[63:0] A:x:B:x:G:x:R:x 10:6:10:6:10:6:10:6 little endian"]
             Axbxgxrx106106106106 = 808534593u32,
+            #[doc = "2x2 subsampled Cr:Cb plane"]
             Nv15 = 892425806u32,
             Q410 = 808531025u32,
             Q401 = 825242705u32,
+            #[doc = "[63:0] x:R:G:B 16:16:16:16 little endian"]
             Xrgb16161616 = 942953048u32,
+            #[doc = "[63:0] x:B:G:R 16:16:16:16 little endian"]
             Xbgr16161616 = 942948952u32,
+            #[doc = "[63:0] A:R:G:B 16:16:16:16 little endian"]
             Argb16161616 = 942953025u32,
+            #[doc = "[63:0] A:B:G:R 16:16:16:16 little endian"]
             Abgr16161616 = 942948929u32,
+            #[doc = "[7:0] C0:C1:C2:C3:C4:C5:C6:C7 1:1:1:1:1:1:1:1 eight pixels/byte"]
             C1 = 538980675u32,
+            #[doc = "[7:0] C0:C1:C2:C3 2:2:2:2 four pixels/byte"]
             C2 = 538980931u32,
+            #[doc = "[7:0] C0:C1 4:4 two pixels/byte"]
             C4 = 538981443u32,
+            #[doc = "[7:0] D0:D1:D2:D3:D4:D5:D6:D7 1:1:1:1:1:1:1:1 eight pixels/byte"]
             D1 = 538980676u32,
+            #[doc = "[7:0] D0:D1:D2:D3 2:2:2:2 four pixels/byte"]
             D2 = 538980932u32,
+            #[doc = "[7:0] D0:D1 4:4 two pixels/byte"]
             D4 = 538981444u32,
+            #[doc = "[7:0] D"]
             D8 = 538982468u32,
+            #[doc = "[7:0] R0:R1:R2:R3:R4:R5:R6:R7 1:1:1:1:1:1:1:1 eight pixels/byte"]
             R1 = 538980690u32,
+            #[doc = "[7:0] R0:R1:R2:R3 2:2:2:2 four pixels/byte"]
             R2 = 538980946u32,
+            #[doc = "[7:0] R0:R1 4:4 two pixels/byte"]
             R4 = 538981458u32,
+            #[doc = "[15:0] x:R 6:10 little endian"]
             R10 = 540029266u32,
+            #[doc = "[15:0] x:R 4:12 little endian"]
             R12 = 540160338u32,
+            #[doc = "[31:0] A:Cr:Cb:Y 8:8:8:8 little endian"]
             Avuy8888 = 1498764865u32,
+            #[doc = "[31:0] X:Cr:Cb:Y 8:8:8:8 little endian"]
             Xvuy8888 = 1498764888u32,
+            #[doc = "2x2 subsampled Cr:Cb plane 10 bits per channel packed"]
             P030 = 808661072u32,
         }
         impl TryFrom<u32> for Format {
@@ -900,9 +1018,13 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "finish request was called untimely"]
             InvalidFinish = 0u32,
+            #[doc = "action mask contains invalid values"]
             InvalidActionMask = 1u32,
+            #[doc = "action argument has an invalid value"]
             InvalidAction = 2u32,
+            #[doc = "offer doesn't accept this request"]
             InvalidOffer = 3u32,
         }
         impl TryFrom<u32> for Error {
@@ -1170,7 +1292,9 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "action mask contains invalid values"]
             InvalidActionMask = 0u32,
+            #[doc = "source doesn't accept this request"]
             InvalidSource = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -1410,7 +1534,9 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "given wl_surface has another role"]
             Role = 0u32,
+            #[doc = "source has already been used"]
             UsedSource = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -1743,6 +1869,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "given wl_surface has another role"]
             Role = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -1832,9 +1959,13 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum FullscreenMethod {
+            #[doc = "no preference, apply default policy"]
             Default = 0u32,
+            #[doc = "scale, preserve the surface's aspect ratio and center on output"]
             Scale = 1u32,
+            #[doc = "switch output mode to the smallest mode that can fit the surface, add black borders to compensate size mismatch"]
             Driver = 2u32,
+            #[doc = "no upscaling, center on output and add black borders to compensate size mismatch"]
             Fill = 3u32,
         }
         impl TryFrom<u32> for FullscreenMethod {
@@ -2228,10 +2359,15 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "buffer scale value is invalid"]
             InvalidScale = 0u32,
+            #[doc = "buffer transform value is invalid"]
             InvalidTransform = 1u32,
+            #[doc = "buffer size is invalid"]
             InvalidSize = 2u32,
+            #[doc = "buffer offset is invalid"]
             InvalidOffset = 3u32,
+            #[doc = "surface was destroyed before its role object"]
             DefunctRoleObject = 4u32,
         }
         impl TryFrom<u32> for Error {
@@ -2842,6 +2978,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "get_pointer, get_keyboard or get_touch called on seat without the matching capability"]
             MissingCapability = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -3035,6 +3172,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "given wl_surface has another role"]
             Role = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -3052,7 +3190,9 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ButtonState {
+            #[doc = "the button is not pressed"]
             Released = 0u32,
+            #[doc = "the button is pressed"]
             Pressed = 1u32,
         }
         impl TryFrom<u32> for ButtonState {
@@ -3070,7 +3210,9 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Axis {
+            #[doc = "vertical axis"]
             VerticalScroll = 0u32,
+            #[doc = "horizontal axis"]
             HorizontalScroll = 1u32,
         }
         impl TryFrom<u32> for Axis {
@@ -3103,9 +3245,13 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum AxisSource {
+            #[doc = "a physical wheel rotation"]
             Wheel = 0u32,
+            #[doc = "finger on a touch surface"]
             Finger = 1u32,
+            #[doc = "continuous coordinate space"]
             Continuous = 2u32,
+            #[doc = "a physical wheel tilt"]
             WheelTilt = 3u32,
         }
         impl TryFrom<u32> for AxisSource {
@@ -3126,7 +3272,9 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum AxisRelativeDirection {
+            #[doc = "physical motion matches axis direction"]
             Identical = 0u32,
+            #[doc = "physical motion is the inverse of the axis direction"]
             Inverted = 1u32,
         }
         impl TryFrom<u32> for AxisRelativeDirection {
@@ -3603,7 +3751,9 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum KeymapFormat {
+            #[doc = "no keymap; client must understand how to interpret the raw keycode"]
             NoKeymap = 0u32,
+            #[doc = "libxkbcommon compatible, null-terminated string; to determine the xkb keycode, clients must add 8 to the key event keycode"]
             XkbV1 = 1u32,
         }
         impl TryFrom<u32> for KeymapFormat {
@@ -3621,7 +3771,9 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum KeyState {
+            #[doc = "key is not pressed"]
             Released = 0u32,
+            #[doc = "key is pressed"]
             Pressed = 1u32,
         }
         impl TryFrom<u32> for KeyState {
@@ -4056,11 +4208,17 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Subpixel {
+            #[doc = "unknown geometry"]
             Unknown = 0u32,
+            #[doc = "no geometry"]
             None = 1u32,
+            #[doc = "horizontal RGB"]
             HorizontalRgb = 2u32,
+            #[doc = "horizontal BGR"]
             HorizontalBgr = 3u32,
+            #[doc = "vertical RGB"]
             VerticalRgb = 4u32,
+            #[doc = "vertical BGR"]
             VerticalBgr = 5u32,
         }
         impl TryFrom<u32> for Subpixel {
@@ -4091,13 +4249,21 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Transform {
+            #[doc = "no transform"]
             Normal = 0u32,
+            #[doc = "90 degrees counter-clockwise"]
             _90 = 1u32,
+            #[doc = "180 degrees counter-clockwise"]
             _180 = 2u32,
+            #[doc = "270 degrees counter-clockwise"]
             _270 = 3u32,
+            #[doc = "180 degree flip around a vertical axis"]
             Flipped = 4u32,
+            #[doc = "flip and rotate 90 degrees counter-clockwise"]
             Flipped90 = 5u32,
+            #[doc = "flip and rotate 180 degrees counter-clockwise"]
             Flipped180 = 6u32,
+            #[doc = "flip and rotate 270 degrees counter-clockwise"]
             Flipped270 = 7u32,
         }
         impl TryFrom<u32> for Transform {
@@ -4451,7 +4617,9 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "the to-be sub-surface is invalid"]
             BadSurface = 0u32,
+            #[doc = "the to-be sub-surface parent is invalid"]
             BadParent = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -4565,6 +4733,7 @@ pub mod wayland {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "wl_surface is not a sibling or the parent"]
             BadSurface = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -5022,13 +5191,22 @@ pub mod linux_dmabuf_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "the dmabuf_batch object has already been used to create a wl_buffer"]
             AlreadyUsed = 0u32,
+            #[doc = "plane index out of bounds"]
             PlaneIdx = 1u32,
+            #[doc = "the plane index was already set"]
             PlaneSet = 2u32,
+            #[doc = "missing or too many planes to create a buffer"]
             Incomplete = 3u32,
+            #[doc = "format not supported"]
             InvalidFormat = 4u32,
+            #[doc = "invalid width or height"]
             InvalidDimensions = 5u32,
+            #[doc = "offset + stride * height goes out of dmabuf bounds"]
             OutOfBounds = 6u32,
+            #[doc = "invalid wl_buffer resulted from importing dmabufs via"]
+            #[doc = "the create_immed request on given buffer_params"]
             InvalidWlBuffer = 7u32,
         }
         impl TryFrom<u32> for Error {
@@ -5594,7 +5772,9 @@ pub mod presentation_time {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "invalid value in tv_nsec"]
             InvalidTimestamp = 0u32,
+            #[doc = "invalid flag"]
             InvalidFlag = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -6107,13 +6287,21 @@ pub mod tablet_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Type {
+            #[doc = "Pen"]
             Pen = 320u32,
+            #[doc = "Eraser"]
             Eraser = 321u32,
+            #[doc = "Brush"]
             Brush = 322u32,
+            #[doc = "Pencil"]
             Pencil = 323u32,
+            #[doc = "Airbrush"]
             Airbrush = 324u32,
+            #[doc = "Finger"]
             Finger = 325u32,
+            #[doc = "Mouse"]
             Mouse = 326u32,
+            #[doc = "Lens"]
             Lens = 327u32,
         }
         impl TryFrom<u32> for Type {
@@ -6140,11 +6328,17 @@ pub mod tablet_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Capability {
+            #[doc = "Tilt axes"]
             Tilt = 1u32,
+            #[doc = "Pressure axis"]
             Pressure = 2u32,
+            #[doc = "Distance axis"]
             Distance = 3u32,
+            #[doc = "Z-rotation axis"]
             Rotation = 4u32,
+            #[doc = "Slider axis"]
             Slider = 5u32,
+            #[doc = "Wheel axis"]
             Wheel = 6u32,
         }
         impl TryFrom<u32> for Capability {
@@ -6166,7 +6360,9 @@ pub mod tablet_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ButtonState {
+            #[doc = "button is not pressed"]
             Released = 0u32,
+            #[doc = "button is pressed"]
             Pressed = 1u32,
         }
         impl TryFrom<u32> for ButtonState {
@@ -6183,6 +6379,7 @@ pub mod tablet_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "given wl_surface has another role"]
             Role = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -6845,6 +7042,7 @@ pub mod tablet_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Source {
+            #[doc = "finger"]
             Finger = 1u32,
         }
         impl TryFrom<u32> for Source {
@@ -7029,6 +7227,7 @@ pub mod tablet_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Source {
+            #[doc = "finger"]
             Finger = 1u32,
         }
         impl TryFrom<u32> for Source {
@@ -7411,7 +7610,9 @@ pub mod tablet_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ButtonState {
+            #[doc = "the button is not pressed"]
             Released = 0u32,
+            #[doc = "the button is pressed"]
             Pressed = 1u32,
         }
         impl TryFrom<u32> for ButtonState {
@@ -7671,6 +7872,7 @@ pub mod viewporter {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "the surface already has a viewport object associated"]
             ViewportExists = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -7751,9 +7953,13 @@ pub mod viewporter {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "negative or zero values in width or height"]
             BadValue = 0u32,
+            #[doc = "destination size is not integer"]
             BadSize = 1u32,
+            #[doc = "source rectangle extends outside of the content area"]
             OutOfBuffer = 2u32,
+            #[doc = "the wl_surface was destroyed"]
             NoSurface = 3u32,
         }
         impl TryFrom<u32> for Error {
@@ -7917,12 +8123,19 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "given wl_surface has another role"]
             Role = 0u32,
+            #[doc = "xdg_wm_base was destroyed before children"]
             DefunctSurfaces = 1u32,
+            #[doc = "the client tried to map or destroy a non-topmost popup"]
             NotTheTopmostPopup = 2u32,
+            #[doc = "the client specified an invalid popup parent surface"]
             InvalidPopupParent = 3u32,
+            #[doc = "the client provided an invalid surface state"]
             InvalidSurfaceState = 4u32,
+            #[doc = "the client provided an invalid positioner"]
             InvalidPositioner = 5u32,
+            #[doc = "the client didn’t respond to a ping event in time"]
             Unresponsive = 6u32,
         }
         impl TryFrom<u32> for Error {
@@ -8078,6 +8291,7 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "invalid input provided"]
             InvalidInput = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -8392,11 +8606,17 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "Surface was not fully constructed"]
             NotConstructed = 1u32,
+            #[doc = "Surface was already constructed"]
             AlreadyConstructed = 2u32,
+            #[doc = "Attaching a buffer to an unconfigured surface"]
             UnconfiguredBuffer = 3u32,
+            #[doc = "Invalid serial number when acking a configure event"]
             InvalidSerial = 4u32,
+            #[doc = "Width or height was zero or negative"]
             InvalidSize = 5u32,
+            #[doc = "Surface was destroyed before its role object"]
             DefunctRoleObject = 6u32,
         }
         impl TryFrom<u32> for Error {
@@ -8681,8 +8901,12 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "provided value is"]
+            #[doc = "not a valid variant of the resize_edge enum"]
             InvalidResizeEdge = 0u32,
+            #[doc = "invalid parent toplevel"]
             InvalidParent = 1u32,
+            #[doc = "client provided an invalid min or max size"]
             InvalidSize = 2u32,
         }
         impl TryFrom<u32> for Error {
@@ -8740,55 +8964,18 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum State {
-            #[doc = "The surface is maximized. The window geometry specified in the configure"]
-            #[doc = "event must be obeyed by the client, or the xdg_wm_base.invalid_surface_state"]
-            #[doc = "error is raised."]
-            #[doc = ""]
-            #[doc = "The client should draw without shadow or other"]
-            #[doc = "decoration outside of the window geometry."]
+            #[doc = "the surface is maximized"]
             Maximized = 1u32,
-            #[doc = "The surface is fullscreen. The window geometry specified in the"]
-            #[doc = "configure event is a maximum; the client cannot resize beyond it. For"]
-            #[doc = "a surface to cover the whole fullscreened area, the geometry"]
-            #[doc = "dimensions must be obeyed by the client. For more details, see"]
-            #[doc = "xdg_toplevel.set_fullscreen."]
+            #[doc = "the surface is fullscreen"]
             Fullscreen = 2u32,
-            #[doc = "The surface is being resized. The window geometry specified in the"]
-            #[doc = "configure event is a maximum; the client cannot resize beyond it."]
-            #[doc = "Clients that have aspect ratio or cell sizing configuration can use"]
-            #[doc = "a smaller size, however."]
+            #[doc = "the surface is being resized"]
             Resizing = 3u32,
-            #[doc = "Client window decorations should be painted as if the window is"]
-            #[doc = "active. Do not assume this means that the window actually has"]
-            #[doc = "keyboard or pointer focus."]
+            #[doc = "the surface is now activated"]
             Activated = 4u32,
-            #[doc = "The window is currently in a tiled layout and the left edge is"]
-            #[doc = "considered to be adjacent to another part of the tiling grid."]
-            #[doc = ""]
-            #[doc = "The client should draw without shadow or other decoration outside of"]
-            #[doc = "the window geometry on the left edge."]
             TiledLeft = 5u32,
-            #[doc = "The window is currently in a tiled layout and the right edge is"]
-            #[doc = "considered to be adjacent to another part of the tiling grid."]
-            #[doc = ""]
-            #[doc = "The client should draw without shadow or other decoration outside of"]
-            #[doc = "the window geometry on the right edge."]
             TiledRight = 6u32,
-            #[doc = "The window is currently in a tiled layout and the top edge is"]
-            #[doc = "considered to be adjacent to another part of the tiling grid."]
-            #[doc = ""]
-            #[doc = "The client should draw without shadow or other decoration outside of"]
-            #[doc = "the window geometry on the top edge."]
             TiledTop = 7u32,
-            #[doc = "The window is currently in a tiled layout and the bottom edge is"]
-            #[doc = "considered to be adjacent to another part of the tiling grid."]
-            #[doc = ""]
-            #[doc = "The client should draw without shadow or other decoration outside of"]
-            #[doc = "the window geometry on the bottom edge."]
             TiledBottom = 8u32,
-            #[doc = "The surface is currently not ordinarily being repainted; for"]
-            #[doc = "example because its content is occluded by another window, or its"]
-            #[doc = "outputs are switched off due to screen locking."]
             Suspended = 9u32,
         }
         impl TryFrom<u32> for State {
@@ -8812,9 +8999,13 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum WmCapabilities {
+            #[doc = "show_window_menu is available"]
             WindowMenu = 1u32,
+            #[doc = "set_maximized and unset_maximized are available"]
             Maximize = 2u32,
+            #[doc = "set_fullscreen and unset_fullscreen are available"]
             Fullscreen = 3u32,
+            #[doc = "set_minimized is available"]
             Minimize = 4u32,
         }
         impl TryFrom<u32> for WmCapabilities {
@@ -9445,6 +9636,7 @@ pub mod xdg_shell {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "tried to grab after being mapped"]
             InvalidGrab = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -9691,6 +9883,7 @@ pub mod alpha_modifier_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "wl_surface already has a alpha modifier object"]
             AlreadyConstructed = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -9771,6 +9964,7 @@ pub mod alpha_modifier_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "wl_surface was destroyed"]
             NoSurface = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -9855,6 +10049,7 @@ pub mod content_type_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "wl_surface already has a content type object"]
             AlreadyConstructed = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -9939,19 +10134,9 @@ pub mod content_type_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Type {
-            #[doc = "The content type none means that either the application has no data"]
-            #[doc = "about the content type, or that the content doesn't fit into one of"]
-            #[doc = "the other categories."]
             None = 0u32,
-            #[doc = "The content type photo describes content derived from digital still"]
-            #[doc = "pictures and may be presented with minimal processing."]
             Photo = 1u32,
-            #[doc = "The content type video describes a video or animation and may be"]
-            #[doc = "presented with more accurate timing to avoid stutter. Where scaling"]
-            #[doc = "is needed, scaling methods more appropriate for video may be used."]
             Video = 2u32,
-            #[doc = "The content type game describes a running game. Its content may be"]
-            #[doc = "presented with reduced latency."]
             Game = 3u32,
         }
         impl TryFrom<u32> for Type {
@@ -10123,39 +10308,73 @@ pub mod cursor_shape_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Shape {
+            #[doc = "default cursor"]
             Default = 1u32,
+            #[doc = "a context menu is available for the object under the cursor"]
             ContextMenu = 2u32,
+            #[doc = "help is available for the object under the cursor"]
             Help = 3u32,
+            #[doc = "pointer that indicates a link or another interactive element"]
             Pointer = 4u32,
+            #[doc = "progress indicator"]
             Progress = 5u32,
+            #[doc = "program is busy, user should wait"]
             Wait = 6u32,
+            #[doc = "a cell or set of cells may be selected"]
             Cell = 7u32,
+            #[doc = "simple crosshair"]
             Crosshair = 8u32,
+            #[doc = "text may be selected"]
             Text = 9u32,
+            #[doc = "vertical text may be selected"]
             VerticalText = 10u32,
+            #[doc = "drag-and-drop: alias of/shortcut to something is to be created"]
             Alias = 11u32,
+            #[doc = "drag-and-drop: something is to be copied"]
             Copy = 12u32,
+            #[doc = "drag-and-drop: something is to be moved"]
             Move = 13u32,
+            #[doc = "drag-and-drop: the dragged item cannot be dropped at the current cursor location"]
             NoDrop = 14u32,
+            #[doc = "drag-and-drop: the requested action will not be carried out"]
             NotAllowed = 15u32,
+            #[doc = "drag-and-drop: something can be grabbed"]
             Grab = 16u32,
+            #[doc = "drag-and-drop: something is being grabbed"]
             Grabbing = 17u32,
+            #[doc = "resizing: the east border is to be moved"]
             EResize = 18u32,
+            #[doc = "resizing: the north border is to be moved"]
             NResize = 19u32,
+            #[doc = "resizing: the north-east corner is to be moved"]
             NeResize = 20u32,
+            #[doc = "resizing: the north-west corner is to be moved"]
             NwResize = 21u32,
+            #[doc = "resizing: the south border is to be moved"]
             SResize = 22u32,
+            #[doc = "resizing: the south-east corner is to be moved"]
             SeResize = 23u32,
+            #[doc = "resizing: the south-west corner is to be moved"]
             SwResize = 24u32,
+            #[doc = "resizing: the west border is to be moved"]
             WResize = 25u32,
+            #[doc = "resizing: the east and west borders are to be moved"]
             EwResize = 26u32,
+            #[doc = "resizing: the north and south borders are to be moved"]
             NsResize = 27u32,
+            #[doc = "resizing: the north-east and south-west corners are to be moved"]
             NeswResize = 28u32,
+            #[doc = "resizing: the north-west and south-east corners are to be moved"]
             NwseResize = 29u32,
+            #[doc = "resizing: that the item/column can be resized horizontally"]
             ColResize = 30u32,
+            #[doc = "resizing: that the item/row can be resized vertically"]
             RowResize = 31u32,
+            #[doc = "something can be scrolled in any direction"]
             AllScroll = 32u32,
+            #[doc = "something can be zoomed in"]
             ZoomIn = 33u32,
+            #[doc = "something can be zoomed out"]
             ZoomOut = 34u32,
         }
         impl TryFrom<u32> for Shape {
@@ -10204,6 +10423,7 @@ pub mod cursor_shape_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "the specified shape value is invalid"]
             InvalidShape = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -10587,8 +10807,11 @@ pub mod drm_lease_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "requested a connector from a different lease device"]
             WrongDevice = 0u32,
+            #[doc = "requested a connector twice"]
             DuplicateConnector = 1u32,
+            #[doc = "requested a lease without requesting a connector"]
             EmptyLease = 2u32,
         }
         impl TryFrom<u32> for Error {
@@ -11287,10 +11510,15 @@ pub mod ext_session_lock_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "attempted to destroy session lock while locked"]
             InvalidDestroy = 0u32,
+            #[doc = "unlock requested but locked event was never sent"]
             InvalidUnlock = 1u32,
+            #[doc = "given wl_surface already has a role"]
             Role = 2u32,
+            #[doc = "given output already has a lock surface"]
             DuplicateOutput = 3u32,
+            #[doc = "given wl_surface has a buffer attached or committed"]
             AlreadyConstructed = 4u32,
         }
         impl TryFrom<u32> for Error {
@@ -11521,9 +11749,13 @@ pub mod ext_session_lock_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "surface committed before first ack_configure request"]
             CommitBeforeFirstAck = 0u32,
+            #[doc = "surface committed with a null buffer"]
             NullBuffer = 1u32,
+            #[doc = "failed to match ack'd width/height"]
             DimensionsMismatch = 2u32,
+            #[doc = "serial provided in ack_configure is invalid"]
             InvalidSerial = 3u32,
         }
         impl TryFrom<u32> for Error {
@@ -11826,6 +12058,7 @@ pub mod fractional_scale_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "the surface already has a fractional_scale object associated"]
             FractionalScaleExists = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -11984,7 +12217,9 @@ pub mod linux_drm_syncobj_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "the surface already has a synchronization object associated"]
             SurfaceExists = 0u32,
+            #[doc = "the timeline object could not be imported"]
             InvalidTimeline = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -12134,11 +12369,17 @@ pub mod linux_drm_syncobj_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "the associated wl_surface was destroyed"]
             NoSurface = 1u32,
+            #[doc = "the buffer does not support explicit synchronization"]
             UnsupportedBuffer = 2u32,
+            #[doc = "no buffer was attached"]
             NoBuffer = 3u32,
+            #[doc = "no acquire timeline point was set"]
             NoAcquirePoint = 4u32,
+            #[doc = "no release timeline point was set"]
             NoReleasePoint = 5u32,
+            #[doc = "acquire and release timeline points are in conflict"]
             ConflictingPoints = 6u32,
         }
         impl TryFrom<u32> for Error {
@@ -12336,7 +12577,9 @@ pub mod security_context_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "listening socket FD is invalid"]
             InvalidListenFd = 1u32,
+            #[doc = "nested security contexts are forbidden"]
             Nested = 2u32,
         }
         impl TryFrom<u32> for Error {
@@ -12443,8 +12686,11 @@ pub mod security_context_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "security context has already been committed"]
             AlreadyUsed = 1u32,
+            #[doc = "metadata has already been set"]
             AlreadySet = 2u32,
+            #[doc = "metadata is invalid"]
             InvalidMetadata = 3u32,
         }
         impl TryFrom<u32> for Error {
@@ -12696,6 +12942,7 @@ pub mod tearing_control_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "the surface already has a tearing object associated"]
             TearingControlExists = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -12791,12 +13038,7 @@ pub mod tearing_control_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum PresentationHint {
-            #[doc = "The content of this surface is meant to be synchronized to the"]
-            #[doc = "vertical blanking period. This should not result in visible tearing"]
-            #[doc = "and may result in a delay before a surface commit is presented."]
             Vsync = 0u32,
-            #[doc = "The content of this surface is meant to be presented with minimal"]
-            #[doc = "latency and tearing is acceptable."]
             Async = 1u32,
         }
         impl TryFrom<u32> for PresentationHint {
@@ -13001,6 +13243,7 @@ pub mod xdg_activation_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "The token has already been used previously"]
             AlreadyUsed = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -13161,6 +13404,7 @@ pub mod xdg_dialog_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "the xdg_toplevel object has already been used to create a xdg_dialog_v1"]
             AlreadyUsed = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -13322,6 +13566,7 @@ pub mod xdg_toplevel_drag_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "data_source already used for toplevel drag"]
             InvalidSource = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -13438,7 +13683,9 @@ pub mod xdg_toplevel_drag_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "valid toplevel already attached"]
             ToplevelAttached = 0u32,
+            #[doc = "drag has not ended"]
             OngoingDrag = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -13556,6 +13803,7 @@ pub mod xwayland_shell_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "given wl_surface has another role"]
             Role = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -13650,7 +13898,9 @@ pub mod xwayland_shell_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "given wl_surface is already associated with an X11 window"]
             AlreadyAssociated = 0u32,
+            #[doc = "serial was not valid"]
             InvalidSerial = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -13766,7 +14016,9 @@ pub mod fullscreen_shell_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Capability {
+            #[doc = "compositor is capable of almost any output mode"]
             ArbitraryModes = 1u32,
+            #[doc = "compositor has a separate cursor plane"]
             CursorPlane = 2u32,
         }
         impl TryFrom<u32> for Capability {
@@ -13786,10 +14038,15 @@ pub mod fullscreen_shell_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum PresentMethod {
+            #[doc = "no preference, apply default policy"]
             Default = 0u32,
+            #[doc = "center the surface on the output"]
             Center = 1u32,
+            #[doc = "scale the surface, preserving aspect ratio, to the largest size that will fit on the output"]
             Zoom = 2u32,
+            #[doc = "scale the surface, preserving aspect ratio, to fully fill the output cropping if needed"]
             ZoomCrop = 3u32,
+            #[doc = "scale the surface to the size of the output ignoring aspect ratio"]
             Stretch = 4u32,
         }
         impl TryFrom<u32> for PresentMethod {
@@ -13810,7 +14067,9 @@ pub mod fullscreen_shell_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "present_method is not known"]
             InvalidMethod = 0u32,
+            #[doc = "given wl_surface has another role"]
             Role = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -15103,6 +15362,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "the shortcuts are already inhibited for this surface"]
             AlreadyInhibited = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -15532,13 +15792,22 @@ pub mod linux_dmabuf_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "the dmabuf_batch object has already been used to create a wl_buffer"]
             AlreadyUsed = 0u32,
+            #[doc = "plane index out of bounds"]
             PlaneIdx = 1u32,
+            #[doc = "the plane index was already set"]
             PlaneSet = 2u32,
+            #[doc = "missing or too many planes to create a buffer"]
             Incomplete = 3u32,
+            #[doc = "format not supported"]
             InvalidFormat = 4u32,
+            #[doc = "invalid width or height"]
             InvalidDimensions = 5u32,
+            #[doc = "offset + stride * height goes out of dmabuf bounds"]
             OutOfBounds = 6u32,
+            #[doc = "invalid wl_buffer resulted from importing dmabufs via"]
+            #[doc = "the create_immed request on given buffer_params"]
             InvalidWlBuffer = 7u32,
         }
         impl TryFrom<u32> for Error {
@@ -16102,6 +16371,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "the surface already has a synchronization object associated"]
             SynchronizationExists = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -16207,11 +16477,17 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "the fence specified by the client could not be imported"]
             InvalidFence = 0u32,
+            #[doc = "multiple fences added for a single surface commit"]
             DuplicateFence = 1u32,
+            #[doc = "multiple releases added for a single surface commit"]
             DuplicateRelease = 2u32,
+            #[doc = "the associated wl_surface was destroyed"]
             NoSurface = 3u32,
+            #[doc = "the buffer does not support explicit synchronization"]
             UnsupportedBuffer = 4u32,
+            #[doc = "no buffer was attached"]
             NoBuffer = 5u32,
         }
         impl TryFrom<u32> for Error {
@@ -16491,6 +16767,7 @@ pub mod pointer_constraints_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "pointer constraint already requested on that surface"]
             AlreadyConstrained = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -16509,15 +16786,7 @@ pub mod pointer_constraints_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Lifetime {
-            #[doc = "A oneshot pointer constraint will never reactivate once it has been"]
-            #[doc = "deactivated. See the corresponding deactivation event"]
-            #[doc = "(wp_locked_pointer.unlocked and wp_confined_pointer.unconfined) for"]
-            #[doc = "details."]
             Oneshot = 1u32,
-            #[doc = "A persistent pointer constraint may again reactivate once it has"]
-            #[doc = "been deactivated. See the corresponding deactivation event"]
-            #[doc = "(wp_locked_pointer.unlocked and wp_confined_pointer.unconfined) for"]
-            #[doc = "details."]
             Persistent = 2u32,
         }
         impl TryFrom<u32> for Lifetime {
@@ -18158,13 +18427,21 @@ pub mod tablet_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Type {
+            #[doc = "Pen"]
             Pen = 320u32,
+            #[doc = "Eraser"]
             Eraser = 321u32,
+            #[doc = "Brush"]
             Brush = 322u32,
+            #[doc = "Pencil"]
             Pencil = 323u32,
+            #[doc = "Airbrush"]
             Airbrush = 324u32,
+            #[doc = "Finger"]
             Finger = 325u32,
+            #[doc = "Mouse"]
             Mouse = 326u32,
+            #[doc = "Lens"]
             Lens = 327u32,
         }
         impl TryFrom<u32> for Type {
@@ -18191,11 +18468,17 @@ pub mod tablet_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Capability {
+            #[doc = "Tilt axes"]
             Tilt = 1u32,
+            #[doc = "Pressure axis"]
             Pressure = 2u32,
+            #[doc = "Distance axis"]
             Distance = 3u32,
+            #[doc = "Z-rotation axis"]
             Rotation = 4u32,
+            #[doc = "Slider axis"]
             Slider = 5u32,
+            #[doc = "Wheel axis"]
             Wheel = 6u32,
         }
         impl TryFrom<u32> for Capability {
@@ -18217,7 +18500,9 @@ pub mod tablet_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ButtonState {
+            #[doc = "button is not pressed"]
             Released = 0u32,
+            #[doc = "button is pressed"]
             Pressed = 1u32,
         }
         impl TryFrom<u32> for ButtonState {
@@ -18234,6 +18519,7 @@ pub mod tablet_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "given wl_surface has another role"]
             Role = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -19128,13 +19414,21 @@ pub mod tablet_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Type {
+            #[doc = "Pen"]
             Pen = 320u32,
+            #[doc = "Eraser"]
             Eraser = 321u32,
+            #[doc = "Brush"]
             Brush = 322u32,
+            #[doc = "Pencil"]
             Pencil = 323u32,
+            #[doc = "Airbrush"]
             Airbrush = 324u32,
+            #[doc = "Finger"]
             Finger = 325u32,
+            #[doc = "Mouse"]
             Mouse = 326u32,
+            #[doc = "Lens"]
             Lens = 327u32,
         }
         impl TryFrom<u32> for Type {
@@ -19161,11 +19455,17 @@ pub mod tablet_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Capability {
+            #[doc = "Tilt axes"]
             Tilt = 1u32,
+            #[doc = "Pressure axis"]
             Pressure = 2u32,
+            #[doc = "Distance axis"]
             Distance = 3u32,
+            #[doc = "Z-rotation axis"]
             Rotation = 4u32,
+            #[doc = "Slider axis"]
             Slider = 5u32,
+            #[doc = "Wheel axis"]
             Wheel = 6u32,
         }
         impl TryFrom<u32> for Capability {
@@ -19187,7 +19487,9 @@ pub mod tablet_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ButtonState {
+            #[doc = "button is not pressed"]
             Released = 0u32,
+            #[doc = "button is pressed"]
             Pressed = 1u32,
         }
         impl TryFrom<u32> for ButtonState {
@@ -19204,6 +19506,7 @@ pub mod tablet_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "given wl_surface has another role"]
             Role = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -19866,6 +20169,7 @@ pub mod tablet_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Source {
+            #[doc = "finger"]
             Finger = 1u32,
         }
         impl TryFrom<u32> for Source {
@@ -20050,6 +20354,7 @@ pub mod tablet_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Source {
+            #[doc = "finger"]
             Finger = 1u32,
         }
         impl TryFrom<u32> for Source {
@@ -20432,7 +20737,9 @@ pub mod tablet_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ButtonState {
+            #[doc = "the button is not pressed"]
             Released = 0u32,
+            #[doc = "the button is pressed"]
             Pressed = 1u32,
         }
         impl TryFrom<u32> for ButtonState {
@@ -20704,18 +21011,31 @@ pub mod text_input_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ContentPurpose {
+            #[doc = "default input, allowing all characters"]
             Normal = 0u32,
+            #[doc = "allow only alphabetic characters"]
             Alpha = 1u32,
+            #[doc = "allow only digits"]
             Digits = 2u32,
+            #[doc = "input a number (including decimal separator and sign)"]
             Number = 3u32,
+            #[doc = "input a phone number"]
             Phone = 4u32,
+            #[doc = "input an URL"]
             Url = 5u32,
+            #[doc = "input an email address"]
             Email = 6u32,
+            #[doc = "input a name of a person"]
             Name = 7u32,
+            #[doc = "input a password (combine with password or sensitive_data hint)"]
             Password = 8u32,
+            #[doc = "input a date"]
             Date = 9u32,
+            #[doc = "input a time"]
             Time = 10u32,
+            #[doc = "input a date and time"]
             Datetime = 11u32,
+            #[doc = "input for a terminal"]
             Terminal = 12u32,
         }
         impl TryFrom<u32> for ContentPurpose {
@@ -20743,7 +21063,9 @@ pub mod text_input_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum PreeditStyle {
+            #[doc = "default style for composing text"]
             Default = 0u32,
+            #[doc = "style should be the same as in non-composing text"]
             None = 1u32,
             Active = 2u32,
             Inactive = 3u32,
@@ -20772,8 +21094,11 @@ pub mod text_input_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum TextDirection {
+            #[doc = "automatic text direction based on text and language"]
             Auto = 0u32,
+            #[doc = "left-to-right"]
             Ltr = 1u32,
+            #[doc = "right-to-left"]
             Rtl = 2u32,
         }
         impl TryFrom<u32> for TextDirection {
@@ -21347,7 +21672,9 @@ pub mod text_input_unstable_v3 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ChangeCause {
+            #[doc = "input method caused the change"]
             InputMethod = 0u32,
+            #[doc = "something else than the input method caused the change"]
             Other = 1u32,
         }
         impl TryFrom<u32> for ChangeCause {
@@ -21376,19 +21703,33 @@ pub mod text_input_unstable_v3 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum ContentPurpose {
+            #[doc = "default input, allowing all characters"]
             Normal = 0u32,
+            #[doc = "allow only alphabetic characters"]
             Alpha = 1u32,
+            #[doc = "allow only digits"]
             Digits = 2u32,
+            #[doc = "input a number (including decimal separator and sign)"]
             Number = 3u32,
+            #[doc = "input a phone number"]
             Phone = 4u32,
+            #[doc = "input an URL"]
             Url = 5u32,
+            #[doc = "input an email address"]
             Email = 6u32,
+            #[doc = "input a name of a person"]
             Name = 7u32,
+            #[doc = "input a password (combine with sensitive_data hint)"]
             Password = 8u32,
+            #[doc = "input is a numeric password (combine with sensitive_data hint)"]
             Pin = 9u32,
+            #[doc = "input a date"]
             Date = 10u32,
+            #[doc = "input a time"]
             Time = 11u32,
+            #[doc = "input a date and time"]
             Datetime = 12u32,
+            #[doc = "input for a terminal"]
             Terminal = 13u32,
         }
         impl TryFrom<u32> for ContentPurpose {
@@ -22016,8 +22357,11 @@ pub mod xdg_decoration_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "xdg_toplevel has a buffer attached before configure"]
             UnconfiguredBuffer = 0u32,
+            #[doc = "xdg_toplevel already has a decoration object"]
             AlreadyConstructed = 1u32,
+            #[doc = "xdg_toplevel destroyed before the decoration object"]
             Orphaned = 2u32,
         }
         impl TryFrom<u32> for Error {
@@ -22036,7 +22380,9 @@ pub mod xdg_decoration_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Mode {
+            #[doc = "no server-side window decoration"]
             ClientSide = 1u32,
+            #[doc = "server-side window decoration"]
             ServerSide = 2u32,
         }
         impl TryFrom<u32> for Mode {
@@ -22473,6 +22819,7 @@ pub mod xdg_foreign_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "surface is not an xdg_toplevel"]
             InvalidSurface = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -22672,6 +23019,7 @@ pub mod xdg_foreign_unstable_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "surface is not an xdg_toplevel"]
             InvalidSurface = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -23047,6 +23395,7 @@ pub mod xdg_shell_unstable_v5 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Version {
+            #[doc = "Always the latest version"]
             Current = 5u32,
         }
         impl TryFrom<u32> for Version {
@@ -23062,9 +23411,13 @@ pub mod xdg_shell_unstable_v5 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "given wl_surface has another role"]
             Role = 0u32,
+            #[doc = "xdg_shell was destroyed before children"]
             DefunctSurfaces = 1u32,
+            #[doc = "the client tried to map or destroy a non-topmost popup"]
             NotTheTopmostPopup = 2u32,
+            #[doc = "the client specified an invalid popup parent surface"]
             InvalidPopupParent = 3u32,
         }
         impl TryFrom<u32> for Error {
@@ -23302,20 +23655,13 @@ pub mod xdg_shell_unstable_v5 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum State {
-            #[doc = "The surface is maximized. The window geometry specified in the configure"]
-            #[doc = "event must be obeyed by the client."]
+            #[doc = "the surface is maximized"]
             Maximized = 1u32,
-            #[doc = "The surface is fullscreen. The window geometry specified in the configure"]
-            #[doc = "event must be obeyed by the client."]
+            #[doc = "the surface is fullscreen"]
             Fullscreen = 2u32,
-            #[doc = "The surface is being resized. The window geometry specified in the"]
-            #[doc = "configure event is a maximum; the client cannot resize beyond it."]
-            #[doc = "Clients that have aspect ratio or cell sizing configuration can use"]
-            #[doc = "a smaller size, however."]
+            #[doc = "the surface is being resized"]
             Resizing = 3u32,
-            #[doc = "Client window decorations should be painted as if the window is"]
-            #[doc = "active. Do not assume this means that the window actually has"]
-            #[doc = "keyboard or pointer focus."]
+            #[doc = "the surface is now activated"]
             Activated = 4u32,
         }
         impl TryFrom<u32> for State {
@@ -23930,11 +24276,17 @@ pub mod xdg_shell_unstable_v6 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "given wl_surface has another role"]
             Role = 0u32,
+            #[doc = "xdg_shell was destroyed before children"]
             DefunctSurfaces = 1u32,
+            #[doc = "the client tried to map or destroy a non-topmost popup"]
             NotTheTopmostPopup = 2u32,
+            #[doc = "the client specified an invalid popup parent surface"]
             InvalidPopupParent = 3u32,
+            #[doc = "the client provided an invalid surface state"]
             InvalidSurfaceState = 4u32,
+            #[doc = "the client provided an invalid positioner"]
             InvalidPositioner = 5u32,
         }
         impl TryFrom<u32> for Error {
@@ -24083,6 +24435,7 @@ pub mod xdg_shell_unstable_v6 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "invalid input provided"]
             InvalidInput = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -24593,22 +24946,13 @@ pub mod xdg_shell_unstable_v6 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum State {
-            #[doc = "The surface is maximized. The window geometry specified in the configure"]
-            #[doc = "event must be obeyed by the client. If the window geometry is not obyed,"]
-            #[doc = "the zxdg_shell_v6.invalid_surface_state error is raised."]
+            #[doc = "the surface is maximized"]
             Maximized = 1u32,
-            #[doc = "The surface is fullscreen. See set_fullscreen for more information."]
+            #[doc = "the surface is fullscreen"]
             Fullscreen = 2u32,
-            #[doc = "The surface is being resized. The window geometry specified in the"]
-            #[doc = "configure event is a maximum; the client cannot resize beyond it. If the"]
-            #[doc = "client attempts to resize above it, the zxdg_shell_v6.invalid_surface_state"]
-            #[doc = "error is raised."]
-            #[doc = "Clients that have aspect ratio or cell sizing configuration can use"]
-            #[doc = "a smaller size, however."]
+            #[doc = "the surface is being resized"]
             Resizing = 3u32,
-            #[doc = "Client window decorations should be painted as if the window is"]
-            #[doc = "active. Do not assume this means that the window actually has"]
-            #[doc = "keyboard or pointer focus."]
+            #[doc = "the surface is now activated"]
             Activated = 4u32,
         }
         impl TryFrom<u32> for State {
@@ -25116,6 +25460,7 @@ pub mod xdg_shell_unstable_v6 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "tried to grab after being mapped"]
             InvalidGrab = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -25393,6 +25738,7 @@ pub mod wlr_data_control_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "source given to set_selection or set_primary_selection was already used before"]
             UsedSource = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -25578,6 +25924,7 @@ pub mod wlr_data_control_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "offer sent after wlr_data_control_device.set_selection"]
             InvalidOffer = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -25837,6 +26184,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Flags {
+            #[doc = "clients should copy frame before processing"]
             Transient = 1u32,
         }
         impl TryFrom<u32> for Flags {
@@ -25853,8 +26201,11 @@ pub mod wlr_export_dmabuf_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum CancelReason {
+            #[doc = "temporary error, source will produce more frames"]
             Temporary = 0u32,
+            #[doc = "fatal error, source will not produce frames"]
             Permanent = 1u32,
+            #[doc = "temporary error, source will produce more frames"]
             Resizing = 2u32,
         }
         impl TryFrom<u32> for CancelReason {
@@ -26110,9 +26461,13 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum State {
+            #[doc = "the toplevel is maximized"]
             Maximized = 0u32,
+            #[doc = "the toplevel is minimized"]
             Minimized = 1u32,
+            #[doc = "the toplevel is active"]
             Activated = 2u32,
+            #[doc = "the toplevel is fullscreen"]
             Fullscreen = 3u32,
         }
         impl TryFrom<u32> for State {
@@ -26131,6 +26486,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "the provided rectangle is invalid"]
             InvalidRectangle = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -26555,6 +26911,7 @@ pub mod wlr_gamma_control_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "invalid gamma tables"]
             InvalidGamma = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -26668,6 +27025,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "an input inhibitor is already in use on the compositor"]
             AlreadyInhibited = 0u32,
         }
         impl TryFrom<u32> for Error {
@@ -26777,8 +27135,11 @@ pub mod wlr_layer_shell_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "wl_surface has another role"]
             Role = 0u32,
+            #[doc = "layer value is invalid"]
             InvalidLayer = 1u32,
+            #[doc = "wl_surface has a buffer attached or committed"]
             AlreadyConstructed = 2u32,
         }
         impl TryFrom<u32> for Error {
@@ -26919,48 +27280,8 @@ pub mod wlr_layer_shell_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum KeyboardInteractivity {
-            #[doc = "This value indicates that this surface is not interested in keyboard"]
-            #[doc = "events and the compositor should never assign it the keyboard focus."]
-            #[doc = ""]
-            #[doc = "This is the default value, set for newly created layer shell surfaces."]
-            #[doc = ""]
-            #[doc = "This is useful for e.g. desktop widgets that display information or"]
-            #[doc = "only have interaction with non-keyboard input devices."]
             None = 0u32,
-            #[doc = "Request exclusive keyboard focus if this surface is above the shell surface layer."]
-            #[doc = ""]
-            #[doc = "For the top and overlay layers, the seat will always give"]
-            #[doc = "exclusive keyboard focus to the top-most layer which has keyboard"]
-            #[doc = "interactivity set to exclusive. If this layer contains multiple"]
-            #[doc = "surfaces with keyboard interactivity set to exclusive, the compositor"]
-            #[doc = "determines the one receiving keyboard events in an implementation-"]
-            #[doc = "defined manner. In this case, no guarantee is made when this surface"]
-            #[doc = "will receive keyboard focus (if ever)."]
-            #[doc = ""]
-            #[doc = "For the bottom and background layers, the compositor is allowed to use"]
-            #[doc = "normal focus semantics."]
-            #[doc = ""]
-            #[doc = "This setting is mainly intended for applications that need to ensure"]
-            #[doc = "they receive all keyboard events, such as a lock screen or a password"]
-            #[doc = "prompt."]
             Exclusive = 1u32,
-            #[doc = "This requests the compositor to allow this surface to be focused and"]
-            #[doc = "unfocused by the user in an implementation-defined manner. The user"]
-            #[doc = "should be able to unfocus this surface even regardless of the layer"]
-            #[doc = "it is on."]
-            #[doc = ""]
-            #[doc = "Typically, the compositor will want to use its normal mechanism to"]
-            #[doc = "manage keyboard focus between layer shell surfaces with this setting"]
-            #[doc = "and regular toplevels on the desktop layer (e.g. click to focus)."]
-            #[doc = "Nevertheless, it is possible for a compositor to require a special"]
-            #[doc = "interaction to focus or unfocus layer shell surfaces (e.g. requiring"]
-            #[doc = "a click even if focus follows the mouse normally, or providing a"]
-            #[doc = "keybinding to switch focus between layers)."]
-            #[doc = ""]
-            #[doc = "This setting is mainly intended for desktop shell components (e.g."]
-            #[doc = "panels) that allow keyboard interaction. Using this option can allow"]
-            #[doc = "implementing a desktop shell that can be fully usable without the"]
-            #[doc = "mouse."]
             OnDemand = 2u32,
         }
         impl TryFrom<u32> for KeyboardInteractivity {
@@ -26978,10 +27299,15 @@ pub mod wlr_layer_shell_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "provided surface state is invalid"]
             InvalidSurfaceState = 0u32,
+            #[doc = "size is invalid"]
             InvalidSize = 1u32,
+            #[doc = "anchor bitfield is invalid"]
             InvalidAnchor = 2u32,
+            #[doc = "keyboard interactivity is invalid"]
             InvalidKeyboardInteractivity = 3u32,
+            #[doc = "exclusive edge is invalid given the surface anchors"]
             InvalidExclusiveEdge = 4u32,
         }
         impl TryFrom<u32> for Error {
@@ -27482,7 +27808,9 @@ pub mod wlr_output_management_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum AdaptiveSyncState {
+            #[doc = "adaptive sync is disabled"]
             Disabled = 0u32,
+            #[doc = "adaptive sync is enabled"]
             Enabled = 1u32,
         }
         impl TryFrom<u32> for AdaptiveSyncState {
@@ -27938,8 +28266,11 @@ pub mod wlr_output_management_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "head has been configured twice"]
             AlreadyConfiguredHead = 1u32,
+            #[doc = "head has not been configured"]
             UnconfiguredHead = 2u32,
+            #[doc = "request sent after configuration has been applied or tested"]
             AlreadyUsed = 3u32,
         }
         impl TryFrom<u32> for Error {
@@ -28141,11 +28472,17 @@ pub mod wlr_output_management_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "property has already been set"]
             AlreadySet = 1u32,
+            #[doc = "mode doesn't belong to head"]
             InvalidMode = 2u32,
+            #[doc = "mode is invalid"]
             InvalidCustomMode = 3u32,
+            #[doc = "transform value outside enum"]
             InvalidTransform = 4u32,
+            #[doc = "scale negative or zero"]
             InvalidScale = 5u32,
+            #[doc = "invalid enum value used in the set_adaptive_sync request"]
             InvalidAdaptiveSyncState = 6u32,
         }
         impl TryFrom<u32> for Error {
@@ -28379,7 +28716,9 @@ pub mod wlr_output_power_management_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Mode {
+            #[doc = "Output is turned off."]
             Off = 0u32,
+            #[doc = "Output is turned on, no power saving"]
             On = 1u32,
         }
         impl TryFrom<u32> for Mode {
@@ -28396,6 +28735,7 @@ pub mod wlr_output_power_management_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "nonexistent power save mode"]
             InvalidMode = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -28614,7 +28954,9 @@ pub mod wlr_screencopy_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "the object has already been used to copy a wl_buffer"]
             AlreadyUsed = 0u32,
+            #[doc = "buffer attributes are invalid"]
             InvalidBuffer = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -28869,7 +29211,9 @@ pub mod wlr_virtual_pointer_unstable_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
+            #[doc = "client sent invalid axis enumeration value"]
             InvalidAxis = 0u32,
+            #[doc = "client sent invalid axis source enumeration value"]
             InvalidAxisSource = 1u32,
         }
         impl TryFrom<u32> for Error {
