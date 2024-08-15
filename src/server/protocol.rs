@@ -113,7 +113,6 @@ pub mod wayland {
                 code: u32,
                 message: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_display#{}.error()", object.id);
                 todo!()
             }
             #[doc = "This event is used internally by the object ID management"]
@@ -127,7 +126,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_display#{}.delete_id()", object.id);
                 todo!()
             }
         }
@@ -199,7 +197,6 @@ pub mod wayland {
                 interface: String,
                 version: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_registry#{}.global()", object.id);
                 todo!()
             }
             #[doc = "Notify the client of removed global objects."]
@@ -218,7 +215,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 name: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_registry#{}.global_remove()", object.id);
                 todo!()
             }
         }
@@ -255,7 +251,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 callback_data: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_callback#{}.done()", object.id);
                 todo!()
             }
         }
@@ -777,7 +772,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 format: Format,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_shm#{}.format()", object.id);
                 todo!()
             }
         }
@@ -847,7 +841,6 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_buffer#{}.release()", object.id);
                 todo!()
             }
         }
@@ -1048,7 +1041,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 mime_type: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_offer#{}.offer()", object.id);
                 todo!()
             }
             #[doc = "This event indicates the actions offered by the data source. It"]
@@ -1061,7 +1053,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 source_actions: super::super::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_offer#{}.source_actions()", object.id);
                 todo!()
             }
             #[doc = "This event indicates the action selected by the compositor after"]
@@ -1105,7 +1096,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 dnd_action: super::super::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_offer#{}.action()", object.id);
                 todo!()
             }
         }
@@ -1215,7 +1205,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 mime_type: Option<String>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.target()", object.id);
                 todo!()
             }
             #[doc = "Request for data from the client.  Send the data as the"]
@@ -1228,7 +1217,6 @@ pub mod wayland {
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.send()", object.id);
                 todo!()
             }
             #[doc = "This data source is no longer valid. There are several reasons why"]
@@ -1256,7 +1244,6 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.cancelled()", object.id);
                 todo!()
             }
             #[doc = "The user performed the drop action. This event does not indicate"]
@@ -1273,7 +1260,6 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.dnd_drop_performed()", object.id);
                 todo!()
             }
             #[doc = "The drop destination finished interoperating with this data"]
@@ -1287,7 +1273,6 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.dnd_finished()", object.id);
                 todo!()
             }
             #[doc = "This event indicates the action selected by the compositor after"]
@@ -1321,7 +1306,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 dnd_action: super::super::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.action()", object.id);
                 todo!()
             }
         }
@@ -1463,7 +1447,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_device#{}.data_offer()", object.id);
                 todo!()
             }
             #[doc = "This event is sent when an active drag-and-drop pointer enters"]
@@ -1480,7 +1463,6 @@ pub mod wayland {
                 y: crate::wire::Fixed,
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_device#{}.enter()", object.id);
                 todo!()
             }
             #[doc = "This event is sent when the drag-and-drop pointer leaves the"]
@@ -1491,7 +1473,6 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_device#{}.leave()", object.id);
                 todo!()
             }
             #[doc = "This event is sent when the drag-and-drop pointer moves within"]
@@ -1506,7 +1487,6 @@ pub mod wayland {
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_device#{}.motion()", object.id);
                 todo!()
             }
             #[doc = "The event is sent when a drag-and-drop operation is ended"]
@@ -1527,7 +1507,6 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_device#{}.drop()", object.id);
                 todo!()
             }
             #[doc = "The selection event is sent out to notify the client of a new"]
@@ -1548,7 +1527,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_device#{}.selection()", object.id);
                 todo!()
             }
         }
@@ -2060,7 +2038,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_shell_surface#{}.ping()", object.id);
                 todo!()
             }
             #[doc = "The configure event asks the client to resize its surface."]
@@ -2088,7 +2065,6 @@ pub mod wayland {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_shell_surface#{}.configure()", object.id);
                 todo!()
             }
             #[doc = "The popup_done event is sent out when a popup grab is broken,"]
@@ -2099,7 +2075,6 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_shell_surface#{}.popup_done()", object.id);
                 todo!()
             }
         }
@@ -2632,7 +2607,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_surface#{}.enter()", object.id);
                 todo!()
             }
             #[doc = "This is emitted whenever a surface's creation, movement, or resizing"]
@@ -2650,7 +2624,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_surface#{}.leave()", object.id);
                 todo!()
             }
             #[doc = "This event indicates the preferred buffer scale for this surface. It is"]
@@ -2671,7 +2644,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 factor: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_surface#{}.preferred_buffer_scale()", object.id);
                 todo!()
             }
             #[doc = "This event indicates the preferred buffer transform for this surface."]
@@ -2689,7 +2661,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 transform: super::super::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_surface#{}.preferred_buffer_transform()", object.id);
                 todo!()
             }
         }
@@ -2856,7 +2827,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 capabilities: Capability,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_seat#{}.capabilities()", object.id);
                 todo!()
             }
             #[doc = "In a multi-seat configuration the seat name can be used by clients to"]
@@ -2881,7 +2851,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_seat#{}.name()", object.id);
                 todo!()
             }
         }
@@ -3084,7 +3053,6 @@ pub mod wayland {
                 surface_x: crate::wire::Fixed,
                 surface_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.enter()", object.id);
                 todo!()
             }
             #[doc = "Notification that this seat's pointer is no longer focused on"]
@@ -3099,7 +3067,6 @@ pub mod wayland {
                 serial: u32,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.leave()", object.id);
                 todo!()
             }
             #[doc = "Notification of pointer location change. The arguments"]
@@ -3113,7 +3080,6 @@ pub mod wayland {
                 surface_x: crate::wire::Fixed,
                 surface_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.motion()", object.id);
                 todo!()
             }
             #[doc = "Mouse button click and release notifications."]
@@ -3139,7 +3105,6 @@ pub mod wayland {
                 button: u32,
                 state: ButtonState,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.button()", object.id);
                 todo!()
             }
             #[doc = "Scroll and other axis notifications."]
@@ -3166,7 +3131,6 @@ pub mod wayland {
                 axis: Axis,
                 value: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.axis()", object.id);
                 todo!()
             }
             #[doc = "Indicates the end of a set of events that logically belong together."]
@@ -3208,7 +3172,6 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.frame()", object.id);
                 todo!()
             }
             #[doc = "Source information for scroll and other axes."]
@@ -3242,7 +3205,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 axis_source: AxisSource,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.axis_source()", object.id);
                 todo!()
             }
             #[doc = "Stop notification for scroll and other axes."]
@@ -3266,7 +3228,6 @@ pub mod wayland {
                 time: u32,
                 axis: Axis,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.axis_stop()", object.id);
                 todo!()
             }
             #[doc = "Discrete step information for scroll and other axes."]
@@ -3306,7 +3267,6 @@ pub mod wayland {
                 axis: Axis,
                 discrete: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.axis_discrete()", object.id);
                 todo!()
             }
             #[doc = "Discrete high-resolution scroll information."]
@@ -3337,7 +3297,6 @@ pub mod wayland {
                 axis: Axis,
                 value120: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.axis_value120()", object.id);
                 todo!()
             }
             #[doc = "Relative directional information of the entity causing the axis"]
@@ -3382,7 +3341,6 @@ pub mod wayland {
                 axis: Axis,
                 direction: AxisRelativeDirection,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.axis_relative_direction()", object.id);
                 todo!()
             }
         }
@@ -3476,7 +3434,6 @@ pub mod wayland {
                 fd: rustix::fd::OwnedFd,
                 size: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_keyboard#{}.keymap()", object.id);
                 todo!()
             }
             #[doc = "Notification that this seat's keyboard focus is on a certain"]
@@ -3497,7 +3454,6 @@ pub mod wayland {
                 surface: crate::wire::ObjectId,
                 keys: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_keyboard#{}.enter()", object.id);
                 todo!()
             }
             #[doc = "Notification that this seat's keyboard focus is no longer on"]
@@ -3517,7 +3473,6 @@ pub mod wayland {
                 serial: u32,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_keyboard#{}.leave()", object.id);
                 todo!()
             }
             #[doc = "A key was pressed or released."]
@@ -3547,7 +3502,6 @@ pub mod wayland {
                 key: u32,
                 state: KeyState,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_keyboard#{}.key()", object.id);
                 todo!()
             }
             #[doc = "Notifies clients that the modifier and/or group state has"]
@@ -3573,7 +3527,6 @@ pub mod wayland {
                 mods_locked: u32,
                 group: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_keyboard#{}.modifiers()", object.id);
                 todo!()
             }
             #[doc = "Informs the client about the keyboard's repeat rate and delay."]
@@ -3595,7 +3548,6 @@ pub mod wayland {
                 rate: i32,
                 delay: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_keyboard#{}.repeat_info()", object.id);
                 todo!()
             }
         }
@@ -3652,7 +3604,6 @@ pub mod wayland {
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.down()", object.id);
                 todo!()
             }
             #[doc = "The touch point has disappeared. No further events will be sent for"]
@@ -3666,7 +3617,6 @@ pub mod wayland {
                 time: u32,
                 id: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.up()", object.id);
                 todo!()
             }
             #[doc = "A touch point has changed coordinates."]
@@ -3679,7 +3629,6 @@ pub mod wayland {
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.motion()", object.id);
                 todo!()
             }
             #[doc = "Indicates the end of a set of events that logically belong together."]
@@ -3695,7 +3644,6 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.frame()", object.id);
                 todo!()
             }
             #[doc = "Sent if the compositor decides the touch stream is a global"]
@@ -3711,7 +3659,6 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.cancel()", object.id);
                 todo!()
             }
             #[doc = "Sent when a touchpoint has changed its shape."]
@@ -3747,7 +3694,6 @@ pub mod wayland {
                 major: crate::wire::Fixed,
                 minor: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.shape()", object.id);
                 todo!()
             }
             #[doc = "Sent when a touchpoint has changed its orientation."]
@@ -3780,7 +3726,6 @@ pub mod wayland {
                 id: i32,
                 orientation: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.orientation()", object.id);
                 todo!()
             }
         }
@@ -3916,7 +3861,6 @@ pub mod wayland {
                 model: String,
                 transform: Transform,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.geometry()", object.id);
                 todo!()
             }
             #[doc = "The mode event describes an available mode for the output."]
@@ -3961,7 +3905,6 @@ pub mod wayland {
                 height: i32,
                 refresh: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.mode()", object.id);
                 todo!()
             }
             #[doc = "This event is sent after all other properties have been"]
@@ -3974,7 +3917,6 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.done()", object.id);
                 todo!()
             }
             #[doc = "This event contains scaling geometry information"]
@@ -4001,7 +3943,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 factor: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.scale()", object.id);
                 todo!()
             }
             #[doc = "Many compositors will assign user-friendly names to their outputs, show"]
@@ -4038,7 +3979,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.name()", object.id);
                 todo!()
             }
             #[doc = "Many compositors can produce human-readable descriptions of their"]
@@ -4061,7 +4001,6 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 description: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.description()", object.id);
                 todo!()
             }
         }
@@ -4670,7 +4609,6 @@ pub mod linux_dmabuf_v1 {
                 client: &mut crate::server::Client,
                 format: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_dmabuf_v1#{}.format()", object.id);
                 todo!()
             }
             #[doc = "This event advertises the formats that the server supports, along with"]
@@ -4704,7 +4642,6 @@ pub mod linux_dmabuf_v1 {
                 modifier_hi: u32,
                 modifier_lo: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_dmabuf_v1#{}.modifier()", object.id);
                 todo!()
             }
         }
@@ -4973,7 +4910,6 @@ pub mod linux_dmabuf_v1 {
                 client: &mut crate::server::Client,
                 buffer: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_buffer_params_v1#{}.created()", object.id);
                 todo!()
             }
             #[doc = "This event indicates that the attempted buffer creation has"]
@@ -4987,7 +4923,6 @@ pub mod linux_dmabuf_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_buffer_params_v1#{}.failed()", object.id);
                 todo!()
             }
         }
@@ -5065,7 +5000,6 @@ pub mod linux_dmabuf_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_dmabuf_feedback_v1#{}.done()", object.id);
                 todo!()
             }
             #[doc = "This event provides a file descriptor which can be memory-mapped to"]
@@ -5089,10 +5023,6 @@ pub mod linux_dmabuf_v1 {
                 fd: rustix::fd::OwnedFd,
                 size: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.format_table()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event advertises the main device that the server prefers to use"]
@@ -5124,10 +5054,6 @@ pub mod linux_dmabuf_v1 {
                 client: &mut crate::server::Client,
                 device: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.main_device()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event splits tranche_target_device and tranche_formats events in"]
@@ -5139,10 +5065,6 @@ pub mod linux_dmabuf_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_done()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event advertises the target device that the server prefers to use"]
@@ -5177,10 +5099,6 @@ pub mod linux_dmabuf_v1 {
                 client: &mut crate::server::Client,
                 device: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_target_device()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event advertises the format + modifier combinations that the"]
@@ -5213,10 +5131,6 @@ pub mod linux_dmabuf_v1 {
                 client: &mut crate::server::Client,
                 indices: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_formats()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event sets tranche-specific flags."]
@@ -5233,10 +5147,6 @@ pub mod linux_dmabuf_v1 {
                 client: &mut crate::server::Client,
                 flags: TrancheFlags,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_flags()",
-                    object.id
-                );
                 todo!()
             }
         }
@@ -5374,7 +5284,6 @@ pub mod presentation_time {
                 client: &mut crate::server::Client,
                 clk_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_presentation#{}.clock_id()", object.id);
                 todo!()
             }
         }
@@ -5431,7 +5340,6 @@ pub mod presentation_time {
                 client: &mut crate::server::Client,
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_presentation_feedback#{}.sync_output()", object.id);
                 todo!()
             }
             #[doc = "The associated content update was displayed to the user at the"]
@@ -5487,7 +5395,6 @@ pub mod presentation_time {
                 seq_lo: u32,
                 flags: Kind,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_presentation_feedback#{}.presented()", object.id);
                 todo!()
             }
             #[doc = "The content update was never displayed to the user."]
@@ -5496,7 +5403,6 @@ pub mod presentation_time {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_presentation_feedback#{}.discarded()", object.id);
                 todo!()
             }
         }
@@ -5682,7 +5588,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_seat_v2#{}.tablet_added()", object.id);
                 todo!()
             }
             #[doc = "This event is sent whenever a tool that has not previously been used"]
@@ -5695,7 +5600,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_seat_v2#{}.tool_added()", object.id);
                 todo!()
             }
             #[doc = "This event is sent whenever a new pad is known to the system. Typically,"]
@@ -5714,7 +5618,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_seat_v2#{}.pad_added()", object.id);
                 todo!()
             }
         }
@@ -5917,7 +5820,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 tool_type: Type,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.type()", object.id);
                 todo!()
             }
             #[doc = "If the physical tool can be identified by a unique 64-bit serial"]
@@ -5942,7 +5844,6 @@ pub mod tablet_v2 {
                 hardware_serial_hi: u32,
                 hardware_serial_lo: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.hardware_serial()", object.id);
                 todo!()
             }
             #[doc = "This event notifies the client of a hardware id available on this tool."]
@@ -5962,7 +5863,6 @@ pub mod tablet_v2 {
                 hardware_id_hi: u32,
                 hardware_id_lo: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.hardware_id_wacom()", object.id);
                 todo!()
             }
             #[doc = "This event notifies the client of any capabilities of this tool,"]
@@ -5978,7 +5878,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 capability: Capability,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.capability()", object.id);
                 todo!()
             }
             #[doc = "This event signals the end of the initial burst of descriptive"]
@@ -5989,7 +5888,6 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.done()", object.id);
                 todo!()
             }
             #[doc = "This event is sent when the tool is removed from the system and will"]
@@ -6011,7 +5909,6 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.removed()", object.id);
                 todo!()
             }
             #[doc = "Notification that this tool is focused on a certain surface."]
@@ -6031,7 +5928,6 @@ pub mod tablet_v2 {
                 tablet: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.proximity_in()", object.id);
                 todo!()
             }
             #[doc = "Notification that this tool has either left proximity, or is no"]
@@ -6051,7 +5947,6 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.proximity_out()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the tablet tool comes in contact with the surface of the"]
@@ -6072,7 +5967,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.down()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the tablet tool stops making contact with the surface of"]
@@ -6096,7 +5990,6 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.up()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever a tablet tool moves."]
@@ -6107,7 +6000,6 @@ pub mod tablet_v2 {
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.motion()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the pressure axis on a tool changes. The value of this"]
@@ -6121,7 +6013,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 pressure: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.pressure()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the distance axis on a tool changes. The value of this"]
@@ -6135,7 +6026,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 distance: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.distance()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever one or both of the tilt axes on a tool change. Each tilt"]
@@ -6149,7 +6039,6 @@ pub mod tablet_v2 {
                 tilt_x: crate::wire::Fixed,
                 tilt_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.tilt()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the z-rotation axis on the tool changes. The"]
@@ -6161,7 +6050,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 degrees: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.rotation()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the slider position on the tool changes. The"]
@@ -6175,7 +6063,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 position: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.slider()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the wheel on the tool emits an event. This event"]
@@ -6197,7 +6084,6 @@ pub mod tablet_v2 {
                 degrees: crate::wire::Fixed,
                 clicks: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.wheel()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever a button on the tool is pressed or released."]
@@ -6214,7 +6100,6 @@ pub mod tablet_v2 {
                 button: u32,
                 state: ButtonState,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.button()", object.id);
                 todo!()
             }
             #[doc = "Marks the end of a series of axis and/or button updates from the"]
@@ -6227,7 +6112,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 time: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.frame()", object.id);
                 todo!()
             }
         }
@@ -6282,7 +6166,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.name()", object.id);
                 todo!()
             }
             #[doc = "The USB vendor and product IDs for the tablet device."]
@@ -6299,7 +6182,6 @@ pub mod tablet_v2 {
                 vid: u32,
                 pid: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.id()", object.id);
                 todo!()
             }
             #[doc = "A system-specific device path that indicates which device is behind"]
@@ -6322,7 +6204,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 path: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.path()", object.id);
                 todo!()
             }
             #[doc = "This event is sent immediately to signal the end of the initial"]
@@ -6334,7 +6215,6 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.done()", object.id);
                 todo!()
             }
             #[doc = "Sent when the tablet has been removed from the system. When a tablet"]
@@ -6347,7 +6227,6 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.removed()", object.id);
                 todo!()
             }
         }
@@ -6458,7 +6337,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 source: Source,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.source()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the angle on a ring changes."]
@@ -6471,7 +6349,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 degrees: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.angle()", object.id);
                 todo!()
             }
             #[doc = "Stop notification for ring events."]
@@ -6489,7 +6366,6 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.stop()", object.id);
                 todo!()
             }
             #[doc = "Indicates the end of a set of ring events that logically belong"]
@@ -6511,7 +6387,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 time: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.frame()", object.id);
                 todo!()
             }
         }
@@ -6622,7 +6497,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 source: Source,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.source()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the position on a strip changes."]
@@ -6636,7 +6510,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 position: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.position()", object.id);
                 todo!()
             }
             #[doc = "Stop notification for strip events."]
@@ -6654,7 +6527,6 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.stop()", object.id);
                 todo!()
             }
             #[doc = "Indicates the end of a set of events that represent one logical"]
@@ -6677,7 +6549,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 time: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.frame()", object.id);
                 todo!()
             }
         }
@@ -6752,7 +6623,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 buttons: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.buttons()", object.id);
                 todo!()
             }
             #[doc = "Sent on wp_tablet_pad_group initialization to announce available rings."]
@@ -6766,7 +6636,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 ring: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.ring()", object.id);
                 todo!()
             }
             #[doc = "Sent on wp_tablet_pad initialization to announce available strips."]
@@ -6780,7 +6649,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 strip: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.strip()", object.id);
                 todo!()
             }
             #[doc = "Sent on wp_tablet_pad_group initialization to announce that the pad"]
@@ -6801,7 +6669,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 modes: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.modes()", object.id);
                 todo!()
             }
             #[doc = "This event is sent immediately to signal the end of the initial"]
@@ -6813,7 +6680,6 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.done()", object.id);
                 todo!()
             }
             #[doc = "Notification that the mode was switched."]
@@ -6851,7 +6717,6 @@ pub mod tablet_v2 {
                 serial: u32,
                 mode: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.mode_switch()", object.id);
                 todo!()
             }
         }
@@ -6982,7 +6847,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 pad_group: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.group()", object.id);
                 todo!()
             }
             #[doc = "A system-specific device path that indicates which device is behind"]
@@ -7001,7 +6865,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 path: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.path()", object.id);
                 todo!()
             }
             #[doc = "Sent on wp_tablet_pad initialization to announce the available"]
@@ -7016,7 +6879,6 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 buttons: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.buttons()", object.id);
                 todo!()
             }
             #[doc = "This event signals the end of the initial burst of descriptive"]
@@ -7027,7 +6889,6 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.done()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the physical state of a button changes."]
@@ -7039,7 +6900,6 @@ pub mod tablet_v2 {
                 button: u32,
                 state: ButtonState,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.button()", object.id);
                 todo!()
             }
             #[doc = "Notification that this pad is focused on the specified surface."]
@@ -7051,7 +6911,6 @@ pub mod tablet_v2 {
                 tablet: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.enter()", object.id);
                 todo!()
             }
             #[doc = "Notification that this pad is no longer focused on the specified"]
@@ -7063,7 +6922,6 @@ pub mod tablet_v2 {
                 serial: u32,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.leave()", object.id);
                 todo!()
             }
             #[doc = "Sent when the pad has been removed from the system. When a tablet"]
@@ -7077,7 +6935,6 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.removed()", object.id);
                 todo!()
             }
         }
@@ -7482,7 +7339,6 @@ pub mod xdg_shell {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_wm_base#{}.ping()", object.id);
                 todo!()
             }
         }
@@ -8081,7 +7937,6 @@ pub mod xdg_shell {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_surface#{}.configure()", object.id);
                 todo!()
             }
         }
@@ -8750,7 +8605,6 @@ pub mod xdg_shell {
                 height: i32,
                 states: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_toplevel#{}.configure()", object.id);
                 todo!()
             }
             #[doc = "The close event is sent by the compositor when the user"]
@@ -8766,7 +8620,6 @@ pub mod xdg_shell {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_toplevel#{}.close()", object.id);
                 todo!()
             }
             #[doc = "The configure_bounds event may be sent prior to a xdg_toplevel.configure"]
@@ -8791,7 +8644,6 @@ pub mod xdg_shell {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_toplevel#{}.configure_bounds()", object.id);
                 todo!()
             }
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
@@ -8820,7 +8672,6 @@ pub mod xdg_shell {
                 client: &mut crate::server::Client,
                 capabilities: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_toplevel#{}.wm_capabilities()", object.id);
                 todo!()
             }
         }
@@ -9017,7 +8868,6 @@ pub mod xdg_shell {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_popup#{}.configure()", object.id);
                 todo!()
             }
             #[doc = "The popup_done event is sent out when a popup is dismissed by the"]
@@ -9028,7 +8878,6 @@ pub mod xdg_shell {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_popup#{}.popup_done()", object.id);
                 todo!()
             }
             #[doc = "The repositioned event is sent as part of a popup configuration"]
@@ -9052,7 +8901,6 @@ pub mod xdg_shell {
                 client: &mut crate::server::Client,
                 token: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_popup#{}.repositioned()", object.id);
                 todo!()
             }
         }
@@ -9751,7 +9599,6 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_device_v1#{}.drm_fd()", object.id);
                 todo!()
             }
             #[doc = "The compositor will use this event to advertise connectors available for"]
@@ -9770,7 +9617,6 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_device_v1#{}.connector()", object.id);
                 todo!()
             }
             #[doc = "The compositor will send this event to indicate that it has sent all"]
@@ -9784,7 +9630,6 @@ pub mod drm_lease_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_device_v1#{}.done()", object.id);
                 todo!()
             }
             #[doc = "This event is sent in response to the release request and indicates"]
@@ -9797,7 +9642,6 @@ pub mod drm_lease_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_device_v1#{}.released()", object.id);
                 todo!()
             }
         }
@@ -9857,7 +9701,6 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.name()", object.id);
                 todo!()
             }
             #[doc = "The compositor sends this event once the connector is created to provide"]
@@ -9870,7 +9713,6 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 description: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.description()", object.id);
                 todo!()
             }
             #[doc = "The compositor sends this event once the connector is created to"]
@@ -9883,7 +9725,6 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 connector_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.connector_id()", object.id);
                 todo!()
             }
             #[doc = "This event is sent after all properties of a connector have been sent."]
@@ -9894,7 +9735,6 @@ pub mod drm_lease_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.done()", object.id);
                 todo!()
             }
             #[doc = "Sent to indicate that the compositor will no longer honor requests for"]
@@ -9909,7 +9749,6 @@ pub mod drm_lease_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.withdrawn()", object.id);
                 todo!()
             }
         }
@@ -10069,7 +9908,6 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 leased_fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_v1#{}.lease_fd()", object.id);
                 todo!()
             }
             #[doc = "The compositor uses this event to either reject a lease request, or if"]
@@ -10085,7 +9923,6 @@ pub mod drm_lease_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_v1#{}.finished()", object.id);
                 todo!()
             }
         }
@@ -10194,7 +10031,6 @@ pub mod ext_foreign_toplevel_list_v1 {
                 client: &mut crate::server::Client,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.toplevel()", object.id);
                 todo!()
             }
             #[doc = "This event indicates that the compositor is done sending events"]
@@ -10207,7 +10043,6 @@ pub mod ext_foreign_toplevel_list_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.finished()", object.id);
                 todo!()
             }
         }
@@ -10267,7 +10102,6 @@ pub mod ext_foreign_toplevel_list_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.closed()", object.id);
                 todo!()
             }
             #[doc = "This event is sent after all changes in the toplevel state have"]
@@ -10285,7 +10119,6 @@ pub mod ext_foreign_toplevel_list_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.done()", object.id);
                 todo!()
             }
             #[doc = "The title of the toplevel has changed."]
@@ -10298,7 +10131,6 @@ pub mod ext_foreign_toplevel_list_v1 {
                 client: &mut crate::server::Client,
                 title: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.title()", object.id);
                 todo!()
             }
             #[doc = "The app id of the toplevel has changed."]
@@ -10311,7 +10143,6 @@ pub mod ext_foreign_toplevel_list_v1 {
                 client: &mut crate::server::Client,
                 app_id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.app_id()", object.id);
                 todo!()
             }
             #[doc = "This identifier is used to check if two or more toplevel handles belong"]
@@ -10340,10 +10171,6 @@ pub mod ext_foreign_toplevel_list_v1 {
                 client: &mut crate::server::Client,
                 identifier: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_foreign_toplevel_handle_v1#{}.identifier()",
-                    object.id
-                );
                 todo!()
             }
         }
@@ -10474,7 +10301,6 @@ pub mod ext_idle_notify_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_idle_notification_v1#{}.idled()", object.id);
                 todo!()
             }
             #[doc = "This event is sent when the notification object stops being idle."]
@@ -10487,7 +10313,6 @@ pub mod ext_idle_notify_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_idle_notification_v1#{}.resumed()", object.id);
                 todo!()
             }
         }
@@ -10761,7 +10586,6 @@ pub mod ext_session_lock_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_session_lock_v1#{}.locked()", object.id);
                 todo!()
             }
             #[doc = "The compositor has decided that the session lock should be destroyed"]
@@ -10791,7 +10615,6 @@ pub mod ext_session_lock_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_session_lock_v1#{}.finished()", object.id);
                 todo!()
             }
         }
@@ -10921,7 +10744,6 @@ pub mod ext_session_lock_v1 {
                 width: u32,
                 height: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_session_lock_surface_v1#{}.configure()", object.id);
                 todo!()
             }
         }
@@ -11049,7 +10871,6 @@ pub mod ext_transient_seat_v1 {
                 client: &mut crate::server::Client,
                 global_name: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_transient_seat_v1#{}.ready()", object.id);
                 todo!()
             }
             #[doc = "The event informs the client that the compositor denied its request to"]
@@ -11064,7 +10885,6 @@ pub mod ext_transient_seat_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_transient_seat_v1#{}.denied()", object.id);
                 todo!()
             }
         }
@@ -11210,7 +11030,6 @@ pub mod fractional_scale_v1 {
                 client: &mut crate::server::Client,
                 scale: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_fractional_scale_v1#{}.preferred_scale()", object.id);
                 todo!()
             }
         }
@@ -12407,7 +12226,6 @@ pub mod xdg_activation_v1 {
                 client: &mut crate::server::Client,
                 token: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_activation_token_v1#{}.done()", object.id);
                 todo!()
             }
         }
@@ -13247,7 +13065,6 @@ pub mod fullscreen_shell_unstable_v1 {
                 client: &mut crate::server::Client,
                 capability: Capability,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_fullscreen_shell_v1#{}.capability()", object.id);
                 todo!()
             }
         }
@@ -13283,10 +13100,6 @@ pub mod fullscreen_shell_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_fullscreen_shell_mode_feedback_v1#{}.mode_successful()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event indicates that the attempted mode switch operation"]
@@ -13300,10 +13113,6 @@ pub mod fullscreen_shell_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_fullscreen_shell_mode_feedback_v1#{}.mode_failed()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event indicates that the attempted mode switch operation was"]
@@ -13317,10 +13126,6 @@ pub mod fullscreen_shell_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_fullscreen_shell_mode_feedback_v1#{}.present_cancelled()",
-                    object.id
-                );
                 todo!()
             }
         }
@@ -13819,10 +13624,6 @@ pub mod input_method_unstable_v1 {
                 cursor: u32,
                 anchor: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_input_method_context_v1#{}.surrounding_text()",
-                    object.id
-                );
                 todo!()
             }
             async fn reset(
@@ -13830,7 +13631,6 @@ pub mod input_method_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_input_method_context_v1#{}.reset()", object.id);
                 todo!()
             }
             async fn content_type(
@@ -13840,10 +13640,6 @@ pub mod input_method_unstable_v1 {
                 hint: u32,
                 purpose: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_input_method_context_v1#{}.content_type()",
-                    object.id
-                );
                 todo!()
             }
             async fn invoke_action(
@@ -13853,10 +13649,6 @@ pub mod input_method_unstable_v1 {
                 button: u32,
                 index: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_input_method_context_v1#{}.invoke_action()",
-                    object.id
-                );
                 todo!()
             }
             async fn commit_state(
@@ -13865,10 +13657,6 @@ pub mod input_method_unstable_v1 {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_input_method_context_v1#{}.commit_state()",
-                    object.id
-                );
                 todo!()
             }
             async fn preferred_language(
@@ -13877,10 +13665,6 @@ pub mod input_method_unstable_v1 {
                 client: &mut crate::server::Client,
                 language: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_input_method_context_v1#{}.preferred_language()",
-                    object.id
-                );
                 todo!()
             }
         }
@@ -13917,7 +13701,6 @@ pub mod input_method_unstable_v1 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_input_method_v1#{}.activate()", object.id);
                 todo!()
             }
             #[doc = "The text input corresponding to the context argument was deactivated."]
@@ -13929,7 +13712,6 @@ pub mod input_method_unstable_v1 {
                 client: &mut crate::server::Client,
                 context: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_input_method_v1#{}.deactivate()", object.id);
                 todo!()
             }
         }
@@ -14258,7 +14040,6 @@ pub mod input_timestamps_unstable_v1 {
                 tv_sec_lo: u32,
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_input_timestamps_v1#{}.timestamp()", object.id);
                 todo!()
             }
         }
@@ -14445,10 +14226,6 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_keyboard_shortcuts_inhibitor_v1#{}.active()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event indicates that the shortcuts inhibitor is inactive,"]
@@ -14458,10 +14235,6 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_keyboard_shortcuts_inhibitor_v1#{}.inactive()",
-                    object.id
-                );
                 todo!()
             }
         }
@@ -14653,7 +14426,6 @@ pub mod linux_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 format: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_dmabuf_v1#{}.format()", object.id);
                 todo!()
             }
             #[doc = "This event advertises the formats that the server supports, along with"]
@@ -14687,7 +14459,6 @@ pub mod linux_dmabuf_unstable_v1 {
                 modifier_hi: u32,
                 modifier_lo: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_dmabuf_v1#{}.modifier()", object.id);
                 todo!()
             }
         }
@@ -14956,7 +14727,6 @@ pub mod linux_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 buffer: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_buffer_params_v1#{}.created()", object.id);
                 todo!()
             }
             #[doc = "This event indicates that the attempted buffer creation has"]
@@ -14970,7 +14740,6 @@ pub mod linux_dmabuf_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_buffer_params_v1#{}.failed()", object.id);
                 todo!()
             }
         }
@@ -15048,7 +14817,6 @@ pub mod linux_dmabuf_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_dmabuf_feedback_v1#{}.done()", object.id);
                 todo!()
             }
             #[doc = "This event provides a file descriptor which can be memory-mapped to"]
@@ -15072,10 +14840,6 @@ pub mod linux_dmabuf_unstable_v1 {
                 fd: rustix::fd::OwnedFd,
                 size: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.format_table()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event advertises the main device that the server prefers to use"]
@@ -15107,10 +14871,6 @@ pub mod linux_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 device: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.main_device()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event splits tranche_target_device and tranche_formats events in"]
@@ -15122,10 +14882,6 @@ pub mod linux_dmabuf_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_done()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event advertises the target device that the server prefers to use"]
@@ -15160,10 +14916,6 @@ pub mod linux_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 device: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_target_device()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event advertises the format + modifier combinations that the"]
@@ -15196,10 +14948,6 @@ pub mod linux_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 indices: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_formats()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event sets tranche-specific flags."]
@@ -15216,10 +14964,6 @@ pub mod linux_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 flags: TrancheFlags,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_flags()",
-                    object.id
-                );
                 todo!()
             }
         }
@@ -15555,10 +15299,6 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 client: &mut crate::server::Client,
                 fence: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_buffer_release_v1#{}.fenced_release()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "Sent when the compositor has finalised its usage of the associated"]
@@ -15577,10 +15317,6 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_buffer_release_v1#{}.immediate_release()",
-                    object.id
-                );
                 todo!()
             }
         }
@@ -15911,7 +15647,6 @@ pub mod pointer_constraints_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_locked_pointer_v1#{}.locked()", object.id);
                 todo!()
             }
             #[doc = "Notification that the pointer lock of the seat's pointer is no longer"]
@@ -15925,7 +15660,6 @@ pub mod pointer_constraints_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_locked_pointer_v1#{}.unlocked()", object.id);
                 todo!()
             }
         }
@@ -16010,7 +15744,6 @@ pub mod pointer_constraints_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_confined_pointer_v1#{}.confined()", object.id);
                 todo!()
             }
             #[doc = "Notification that the pointer confinement of the seat's pointer is no"]
@@ -16024,7 +15757,6 @@ pub mod pointer_constraints_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_confined_pointer_v1#{}.unconfined()", object.id);
                 todo!()
             }
         }
@@ -16210,7 +15942,6 @@ pub mod pointer_gestures_unstable_v1 {
                 surface: crate::wire::ObjectId,
                 fingers: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_pointer_gesture_swipe_v1#{}.begin()", object.id);
                 todo!()
             }
             #[doc = "This event is sent when a multi-finger swipe gesture changes the"]
@@ -16226,7 +15957,6 @@ pub mod pointer_gestures_unstable_v1 {
                 dx: crate::wire::Fixed,
                 dy: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_pointer_gesture_swipe_v1#{}.update()", object.id);
                 todo!()
             }
             #[doc = "This event is sent when a multi-finger swipe gesture ceases to"]
@@ -16244,7 +15974,6 @@ pub mod pointer_gestures_unstable_v1 {
                 time: u32,
                 cancelled: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_pointer_gesture_swipe_v1#{}.end()", object.id);
                 todo!()
             }
         }
@@ -16304,7 +16033,6 @@ pub mod pointer_gestures_unstable_v1 {
                 surface: crate::wire::ObjectId,
                 fingers: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_pointer_gesture_pinch_v1#{}.begin()", object.id);
                 todo!()
             }
             #[doc = "This event is sent when a multi-finger pinch gesture changes the"]
@@ -16329,7 +16057,6 @@ pub mod pointer_gestures_unstable_v1 {
                 scale: crate::wire::Fixed,
                 rotation: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_pointer_gesture_pinch_v1#{}.update()", object.id);
                 todo!()
             }
             #[doc = "This event is sent when a multi-finger pinch gesture ceases to"]
@@ -16347,7 +16074,6 @@ pub mod pointer_gestures_unstable_v1 {
                 time: u32,
                 cancelled: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_pointer_gesture_pinch_v1#{}.end()", object.id);
                 todo!()
             }
         }
@@ -16408,7 +16134,6 @@ pub mod pointer_gestures_unstable_v1 {
                 surface: crate::wire::ObjectId,
                 fingers: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_pointer_gesture_hold_v1#{}.begin()", object.id);
                 todo!()
             }
             #[doc = "This event is sent when a hold gesture ceases to"]
@@ -16428,7 +16153,6 @@ pub mod pointer_gestures_unstable_v1 {
                 time: u32,
                 cancelled: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_pointer_gesture_hold_v1#{}.end()", object.id);
                 todo!()
             }
         }
@@ -16621,10 +16345,6 @@ pub mod wp_primary_selection_unstable_v1 {
                 client: &mut crate::server::Client,
                 offer: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_primary_selection_device_v1#{}.data_offer()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "The wp_primary_selection_device.selection event is sent to notify the"]
@@ -16642,10 +16362,6 @@ pub mod wp_primary_selection_unstable_v1 {
                 client: &mut crate::server::Client,
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_primary_selection_device_v1#{}.selection()",
-                    object.id
-                );
                 todo!()
             }
         }
@@ -16723,7 +16439,6 @@ pub mod wp_primary_selection_unstable_v1 {
                 client: &mut crate::server::Client,
                 mime_type: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_primary_selection_offer_v1#{}.offer()", object.id);
                 todo!()
             }
         }
@@ -16790,7 +16505,6 @@ pub mod wp_primary_selection_unstable_v1 {
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_primary_selection_source_v1#{}.send()", object.id);
                 todo!()
             }
             #[doc = "This primary selection source is no longer valid. The client should"]
@@ -16800,10 +16514,6 @@ pub mod wp_primary_selection_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_primary_selection_source_v1#{}.cancelled()",
-                    object.id
-                );
                 todo!()
             }
         }
@@ -16967,7 +16677,6 @@ pub mod relative_pointer_unstable_v1 {
                 dx_unaccel: crate::wire::Fixed,
                 dy_unaccel: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_relative_pointer_v1#{}.relative_motion()", object.id);
                 todo!()
             }
         }
@@ -17162,7 +16871,6 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_seat_v1#{}.tablet_added()", object.id);
                 todo!()
             }
             #[doc = "This event is sent whenever a tool that has not previously been used"]
@@ -17175,7 +16883,6 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_seat_v1#{}.tool_added()", object.id);
                 todo!()
             }
         }
@@ -17380,7 +17087,6 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 tool_type: Type,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.type()", object.id);
                 todo!()
             }
             #[doc = "If the physical tool can be identified by a unique 64-bit serial"]
@@ -17405,7 +17111,6 @@ pub mod tablet_unstable_v1 {
                 hardware_serial_hi: u32,
                 hardware_serial_lo: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.hardware_serial()", object.id);
                 todo!()
             }
             #[doc = "This event notifies the client of a hardware id available on this tool."]
@@ -17425,7 +17130,6 @@ pub mod tablet_unstable_v1 {
                 hardware_id_hi: u32,
                 hardware_id_lo: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.hardware_id_wacom()", object.id);
                 todo!()
             }
             #[doc = "This event notifies the client of any capabilities of this tool,"]
@@ -17441,7 +17145,6 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 capability: Capability,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.capability()", object.id);
                 todo!()
             }
             #[doc = "This event signals the end of the initial burst of descriptive"]
@@ -17452,7 +17155,6 @@ pub mod tablet_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.done()", object.id);
                 todo!()
             }
             #[doc = "This event is sent when the tool is removed from the system and will"]
@@ -17474,7 +17176,6 @@ pub mod tablet_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.removed()", object.id);
                 todo!()
             }
             #[doc = "Notification that this tool is focused on a certain surface."]
@@ -17494,7 +17195,6 @@ pub mod tablet_unstable_v1 {
                 tablet: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.proximity_in()", object.id);
                 todo!()
             }
             #[doc = "Notification that this tool has either left proximity, or is no"]
@@ -17514,7 +17214,6 @@ pub mod tablet_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.proximity_out()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the tablet tool comes in contact with the surface of the"]
@@ -17535,7 +17234,6 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.down()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the tablet tool stops making contact with the surface of"]
@@ -17559,7 +17257,6 @@ pub mod tablet_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.up()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever a tablet tool moves."]
@@ -17570,7 +17267,6 @@ pub mod tablet_unstable_v1 {
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.motion()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the pressure axis on a tool changes. The value of this"]
@@ -17584,7 +17280,6 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 pressure: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.pressure()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the distance axis on a tool changes. The value of this"]
@@ -17598,7 +17293,6 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 distance: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.distance()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever one or both of the tilt axes on a tool change. Each tilt"]
@@ -17612,7 +17306,6 @@ pub mod tablet_unstable_v1 {
                 tilt_x: i32,
                 tilt_y: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.tilt()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the z-rotation axis on the tool changes. The"]
@@ -17624,7 +17317,6 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 degrees: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.rotation()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the slider position on the tool changes. The"]
@@ -17638,7 +17330,6 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 position: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.slider()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the wheel on the tool emits an event. This event"]
@@ -17660,7 +17351,6 @@ pub mod tablet_unstable_v1 {
                 degrees: i32,
                 clicks: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.wheel()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever a button on the tool is pressed or released."]
@@ -17677,7 +17367,6 @@ pub mod tablet_unstable_v1 {
                 button: u32,
                 state: ButtonState,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.button()", object.id);
                 todo!()
             }
             #[doc = "Marks the end of a series of axis and/or button updates from the"]
@@ -17690,7 +17379,6 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 time: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v1#{}.frame()", object.id);
                 todo!()
             }
         }
@@ -17741,7 +17429,6 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v1#{}.name()", object.id);
                 todo!()
             }
             #[doc = "This event is sent in the initial burst of events before the"]
@@ -17753,7 +17440,6 @@ pub mod tablet_unstable_v1 {
                 vid: u32,
                 pid: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v1#{}.id()", object.id);
                 todo!()
             }
             #[doc = "A system-specific device path that indicates which device is behind"]
@@ -17776,7 +17462,6 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 path: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v1#{}.path()", object.id);
                 todo!()
             }
             #[doc = "This event is sent immediately to signal the end of the initial"]
@@ -17788,7 +17473,6 @@ pub mod tablet_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v1#{}.done()", object.id);
                 todo!()
             }
             #[doc = "Sent when the tablet has been removed from the system. When a tablet"]
@@ -17801,7 +17485,6 @@ pub mod tablet_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v1#{}.removed()", object.id);
                 todo!()
             }
         }
@@ -17991,7 +17674,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_seat_v2#{}.tablet_added()", object.id);
                 todo!()
             }
             #[doc = "This event is sent whenever a tool that has not previously been used"]
@@ -18004,7 +17686,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_seat_v2#{}.tool_added()", object.id);
                 todo!()
             }
             #[doc = "This event is sent whenever a new pad is known to the system. Typically,"]
@@ -18023,7 +17704,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_seat_v2#{}.pad_added()", object.id);
                 todo!()
             }
         }
@@ -18226,7 +17906,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 tool_type: Type,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.type()", object.id);
                 todo!()
             }
             #[doc = "If the physical tool can be identified by a unique 64-bit serial"]
@@ -18251,7 +17930,6 @@ pub mod tablet_unstable_v2 {
                 hardware_serial_hi: u32,
                 hardware_serial_lo: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.hardware_serial()", object.id);
                 todo!()
             }
             #[doc = "This event notifies the client of a hardware id available on this tool."]
@@ -18271,7 +17949,6 @@ pub mod tablet_unstable_v2 {
                 hardware_id_hi: u32,
                 hardware_id_lo: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.hardware_id_wacom()", object.id);
                 todo!()
             }
             #[doc = "This event notifies the client of any capabilities of this tool,"]
@@ -18287,7 +17964,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 capability: Capability,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.capability()", object.id);
                 todo!()
             }
             #[doc = "This event signals the end of the initial burst of descriptive"]
@@ -18298,7 +17974,6 @@ pub mod tablet_unstable_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.done()", object.id);
                 todo!()
             }
             #[doc = "This event is sent when the tool is removed from the system and will"]
@@ -18320,7 +17995,6 @@ pub mod tablet_unstable_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.removed()", object.id);
                 todo!()
             }
             #[doc = "Notification that this tool is focused on a certain surface."]
@@ -18340,7 +18014,6 @@ pub mod tablet_unstable_v2 {
                 tablet: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.proximity_in()", object.id);
                 todo!()
             }
             #[doc = "Notification that this tool has either left proximity, or is no"]
@@ -18360,7 +18033,6 @@ pub mod tablet_unstable_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.proximity_out()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the tablet tool comes in contact with the surface of the"]
@@ -18381,7 +18053,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.down()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the tablet tool stops making contact with the surface of"]
@@ -18405,7 +18076,6 @@ pub mod tablet_unstable_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.up()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever a tablet tool moves."]
@@ -18416,7 +18086,6 @@ pub mod tablet_unstable_v2 {
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.motion()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the pressure axis on a tool changes. The value of this"]
@@ -18430,7 +18099,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 pressure: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.pressure()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the distance axis on a tool changes. The value of this"]
@@ -18444,7 +18112,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 distance: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.distance()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever one or both of the tilt axes on a tool change. Each tilt"]
@@ -18458,7 +18125,6 @@ pub mod tablet_unstable_v2 {
                 tilt_x: crate::wire::Fixed,
                 tilt_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.tilt()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the z-rotation axis on the tool changes. The"]
@@ -18470,7 +18136,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 degrees: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.rotation()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the slider position on the tool changes. The"]
@@ -18484,7 +18149,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 position: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.slider()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the wheel on the tool emits an event. This event"]
@@ -18506,7 +18170,6 @@ pub mod tablet_unstable_v2 {
                 degrees: crate::wire::Fixed,
                 clicks: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.wheel()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever a button on the tool is pressed or released."]
@@ -18523,7 +18186,6 @@ pub mod tablet_unstable_v2 {
                 button: u32,
                 state: ButtonState,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.button()", object.id);
                 todo!()
             }
             #[doc = "Marks the end of a series of axis and/or button updates from the"]
@@ -18536,7 +18198,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 time: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.frame()", object.id);
                 todo!()
             }
         }
@@ -18591,7 +18252,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.name()", object.id);
                 todo!()
             }
             #[doc = "The USB vendor and product IDs for the tablet device."]
@@ -18608,7 +18268,6 @@ pub mod tablet_unstable_v2 {
                 vid: u32,
                 pid: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.id()", object.id);
                 todo!()
             }
             #[doc = "A system-specific device path that indicates which device is behind"]
@@ -18631,7 +18290,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 path: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.path()", object.id);
                 todo!()
             }
             #[doc = "This event is sent immediately to signal the end of the initial"]
@@ -18643,7 +18301,6 @@ pub mod tablet_unstable_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.done()", object.id);
                 todo!()
             }
             #[doc = "Sent when the tablet has been removed from the system. When a tablet"]
@@ -18656,7 +18313,6 @@ pub mod tablet_unstable_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.removed()", object.id);
                 todo!()
             }
         }
@@ -18767,7 +18423,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 source: Source,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.source()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the angle on a ring changes."]
@@ -18780,7 +18435,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 degrees: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.angle()", object.id);
                 todo!()
             }
             #[doc = "Stop notification for ring events."]
@@ -18798,7 +18452,6 @@ pub mod tablet_unstable_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.stop()", object.id);
                 todo!()
             }
             #[doc = "Indicates the end of a set of ring events that logically belong"]
@@ -18820,7 +18473,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 time: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.frame()", object.id);
                 todo!()
             }
         }
@@ -18931,7 +18583,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 source: Source,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.source()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the position on a strip changes."]
@@ -18945,7 +18596,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 position: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.position()", object.id);
                 todo!()
             }
             #[doc = "Stop notification for strip events."]
@@ -18963,7 +18613,6 @@ pub mod tablet_unstable_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.stop()", object.id);
                 todo!()
             }
             #[doc = "Indicates the end of a set of events that represent one logical"]
@@ -18986,7 +18635,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 time: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.frame()", object.id);
                 todo!()
             }
         }
@@ -19061,7 +18709,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 buttons: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.buttons()", object.id);
                 todo!()
             }
             #[doc = "Sent on wp_tablet_pad_group initialization to announce available rings."]
@@ -19075,7 +18722,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 ring: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.ring()", object.id);
                 todo!()
             }
             #[doc = "Sent on wp_tablet_pad initialization to announce available strips."]
@@ -19089,7 +18735,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 strip: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.strip()", object.id);
                 todo!()
             }
             #[doc = "Sent on wp_tablet_pad_group initialization to announce that the pad"]
@@ -19110,7 +18755,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 modes: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.modes()", object.id);
                 todo!()
             }
             #[doc = "This event is sent immediately to signal the end of the initial"]
@@ -19122,7 +18766,6 @@ pub mod tablet_unstable_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.done()", object.id);
                 todo!()
             }
             #[doc = "Notification that the mode was switched."]
@@ -19160,7 +18803,6 @@ pub mod tablet_unstable_v2 {
                 serial: u32,
                 mode: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.mode_switch()", object.id);
                 todo!()
             }
         }
@@ -19291,7 +18933,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 pad_group: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.group()", object.id);
                 todo!()
             }
             #[doc = "A system-specific device path that indicates which device is behind"]
@@ -19310,7 +18951,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 path: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.path()", object.id);
                 todo!()
             }
             #[doc = "Sent on wp_tablet_pad initialization to announce the available"]
@@ -19325,7 +18965,6 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 buttons: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.buttons()", object.id);
                 todo!()
             }
             #[doc = "This event signals the end of the initial burst of descriptive"]
@@ -19336,7 +18975,6 @@ pub mod tablet_unstable_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.done()", object.id);
                 todo!()
             }
             #[doc = "Sent whenever the physical state of a button changes."]
@@ -19348,7 +18986,6 @@ pub mod tablet_unstable_v2 {
                 button: u32,
                 state: ButtonState,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.button()", object.id);
                 todo!()
             }
             #[doc = "Notification that this pad is focused on the specified surface."]
@@ -19360,7 +18997,6 @@ pub mod tablet_unstable_v2 {
                 tablet: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.enter()", object.id);
                 todo!()
             }
             #[doc = "Notification that this pad is no longer focused on the specified"]
@@ -19372,7 +19008,6 @@ pub mod tablet_unstable_v2 {
                 serial: u32,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.leave()", object.id);
                 todo!()
             }
             #[doc = "Sent when the pad has been removed from the system. When a tablet"]
@@ -19386,7 +19021,6 @@ pub mod tablet_unstable_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.removed()", object.id);
                 todo!()
             }
         }
@@ -19741,7 +19375,6 @@ pub mod text_input_unstable_v1 {
                 client: &mut crate::server::Client,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v1#{}.enter()", object.id);
                 todo!()
             }
             #[doc = "Notify the text_input object when it lost focus. Either in response"]
@@ -19752,7 +19385,6 @@ pub mod text_input_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v1#{}.leave()", object.id);
                 todo!()
             }
             #[doc = "Transfer an array of 0-terminated modifier names. The position in"]
@@ -19764,7 +19396,6 @@ pub mod text_input_unstable_v1 {
                 client: &mut crate::server::Client,
                 map: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v1#{}.modifiers_map()", object.id);
                 todo!()
             }
             #[doc = "Notify when the visibility state of the input panel changed."]
@@ -19774,7 +19405,6 @@ pub mod text_input_unstable_v1 {
                 client: &mut crate::server::Client,
                 state: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v1#{}.input_panel_state()", object.id);
                 todo!()
             }
             #[doc = "Notify when a new composing text (pre-edit) should be set around the"]
@@ -19794,7 +19424,6 @@ pub mod text_input_unstable_v1 {
                 text: String,
                 commit: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v1#{}.preedit_string()", object.id);
                 todo!()
             }
             #[doc = "Sets styling information on composing text. The style is applied for"]
@@ -19812,7 +19441,6 @@ pub mod text_input_unstable_v1 {
                 length: u32,
                 style: PreeditStyle,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v1#{}.preedit_styling()", object.id);
                 todo!()
             }
             #[doc = "Sets the cursor position inside the composing text (as byte"]
@@ -19826,7 +19454,6 @@ pub mod text_input_unstable_v1 {
                 client: &mut crate::server::Client,
                 index: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v1#{}.preedit_cursor()", object.id);
                 todo!()
             }
             #[doc = "Notify when text should be inserted into the editor widget. The text to"]
@@ -19843,7 +19470,6 @@ pub mod text_input_unstable_v1 {
                 serial: u32,
                 text: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v1#{}.commit_string()", object.id);
                 todo!()
             }
             #[doc = "Notify when the cursor or anchor position should be modified."]
@@ -19857,7 +19483,6 @@ pub mod text_input_unstable_v1 {
                 index: i32,
                 anchor: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v1#{}.cursor_position()", object.id);
                 todo!()
             }
             #[doc = "Notify when the text around the current cursor position should be"]
@@ -19875,10 +19500,6 @@ pub mod text_input_unstable_v1 {
                 index: i32,
                 length: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_text_input_v1#{}.delete_surrounding_text()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "Notify when a key event was sent. Key events should not be used"]
@@ -19897,7 +19518,6 @@ pub mod text_input_unstable_v1 {
                 state: u32,
                 modifiers: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v1#{}.keysym()", object.id);
                 todo!()
             }
             #[doc = "Sets the language of the input text. The \"language\" argument is an"]
@@ -19909,7 +19529,6 @@ pub mod text_input_unstable_v1 {
                 serial: u32,
                 language: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v1#{}.language()", object.id);
                 todo!()
             }
             #[doc = "Sets the text direction of input text."]
@@ -19924,7 +19543,6 @@ pub mod text_input_unstable_v1 {
                 serial: u32,
                 direction: TextDirection,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v1#{}.text_direction()", object.id);
                 todo!()
             }
         }
@@ -20353,7 +19971,6 @@ pub mod text_input_unstable_v3 {
                 client: &mut crate::server::Client,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v3#{}.enter()", object.id);
                 todo!()
             }
             #[doc = "Notification that this seat's text-input focus is no longer on a"]
@@ -20373,7 +19990,6 @@ pub mod text_input_unstable_v3 {
                 client: &mut crate::server::Client,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v3#{}.leave()", object.id);
                 todo!()
             }
             #[doc = "Notify when a new composing text (pre-edit) should be set at the"]
@@ -20402,7 +20018,6 @@ pub mod text_input_unstable_v3 {
                 cursor_begin: i32,
                 cursor_end: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v3#{}.preedit_string()", object.id);
                 todo!()
             }
             #[doc = "Notify when text should be inserted into the editor widget. The text to"]
@@ -20419,7 +20034,6 @@ pub mod text_input_unstable_v3 {
                 client: &mut crate::server::Client,
                 text: Option<String>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v3#{}.commit_string()", object.id);
                 todo!()
             }
             #[doc = "Notify when the text around the current cursor position should be"]
@@ -20443,10 +20057,6 @@ pub mod text_input_unstable_v3 {
                 before_length: u32,
                 after_length: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_text_input_v3#{}.delete_surrounding_text()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "Instruct the application to apply changes to state requested by the"]
@@ -20482,7 +20092,6 @@ pub mod text_input_unstable_v3 {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v3#{}.done()", object.id);
                 todo!()
             }
         }
@@ -20758,7 +20367,6 @@ pub mod xdg_decoration_unstable_v1 {
                 client: &mut crate::server::Client,
                 mode: Mode,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_toplevel_decoration_v1#{}.configure()", object.id);
                 todo!()
             }
         }
@@ -20966,7 +20574,6 @@ pub mod xdg_foreign_unstable_v1 {
                 client: &mut crate::server::Client,
                 handle: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_exported_v1#{}.handle()", object.id);
                 todo!()
             }
         }
@@ -21036,7 +20643,6 @@ pub mod xdg_foreign_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_imported_v1#{}.destroyed()", object.id);
                 todo!()
             }
         }
@@ -21260,7 +20866,6 @@ pub mod xdg_foreign_unstable_v2 {
                 client: &mut crate::server::Client,
                 handle: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_exported_v2#{}.handle()", object.id);
                 todo!()
             }
         }
@@ -21346,7 +20951,6 @@ pub mod xdg_foreign_unstable_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_imported_v2#{}.destroyed()", object.id);
                 todo!()
             }
         }
@@ -21491,7 +21095,6 @@ pub mod xdg_output_unstable_v1 {
                 x: i32,
                 y: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_output_v1#{}.logical_position()", object.id);
                 todo!()
             }
             #[doc = "The logical_size event describes the size of the output in the"]
@@ -21531,7 +21134,6 @@ pub mod xdg_output_unstable_v1 {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_output_v1#{}.logical_size()", object.id);
                 todo!()
             }
             #[doc = "This event is sent after all other properties of an xdg_output"]
@@ -21548,7 +21150,6 @@ pub mod xdg_output_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_output_v1#{}.done()", object.id);
                 todo!()
             }
             #[doc = "Many compositors will assign names to their outputs, show them to the"]
@@ -21578,7 +21179,6 @@ pub mod xdg_output_unstable_v1 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_output_v1#{}.name()", object.id);
                 todo!()
             }
             #[doc = "Many compositors can produce human-readable descriptions of their"]
@@ -21605,7 +21205,6 @@ pub mod xdg_output_unstable_v1 {
                 client: &mut crate::server::Client,
                 description: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_output_v1#{}.description()", object.id);
                 todo!()
             }
         }
@@ -21806,7 +21405,6 @@ pub mod xdg_shell_unstable_v5 {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_shell#{}.ping()", object.id);
                 todo!()
             }
         }
@@ -22337,7 +21935,6 @@ pub mod xdg_shell_unstable_v5 {
                 states: Vec<u8>,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_surface#{}.configure()", object.id);
                 todo!()
             }
             #[doc = "The close event is sent by the compositor when the user"]
@@ -22353,7 +21950,6 @@ pub mod xdg_shell_unstable_v5 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_surface#{}.close()", object.id);
                 todo!()
             }
         }
@@ -22451,7 +22047,6 @@ pub mod xdg_shell_unstable_v5 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_popup#{}.popup_done()", object.id);
                 todo!()
             }
         }
@@ -22602,7 +22197,6 @@ pub mod xdg_shell_unstable_v6 {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_shell_v6#{}.ping()", object.id);
                 todo!()
             }
         }
@@ -23068,7 +22662,6 @@ pub mod xdg_shell_unstable_v6 {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_surface_v6#{}.configure()", object.id);
                 todo!()
             }
         }
@@ -23598,7 +23191,6 @@ pub mod xdg_shell_unstable_v6 {
                 height: i32,
                 states: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_toplevel_v6#{}.configure()", object.id);
                 todo!()
             }
             #[doc = "The close event is sent by the compositor when the user"]
@@ -23614,7 +23206,6 @@ pub mod xdg_shell_unstable_v6 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_toplevel_v6#{}.close()", object.id);
                 todo!()
             }
         }
@@ -23777,7 +23368,6 @@ pub mod xdg_shell_unstable_v6 {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_popup_v6#{}.configure()", object.id);
                 todo!()
             }
             #[doc = "The popup_done event is sent out when a popup is dismissed by the"]
@@ -23788,7 +23378,6 @@ pub mod xdg_shell_unstable_v6 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_popup_v6#{}.popup_done()", object.id);
                 todo!()
             }
         }
@@ -23996,7 +23585,6 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_data_control_device_v1#{}.data_offer()", object.id);
                 todo!()
             }
             #[doc = "The selection event is sent out to notify the client of a new"]
@@ -24017,7 +23605,6 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_data_control_device_v1#{}.selection()", object.id);
                 todo!()
             }
             #[doc = "This data control object is no longer valid and should be destroyed by"]
@@ -24027,7 +23614,6 @@ pub mod wlr_data_control_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_data_control_device_v1#{}.finished()", object.id);
                 todo!()
             }
             #[doc = "The primary_selection event is sent out to notify the client of a new"]
@@ -24049,10 +23635,6 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwlr_data_control_device_v1#{}.primary_selection()",
-                    object.id
-                );
                 todo!()
             }
         }
@@ -24137,7 +23719,6 @@ pub mod wlr_data_control_unstable_v1 {
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_data_control_source_v1#{}.send()", object.id);
                 todo!()
             }
             #[doc = "This data source is no longer valid. The data source has been replaced"]
@@ -24149,7 +23730,6 @@ pub mod wlr_data_control_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_data_control_source_v1#{}.cancelled()", object.id);
                 todo!()
             }
         }
@@ -24225,7 +23805,6 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 mime_type: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_data_control_offer_v1#{}.offer()", object.id);
                 todo!()
             }
         }
@@ -24406,7 +23985,6 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 mod_low: u32,
                 num_objects: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_export_dmabuf_frame_v1#{}.frame()", object.id);
                 todo!()
             }
             #[doc = "Event which serves to supply the client with the file descriptors"]
@@ -24425,7 +24003,6 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 stride: u32,
                 plane_index: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_export_dmabuf_frame_v1#{}.object()", object.id);
                 todo!()
             }
             #[doc = "This event is sent as soon as the frame is presented, indicating it is"]
@@ -24448,7 +24025,6 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 tv_sec_lo: u32,
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_export_dmabuf_frame_v1#{}.ready()", object.id);
                 todo!()
             }
             #[doc = "If the capture failed or if the frame is no longer valid after the"]
@@ -24466,7 +24042,6 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 reason: CancelReason,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_export_dmabuf_frame_v1#{}.cancel()", object.id);
                 todo!()
             }
         }
@@ -24526,10 +24101,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwlr_foreign_toplevel_manager_v1#{}.toplevel()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event indicates that the compositor is done sending events to the"]
@@ -24541,10 +24112,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwlr_foreign_toplevel_manager_v1#{}.finished()",
-                    object.id
-                );
                 todo!()
             }
         }
@@ -24795,7 +24362,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 title: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.title()", object.id);
                 todo!()
             }
             #[doc = "This event is emitted whenever the app-id of the toplevel changes."]
@@ -24805,7 +24371,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 app_id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.app_id()", object.id);
                 todo!()
             }
             #[doc = "This event is emitted whenever the toplevel becomes visible on"]
@@ -24816,10 +24381,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwlr_foreign_toplevel_handle_v1#{}.output_enter()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event is emitted whenever the toplevel stops being visible on"]
@@ -24831,10 +24392,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwlr_foreign_toplevel_handle_v1#{}.output_leave()",
-                    object.id
-                );
                 todo!()
             }
             #[doc = "This event is emitted immediately after the zlw_foreign_toplevel_handle_v1"]
@@ -24846,7 +24403,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 state: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.state()", object.id);
                 todo!()
             }
             #[doc = "This event is sent after all changes in the toplevel state have been"]
@@ -24859,7 +24415,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.done()", object.id);
                 todo!()
             }
             #[doc = "This event means the toplevel has been destroyed. It is guaranteed there"]
@@ -24871,7 +24426,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.closed()", object.id);
                 todo!()
             }
             #[doc = "This event is emitted whenever the parent of the toplevel changes."]
@@ -24883,7 +24437,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 parent: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.parent()", object.id);
                 todo!()
             }
         }
@@ -25044,7 +24597,6 @@ pub mod wlr_gamma_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 size: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_gamma_control_v1#{}.gamma_size()", object.id);
                 todo!()
             }
             #[doc = "This event indicates that the gamma control is no longer valid. This"]
@@ -25060,7 +24612,6 @@ pub mod wlr_gamma_control_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_gamma_control_v1#{}.failed()", object.id);
                 todo!()
             }
         }
@@ -25688,7 +25239,6 @@ pub mod wlr_layer_shell_unstable_v1 {
                 width: u32,
                 height: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_layer_surface_v1#{}.configure()", object.id);
                 todo!()
             }
             #[doc = "The closed event is sent by the compositor when the surface will no"]
@@ -25701,7 +25251,6 @@ pub mod wlr_layer_shell_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_layer_surface_v1#{}.closed()", object.id);
                 todo!()
             }
         }
@@ -25813,7 +25362,6 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 head: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_manager_v1#{}.head()", object.id);
                 todo!()
             }
             #[doc = "This event is sent after all information has been sent after binding to"]
@@ -25833,7 +25381,6 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_manager_v1#{}.done()", object.id);
                 todo!()
             }
             #[doc = "This event indicates that the compositor is done sending manager events."]
@@ -25845,7 +25392,6 @@ pub mod wlr_output_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_manager_v1#{}.finished()", object.id);
                 todo!()
             }
         }
@@ -25935,7 +25481,6 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.name()", object.id);
                 todo!()
             }
             #[doc = "This event describes a human-readable description of the head."]
@@ -25958,7 +25503,6 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 description: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.description()", object.id);
                 todo!()
             }
             #[doc = "This event describes the physical size of the head. This event is only"]
@@ -25971,7 +25515,6 @@ pub mod wlr_output_management_unstable_v1 {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.physical_size()", object.id);
                 todo!()
             }
             #[doc = "This event introduces a mode for this head. It is sent once per"]
@@ -25982,7 +25525,6 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 mode: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.mode()", object.id);
                 todo!()
             }
             #[doc = "This event describes whether the head is enabled. A disabled head is not"]
@@ -25996,7 +25538,6 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 enabled: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.enabled()", object.id);
                 todo!()
             }
             #[doc = "This event describes the mode currently in use for this head. It is only"]
@@ -26007,7 +25548,6 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 mode: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.current_mode()", object.id);
                 todo!()
             }
             #[doc = "This events describes the position of the head in the global compositor"]
@@ -26019,7 +25559,6 @@ pub mod wlr_output_management_unstable_v1 {
                 x: i32,
                 y: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.position()", object.id);
                 todo!()
             }
             #[doc = "This event describes the transformation currently applied to the head."]
@@ -26030,7 +25569,6 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 transform: super::super::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.transform()", object.id);
                 todo!()
             }
             #[doc = "This events describes the scale of the head in the global compositor"]
@@ -26041,7 +25579,6 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 scale: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.scale()", object.id);
                 todo!()
             }
             #[doc = "This event indicates that the head is no longer available. The head"]
@@ -26052,7 +25589,6 @@ pub mod wlr_output_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.finished()", object.id);
                 todo!()
             }
             #[doc = "This event describes the manufacturer of the head."]
@@ -26079,7 +25615,6 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 make: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.make()", object.id);
                 todo!()
             }
             #[doc = "This event describes the model of the head."]
@@ -26106,7 +25641,6 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 model: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.model()", object.id);
                 todo!()
             }
             #[doc = "This event describes the serial number of the head."]
@@ -26131,7 +25665,6 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 serial_number: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.serial_number()", object.id);
                 todo!()
             }
             #[doc = "This event describes whether adaptive sync is currently enabled for"]
@@ -26143,7 +25676,6 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 state: AdaptiveSyncState,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.adaptive_sync()", object.id);
                 todo!()
             }
         }
@@ -26198,7 +25730,6 @@ pub mod wlr_output_management_unstable_v1 {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_mode_v1#{}.size()", object.id);
                 todo!()
             }
             #[doc = "This event describes the mode's fixed vertical refresh rate. It is only"]
@@ -26209,7 +25740,6 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 refresh: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_mode_v1#{}.refresh()", object.id);
                 todo!()
             }
             #[doc = "This event advertises this mode as preferred."]
@@ -26218,7 +25748,6 @@ pub mod wlr_output_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_mode_v1#{}.preferred()", object.id);
                 todo!()
             }
             #[doc = "This event indicates that the mode is no longer available. The mode"]
@@ -26229,7 +25758,6 @@ pub mod wlr_output_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_mode_v1#{}.finished()", object.id);
                 todo!()
             }
         }
@@ -26391,7 +25919,6 @@ pub mod wlr_output_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_configuration_v1#{}.succeeded()", object.id);
                 todo!()
             }
             #[doc = "Sent if the compositor rejects the changes or failed to apply them. The"]
@@ -26404,7 +25931,6 @@ pub mod wlr_output_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_configuration_v1#{}.failed()", object.id);
                 todo!()
             }
             #[doc = "Sent if the compositor cancels the configuration because the state of an"]
@@ -26420,7 +25946,6 @@ pub mod wlr_output_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_configuration_v1#{}.cancelled()", object.id);
                 todo!()
             }
         }
@@ -26754,7 +26279,6 @@ pub mod wlr_output_power_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 mode: Mode,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_power_v1#{}.mode()", object.id);
                 todo!()
             }
             #[doc = "This event indicates that the output power management mode control"]
@@ -26771,7 +26295,6 @@ pub mod wlr_output_power_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_power_v1#{}.failed()", object.id);
                 todo!()
             }
         }
@@ -27017,7 +26540,6 @@ pub mod wlr_screencopy_unstable_v1 {
                 height: u32,
                 stride: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.buffer()", object.id);
                 todo!()
             }
             #[doc = "Provides flags about the frame. This event is sent once before the"]
@@ -27028,7 +26550,6 @@ pub mod wlr_screencopy_unstable_v1 {
                 client: &mut crate::server::Client,
                 flags: Flags,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.flags()", object.id);
                 todo!()
             }
             #[doc = "Called as soon as the frame is copied, indicating it is available"]
@@ -27051,7 +26572,6 @@ pub mod wlr_screencopy_unstable_v1 {
                 tv_sec_lo: u32,
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.ready()", object.id);
                 todo!()
             }
             #[doc = "This event indicates that the attempted frame copy has failed."]
@@ -27062,7 +26582,6 @@ pub mod wlr_screencopy_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.failed()", object.id);
                 todo!()
             }
             #[doc = "This event is sent right before the ready event when copy_with_damage is"]
@@ -27084,7 +26603,6 @@ pub mod wlr_screencopy_unstable_v1 {
                 width: u32,
                 height: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.damage()", object.id);
                 todo!()
             }
             #[doc = "Provides information about linux-dmabuf buffer parameters that need to"]
@@ -27098,7 +26616,6 @@ pub mod wlr_screencopy_unstable_v1 {
                 width: u32,
                 height: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.linux_dmabuf()", object.id);
                 todo!()
             }
             #[doc = "This event is sent once after all buffer events have been sent."]
@@ -27110,7 +26627,6 @@ pub mod wlr_screencopy_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.buffer_done()", object.id);
                 todo!()
             }
         }

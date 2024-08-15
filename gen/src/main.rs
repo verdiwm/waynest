@@ -634,7 +634,6 @@ fn write_events(
 
         let docs = description_to_docs(event.description.as_ref());
         let name = make_ident(event.name.to_snek_case());
-        let tracing_inner = format!("-> {}#{{}}.{}()", interface.name, event.name.to_snek_case());
 
         let mut args = vec![
             quote! {&self },
@@ -658,7 +657,6 @@ fn write_events(
         events.push(quote! {
             #(#docs)*
             async fn #name(#(#args),*) -> crate::server::Result<()> {
-                tracing::debug!(#tracing_inner, object.id);
                 todo!()
             }
         });
