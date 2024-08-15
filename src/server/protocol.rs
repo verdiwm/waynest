@@ -2,6 +2,8 @@
 #![allow(async_fn_in_trait)]
 pub mod wayland {
     pub mod wl_display {
+        #[doc = "These errors are global and can be emitted in response to any"]
+        #[doc = "server request."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -443,6 +445,7 @@ pub mod wayland {
         }
     }
     pub mod wl_shm {
+        #[doc = "These errors can be emitted in response to wl_shm requests."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -462,6 +465,18 @@ pub mod wayland {
                 }
             }
         }
+        #[doc = "This describes the memory layout of an individual pixel."]
+        #[doc = ""]
+        #[doc = "All renderers should support argb8888 and xrgb8888 but any other"]
+        #[doc = "formats are optional and may not be supported by the particular"]
+        #[doc = "renderer in use."]
+        #[doc = ""]
+        #[doc = "The drm format codes match the macros defined in drm_fourcc.h, except"]
+        #[doc = "argb8888 and xrgb8888. The formats actually supported by the compositor"]
+        #[doc = "will be reported by the format event."]
+        #[doc = ""]
+        #[doc = "For all wl_shm formats and unless specified in another protocol"]
+        #[doc = "extension, pre-multiplied alpha is used for pixel values."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1810,6 +1825,9 @@ pub mod wayland {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
+        #[doc = "Hints to indicate to the compositor how to deal with a conflict"]
+        #[doc = "between the dimensions of the surface and the dimensions of the"]
+        #[doc = "output. The compositor is free to ignore this parameter."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2205,6 +2223,7 @@ pub mod wayland {
         }
     }
     pub mod wl_surface {
+        #[doc = "These errors can be emitted in response to wl_surface requests."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2818,6 +2837,7 @@ pub mod wayland {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
+        #[doc = "These errors can be emitted in response to wl_seat requests."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3026,6 +3046,8 @@ pub mod wayland {
                 }
             }
         }
+        #[doc = "Describes the physical state of a button that produced the button"]
+        #[doc = "event."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3043,6 +3065,7 @@ pub mod wayland {
                 }
             }
         }
+        #[doc = "Describes the axis types of scroll events."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3060,6 +3083,22 @@ pub mod wayland {
                 }
             }
         }
+        #[doc = "Describes the source types for axis events. This indicates to the"]
+        #[doc = "client how an axis event was physically generated; a client may"]
+        #[doc = "adjust the user interface accordingly. For example, scroll events"]
+        #[doc = "from a \"finger\" source may be in a smooth coordinate space with"]
+        #[doc = "kinetic scrolling whereas a \"wheel\" source may be in discrete steps"]
+        #[doc = "of a number of lines."]
+        #[doc = ""]
+        #[doc = "The \"continuous\" axis source is a device generating events in a"]
+        #[doc = "continuous coordinate space, but using something other than a"]
+        #[doc = "finger. One example for this source is button-based scrolling where"]
+        #[doc = "the vertical motion of a device is converted to scroll events while"]
+        #[doc = "a button is held down."]
+        #[doc = ""]
+        #[doc = "The \"wheel tilt\" axis source indicates that the actual device is a"]
+        #[doc = "wheel but the scroll event is not caused by a rotation but a"]
+        #[doc = "(usually sideways) tilt of the wheel."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3081,6 +3120,8 @@ pub mod wayland {
                 }
             }
         }
+        #[doc = "This specifies the direction of the physical motion that caused a"]
+        #[doc = "wl_pointer.axis event, relative to the wl_pointer.axis direction."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3556,6 +3597,8 @@ pub mod wayland {
         }
     }
     pub mod wl_keyboard {
+        #[doc = "This specifies the format of the keymap provided to the"]
+        #[doc = "client with the wl_keyboard.keymap event."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3573,6 +3616,7 @@ pub mod wayland {
                 }
             }
         }
+        #[doc = "Describes the physical state of a key that produced the key event."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4006,6 +4050,8 @@ pub mod wayland {
         }
     }
     pub mod wl_output {
+        #[doc = "This enumeration describes how the physical"]
+        #[doc = "pixels on an output are laid out."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4031,6 +4077,16 @@ pub mod wayland {
                 }
             }
         }
+        #[doc = "This describes transformations that clients and compositors apply to"]
+        #[doc = "buffer contents."]
+        #[doc = ""]
+        #[doc = "The flipped values correspond to an initial flip around a"]
+        #[doc = "vertical axis followed by rotation."]
+        #[doc = ""]
+        #[doc = "The purpose is mainly to allow clients to render accordingly and"]
+        #[doc = "tell the compositor, so that for fullscreen surfaces, the"]
+        #[doc = "compositor will still be able to scan out directly from client"]
+        #[doc = "surfaces."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5532,6 +5588,8 @@ pub mod linux_dmabuf_v1 {
 }
 pub mod presentation_time {
     pub mod wp_presentation {
+        #[doc = "These fatal protocol errors may be emitted in response to"]
+        #[doc = "illegal presentation requests."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -6036,6 +6094,15 @@ pub mod tablet_v2 {
         }
     }
     pub mod zwp_tablet_tool_v2 {
+        #[doc = "Describes the physical type of a tool. The physical type of a tool"]
+        #[doc = "generally defines its base usage."]
+        #[doc = ""]
+        #[doc = "The mouse tool represents a mouse-shaped tool that is not a relative"]
+        #[doc = "device but bound to the tablet's surface, providing absolute"]
+        #[doc = "coordinates."]
+        #[doc = ""]
+        #[doc = "The lens tool is a mouse-shaped tool with an attached lens to"]
+        #[doc = "provide precision focus."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -6065,6 +6132,10 @@ pub mod tablet_v2 {
                 }
             }
         }
+        #[doc = "Describes extra capabilities on a tablet."]
+        #[doc = ""]
+        #[doc = "Any tool must provide x and y values, extra axes are"]
+        #[doc = "device-specific."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -6090,6 +6161,7 @@ pub mod tablet_v2 {
                 }
             }
         }
+        #[doc = "Describes the physical state of a button that produced the button event."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -6765,6 +6837,10 @@ pub mod tablet_v2 {
         }
     }
     pub mod zwp_tablet_pad_ring_v2 {
+        #[doc = "Describes the source types for ring events. This indicates to the"]
+        #[doc = "client how a ring event was physically generated; a client may"]
+        #[doc = "adjust the user interface accordingly. For example, events"]
+        #[doc = "from a \"finger\" source may trigger kinetic scrolling."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -6945,6 +7021,10 @@ pub mod tablet_v2 {
         }
     }
     pub mod zwp_tablet_pad_strip_v2 {
+        #[doc = "Describes the source types for strip events. This indicates to the"]
+        #[doc = "client how a strip event was physically generated; a client may"]
+        #[doc = "adjust the user interface accordingly. For example, events"]
+        #[doc = "from a \"finger\" source may trigger kinetic scrolling."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -7325,6 +7405,8 @@ pub mod tablet_v2 {
         }
     }
     pub mod zwp_tablet_pad_v2 {
+        #[doc = "Describes the physical state of a button that caused the button"]
+        #[doc = "event."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -8614,6 +8696,8 @@ pub mod xdg_shell {
                 }
             }
         }
+        #[doc = "These values are used to indicate which edge of a surface"]
+        #[doc = "is being dragged in a resize operation."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -8645,6 +8729,13 @@ pub mod xdg_shell {
                 }
             }
         }
+        #[doc = "The different state values used on the surface. This is designed for"]
+        #[doc = "state values like maximized, fullscreen. It is paired with the"]
+        #[doc = "configure event to ensure that both the client and the compositor"]
+        #[doc = "setting the state can be synchronized."]
+        #[doc = ""]
+        #[doc = "States set in this way are double-buffered. They will get applied on"]
+        #[doc = "the next commit."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -9843,6 +9934,7 @@ pub mod content_type_v1 {
         }
     }
     pub mod wp_content_type_v1 {
+        #[doc = "These values describe the available content types for a surface."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -10023,6 +10115,10 @@ pub mod cursor_shape_v1 {
         }
     }
     pub mod wp_cursor_shape_device_v1 {
+        #[doc = "This enum describes cursor shapes."]
+        #[doc = ""]
+        #[doc = "The names are taken from the CSS W3C specification:"]
+        #[doc = "https://w3c.github.io/csswg-drafts/css-ui/#cursor"]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -12689,6 +12785,8 @@ pub mod tearing_control_v1 {
         }
     }
     pub mod wp_tearing_control_v1 {
+        #[doc = "This enum provides information for if submitted frames from the client"]
+        #[doc = "may be presented with tearing."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -13643,6 +13741,27 @@ pub mod xwayland_shell_v1 {
 }
 pub mod fullscreen_shell_unstable_v1 {
     pub mod zwp_fullscreen_shell_v1 {
+        #[doc = "Various capabilities that can be advertised by the compositor.  They"]
+        #[doc = "are advertised one-at-a-time when the wl_fullscreen_shell interface is"]
+        #[doc = "bound.  See the wl_fullscreen_shell.capability event for more details."]
+        #[doc = ""]
+        #[doc = "ARBITRARY_MODES:"]
+        #[doc = "This is a hint to the client that indicates that the compositor is"]
+        #[doc = "capable of setting practically any mode on its outputs.  If this"]
+        #[doc = "capability is provided, wl_fullscreen_shell.present_surface_for_mode"]
+        #[doc = "will almost never fail and clients should feel free to set whatever"]
+        #[doc = "mode they like.  If the compositor does not advertise this, it may"]
+        #[doc = "still support some modes that are not advertised through wl_global.mode"]
+        #[doc = "but it is less likely."]
+        #[doc = ""]
+        #[doc = "CURSOR_PLANE:"]
+        #[doc = "This is a hint to the client that indicates that the compositor can"]
+        #[doc = "handle a cursor surface from the client without actually compositing."]
+        #[doc = "This may be because of a hardware cursor plane or some other mechanism."]
+        #[doc = "If the compositor does not advertise this capability then setting"]
+        #[doc = "wl_pointer.cursor may degrade performance or be ignored entirely.  If"]
+        #[doc = "CURSOR_PLANE is not advertised, it is recommended that the client draw"]
+        #[doc = "its own cursor and set wl_pointer.cursor(NULL)."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -13660,6 +13779,9 @@ pub mod fullscreen_shell_unstable_v1 {
                 }
             }
         }
+        #[doc = "Hints to indicate to the compositor how to deal with a conflict"]
+        #[doc = "between the dimensions of the surface and the dimensions of the"]
+        #[doc = "output. The compositor is free to ignore this parameter."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -13683,6 +13805,7 @@ pub mod fullscreen_shell_unstable_v1 {
                 }
             }
         }
+        #[doc = "These errors can be emitted in response to wl_fullscreen_shell requests."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -16362,6 +16485,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
 #[doc = "reset."]
 pub mod pointer_constraints_unstable_v1 {
     pub mod zwp_pointer_constraints_v1 {
+        #[doc = "These errors can be emitted in response to wp_pointer_constraints"]
+        #[doc = "requests."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -16377,6 +16502,9 @@ pub mod pointer_constraints_unstable_v1 {
                 }
             }
         }
+        #[doc = "These values represent different lifetime semantics. They are passed"]
+        #[doc = "as arguments to the factory requests to specify how the constraint"]
+        #[doc = "lifetimes should be managed."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -18017,6 +18145,15 @@ pub mod tablet_unstable_v1 {
         }
     }
     pub mod zwp_tablet_tool_v1 {
+        #[doc = "Describes the physical type of a tool. The physical type of a tool"]
+        #[doc = "generally defines its base usage."]
+        #[doc = ""]
+        #[doc = "The mouse tool represents a mouse-shaped tool that is not a relative"]
+        #[doc = "device but bound to the tablet's surface, providing absolute"]
+        #[doc = "coordinates."]
+        #[doc = ""]
+        #[doc = "The lens tool is a mouse-shaped tool with an attached lens to"]
+        #[doc = "provide precision focus."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -18046,6 +18183,10 @@ pub mod tablet_unstable_v1 {
                 }
             }
         }
+        #[doc = "Describes extra capabilities on a tablet."]
+        #[doc = ""]
+        #[doc = "Any tool must provide x and y values, extra axes are"]
+        #[doc = "device-specific."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -18071,6 +18212,7 @@ pub mod tablet_unstable_v1 {
                 }
             }
         }
+        #[doc = "Describes the physical state of a button that produced the button event."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -18973,6 +19115,15 @@ pub mod tablet_unstable_v2 {
         }
     }
     pub mod zwp_tablet_tool_v2 {
+        #[doc = "Describes the physical type of a tool. The physical type of a tool"]
+        #[doc = "generally defines its base usage."]
+        #[doc = ""]
+        #[doc = "The mouse tool represents a mouse-shaped tool that is not a relative"]
+        #[doc = "device but bound to the tablet's surface, providing absolute"]
+        #[doc = "coordinates."]
+        #[doc = ""]
+        #[doc = "The lens tool is a mouse-shaped tool with an attached lens to"]
+        #[doc = "provide precision focus."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -19002,6 +19153,10 @@ pub mod tablet_unstable_v2 {
                 }
             }
         }
+        #[doc = "Describes extra capabilities on a tablet."]
+        #[doc = ""]
+        #[doc = "Any tool must provide x and y values, extra axes are"]
+        #[doc = "device-specific."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -19027,6 +19182,7 @@ pub mod tablet_unstable_v2 {
                 }
             }
         }
+        #[doc = "Describes the physical state of a button that produced the button event."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -19702,6 +19858,10 @@ pub mod tablet_unstable_v2 {
         }
     }
     pub mod zwp_tablet_pad_ring_v2 {
+        #[doc = "Describes the source types for ring events. This indicates to the"]
+        #[doc = "client how a ring event was physically generated; a client may"]
+        #[doc = "adjust the user interface accordingly. For example, events"]
+        #[doc = "from a \"finger\" source may trigger kinetic scrolling."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -19882,6 +20042,10 @@ pub mod tablet_unstable_v2 {
         }
     }
     pub mod zwp_tablet_pad_strip_v2 {
+        #[doc = "Describes the source types for strip events. This indicates to the"]
+        #[doc = "client how a strip event was physically generated; a client may"]
+        #[doc = "adjust the user interface accordingly. For example, events"]
+        #[doc = "from a \"finger\" source may trigger kinetic scrolling."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -20262,6 +20426,8 @@ pub mod tablet_unstable_v2 {
         }
     }
     pub mod zwp_tablet_pad_v2 {
+        #[doc = "Describes the physical state of a button that caused the button"]
+        #[doc = "event."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -20529,6 +20695,11 @@ pub mod text_input_unstable_v1 {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
+        #[doc = "The content purpose allows to specify the primary purpose of a text"]
+        #[doc = "input."]
+        #[doc = ""]
+        #[doc = "This allows an input method to show special purpose input panels with"]
+        #[doc = "extra characters or to disallow some characters."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -21171,6 +21342,7 @@ pub mod text_input_unstable_v1 {
 #[doc = "interface version number is reset."]
 pub mod text_input_unstable_v3 {
     pub mod zwp_text_input_v3 {
+        #[doc = "Reason for the change of surrounding text or cursor posision."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -21195,6 +21367,11 @@ pub mod text_input_unstable_v3 {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
+        #[doc = "The content purpose allows to specify the primary purpose of a text"]
+        #[doc = "input."]
+        #[doc = ""]
+        #[doc = "This allows an input method to show special purpose input panels with"]
+        #[doc = "extra characters or to disallow some characters."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -21854,6 +22031,7 @@ pub mod xdg_decoration_unstable_v1 {
                 }
             }
         }
+        #[doc = "These values describe window decoration modes."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -22289,6 +22467,8 @@ pub mod xdg_foreign_unstable_v1 {
 #[doc = "reset."]
 pub mod xdg_foreign_unstable_v2 {
     pub mod zxdg_exporter_v2 {
+        #[doc = "These errors can be emitted in response to invalid xdg_exporter"]
+        #[doc = "requests."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -22486,6 +22666,8 @@ pub mod xdg_foreign_unstable_v2 {
         }
     }
     pub mod zxdg_imported_v2 {
+        #[doc = "These errors can be emitted in response to invalid xdg_imported"]
+        #[doc = "requests."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -22857,6 +23039,10 @@ pub mod xdg_output_unstable_v1 {
 }
 pub mod xdg_shell_unstable_v5 {
     pub mod xdg_shell {
+        #[doc = "The 'current' member of this enum gives the version of the"]
+        #[doc = "protocol.  Implementations can compare this to the version"]
+        #[doc = "they implement using static_assert to ensure the protocol and"]
+        #[doc = "implementation versions match."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -23060,6 +23246,8 @@ pub mod xdg_shell_unstable_v5 {
         }
     }
     pub mod xdg_surface {
+        #[doc = "These values are used to indicate which edge of a surface"]
+        #[doc = "is being dragged in a resize operation."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -23091,6 +23279,25 @@ pub mod xdg_shell_unstable_v5 {
                 }
             }
         }
+        #[doc = "The different state values used on the surface. This is designed for"]
+        #[doc = "state values like maximized, fullscreen. It is paired with the"]
+        #[doc = "configure event to ensure that both the client and the compositor"]
+        #[doc = "setting the state can be synchronized."]
+        #[doc = ""]
+        #[doc = "States set in this way are double-buffered. They will get applied on"]
+        #[doc = "the next commit."]
+        #[doc = ""]
+        #[doc = "Desktop environments may extend this enum by taking up a range of"]
+        #[doc = "values and documenting the range they chose in this description."]
+        #[doc = "They are not required to document the values for the range that they"]
+        #[doc = "chose. Ideally, any good extensions from a desktop environment should"]
+        #[doc = "make its way into standardization into this enum."]
+        #[doc = ""]
+        #[doc = "The current reserved ranges are:"]
+        #[doc = ""]
+        #[doc = "0x0000 - 0x0FFF: xdg-shell core values, documented below."]
+        #[doc = "0x1000 - 0x1FFF: GNOME"]
+        #[doc = "0x2000 - 0x2FFF: EFL"]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -24342,6 +24549,8 @@ pub mod xdg_shell_unstable_v6 {
         }
     }
     pub mod zxdg_toplevel_v6 {
+        #[doc = "These values are used to indicate which edge of a surface"]
+        #[doc = "is being dragged in a resize operation."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -24373,6 +24582,13 @@ pub mod xdg_shell_unstable_v6 {
                 }
             }
         }
+        #[doc = "The different state values used on the surface. This is designed for"]
+        #[doc = "state values like maximized, fullscreen. It is paired with the"]
+        #[doc = "configure event to ensure that both the client and the compositor"]
+        #[doc = "setting the state can be synchronized."]
+        #[doc = ""]
+        #[doc = "States set in this way are double-buffered. They will get applied on"]
+        #[doc = "the next commit."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -25616,6 +25832,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
         }
     }
     pub mod zwlr_export_dmabuf_frame_v1 {
+        #[doc = "Special flags that should be respected by the client."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -25631,6 +25848,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 }
             }
         }
+        #[doc = "Indicates reason for cancelling the frame."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -25886,6 +26104,8 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
         }
     }
     pub mod zwlr_foreign_toplevel_handle_v1 {
+        #[doc = "The different states that a toplevel can have. These have the same meaning"]
+        #[doc = "as the states with the same names defined in xdg-toplevel"]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -26572,6 +26792,12 @@ pub mod wlr_layer_shell_unstable_v1 {
                 }
             }
         }
+        #[doc = "These values indicate which layers a surface can be rendered in. They"]
+        #[doc = "are ordered by z depth, bottom-most first. Traditional shell surfaces"]
+        #[doc = "will typically be rendered between the bottom and top layers."]
+        #[doc = "Fullscreen shell surfaces are typically rendered at the top layer."]
+        #[doc = "Multiple surfaces can share a single layer, and ordering within a"]
+        #[doc = "single layer is undefined."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -26684,6 +26910,11 @@ pub mod wlr_layer_shell_unstable_v1 {
         }
     }
     pub mod zwlr_layer_surface_v1 {
+        #[doc = "Types of keyboard interaction possible for layer shell surfaces. The"]
+        #[doc = "rationale for this is twofold: (1) some applications are not interested"]
+        #[doc = "in keyboard events and not allowing them to be focused can improve the"]
+        #[doc = "desktop experience; (2) some applications will want to take exclusive"]
+        #[doc = "keyboard focus."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
