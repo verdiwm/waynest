@@ -539,7 +539,8 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
             #opcode => {
                 tracing::debug!(#tracing_inner, object.id);
                 self.#name(#(#args),*).await
-            }
+            }                // let args = quote! {&self, object: &crate::server::Object, client: &mut crate::server::Client,};
+
         });
     }
 
