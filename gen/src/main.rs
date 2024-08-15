@@ -658,7 +658,47 @@ fn write_events(
 
         let mut build_args = Vec::new();
 
-        build_args.push(quote! {});
+        for arg in &event.args {
+            let build_ty = arg.to_caller();
+            let build_ty = format_ident!("put_{build_ty}");
+
+            let mut build_convert = quote! {};
+
+            if let Some((enum_interface, name)) = arg.to_enum_name() {
+                let e = if let Some(enum_interface) = enum_interface {
+                    protocols
+                        .iter()
+                        .find_map(|protocol| {
+                            protocol
+                                .interfaces
+                                .iter()
+                                .find(|e| e.name == enum_interface)
+                        })
+                        .unwrap()
+                        .enums
+                        .iter()
+                        .find(|e| e.name == name)
+                        .unwrap()
+                } else {
+                    find_enum(&protocol, &name)
+                };
+
+                if e.bitfield {
+                    build_convert = quote! { .bits() };
+                } else {
+                    build_convert = quote! {  as u32 };
+                }
+            }
+
+            let build_name = make_ident(arg.name.to_snek_case());
+            let mut build_name = quote! { #build_name };
+
+            if arg.is_return_option() && !arg.allow_null {
+                build_name = quote! { Some(#build_name) }
+            }
+
+            build_args.push(quote! { .#build_ty(#build_name #build_convert) })
+        }
 
         events.push(quote! {
             #(#docs)*
