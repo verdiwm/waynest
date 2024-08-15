@@ -109,6 +109,9 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                object_id: crate::wire::ObjectId,
+                code: u32,
+                message: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -121,6 +124,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -189,6 +193,9 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                name: u32,
+                interface: String,
+                version: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -206,6 +213,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                name: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -241,6 +249,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                callback_data: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -761,6 +770,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                format: Format,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -1029,6 +1039,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mime_type: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -1040,6 +1051,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                source_actions: super::super::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -1082,6 +1094,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                dnd_action: super::super::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -1190,6 +1203,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mime_type: Option<String>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -1200,6 +1214,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mime_type: String,
+                fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -1288,6 +1304,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                dnd_action: super::super::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -1428,6 +1445,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -1439,6 +1457,11 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                surface: crate::wire::ObjectId,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
+                id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -1460,6 +1483,9 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -1499,6 +1525,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -2009,6 +2036,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -2033,6 +2061,9 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                edges: Resize,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -2574,6 +2605,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -2590,6 +2622,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -2609,6 +2642,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                factor: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -2625,6 +2659,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                transform: super::super::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -2790,6 +2825,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                capabilities: Capability,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -2813,6 +2849,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                name: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3011,6 +3048,10 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                surface: crate::wire::ObjectId,
+                surface_x: crate::wire::Fixed,
+                surface_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3023,6 +3064,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3033,6 +3076,9 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                surface_x: crate::wire::Fixed,
+                surface_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3054,6 +3100,10 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                time: u32,
+                button: u32,
+                state: ButtonState,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3077,6 +3127,9 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                axis: Axis,
+                value: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3150,6 +3203,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                axis_source: AxisSource,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3171,6 +3225,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                axis: Axis,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3208,6 +3264,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                axis: Axis,
+                discrete: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3236,6 +3294,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                axis: Axis,
+                value120: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3278,6 +3338,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                axis: Axis,
+                direction: AxisRelativeDirection,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3368,6 +3430,9 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                format: KeymapFormat,
+                fd: rustix::fd::OwnedFd,
+                size: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3385,6 +3450,9 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                surface: crate::wire::ObjectId,
+                keys: Vec<u8>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3402,6 +3470,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3427,6 +3497,10 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                time: u32,
+                key: u32,
+                state: KeyState,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3447,6 +3521,11 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                mods_depressed: u32,
+                mods_latched: u32,
+                mods_locked: u32,
+                group: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3466,6 +3545,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                rate: i32,
+                delay: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3516,6 +3597,12 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                time: u32,
+                surface: crate::wire::ObjectId,
+                id: i32,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3526,6 +3613,9 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                time: u32,
+                id: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3534,6 +3624,10 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                id: i32,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3596,6 +3690,9 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: i32,
+                major: crate::wire::Fixed,
+                minor: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3626,6 +3723,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: i32,
+                orientation: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3753,6 +3852,14 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                physical_width: i32,
+                physical_height: i32,
+                subpixel: Subpixel,
+                make: String,
+                model: String,
+                transform: Transform,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3793,6 +3900,10 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                flags: Mode,
+                width: i32,
+                height: i32,
+                refresh: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3830,6 +3941,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                factor: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3865,6 +3977,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                name: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -3886,6 +3999,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                description: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -4493,6 +4607,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                format: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -4523,6 +4638,9 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                format: u32,
+                modifier_hi: u32,
+                modifier_lo: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -4790,6 +4908,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                buffer: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -4901,6 +5020,8 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                fd: rustix::fd::OwnedFd,
+                size: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -4931,6 +5052,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                device: Vec<u8>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -4975,6 +5097,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                device: Vec<u8>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5006,6 +5129,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                indices: Vec<u8>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5021,6 +5145,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                flags: TrancheFlags,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5157,6 +5282,7 @@ pub mod presentation_time {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                clk_id: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5212,6 +5338,7 @@ pub mod presentation_time {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5260,6 +5387,13 @@ pub mod presentation_time {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
+                refresh: u32,
+                seq_hi: u32,
+                seq_lo: u32,
+                flags: Kind,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5452,6 +5586,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5463,6 +5598,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5480,6 +5616,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5681,6 +5818,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                tool_type: Type,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5703,6 +5841,8 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                hardware_serial_hi: u32,
+                hardware_serial_lo: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5720,6 +5860,8 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                hardware_id_hi: u32,
+                hardware_id_lo: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5734,6 +5876,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                capability: Capability,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5781,6 +5924,9 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                tablet: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5819,6 +5965,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5850,6 +5997,8 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5862,6 +6011,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                pressure: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5874,6 +6024,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                distance: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5885,6 +6036,8 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                tilt_x: crate::wire::Fixed,
+                tilt_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5895,6 +6048,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                degrees: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5907,6 +6061,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                position: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5926,6 +6081,8 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                degrees: crate::wire::Fixed,
+                clicks: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5939,6 +6096,9 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                button: u32,
+                state: ButtonState,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -5950,6 +6110,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6003,6 +6164,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                name: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6017,6 +6179,8 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                vid: u32,
+                pid: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6038,6 +6202,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                path: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6170,6 +6335,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                source: Source,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6181,6 +6347,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                degrees: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6218,6 +6385,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6327,6 +6495,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                source: Source,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6339,6 +6508,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                position: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6377,6 +6547,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6450,6 +6621,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                buttons: Vec<u8>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6462,6 +6634,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                ring: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6474,6 +6647,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                strip: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6493,6 +6667,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                modes: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6538,6 +6713,9 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                serial: u32,
+                mode: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6667,6 +6845,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                pad_group: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6684,6 +6863,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                path: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6697,6 +6877,7 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                buttons: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6715,6 +6896,9 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                button: u32,
+                state: ButtonState,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6723,6 +6907,9 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                tablet: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -6732,6 +6919,8 @@ pub mod tablet_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -7148,6 +7337,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -7745,6 +7935,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -8410,6 +8601,9 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
+                states: Vec<u8>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -8447,6 +8641,8 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -8474,6 +8670,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                capabilities: Vec<u8>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -8666,6 +8863,10 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -8698,6 +8899,7 @@ pub mod xdg_shell {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                token: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -9395,6 +9597,7 @@ pub mod drm_lease_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -9412,6 +9615,7 @@ pub mod drm_lease_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -9495,6 +9699,7 @@ pub mod drm_lease_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                name: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -9506,6 +9711,7 @@ pub mod drm_lease_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                description: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -9517,6 +9723,7 @@ pub mod drm_lease_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                connector_id: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -9699,6 +9906,7 @@ pub mod drm_lease_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                leased_fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -9821,6 +10029,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -9920,6 +10129,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                title: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -9931,6 +10141,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                app_id: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -9958,6 +10169,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                identifier: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -10528,6 +10740,9 @@ pub mod ext_session_lock_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                width: u32,
+                height: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -10654,6 +10869,7 @@ pub mod ext_transient_seat_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                global_name: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -10812,6 +11028,7 @@ pub mod fractional_scale_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                scale: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -12007,6 +12224,7 @@ pub mod xdg_activation_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                token: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -12845,6 +13063,7 @@ pub mod fullscreen_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                capability: Capability,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -13401,6 +13620,9 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                text: String,
+                cursor: u32,
+                anchor: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -13415,6 +13637,8 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                hint: u32,
+                purpose: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -13422,6 +13646,8 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                button: u32,
+                index: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -13429,6 +13655,7 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -13436,6 +13663,7 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                language: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -13471,6 +13699,7 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -13481,6 +13710,7 @@ pub mod input_method_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                context: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -13806,6 +14036,9 @@ pub mod input_timestamps_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -14191,6 +14424,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                format: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -14221,6 +14455,9 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                format: u32,
+                modifier_hi: u32,
+                modifier_lo: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -14488,6 +14725,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                buffer: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -14599,6 +14837,8 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                fd: rustix::fd::OwnedFd,
+                size: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -14629,6 +14869,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                device: Vec<u8>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -14673,6 +14914,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                device: Vec<u8>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -14704,6 +14946,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                indices: Vec<u8>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -14719,6 +14962,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                flags: TrancheFlags,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -15053,6 +15297,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                fence: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -15692,6 +15937,10 @@ pub mod pointer_gestures_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                time: u32,
+                surface: crate::wire::ObjectId,
+                fingers: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -15704,6 +15953,9 @@ pub mod pointer_gestures_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                dx: crate::wire::Fixed,
+                dy: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -15718,6 +15970,9 @@ pub mod pointer_gestures_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                time: u32,
+                cancelled: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -15773,6 +16028,10 @@ pub mod pointer_gestures_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                time: u32,
+                surface: crate::wire::ObjectId,
+                fingers: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -15792,6 +16051,11 @@ pub mod pointer_gestures_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                dx: crate::wire::Fixed,
+                dy: crate::wire::Fixed,
+                scale: crate::wire::Fixed,
+                rotation: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -15806,6 +16070,9 @@ pub mod pointer_gestures_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                time: u32,
+                cancelled: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -15862,6 +16129,10 @@ pub mod pointer_gestures_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                time: u32,
+                surface: crate::wire::ObjectId,
+                fingers: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -15878,6 +16149,9 @@ pub mod pointer_gestures_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                time: u32,
+                cancelled: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16069,6 +16343,7 @@ pub mod wp_primary_selection_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                offer: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16085,6 +16360,7 @@ pub mod wp_primary_selection_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16161,6 +16437,7 @@ pub mod wp_primary_selection_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mime_type: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16225,6 +16502,8 @@ pub mod wp_primary_selection_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mime_type: String,
+                fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16391,6 +16670,12 @@ pub mod relative_pointer_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                utime_hi: u32,
+                utime_lo: u32,
+                dx: crate::wire::Fixed,
+                dy: crate::wire::Fixed,
+                dx_unaccel: crate::wire::Fixed,
+                dy_unaccel: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16584,6 +16869,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16595,6 +16881,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16798,6 +17085,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                tool_type: Type,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16820,6 +17108,8 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                hardware_serial_hi: u32,
+                hardware_serial_lo: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16837,6 +17127,8 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                hardware_id_hi: u32,
+                hardware_id_lo: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16851,6 +17143,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                capability: Capability,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16898,6 +17191,9 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                tablet: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16936,6 +17232,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16967,6 +17264,8 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16979,6 +17278,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                pressure: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -16991,6 +17291,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                distance: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17002,6 +17303,8 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                tilt_x: i32,
+                tilt_y: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17012,6 +17315,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                degrees: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17024,6 +17328,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                position: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17043,6 +17348,8 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                degrees: i32,
+                clicks: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17056,6 +17363,9 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                button: u32,
+                state: ButtonState,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17067,6 +17377,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17116,6 +17427,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                name: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17125,6 +17437,8 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                vid: u32,
+                pid: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17146,6 +17460,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                path: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17357,6 +17672,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17368,6 +17684,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17385,6 +17702,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17586,6 +17904,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                tool_type: Type,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17608,6 +17927,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                hardware_serial_hi: u32,
+                hardware_serial_lo: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17625,6 +17946,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                hardware_id_hi: u32,
+                hardware_id_lo: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17639,6 +17962,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                capability: Capability,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17686,6 +18010,9 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                tablet: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17724,6 +18051,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17755,6 +18083,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17767,6 +18097,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                pressure: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17779,6 +18110,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                distance: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17790,6 +18122,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                tilt_x: crate::wire::Fixed,
+                tilt_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17800,6 +18134,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                degrees: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17812,6 +18147,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                position: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17831,6 +18167,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                degrees: crate::wire::Fixed,
+                clicks: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17844,6 +18182,9 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                button: u32,
+                state: ButtonState,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17855,6 +18196,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17908,6 +18250,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                name: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17922,6 +18265,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                vid: u32,
+                pid: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -17943,6 +18288,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                path: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18075,6 +18421,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                source: Source,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18086,6 +18433,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                degrees: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18123,6 +18471,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18232,6 +18581,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                source: Source,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18244,6 +18594,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                position: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18282,6 +18633,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18355,6 +18707,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                buttons: Vec<u8>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18367,6 +18720,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                ring: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18379,6 +18733,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                strip: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18398,6 +18753,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                modes: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18443,6 +18799,9 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                serial: u32,
+                mode: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18572,6 +18931,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                pad_group: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18589,6 +18949,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                path: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18602,6 +18963,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                buttons: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18620,6 +18982,9 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                time: u32,
+                button: u32,
+                state: ButtonState,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18628,6 +18993,9 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                tablet: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -18637,6 +19005,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19003,6 +19373,7 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19023,6 +19394,7 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                map: Vec<u8>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19031,6 +19403,7 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                state: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19047,6 +19420,9 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                text: String,
+                commit: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19061,6 +19437,9 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                index: u32,
+                length: u32,
+                style: PreeditStyle,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19073,6 +19452,7 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                index: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19087,6 +19467,8 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                text: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19098,6 +19480,8 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                index: i32,
+                anchor: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19113,6 +19497,8 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                index: i32,
+                length: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19126,6 +19512,11 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                time: u32,
+                sym: u32,
+                state: u32,
+                modifiers: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19135,6 +19526,8 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                language: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19147,6 +19540,8 @@ pub mod text_input_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                direction: TextDirection,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19574,6 +19969,7 @@ pub mod text_input_unstable_v3 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19592,6 +19988,7 @@ pub mod text_input_unstable_v3 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19617,6 +20014,9 @@ pub mod text_input_unstable_v3 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                text: Option<String>,
+                cursor_begin: i32,
+                cursor_end: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19632,6 +20032,7 @@ pub mod text_input_unstable_v3 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                text: Option<String>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19653,6 +20054,8 @@ pub mod text_input_unstable_v3 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                before_length: u32,
+                after_length: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19687,6 +20090,7 @@ pub mod text_input_unstable_v3 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -19961,6 +20365,7 @@ pub mod xdg_decoration_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mode: Mode,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -20167,6 +20572,7 @@ pub mod xdg_foreign_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                handle: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -20458,6 +20864,7 @@ pub mod xdg_foreign_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                handle: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -20685,6 +21092,8 @@ pub mod xdg_output_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -20722,6 +21131,8 @@ pub mod xdg_output_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -20766,6 +21177,7 @@ pub mod xdg_output_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                name: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -20791,6 +21203,7 @@ pub mod xdg_output_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                description: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -20990,6 +21403,7 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -21516,6 +21930,10 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
+                states: Vec<u8>,
+                serial: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -21777,6 +22195,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -22241,6 +22660,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -22767,6 +23187,9 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
+                states: Vec<u8>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -22940,6 +23363,10 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23156,6 +23583,7 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23175,6 +23603,7 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23204,6 +23633,7 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23286,6 +23716,8 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mime_type: String,
+                fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23371,6 +23803,7 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mime_type: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23541,6 +23974,16 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: u32,
+                height: u32,
+                offset_x: u32,
+                offset_y: u32,
+                buffer_flags: u32,
+                flags: Flags,
+                format: u32,
+                mod_high: u32,
+                mod_low: u32,
+                num_objects: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23553,6 +23996,12 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                index: u32,
+                fd: rustix::fd::OwnedFd,
+                size: u32,
+                offset: u32,
+                stride: u32,
+                plane_index: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23572,6 +24021,9 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23588,6 +24040,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                reason: CancelReason,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23646,6 +24099,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23906,6 +24360,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                title: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23914,6 +24369,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                app_id: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23923,6 +24379,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23933,6 +24390,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23943,6 +24401,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                state: Vec<u8>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -23976,6 +24435,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                parent: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -24135,6 +24595,7 @@ pub mod wlr_gamma_control_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                size: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -24774,6 +25235,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
+                width: u32,
+                height: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -24896,6 +25360,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                head: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -24914,6 +25379,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25013,6 +25479,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                name: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25034,6 +25501,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                description: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25044,6 +25512,8 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25053,6 +25523,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mode: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25065,6 +25536,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                enabled: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25074,6 +25546,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mode: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25083,6 +25556,8 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25092,6 +25567,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                transform: super::super::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25101,6 +25577,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                scale: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25136,6 +25613,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                make: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25161,6 +25639,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                model: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25184,6 +25663,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                serial_number: String,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25194,6 +25674,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                state: AdaptiveSyncState,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25246,6 +25727,8 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25255,6 +25738,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                refresh: i32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -25793,6 +26277,7 @@ pub mod wlr_output_power_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mode: Mode,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -26050,6 +26535,10 @@ pub mod wlr_screencopy_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                format: super::super::wayland::wl_shm::Format,
+                width: u32,
+                height: u32,
+                stride: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -26059,6 +26548,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                flags: Flags,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -26078,6 +26568,9 @@ pub mod wlr_screencopy_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -26105,6 +26598,10 @@ pub mod wlr_screencopy_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                x: u32,
+                y: u32,
+                width: u32,
+                height: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }
@@ -26115,6 +26612,9 @@ pub mod wlr_screencopy_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                format: u32,
+                width: u32,
+                height: u32,
             ) -> crate::server::Result<()> {
                 todo!()
             }

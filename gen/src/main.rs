@@ -364,7 +364,7 @@ fn main() -> Result<()> {
 
             let dispatchers = write_dispatchers(&interface);
             let requests = write_requests(&protocols, &protocol, &interface);
-            let events = write_events(&interface);
+            let events = write_events(&protocols, &protocol, &interface);
 
             let enums = write_enums(&interface);
 
@@ -622,7 +622,11 @@ fn write_requests(
     requests
 }
 
-fn write_events(interface: &Interface) -> Vec<TokenStream> {
+fn write_events(
+    protocols: &[Protocol],
+    protocol: &Protocol,
+    interface: &Interface,
+) -> Vec<TokenStream> {
     let mut events = Vec::new();
 
     for (opcode, event) in interface.events.iter().enumerate() {
@@ -630,12 +634,29 @@ fn write_events(interface: &Interface) -> Vec<TokenStream> {
 
         let docs = description_to_docs(event.description.as_ref());
         let name = make_ident(event.name.to_snek_case());
-        let args =
-            quote! {&self, object: &crate::server::Object, client: &mut crate::server::Client,};
+
+        let mut args = vec![
+            quote! {&self },
+            quote! {object: &crate::server::Object},
+            quote! {client: &mut crate::server::Client},
+        ];
+
+        for arg in &event.args {
+            let mut ty =
+                arg.to_rust_type_token(arg.find_protocol(&protocols).as_ref().unwrap_or(protocol));
+
+            if arg.allow_null {
+                ty = quote! {Option<#ty>};
+            }
+
+            let name = make_ident(arg.name.to_snek_case());
+
+            args.push(quote! {#name: #ty})
+        }
 
         events.push(quote! {
             #(#docs)*
-            async fn #name(#args) -> crate::server::Result<()> {
+            async fn #name(#(#args),*) -> crate::server::Result<()> {
                 todo!()
             }
         });
