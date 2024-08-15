@@ -477,14 +477,12 @@ fn write_enums(interface: &Interface) -> Vec<TokenStream> {
                 let name = make_ident(entry.name.to_upper_camel_case());
                 let value = value_to_u32(&entry.value);
 
-                // match_variants.push_str(&format!("{value} => Ok(Self::{prefix}{name}),"));
-
                 variants.push(quote! {
                     #(#docs)*
                     #name = #value
                 });
 
-                match_variants.push(quote! {});
+                match_variants.push(quote! { #value => { Ok(Self::#name) } });
             }
 
             enums.push(quote! {
@@ -500,7 +498,7 @@ fn write_enums(interface: &Interface) -> Vec<TokenStream> {
 
                     fn try_from(v: u32) -> Result<Self, Self::Error> {
                         match v {
-                            // #(#match_variants),*
+                            #(#match_variants),*
                             _ => Err(crate::wire::DecodeError::MalformedPayload)
                         }
                     }
