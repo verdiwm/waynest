@@ -7,9 +7,9 @@ edition = "2021"
 anyhow = "1.0.86"
 heck = "0.5.0"
 proc-macro2 = { version = "1.0.86", default-features = false }
-quick-xml = { version = "0.36.1", features = ["serialize", "overlapped-lists"] }
+quick-xml = { version = "0.33.0", features = ["serialize", "overlapped-lists"] }
 quote = { version = "1.0.36", default-features = false }
-serde = { version = "1.0.207", features = ["derive"] }
+serde = { version = "1.0.203", features = ["derive"] }
 # syn = { version = "2.0.74", features = ["parsing", "full"], default-features = false }
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
