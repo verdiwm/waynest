@@ -473,7 +473,7 @@ fn write_enums(interface: &Interface) -> Vec<TokenStream> {
             let mut match_variants = Vec::new();
 
             for entry in &e.entries {
-                let docs = description_to_docs(entry.description.as_ref());
+                let docs = description_to_docs(entry.summary.as_ref());
                 let name = make_ident(entry.name.to_upper_camel_case());
                 let value = value_to_u32(&entry.value);
 
