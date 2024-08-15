@@ -1,7 +1,7 @@
 use anyhow::Result;
 use heck::{ToSnekCase, ToUpperCamelCase};
 use proc_macro2::{Ident, TokenStream};
-use quote::{format_ident, quote, ToTokens};
+use quote::{format_ident, quote};
 use serde::{Deserialize, Serialize};
 use std::{
     fmt::{Display, Write as _},
@@ -181,7 +181,7 @@ impl Arg {
 
                 return quote! {super::super::#protocol_name::#module::#name};
             } else {
-                return make_ident(e.to_upper_camel_case()).to_token_stream();
+                // return e.to_upper_camel_case();
             }
         }
 
