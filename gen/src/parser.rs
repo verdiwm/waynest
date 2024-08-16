@@ -1,3 +1,6 @@
+use std::{fs, path::Path};
+
+use anyhow::Result;
 use heck::ToUpperCamelCase;
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
@@ -122,6 +125,12 @@ pub struct Entry {
     #[serde(rename = "@deprecated-since")]
     pub deprecated_since: Option<usize>,
     pub description: Option<String>,
+}
+
+impl Protocol {
+    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Self> {
+        Ok(quick_xml::de::from_str(&fs::read_to_string(path)?)?)
+    }
 }
 
 impl Arg {

@@ -1,9 +1,6 @@
 use anyhow::Result;
 use parser::Protocol;
-use std::{
-    fs::{self, OpenOptions},
-    io::Write as _,
-};
+use std::{fs::OpenOptions, io::Write as _};
 
 mod client;
 mod parser;
@@ -73,10 +70,10 @@ const PROTOCOLS: &[&str] = &[
 fn main() -> Result<()> {
     tracing_subscriber::fmt::init();
 
-    let protocols: Vec<Protocol> = PROTOCOLS
+    let protocols = PROTOCOLS
         .iter()
-        .map(|path| quick_xml::de::from_str(&fs::read_to_string(path).unwrap()).unwrap())
-        .collect();
+        .map(Protocol::from_path)
+        .collect::<Result<Vec<Protocol>>>()?;
 
     let mut server_path = OpenOptions::new()
         .truncate(true)
