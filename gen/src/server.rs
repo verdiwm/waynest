@@ -3,7 +3,10 @@ use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use tracing::debug;
 
-use crate::{description_to_docs, find_enum, make_ident, write_enums, Interface, Protocol};
+use crate::{
+    parser::{Interface, Protocol},
+    utils::{description_to_docs, find_enum, make_ident, write_enums},
+};
 
 pub fn generate_server_code(protocols: &[Protocol]) -> TokenStream {
     let mut modules = Vec::new();
