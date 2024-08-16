@@ -27,7 +27,6 @@ pub fn generate_client_code(protocols: &[Protocol]) -> TokenStream {
 
             let enums = write_enums(&interface);
 
-
             inner_modules.push(quote! {
                 #(#docs)*
                 pub mod #module_name {
