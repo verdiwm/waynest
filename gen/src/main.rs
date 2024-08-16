@@ -169,12 +169,6 @@ impl Arg {
     fn to_rust_type_token(&self, protocol: &Protocol) -> TokenStream {
         if let Some(e) = &self.r#enum {
             if let Some((module, name)) = e.split_once('.') {
-                // return format!(
-                //     "super::super::{protocol_name}::{module}::{name}",
-                //     protocol_name = protocol.name,
-                //     name = name.to_upper_camel_case()
-                // );
-
                 let protocol_name = make_ident(&protocol.name);
                 let name = make_ident(name.to_upper_camel_case());
                 let module = make_ident(module);
