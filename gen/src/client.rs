@@ -1,11 +1,11 @@
-use heck::ToUpperCamelCase;
+use heck::{ToSnekCase, ToUpperCamelCase};
 use proc_macro2::TokenStream;
-use quote::quote;
+use quote::{format_ident, quote};
 use tracing::debug;
 
 use crate::{
-    parser::Protocol,
-    utils::{description_to_docs, make_ident, write_enums},
+    parser::{Interface, Protocol},
+    utils::{description_to_docs, find_enum, make_ident, write_enums},
 };
 
 pub fn generate_client_code(protocols: &[Protocol]) -> TokenStream {
@@ -27,6 +27,8 @@ pub fn generate_client_code(protocols: &[Protocol]) -> TokenStream {
 
             let enums = write_enums(&interface);
 
+            let requests = write_requests(&protocols, protocol, interface);
+
             inner_modules.push(quote! {
                 #(#docs)*
                 pub mod #module_name {
@@ -47,7 +49,7 @@ pub fn generate_client_code(protocols: &[Protocol]) -> TokenStream {
                             }
                         }
 
-                        // #(#requests)*
+                        #(#requests)*
                         // #(#events)*
                     }
                 }
@@ -69,4 +71,101 @@ pub fn generate_client_code(protocols: &[Protocol]) -> TokenStream {
         #![allow(async_fn_in_trait)]
         #(#modules)*
     }
+}
+
+fn write_requests(
+    protocols: &[Protocol],
+    protocol: &Protocol,
+    interface: &Interface,
+) -> Vec<TokenStream> {
+    let mut requests = Vec::new();
+
+    for (opcode, request) in interface.requests.iter().enumerate() {
+        let opcode = opcode as u16;
+
+        let docs = description_to_docs(request.description.as_ref());
+        let name = make_ident(request.name.to_snek_case());
+        let tracing_inner = format!(
+            "-> {}#{{}}.{}()",
+            interface.name,
+            request.name.to_snek_case()
+        );
+
+        let mut args = vec![quote! { &self }];
+
+        for arg in &request.args {
+            let mut ty =
+                arg.to_rust_type_token(arg.find_protocol(&protocols).as_ref().unwrap_or(protocol));
+
+            if arg.allow_null {
+                ty = quote! {Option<#ty>};
+            }
+
+            let name = make_ident(arg.name.to_snek_case());
+
+            args.push(quote! {#name: #ty})
+        }
+
+        let mut build_args = Vec::new();
+
+        for arg in &request.args {
+            let build_ty = arg.to_caller();
+            let build_ty = format_ident!("put_{build_ty}");
+
+            let mut build_convert = quote! {};
+
+            if let Some((enum_interface, name)) = arg.to_enum_name() {
+                let e = if let Some(enum_interface) = enum_interface {
+                    protocols
+                        .iter()
+                        .find_map(|protocol| {
+                            protocol
+                                .interfaces
+                                .iter()
+                                .find(|e| e.name == enum_interface)
+                        })
+                        .unwrap()
+                        .enums
+                        .iter()
+                        .find(|e| e.name == name)
+                        .unwrap()
+                } else {
+                    find_enum(&protocol, &name)
+                };
+
+                if e.bitfield {
+                    build_convert = quote! { .bits() };
+                } else {
+                    build_convert = quote! {  as u32 };
+                }
+            }
+
+            let build_name = make_ident(arg.name.to_snek_case());
+            let mut build_name = quote! { #build_name };
+
+            if arg.is_return_option() && !arg.allow_null {
+                build_name = quote! { Some(#build_name) }
+            }
+
+            build_args.push(quote! { .#build_ty(#build_name #build_convert) })
+        }
+
+        requests.push(quote! {
+            #(#docs)*
+            async fn #name(#(#args),*) -> crate::server::Result<()> {
+                tracing::debug!(#tracing_inner, object.id);
+
+                let (payload,fds) = crate::wire::PayloadBuilder::new()
+                    #(#build_args)*
+                    .build();
+
+                self.socket()
+                    .send_message(crate::wire::Message::new(object.id, #opcode, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        });
+    }
+
+    requests
 }

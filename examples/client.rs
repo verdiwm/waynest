@@ -1,29 +1,58 @@
-use std::{borrow::Cow, os::unix::net::UnixStream, path::Path};
+use std::{borrow::Cow, collections::HashMap, os::unix::net::UnixStream, path::Path};
 
 use anyhow::Result;
 use futures_util::{SinkExt, TryStreamExt};
-use waynest::wire::{Message, ObjectId, PayloadBuilder, Socket};
+use waynest::{
+    client::{protocol::wayland::wl_display::WlDisplay, Dispatcher},
+    wire::{DecodeError, Message, ObjectId, PayloadBuilder, Socket},
+};
+
+struct Client {
+    socket: Socket,
+    objects: HashMap<ObjectId, Arc<dyn Dispatcher>>,
+}
+
+struct Display {
+    socket: Socket,
+}
+
+impl Client {
+    pub fn new() -> Result<Self> {
+        let xdg_runtime_dir = std::env::var("XDG_RUNTIME_DIR")?;
+        let wayland_connection = std::env::var("WAYLAND_DISPLAY")
+            .map(Cow::Owned)
+            .unwrap_or(Cow::Borrowed("wayland-0"));
+
+        let socket_path = Path::new(&xdg_runtime_dir).join(wayland_connection.as_ref());
+
+        let socket = Socket::new(UnixStream::connect(socket_path)?)?;
+
+
+        let objects = HashMap::new();
+
+        Ok(Self { socket, objects })
+    }
+
+    pub async fn next_message(&mut self) -> Result<Option<Message>, DecodeError> {
+        self.socket.try_next().await
+    }
+}
+
+impl Dispatcher for Client {
+    fn socket(&mut self) -> &mut Socket {
+        &mut self.socket
+    }
+}
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let xdg_runtime_dir = std::env::var("XDG_RUNTIME_DIR")?;
-    let wayland_connection = std::env::var("WAYLAND_DISPLAY")
-        .map(Cow::Owned)
-        .unwrap_or(Cow::Borrowed("wayland-0"));
-
-    let socket_path = Path::new(&xdg_runtime_dir).join(wayland_connection.as_ref());
-
-    let mut socket = Socket::new(UnixStream::connect(socket_path)?)?;
-
     let registry = unsafe { ObjectId::from_raw(2) };
 
-    let (payload, fds) = PayloadBuilder::new().put_object(Some(registry)).build();
+    let mut client = Client::new()?;
 
-    socket
-        .send(Message::new(ObjectId::DISPLAY, 1, payload, fds))
-        .await?;
+    client.get_registry(registry).await?;
 
-    while let Some(message) = socket.try_next().await? {
+    while let Some(message) = client.next_message().await? {
         dbg!(message);
     }
 
