@@ -1,4 +1,4 @@
-use std::{borrow::Cow, collections::HashMap, os::unix::net::UnixStream, path::Path};
+use std::{borrow::Cow, collections::HashMap, os::unix::net::UnixStream, path::Path, sync::Arc};
 
 use anyhow::Result;
 use futures_util::{SinkExt, TryStreamExt};
@@ -8,51 +8,78 @@ use waynest::{
 };
 
 struct Client {
-    socket: Socket,
     objects: HashMap<ObjectId, Arc<dyn Dispatcher>>,
-}
-
-struct Display {
-    socket: Socket,
 }
 
 impl Client {
     pub fn new() -> Result<Self> {
-        let xdg_runtime_dir = std::env::var("XDG_RUNTIME_DIR")?;
-        let wayland_connection = std::env::var("WAYLAND_DISPLAY")
-            .map(Cow::Owned)
-            .unwrap_or(Cow::Borrowed("wayland-0"));
+        let mut objects: HashMap<ObjectId, Arc<dyn Dispatcher>> = HashMap::new();
 
-        let socket_path = Path::new(&xdg_runtime_dir).join(wayland_connection.as_ref());
+        objects.insert(ObjectId::DISPLAY, Arc::new(Display::new()));
 
-        let socket = Socket::new(UnixStream::connect(socket_path)?)?;
-
-
-        let objects = HashMap::new();
-
-        Ok(Self { socket, objects })
+        Ok(Self { objects })
     }
 
-    pub async fn next_message(&mut self) -> Result<Option<Message>, DecodeError> {
-        self.socket.try_next().await
+    pub async fn handle_message(&mut self, message: &Message) {
+        let dispatcher = self
+            .objects
+            .get(&message.object_id)
+            .expect("Invalid object id");
+
+        dispatcher.dispatch(message);
+    }
+
+    pub fn display(&self) -> &Display {
+        let dispatcher = self
+            .objects
+            .get(&ObjectId::DISPLAY)
+            .expect("Invalid object id");
+
+        dispatcher.downcast_ref().unwrap()
     }
 }
 
-impl Dispatcher for Client {
-    fn socket(&mut self) -> &mut Socket {
-        &mut self.socket
+#[derive(Clone)]
+struct Display {
+    // socket: Socket,
+}
+
+impl Display {
+    pub fn new() -> Self {
+        Self {}
     }
 }
+
+impl Dispatcher for Display {
+    fn dispatch(&self, message: &Message) {
+        todo!()
+    }
+}
+
+impl WlDisplay for Display {}
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let registry = unsafe { ObjectId::from_raw(2) };
 
-    let mut client = Client::new()?;
+    let xdg_runtime_dir = std::env::var("XDG_RUNTIME_DIR")?;
+    let wayland_connection = std::env::var("WAYLAND_DISPLAY")
+        .map(Cow::Owned)
+        .unwrap_or(Cow::Borrowed("wayland-0"));
 
-    client.get_registry(registry).await?;
+    let socket_path = Path::new(&xdg_runtime_dir).join(wayland_connection.as_ref());
 
-    while let Some(message) = client.next_message().await? {
+    let mut socket = Socket::new(UnixStream::connect(socket_path)?)?;
+
+    let client = Client::new()?;
+
+    let display = client.display();
+
+    display
+        .get_registry(&mut socket, ObjectId::DISPLAY, registry)
+        .await?;
+
+    while let Some(message) = socket.try_next().await? {
         dbg!(message);
     }
 
