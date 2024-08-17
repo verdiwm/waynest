@@ -32,10 +32,12 @@ pub fn generate_client_code(protocols: &[Protocol]) -> TokenStream {
             inner_modules.push(quote! {
                 #(#docs)*
                 pub mod #module_name {
+                    use futures_util::SinkExt;
+
                     #(#enums)*
 
                     #[doc = #trait_docs]
-                    pub trait #trait_name: crate::client::Dispatcher {
+                    pub trait #trait_name {
                         const INTERFACE: &'static str = #name;
                         const VERSION: u32 = #version;
 
@@ -91,7 +93,11 @@ fn write_requests(
             request.name.to_snek_case()
         );
 
-        let mut args = vec![quote! { &self }];
+        let mut args = vec![
+            quote! { &self },
+            quote! { socket: &mut crate::wire::Socket },
+            quote! { object_id: crate::wire::ObjectId },
+        ];
 
         for arg in &request.args {
             let mut ty =
@@ -152,17 +158,17 @@ fn write_requests(
 
         requests.push(quote! {
             #(#docs)*
-            async fn #name(#(#args),*) -> crate::server::Result<()> {
-                tracing::debug!(#tracing_inner, object.id);
+            async fn #name(#(#args),*) -> crate::client::Result<()> {
+                tracing::debug!(#tracing_inner, object_id);
 
                 let (payload,fds) = crate::wire::PayloadBuilder::new()
                     #(#build_args)*
                     .build();
 
-                self.socket()
-                    .send_message(crate::wire::Message::new(object.id, #opcode, payload, fds))
+                socket
+                    .send(crate::wire::Message::new(object_id, #opcode, payload, fds))
                     .await
-                    .map_err(crate::server::error::Error::IoError)
+                    .map_err(crate::client::Error::IoError)
             }
         });
     }
