@@ -1,38 +1,24 @@
 name: ci
 on: [push, pull_request]
 
+env:
+  RUSTFLAGS: "-Dwarnings"
+
 jobs:
   test:
     name: Build and test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        rust-version: [stable, beta, nightly]
-      fail-fast: false
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ matrix.rust-version }}
+
+      - name: Setup rust
+        run: rustup toolchain install stable --profile minimal
+
       - name: Install nextest to run tests
         uses: taiki-e/install-action@nextest
+
       - name: Run tests
         run: cargo nextest run --all-features
 
-  # miri:
-  #   name: Build and test with miri
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       rust-version: [nightly]
-  #     fail-fast: false
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: dtolnay/rust-toolchain@master
-  #       with:
-  #         toolchain: ${{ matrix.rust-version }}
-  #         components: miri
-  #     - name: Install nextest to run tests
-  #       uses: taiki-e/install-action@nextest
-  #     - name: Run tests with miri
-  #       run: cargo miri nextest run
+      - name: Check clippy
+        run: cargo clippy --all-targets --all-features
