@@ -11761,6 +11761,1032 @@ pub mod ext_idle_notify_v1 {
         }
     }
 }
+#[doc = "This protocol serves as an intermediary between capturing protocols and"]
+#[doc = "potential image capture sources such as outputs and toplevels."]
+#[doc = ""]
+#[doc = "This protocol may be extended to support more image capture sources in the"]
+#[doc = "future, thereby adding those image capture sources to other protocols that"]
+#[doc = "use the image capture source object without having to modify those"]
+#[doc = "protocols."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is currently in the testing"]
+#[doc = "phase. Backward compatible changes may be added together with the"]
+#[doc = "corresponding interface version bump. Backward incompatible changes can"]
+#[doc = "only be done by creating a new major version of the extension."]
+pub mod ext_image_capture_source_v1 {
+    #[doc = "The image capture source object is an opaque descriptor for a capturable"]
+    #[doc = "resource.  This resource may be any sort of entity from which an image"]
+    #[doc = "may be derived."]
+    #[doc = ""]
+    #[doc = "Note, because ext_image_capture_source_v1 objects are created from multiple"]
+    #[doc = "independent factory interfaces, the ext_image_capture_source_v1 interface is"]
+    #[doc = "frozen at version 1."]
+    pub mod ext_image_capture_source_v1 {
+        #[doc = "Trait to implement the ext_image_capture_source_v1 interface. See the module level documentation for more info"]
+        pub trait ExtImageCaptureSourceV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_image_capture_source_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("ext_image_capture_source_v1#{}.destroy()", object.id);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroys the image capture source. This request may be sent at any time"]
+            #[doc = "by the client."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+        }
+    }
+    #[doc = "A manager for creating image capture source objects for wl_output objects."]
+    pub mod ext_output_image_capture_source_manager_v1 {
+        #[doc = "Trait to implement the ext_output_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ExtOutputImageCaptureSourceManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_output_image_capture_source_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!(
+                            "ext_output_image_capture_source_manager_v1#{}.create_source()",
+                            object.id
+                        );
+                        self.create_source(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
+                    }
+                    1u16 => {
+                        tracing::debug!(
+                            "ext_output_image_capture_source_manager_v1#{}.destroy()",
+                            object.id
+                        );
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Creates a source object for an output. Images captured from this source"]
+            #[doc = "will show the same content as the output. Some elements may be omitted,"]
+            #[doc = "such as cursors and overlays that have been marked as transparent to"]
+            #[doc = "capturing."]
+            async fn create_source(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                source: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "Destroys the manager. This request may be sent at any time by the client"]
+            #[doc = "and objects created by the manager will remain valid after its"]
+            #[doc = "destruction."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+        }
+    }
+    #[doc = "A manager for creating image capture source objects for"]
+    #[doc = "ext_foreign_toplevel_handle_v1 objects."]
+    pub mod ext_foreign_toplevel_image_capture_source_manager_v1 {
+        #[doc = "Trait to implement the ext_foreign_toplevel_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ExtForeignToplevelImageCaptureSourceManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_foreign_toplevel_image_capture_source_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing :: debug ! ("ext_foreign_toplevel_image_capture_source_manager_v1#{}.create_source()" , object . id);
+                        self.create_source(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
+                    }
+                    1u16 => {
+                        tracing::debug!(
+                            "ext_foreign_toplevel_image_capture_source_manager_v1#{}.destroy()",
+                            object.id
+                        );
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Creates a source object for a foreign toplevel handle. Images captured"]
+            #[doc = "from this source will show the same content as the toplevel."]
+            async fn create_source(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                source: crate::wire::ObjectId,
+                toplevel_handle: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "Destroys the manager. This request may be sent at any time by the client"]
+            #[doc = "and objects created by the manager will remain valid after its"]
+            #[doc = "destruction."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+        }
+    }
+}
+#[doc = "This protocol allows clients to ask the compositor to capture image sources"]
+#[doc = "such as outputs and toplevels into user submitted buffers."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is currently in the testing"]
+#[doc = "phase. Backward compatible changes may be added together with the"]
+#[doc = "corresponding interface version bump. Backward incompatible changes can"]
+#[doc = "only be done by creating a new major version of the extension."]
+pub mod ext_image_copy_capture_v1 {
+    #[doc = "This object is a manager which offers requests to start capturing from a"]
+    #[doc = "source."]
+    pub mod ext_image_copy_capture_manager_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "invalid option flag"]
+            InvalidOption = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::InvalidOption),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Options : u32 { # [doc = "paint cursors onto captured frames"] const PaintCursors = 1u32 ; } }
+        impl TryFrom<u32> for Options {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        #[doc = "Trait to implement the ext_image_copy_capture_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ExtImageCopyCaptureManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_image_copy_capture_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!(
+                            "ext_image_copy_capture_manager_v1#{}.create_session()",
+                            object.id
+                        );
+                        self.create_session(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.uint()?.try_into()?,
+                        )
+                        .await
+                    }
+                    1u16 => {
+                        tracing::debug!(
+                            "ext_image_copy_capture_manager_v1#{}.create_pointer_cursor_session()",
+                            object.id
+                        );
+                        self.create_pointer_cursor_session(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
+                    }
+                    2u16 => {
+                        tracing::debug!(
+                            "ext_image_copy_capture_manager_v1#{}.destroy()",
+                            object.id
+                        );
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Create a capturing session for an image capture source."]
+            #[doc = ""]
+            #[doc = "If the paint_cursors option is set, cursors shall be composited onto"]
+            #[doc = "the captured frame. The cursor must not be composited onto the frame"]
+            #[doc = "if this flag is not set."]
+            #[doc = ""]
+            #[doc = "If the options bitfield is invalid, the invalid_option protocol error"]
+            #[doc = "is sent."]
+            async fn create_session(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                session: crate::wire::ObjectId,
+                source: crate::wire::ObjectId,
+                options: Options,
+            ) -> crate::server::Result<()>;
+            #[doc = "Create a cursor capturing session for the pointer of an image capture"]
+            #[doc = "source."]
+            async fn create_pointer_cursor_session(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                session: crate::wire::ObjectId,
+                source: crate::wire::ObjectId,
+                pointer: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "Destroy the manager object."]
+            #[doc = ""]
+            #[doc = "Other objects created via this interface are unaffected."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+        }
+    }
+    #[doc = "This object represents an active image copy capture session."]
+    #[doc = ""]
+    #[doc = "After a capture session is created, buffer constraint events will be"]
+    #[doc = "emitted from the compositor to tell the client which buffer types and"]
+    #[doc = "formats are supported for reading from the session. The compositor may"]
+    #[doc = "re-send buffer constraint events whenever they change."]
+    #[doc = ""]
+    #[doc = "The advertise buffer constraints, the compositor must send in no"]
+    #[doc = "particular order: zero or more shm_format and dmabuf_format events, zero"]
+    #[doc = "or one dmabuf_device event, and exactly one buffer_size event. Then the"]
+    #[doc = "compositor must send a done event."]
+    #[doc = ""]
+    #[doc = "When the client has received all the buffer constraints, it can create a"]
+    #[doc = "buffer accordingly, attach it to the capture session using the"]
+    #[doc = "attach_buffer request, set the buffer damage using the damage_buffer"]
+    #[doc = "request and then send the capture request."]
+    pub mod ext_image_copy_capture_session_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "create_frame sent before destroying previous frame"]
+            DuplicateFrame = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::DuplicateFrame),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        #[doc = "Trait to implement the ext_image_copy_capture_session_v1 interface. See the module level documentation for more info"]
+        pub trait ExtImageCopyCaptureSessionV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_image_copy_capture_session_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!(
+                            "ext_image_copy_capture_session_v1#{}.create_frame()",
+                            object.id
+                        );
+                        self.create_frame(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
+                    }
+                    1u16 => {
+                        tracing::debug!(
+                            "ext_image_copy_capture_session_v1#{}.destroy()",
+                            object.id
+                        );
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Create a capture frame for this session."]
+            #[doc = ""]
+            #[doc = "At most one frame object can exist for a given session at any time. If"]
+            #[doc = "a client sends a create_frame request before a previous frame object"]
+            #[doc = "has been destroyed, the duplicate_frame protocol error is raised."]
+            async fn create_frame(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                frame: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "Destroys the session. This request can be sent at any time by the"]
+            #[doc = "client."]
+            #[doc = ""]
+            #[doc = "This request doesn't affect ext_image_copy_capture_frame_v1 objects created by"]
+            #[doc = "this object."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Provides the dimensions of the source image in buffer pixel coordinates."]
+            #[doc = ""]
+            #[doc = "The client must attach buffers that match this size."]
+            async fn buffer_size(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                width: u32,
+                height: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_session_v1#{}.buffer_size()",
+                    object.id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(width)
+                    .put_uint(height)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "Provides the format that must be used for shared-memory buffers."]
+            #[doc = ""]
+            #[doc = "This event may be emitted multiple times, in which case the client may"]
+            #[doc = "choose any given format."]
+            async fn shm_format(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                format: super::super::wayland::wl_shm::Format,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_session_v1#{}.shm_format()",
+                    object.id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(format as u32)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event advertises the device buffers must be allocated on for"]
+            #[doc = "dma-buf buffers."]
+            #[doc = ""]
+            #[doc = "In general the device is a DRM node. The DRM node type (primary vs."]
+            #[doc = "render) is unspecified. Clients must not rely on the compositor sending"]
+            #[doc = "a particular node type. Clients cannot check two devices for equality"]
+            #[doc = "by comparing the dev_t value."]
+            async fn dmabuf_device(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                device: Vec<u8>,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_session_v1#{}.dmabuf_device()",
+                    object.id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "Provides the format that must be used for dma-buf buffers."]
+            #[doc = ""]
+            #[doc = "The client may choose any of the modifiers advertised in the array of"]
+            #[doc = "64-bit unsigned integers."]
+            #[doc = ""]
+            #[doc = "This event may be emitted multiple times, in which case the client may"]
+            #[doc = "choose any given format."]
+            async fn dmabuf_format(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                format: u32,
+                modifiers: Vec<u8>,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_session_v1#{}.dmabuf_format()",
+                    object.id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(format)
+                    .put_array(modifiers)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is sent once when all buffer constraint events have been"]
+            #[doc = "sent."]
+            #[doc = ""]
+            #[doc = "The compositor must always end a batch of buffer constraint events with"]
+            #[doc = "this event, regardless of whether it sends the initial constraints or"]
+            #[doc = "an update."]
+            async fn done(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> ext_image_copy_capture_session_v1#{}.done()", object.id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event indicates that the capture session has stopped and is no"]
+            #[doc = "longer available. This can happen in a number of cases, e.g. when the"]
+            #[doc = "underlying source is destroyed, if the user decides to end the image"]
+            #[doc = "capture, or if an unrecoverable runtime error has occurred."]
+            #[doc = ""]
+            #[doc = "The client should destroy the session after receiving this event."]
+            async fn stopped(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_session_v1#{}.stopped()",
+                    object.id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[doc = "This object represents an image capture frame."]
+    #[doc = ""]
+    #[doc = "The client should attach a buffer, damage the buffer, and then send a"]
+    #[doc = "capture request."]
+    #[doc = ""]
+    #[doc = "If the capture is successful, the compositor must send the frame metadata"]
+    #[doc = "(transform, damage, presentation_time in any order) followed by the ready"]
+    #[doc = "event."]
+    #[doc = ""]
+    #[doc = "If the capture fails, the compositor must send the failed event."]
+    pub mod ext_image_copy_capture_frame_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "capture sent without attach_buffer"]
+            NoBuffer = 1u32,
+            #[doc = "invalid buffer damage"]
+            InvalidBufferDamage = 2u32,
+            #[doc = "capture request has been sent"]
+            AlreadyCaptured = 3u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::NoBuffer),
+                    2u32 => Ok(Self::InvalidBufferDamage),
+                    3u32 => Ok(Self::AlreadyCaptured),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum FailureReason {
+            Unknown = 0u32,
+            BufferConstraints = 1u32,
+            Stopped = 2u32,
+        }
+        impl TryFrom<u32> for FailureReason {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Unknown),
+                    1u32 => Ok(Self::BufferConstraints),
+                    2u32 => Ok(Self::Stopped),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        #[doc = "Trait to implement the ext_image_copy_capture_frame_v1 interface. See the module level documentation for more info"]
+        pub trait ExtImageCopyCaptureFrameV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_image_copy_capture_frame_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("ext_image_copy_capture_frame_v1#{}.destroy()", object.id);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        tracing::debug!(
+                            "ext_image_copy_capture_frame_v1#{}.attach_buffer()",
+                            object.id
+                        );
+                        self.attach_buffer(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
+                    }
+                    2u16 => {
+                        tracing::debug!(
+                            "ext_image_copy_capture_frame_v1#{}.damage_buffer()",
+                            object.id
+                        );
+                        self.damage_buffer(
+                            object,
+                            client,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
+                    }
+                    3u16 => {
+                        tracing::debug!("ext_image_copy_capture_frame_v1#{}.capture()", object.id);
+                        self.capture(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroys the session. This request can be sent at any time by the"]
+            #[doc = "client."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Attach a buffer to the session."]
+            #[doc = ""]
+            #[doc = "The wl_buffer.release request is unused."]
+            #[doc = ""]
+            #[doc = "The new buffer replaces any previously attached buffer."]
+            #[doc = ""]
+            #[doc = "This request must not be sent after capture, or else the"]
+            #[doc = "already_captured protocol error is raised."]
+            async fn attach_buffer(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                buffer: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "Apply damage to the buffer which is to be captured next. This request"]
+            #[doc = "may be sent multiple times to describe a region."]
+            #[doc = ""]
+            #[doc = "The client indicates the accumulated damage since this wl_buffer was"]
+            #[doc = "last captured. During capture, the compositor will update the buffer"]
+            #[doc = "with at least the union of the region passed by the client and the"]
+            #[doc = "region advertised by ext_image_copy_capture_frame_v1.damage."]
+            #[doc = ""]
+            #[doc = "When a wl_buffer is captured for the first time, or when the client"]
+            #[doc = "doesn't track damage, the client must damage the whole buffer."]
+            #[doc = ""]
+            #[doc = "This is for optimisation purposes. The compositor may use this"]
+            #[doc = "information to reduce copying."]
+            #[doc = ""]
+            #[doc = "These coordinates originate from the upper left corner of the buffer."]
+            #[doc = ""]
+            #[doc = "If x or y are strictly negative, or if width or height are negative or"]
+            #[doc = "zero, the invalid_buffer_damage protocol error is raised."]
+            #[doc = ""]
+            #[doc = "This request must not be sent after capture, or else the"]
+            #[doc = "already_captured protocol error is raised."]
+            async fn damage_buffer(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Capture a frame."]
+            #[doc = ""]
+            #[doc = "Unless this is the first successful captured frame performed in this"]
+            #[doc = "session, the compositor may wait an indefinite amount of time for the"]
+            #[doc = "source content to change before performing the copy."]
+            #[doc = ""]
+            #[doc = "This request may only be sent once, or else the already_captured"]
+            #[doc = "protocol error is raised. A buffer must be attached before this request"]
+            #[doc = "is sent, or else the no_buffer protocol error is raised."]
+            async fn capture(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "This event is sent before the ready event and holds the transform that"]
+            #[doc = "the compositor has applied to the buffer contents."]
+            async fn transform(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                transform: super::super::wayland::wl_output::Transform,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_frame_v1#{}.transform()",
+                    object.id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(transform as u32)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is sent before the ready event. It may be generated multiple"]
+            #[doc = "times to describe a region."]
+            #[doc = ""]
+            #[doc = "The first captured frame in a session will always carry full damage."]
+            #[doc = "Subsequent frames' damaged regions describe which parts of the buffer"]
+            #[doc = "have changed since the last ready event."]
+            #[doc = ""]
+            #[doc = "These coordinates originate in the upper left corner of the buffer."]
+            async fn damage(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.damage()", object.id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event indicates the time at which the frame is presented to the"]
+            #[doc = "output in system monotonic time. This event is sent before the ready"]
+            #[doc = "event."]
+            #[doc = ""]
+            #[doc = "The timestamp is expressed as tv_sec_hi, tv_sec_lo, tv_nsec triples,"]
+            #[doc = "each component being an unsigned 32-bit value. Whole seconds are in"]
+            #[doc = "tv_sec which is a 64-bit value combined from tv_sec_hi and tv_sec_lo,"]
+            #[doc = "and the additional fractional part in tv_nsec as nanoseconds. Hence,"]
+            #[doc = "for valid timestamps tv_nsec must be in [0, 999999999]."]
+            async fn presentation_time(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_frame_v1#{}.presentation_time()",
+                    object.id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(tv_sec_hi)
+                    .put_uint(tv_sec_lo)
+                    .put_uint(tv_nsec)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "Called as soon as the frame is copied, indicating it is available"]
+            #[doc = "for reading."]
+            #[doc = ""]
+            #[doc = "The buffer may be re-used by the client after this event."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client must destroy the object."]
+            async fn ready(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.ready()", object.id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event indicates that the attempted frame copy has failed."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client must destroy the object."]
+            async fn failed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                reason: FailureReason,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.failed()", object.id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(reason as u32)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[doc = "This object represents a cursor capture session. It extends the base"]
+    #[doc = "capture session with cursor-specific metadata."]
+    pub mod ext_image_copy_capture_cursor_session_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "get_captuerer_session sent twice"]
+            DuplicateSession = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::DuplicateSession),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        #[doc = "Trait to implement the ext_image_copy_capture_cursor_session_v1 interface. See the module level documentation for more info"]
+        pub trait ExtImageCopyCaptureCursorSessionV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_image_copy_capture_cursor_session_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!(
+                            "ext_image_copy_capture_cursor_session_v1#{}.destroy()",
+                            object.id
+                        );
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        tracing::debug!(
+                            "ext_image_copy_capture_cursor_session_v1#{}.get_capture_session()",
+                            object.id
+                        );
+                        self.get_capture_session(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroys the session. This request can be sent at any time by the"]
+            #[doc = "client."]
+            #[doc = ""]
+            #[doc = "This request doesn't affect ext_image_copy_capture_frame_v1 objects created by"]
+            #[doc = "this object."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Gets the image copy capture session for this cursor session."]
+            #[doc = ""]
+            #[doc = "The session will produce frames of the cursor image. The compositor may"]
+            #[doc = "pause the session when the cursor leaves the captured area."]
+            #[doc = ""]
+            #[doc = "This request must not be sent more than once, or else the"]
+            #[doc = "duplicate_session protocol error is raised."]
+            async fn get_capture_session(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                session: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "Sent when a cursor enters the captured area. It shall be generated"]
+            #[doc = "before the \"position\" and \"hotspot\" events when and only when a cursor"]
+            #[doc = "enters the area."]
+            #[doc = ""]
+            #[doc = "The cursor enters the captured area when the cursor image intersects"]
+            #[doc = "with the captured area. Note, this is different from e.g."]
+            #[doc = "wl_pointer.enter."]
+            async fn enter(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_cursor_session_v1#{}.enter()",
+                    object.id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "Sent when a cursor leaves the captured area. No \"position\" or \"hotspot\""]
+            #[doc = "event is generated for the cursor until the cursor enters the captured"]
+            #[doc = "area again."]
+            async fn leave(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_cursor_session_v1#{}.leave()",
+                    object.id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "Cursors outside the image capture source do not get captured and no"]
+            #[doc = "event will be generated for them."]
+            #[doc = ""]
+            #[doc = "The given position is the position of the cursor's hotspot and it is"]
+            #[doc = "relative to the main buffer's top left corner in transformed buffer"]
+            #[doc = "pixel coordinates. The coordinates may be negative or greater than the"]
+            #[doc = "main buffer size."]
+            async fn position(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_cursor_session_v1#{}.position()",
+                    object.id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "The hotspot describes the offset between the cursor image and the"]
+            #[doc = "position of the input device."]
+            #[doc = ""]
+            #[doc = "The given coordinates are the hotspot's offset from the origin in"]
+            #[doc = "buffer coordinates."]
+            #[doc = ""]
+            #[doc = "Clients should not apply the hotspot immediately: the hotspot becomes"]
+            #[doc = "effective when the next ext_image_copy_capture_frame_v1.ready event is received."]
+            #[doc = ""]
+            #[doc = "Compositors may delay this event until the client captures a new frame."]
+            async fn hotspot(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_cursor_session_v1#{}.hotspot()",
+                    object.id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
 #[doc = "This protocol allows for a privileged Wayland client to lock the session"]
 #[doc = "and display arbitrary graphics while the session is locked."]
 #[doc = ""]
@@ -14133,71 +15159,60 @@ pub mod xdg_toplevel_drag_v1 {
         }
     }
 }
-#[doc = "This protocol adds a xwayland_surface role which allows an Xwayland"]
-#[doc = "server to associate an X11 window to a wl_surface."]
-#[doc = ""]
-#[doc = "Before this protocol, this would be done via the Xwayland server"]
-#[doc = "providing the wl_surface's resource id via the a client message with"]
-#[doc = "the WL_SURFACE_ID atom on the X window."]
-#[doc = "This was problematic as a race could occur if the wl_surface"]
-#[doc = "associated with a WL_SURFACE_ID for a window was destroyed before the"]
-#[doc = "client message was processed by the compositor and another surface"]
-#[doc = "(or other object) had taken its id due to recycling."]
-#[doc = ""]
-#[doc = "This protocol solves the problem by moving the X11 window to wl_surface"]
-#[doc = "association step to the Wayland side, which means that the association"]
-#[doc = "cannot happen out-of-sync with the resource lifetime of the wl_surface."]
-#[doc = ""]
-#[doc = "This protocol avoids duplicating the race on the other side by adding a"]
-#[doc = "non-zero monotonic serial number which is entirely unique that is set on"]
-#[doc = "both the wl_surface (via. xwayland_surface_v1's set_serial method) and"]
-#[doc = "the X11 window (via. the `WL_SURFACE_SERIAL` client message) that can be"]
-#[doc = "used to associate them, and synchronize the two timelines."]
-#[doc = ""]
-#[doc = "The key words \"must\", \"must not\", \"required\", \"shall\", \"shall not\","]
-#[doc = "\"should\", \"should not\", \"recommended\",  \"may\", and \"optional\" in this"]
-#[doc = "document are to be interpreted as described in IETF RFC 2119."]
-#[doc = ""]
-#[doc = "Warning! The protocol described in this file is currently in the testing"]
-#[doc = "phase. Backward compatible changes may be added together with the"]
-#[doc = "corresponding interface version bump. Backward incompatible changes can"]
-#[doc = "only be done by creating a new major version of the extension."]
-pub mod xwayland_shell_v1 {
-    #[doc = "xwayland_shell_v1 is a singleton global object that"]
-    #[doc = "provides the ability to create a xwayland_surface_v1 object"]
-    #[doc = "for a given wl_surface."]
+pub mod xdg_toplevel_drag_v1 {
+    #[doc = "This protocol enhances normal drag and drop with the ability to move a"]
+    #[doc = "window at the same time. This allows having detachable parts of a window"]
+    #[doc = "that when dragged out of it become a new window and can be dragged over"]
+    #[doc = "an existing window to be reattached."]
     #[doc = ""]
-    #[doc = "This interface is intended to be bound by the Xwayland server."]
+    #[doc = "A typical workflow would be when the user starts dragging on top of a"]
+    #[doc = "detachable part of a window, the client would create a wl_data_source and"]
+    #[doc = "a xdg_toplevel_drag_v1 object and start the drag as normal via"]
+    #[doc = "wl_data_device.start_drag. Once the client determines that the detachable"]
+    #[doc = "window contents should be detached from the originating window, it creates"]
+    #[doc = "a new xdg_toplevel with these contents and issues a"]
+    #[doc = "xdg_toplevel_drag_v1.attach request before mapping it. From now on the new"]
+    #[doc = "window is moved by the compositor during the drag as if the client called"]
+    #[doc = "xdg_toplevel.move."]
     #[doc = ""]
-    #[doc = "A compositor must not allow clients other than Xwayland to"]
-    #[doc = "bind to this interface. A compositor should hide this global"]
-    #[doc = "from other clients' wl_registry."]
-    #[doc = "A client the compositor does not consider to be an Xwayland"]
-    #[doc = "server attempting to bind this interface will result in"]
-    #[doc = "an implementation-defined error."]
+    #[doc = "Dragging an existing window is similar. The client creates a"]
+    #[doc = "xdg_toplevel_drag_v1 object and attaches the existing toplevel before"]
+    #[doc = "starting the drag."]
     #[doc = ""]
-    #[doc = "An Xwayland server that has bound this interface must not"]
-    #[doc = "set the `WL_SURFACE_ID` atom on a window."]
-    pub mod xwayland_shell_v1 {
+    #[doc = "Clients use the existing drag and drop mechanism to detect when a window"]
+    #[doc = "can be docked or undocked. If the client wants to snap a window into a"]
+    #[doc = "parent window it should delete or unmap the dragged top-level. If the"]
+    #[doc = "contents should be detached again it attaches a new toplevel as described"]
+    #[doc = "above. If a drag operation is cancelled without being dropped, clients"]
+    #[doc = "should revert to the previous state, deleting any newly created windows"]
+    #[doc = "as appropriate. When a drag operation ends as indicated by"]
+    #[doc = "wl_data_source.dnd_drop_performed the dragged toplevel window's final"]
+    #[doc = "position is determined as if a xdg_toplevel_move operation ended."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    pub mod xdg_toplevel_drag_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            #[doc = "given wl_surface has another role"]
-            Role = 0u32,
+            #[doc = "data_source already used for toplevel drag"]
+            InvalidSource = 0u32,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Role),
+                    0u32 => Ok(Self::InvalidSource),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
         }
-        #[doc = "Trait to implement the xwayland_shell_v1 interface. See the module level documentation for more info"]
-        pub trait XwaylandShellV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xwayland_shell_v1";
+        #[doc = "Trait to implement the xdg_toplevel_drag_manager_v1 interface. See the module level documentation for more info"]
+        pub trait XdgToplevelDragManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "xdg_toplevel_drag_manager_v1";
             const VERSION: u32 = 1u32;
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
             where
@@ -14213,12 +15228,15 @@ pub mod xwayland_shell_v1 {
             ) -> crate::server::Result<()> {
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("xwayland_shell_v1#{}.destroy()", object.id);
+                        tracing::debug!("xdg_toplevel_drag_manager_v1#{}.destroy()", object.id);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("xwayland_shell_v1#{}.get_xwayland_surface()", object.id);
-                        self.get_xwayland_surface(
+                        tracing::debug!(
+                            "xdg_toplevel_drag_manager_v1#{}.get_xdg_toplevel_drag()",
+                            object.id
+                        );
+                        self.get_xdg_toplevel_drag(
                             object,
                             client,
                             message
@@ -14233,63 +15251,56 @@ pub mod xwayland_shell_v1 {
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
-            #[doc = "Destroy the xwayland_shell_v1 object."]
-            #[doc = ""]
-            #[doc = "The child objects created via this interface are unaffected."]
+            #[doc = "Destroy this xdg_toplevel_drag_manager_v1 object. Other objects,"]
+            #[doc = "including xdg_toplevel_drag_v1 objects created by this factory, are not"]
+            #[doc = "affected by this request."]
             async fn destroy(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()>;
-            #[doc = "Create an xwayland_surface_v1 interface for a given wl_surface"]
-            #[doc = "object and gives it the xwayland_surface role."]
+            #[doc = "Create an xdg_toplevel_drag for a drag and drop operation that is going"]
+            #[doc = "to be started with data_source."]
             #[doc = ""]
-            #[doc = "It is illegal to create an xwayland_surface_v1 for a wl_surface"]
-            #[doc = "which already has an assigned role and this will result in the"]
-            #[doc = "`role` protocol error."]
+            #[doc = "This request can only be made on sources used in drag-and-drop, so it"]
+            #[doc = "must be performed before wl_data_device.start_drag. Attempting to use"]
+            #[doc = "the source other than for drag-and-drop such as in"]
+            #[doc = "wl_data_device.set_selection will raise an invalid_source error."]
             #[doc = ""]
-            #[doc = "See the documentation of xwayland_surface_v1 for more details"]
-            #[doc = "about what an xwayland_surface_v1 is and how it is used."]
-            async fn get_xwayland_surface(
+            #[doc = "Destroying data_source while a toplevel is attached to the"]
+            #[doc = "xdg_toplevel_drag is undefined."]
+            async fn get_xdg_toplevel_drag(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
+                data_source: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
-    #[doc = "An Xwayland surface is a surface managed by an Xwayland server."]
-    #[doc = "It is used for associating surfaces to Xwayland windows."]
-    #[doc = ""]
-    #[doc = "The Xwayland server associated with actions in this interface is"]
-    #[doc = "determined by the Wayland client making the request."]
-    #[doc = ""]
-    #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
-    #[doc = "for the xwayland_surface_v1 state to take effect."]
-    pub mod xwayland_surface_v1 {
+    pub mod xdg_toplevel_drag_v1 {
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            #[doc = "given wl_surface is already associated with an X11 window"]
-            AlreadyAssociated = 0u32,
-            #[doc = "serial was not valid"]
-            InvalidSerial = 1u32,
+            #[doc = "valid toplevel already attached"]
+            ToplevelAttached = 0u32,
+            #[doc = "drag has not ended"]
+            OngoingDrag = 1u32,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::AlreadyAssociated),
-                    1u32 => Ok(Self::InvalidSerial),
+                    0u32 => Ok(Self::ToplevelAttached),
+                    1u32 => Ok(Self::OngoingDrag),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
         }
-        #[doc = "Trait to implement the xwayland_surface_v1 interface. See the module level documentation for more info"]
-        pub trait XwaylandSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xwayland_surface_v1";
+        #[doc = "Trait to implement the xdg_toplevel_drag_v1 interface. See the module level documentation for more info"]
+        pub trait XdgToplevelDragV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "xdg_toplevel_drag_v1";
             const VERSION: u32 = 1u32;
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
             where
@@ -14305,52 +15316,342 @@ pub mod xwayland_shell_v1 {
             ) -> crate::server::Result<()> {
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("xwayland_surface_v1#{}.set_serial()", object.id);
-                        self.set_serial(object, client, message.uint()?, message.uint()?)
-                            .await
+                        tracing::debug!("xdg_toplevel_drag_v1#{}.destroy()", object.id);
+                        self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("xwayland_surface_v1#{}.destroy()", object.id);
-                        self.destroy(object, client).await
+                        tracing::debug!("xdg_toplevel_drag_v1#{}.attach()", object.id);
+                        self.attach(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.int()?,
+                            message.int()?,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
-            #[doc = "Associates an Xwayland window to a wl_surface."]
-            #[doc = "The association state is double-buffered, see wl_surface.commit."]
-            #[doc = ""]
-            #[doc = "The `serial_lo` and `serial_hi` parameters specify a non-zero"]
-            #[doc = "monotonic serial number which is entirely unique and provided by the"]
-            #[doc = "Xwayland server equal to the serial value provided by a client message"]
-            #[doc = "with a message type of the `WL_SURFACE_SERIAL` atom on the X11 window"]
-            #[doc = "for this surface to be associated to."]
-            #[doc = ""]
-            #[doc = "The serial value in the `WL_SURFACE_SERIAL` client message is specified"]
-            #[doc = "as having the lo-bits specified in `l[0]` and the hi-bits specified"]
-            #[doc = "in `l[1]`."]
-            #[doc = ""]
-            #[doc = "If the serial value provided by `serial_lo` and `serial_hi` is not"]
-            #[doc = "valid, the `invalid_serial` protocol error will be raised."]
-            #[doc = ""]
-            #[doc = "An X11 window may be associated with multiple surfaces throughout its"]
-            #[doc = "lifespan. (eg. unmapping and remapping a window)."]
-            #[doc = ""]
-            #[doc = "For each wl_surface, this state must not be committed more than once,"]
-            #[doc = "otherwise the `already_associated` protocol error will be raised."]
-            async fn set_serial(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                serial_lo: u32,
-                serial_hi: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Destroy the xwayland_surface_v1 object."]
-            #[doc = ""]
-            #[doc = "Any already existing associations are unaffected by this action."]
+            #[doc = "Destroy this xdg_toplevel_drag_v1 object. This request must only be"]
+            #[doc = "called after the underlying wl_data_source drag has ended, as indicated"]
+            #[doc = "by the dnd_drop_performed or cancelled events. In any other case an"]
+            #[doc = "ongoing_drag error is raised."]
             async fn destroy(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Request that the window will be moved with the cursor during the drag"]
+            #[doc = "operation. The offset is a hint to the compositor how the toplevel"]
+            #[doc = "should be positioned relative to the cursor hotspot in surface local"]
+            #[doc = "coordinates. For example it might only be used when an unmapped window"]
+            #[doc = "is attached. The attached window does not participate in the selection"]
+            #[doc = "of the drag target."]
+            #[doc = ""]
+            #[doc = "If the toplevel is unmapped while it is attached, it is automatically"]
+            #[doc = "detached from the drag. In this case this request has to be called again"]
+            #[doc = "if the window should be attached after it is remapped."]
+            #[doc = ""]
+            #[doc = "This request can be called multiple times but issuing it while a"]
+            #[doc = "toplevel with an active role is attached raises a toplevel_attached"]
+            #[doc = "error."]
+            async fn attach(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+                x_offset: i32,
+                y_offset: i32,
+            ) -> crate::server::Result<()>;
+        }
+    }
+}
+#[doc = "This protocol allows clients to set icons for their toplevel surfaces"]
+#[doc = "either via the XDG icon stock (using an icon name), or from pixel data."]
+#[doc = ""]
+#[doc = "A toplevel icon represents the individual toplevel (unlike the application"]
+#[doc = "or launcher icon, which represents the application as a whole), and may be"]
+#[doc = "shown in window switchers, window overviews and taskbars that list"]
+#[doc = "individual windows."]
+#[doc = ""]
+#[doc = "This document adheres to RFC 2119 when using words like \"must\","]
+#[doc = "\"should\", \"may\", etc."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is currently in the testing"]
+#[doc = "phase. Backward compatible changes may be added together with the"]
+#[doc = "corresponding interface version bump. Backward incompatible changes can"]
+#[doc = "only be done by creating a new major version of the extension."]
+pub mod xdg_toplevel_icon_v1 {
+    #[doc = "This interface allows clients to create toplevel window icons and set"]
+    #[doc = "them on toplevel windows to be displayed to the user."]
+    pub mod xdg_toplevel_icon_manager_v1 {
+        #[doc = "Trait to implement the xdg_toplevel_icon_manager_v1 interface. See the module level documentation for more info"]
+        pub trait XdgToplevelIconManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "xdg_toplevel_icon_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("xdg_toplevel_icon_manager_v1#{}.destroy()", object.id);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        tracing::debug!("xdg_toplevel_icon_manager_v1#{}.create_icon()", object.id);
+                        self.create_icon(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
+                    }
+                    2u16 => {
+                        tracing::debug!("xdg_toplevel_icon_manager_v1#{}.set_icon()", object.id);
+                        self.set_icon(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.object()?,
+                        )
+                        .await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the toplevel icon manager."]
+            #[doc = "This does not destroy objects created with the manager."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Creates a new icon object. This icon can then be attached to a"]
+            #[doc = "xdg_toplevel via the 'set_icon' request."]
+            async fn create_icon(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "This request assigns the icon 'icon' to 'toplevel', or clears the"]
+            #[doc = "toplevel icon if 'icon' was null."]
+            #[doc = "This state is double-buffered and is applied on the next"]
+            #[doc = "wl_surface.commit of the toplevel."]
+            #[doc = ""]
+            #[doc = "After making this call, the xdg_toplevel_icon_v1 provided as 'icon'"]
+            #[doc = "can be destroyed by the client without 'toplevel' losing its icon."]
+            #[doc = "The xdg_toplevel_icon_v1 is immutable from this point, and any"]
+            #[doc = "future attempts to change it must raise the"]
+            #[doc = "'xdg_toplevel_icon_v1.immutable' protocol error."]
+            #[doc = ""]
+            #[doc = "The compositor must set the toplevel icon from either the pixel data"]
+            #[doc = "the icon provides, or by loading a stock icon using the icon name."]
+            #[doc = "See the description of 'xdg_toplevel_icon_v1' for details."]
+            #[doc = ""]
+            #[doc = "If 'icon' is set to null, the icon of the respective toplevel is reset"]
+            #[doc = "to its default icon (usually the icon of the application, derived from"]
+            #[doc = "its desktop-entry file, or a placeholder icon)."]
+            #[doc = "If this request is passed an icon with no pixel buffers or icon name"]
+            #[doc = "assigned, the icon must be reset just like if 'icon' was null."]
+            async fn set_icon(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+                icon: Option<crate::wire::ObjectId>,
+            ) -> crate::server::Result<()>;
+            #[doc = "This event indicates an icon size the compositor prefers to be"]
+            #[doc = "available if the client has scalable icons and can render to any size."]
+            #[doc = ""]
+            #[doc = "When the 'xdg_toplevel_icon_manager_v1' object is created, the"]
+            #[doc = "compositor may send one or more 'icon_size' events to describe the list"]
+            #[doc = "of preferred icon sizes. If the compositor has no size preference, it"]
+            #[doc = "may not send any 'icon_size' event, and it is up to the client to"]
+            #[doc = "decide a suitable icon size."]
+            #[doc = ""]
+            #[doc = "A sequence of 'icon_size' events must be finished with a 'done' event."]
+            #[doc = "If the compositor has no size preferences, it must still send the"]
+            #[doc = "'done' event, without any preceding 'icon_size' events."]
+            async fn icon_size(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                size: i32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.icon_size()", object.id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(size).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is sent after all 'icon_size' events have been sent."]
+            async fn done(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.done()", object.id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[doc = "This interface defines a toplevel icon."]
+    #[doc = "An icon can have a name, and multiple buffers."]
+    #[doc = "In order to be applied, the icon must have either a name, or at least"]
+    #[doc = "one buffer assigned. Applying an empty icon (with no buffer or name) to"]
+    #[doc = "a toplevel should reset its icon to the default icon."]
+    #[doc = ""]
+    #[doc = "It is up to compositor policy whether to prefer using a buffer or loading"]
+    #[doc = "an icon via its name. See 'set_name' and 'add_buffer' for details."]
+    pub mod xdg_toplevel_icon_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the provided buffer does not satisfy requirements"]
+            InvalidBuffer = 1u32,
+            #[doc = "the icon has already been assigned to a toplevel and must not be changed"]
+            Immutable = 2u32,
+            #[doc = "the provided buffer has been destroyed before the toplevel icon"]
+            NoBuffer = 3u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::InvalidBuffer),
+                    2u32 => Ok(Self::Immutable),
+                    3u32 => Ok(Self::NoBuffer),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        #[doc = "Trait to implement the xdg_toplevel_icon_v1 interface. See the module level documentation for more info"]
+        pub trait XdgToplevelIconV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "xdg_toplevel_icon_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("xdg_toplevel_icon_v1#{}.destroy()", object.id);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        tracing::debug!("xdg_toplevel_icon_v1#{}.set_name()", object.id);
+                        self.set_name(
+                            object,
+                            client,
+                            message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
+                    }
+                    2u16 => {
+                        tracing::debug!("xdg_toplevel_icon_v1#{}.add_buffer()", object.id);
+                        self.add_buffer(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message.int()?,
+                        )
+                        .await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroys the 'xdg_toplevel_icon_v1' object."]
+            #[doc = "The icon must still remain set on every toplevel it was assigned to,"]
+            #[doc = "until the toplevel icon is reset explicitly."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "This request assigns an icon name to this icon."]
+            #[doc = "Any previously set name is overridden."]
+            #[doc = ""]
+            #[doc = "The compositor must resolve 'icon_name' according to the lookup rules"]
+            #[doc = "described in the XDG icon theme specification[1] using the"]
+            #[doc = "environment's current icon theme."]
+            #[doc = ""]
+            #[doc = "If the compositor does not support icon names or cannot resolve"]
+            #[doc = "'icon_name' according to the XDG icon theme specification it must"]
+            #[doc = "fall back to using pixel buffer data instead."]
+            #[doc = ""]
+            #[doc = "If this request is made after the icon has been assigned to a toplevel"]
+            #[doc = "via 'set_icon', a 'immutable' error must be raised."]
+            #[doc = ""]
+            #[doc = "[1]: https://specifications.freedesktop.org/icon-theme-spec/icon-theme-spec-latest.html"]
+            async fn set_name(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                icon_name: String,
+            ) -> crate::server::Result<()>;
+            #[doc = "This request adds pixel data supplied as wl_buffer to the icon."]
+            #[doc = ""]
+            #[doc = "The client should add pixel data for all icon sizes and scales that"]
+            #[doc = "it can provide, or which are explicitly requested by the compositor"]
+            #[doc = "via 'icon_size' events on xdg_toplevel_icon_manager_v1."]
+            #[doc = ""]
+            #[doc = "The wl_buffer supplying pixel data as 'buffer' must be backed by wl_shm"]
+            #[doc = "and must be a square (width and height being equal)."]
+            #[doc = "If any of these buffer requirements are not fulfilled, a 'invalid_buffer'"]
+            #[doc = "error must be raised."]
+            #[doc = ""]
+            #[doc = "If this icon instance already has a buffer of the same size and scale"]
+            #[doc = "from a previous 'add_buffer' request, data from the last request"]
+            #[doc = "overrides the preexisting pixel data."]
+            #[doc = ""]
+            #[doc = "The wl_buffer must be kept alive for as long as the xdg_toplevel_icon"]
+            #[doc = "it is associated with is not destroyed, otherwise a 'no_buffer' error"]
+            #[doc = "is raised. The buffer contents must not be modified after it was"]
+            #[doc = "assigned to the icon."]
+            #[doc = ""]
+            #[doc = "If this request is made after the icon has been assigned to a toplevel"]
+            #[doc = "via 'set_icon', a 'immutable' error must be raised."]
+            async fn add_buffer(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                buffer: crate::wire::ObjectId,
+                scale: i32,
             ) -> crate::server::Result<()>;
         }
     }
@@ -26337,6 +27638,164 @@ pub mod xdg_shell_unstable_v6 {
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
+        }
+    }
+}
+#[doc = "This protocol is application-specific to meet the needs of the X11"]
+#[doc = "protocol through Xwayland. It provides a way for Xwayland to request"]
+#[doc = "all keyboard events to be forwarded to a surface even when the"]
+#[doc = "surface does not have keyboard focus."]
+#[doc = ""]
+#[doc = "In the X11 protocol, a client may request an \"active grab\" on the"]
+#[doc = "keyboard. On success, all key events are reported only to the"]
+#[doc = "grabbing X11 client. For details, see XGrabKeyboard(3)."]
+#[doc = ""]
+#[doc = "The core Wayland protocol does not have a notion of an active"]
+#[doc = "keyboard grab. When running in Xwayland, X11 applications may"]
+#[doc = "acquire an active grab inside Xwayland but that cannot be translated"]
+#[doc = "to the Wayland compositor who may set the input focus to some other"]
+#[doc = "surface. In doing so, it breaks the X11 client assumption that all"]
+#[doc = "key events are reported to the grabbing client."]
+#[doc = ""]
+#[doc = "This protocol specifies a way for Xwayland to request all keyboard"]
+#[doc = "be directed to the given surface. The protocol does not guarantee"]
+#[doc = "that the compositor will honor this request and it does not"]
+#[doc = "prescribe user interfaces on how to handle the respond. For example,"]
+#[doc = "a compositor may inform the user that all key events are now"]
+#[doc = "forwarded to the given client surface, or it may ask the user for"]
+#[doc = "permission to do so."]
+#[doc = ""]
+#[doc = "Compositors are required to restrict access to this application"]
+#[doc = "specific protocol to Xwayland alone."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is experimental and"]
+#[doc = "backward incompatible changes may be made. Backward compatible"]
+#[doc = "changes may be added together with the corresponding interface"]
+#[doc = "version bump."]
+#[doc = "Backward incompatible changes are done by bumping the version"]
+#[doc = "number in the protocol and interface names and resetting the"]
+#[doc = "interface version. Once the protocol is to be declared stable,"]
+#[doc = "the 'z' prefix and the version number in the protocol and"]
+#[doc = "interface names are removed and the interface version number is"]
+#[doc = "reset."]
+pub mod xwayland_keyboard_grab_unstable_v1 {
+    #[doc = "A global interface used for grabbing the keyboard."]
+    pub mod zwp_xwayland_keyboard_grab_manager_v1 {
+        #[doc = "Trait to implement the zwp_xwayland_keyboard_grab_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ZwpXwaylandKeyboardGrabManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "zwp_xwayland_keyboard_grab_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!(
+                            "zwp_xwayland_keyboard_grab_manager_v1#{}.destroy()",
+                            object.id
+                        );
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        tracing::debug!(
+                            "zwp_xwayland_keyboard_grab_manager_v1#{}.grab_keyboard()",
+                            object.id
+                        );
+                        self.grab_keyboard(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the keyboard grab manager."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "The grab_keyboard request asks for a grab of the keyboard, forcing"]
+            #[doc = "the keyboard focus for the given seat upon the given surface."]
+            #[doc = ""]
+            #[doc = "The protocol provides no guarantee that the grab is ever satisfied,"]
+            #[doc = "and does not require the compositor to send an error if the grab"]
+            #[doc = "cannot ever be satisfied. It is thus possible to request a keyboard"]
+            #[doc = "grab that will never be effective."]
+            #[doc = ""]
+            #[doc = "The protocol:"]
+            #[doc = ""]
+            #[doc = "* does not guarantee that the grab itself is applied for a surface,"]
+            #[doc = "the grab request may be silently ignored by the compositor,"]
+            #[doc = "* does not guarantee that any events are sent to this client even"]
+            #[doc = "if the grab is applied to a surface,"]
+            #[doc = "* does not guarantee that events sent to this client are exhaustive,"]
+            #[doc = "a compositor may filter some events for its own consumption,"]
+            #[doc = "* does not guarantee that events sent to this client are continuous,"]
+            #[doc = "a compositor may change and reroute keyboard events while the grab"]
+            #[doc = "is nominally active."]
+            async fn grab_keyboard(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+                seat: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+        }
+    }
+    #[doc = "A global interface used for grabbing the keyboard."]
+    pub mod zwp_xwayland_keyboard_grab_v1 {
+        #[doc = "Trait to implement the zwp_xwayland_keyboard_grab_v1 interface. See the module level documentation for more info"]
+        pub trait ZwpXwaylandKeyboardGrabV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "zwp_xwayland_keyboard_grab_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("zwp_xwayland_keyboard_grab_v1#{}.destroy()", object.id);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the grabbed keyboard object. If applicable, the compositor"]
+            #[doc = "will ungrab the keyboard."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
         }
     }
 }

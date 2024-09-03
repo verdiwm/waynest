@@ -11,18 +11,25 @@ use client::generate_client_code;
 use server::generate_server_code;
 
 const PROTOCOLS: &[&str] = &[
+    // Core protocol
     "wayland/protocol/wayland.xml",
+
+    // Stable protocols
     "wayland-protocols/stable/linux-dmabuf/linux-dmabuf-v1.xml",
     "wayland-protocols/stable/presentation-time/presentation-time.xml",
     "wayland-protocols/stable/tablet/tablet-v2.xml",
     "wayland-protocols/stable/viewporter/viewporter.xml",
     "wayland-protocols/stable/xdg-shell/xdg-shell.xml",
+
+    // Staging protocols
     "wayland-protocols/staging/alpha-modifier/alpha-modifier-v1.xml",
     "wayland-protocols/staging/content-type/content-type-v1.xml",
     "wayland-protocols/staging/cursor-shape/cursor-shape-v1.xml",
     "wayland-protocols/staging/drm-lease/drm-lease-v1.xml",
     "wayland-protocols/staging/ext-foreign-toplevel-list/ext-foreign-toplevel-list-v1.xml",
     "wayland-protocols/staging/ext-idle-notify/ext-idle-notify-v1.xml",
+    "wayland-protocols/staging/ext-image-capture-source/ext-image-capture-source-v1.xml",
+    "wayland-protocols/staging/ext-image-copy-capture/ext-image-copy-capture-v1.xml",
     "wayland-protocols/staging/ext-session-lock/ext-session-lock-v1.xml",
     "wayland-protocols/staging/ext-transient-seat/ext-transient-seat-v1.xml",
     "wayland-protocols/staging/fractional-scale/fractional-scale-v1.xml",
@@ -33,7 +40,10 @@ const PROTOCOLS: &[&str] = &[
     "wayland-protocols/staging/xdg-activation/xdg-activation-v1.xml",
     "wayland-protocols/staging/xdg-dialog/xdg-dialog-v1.xml",
     "wayland-protocols/staging/xdg-toplevel-drag/xdg-toplevel-drag-v1.xml",
-    "wayland-protocols/staging/xwayland-shell/xwayland-shell-v1.xml",
+    "wayland-protocols/staging/xdg-toplevel-drag/xdg-toplevel-drag-v1.xml",
+    "wayland-protocols/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml",
+
+    // Unstable protocols
     "wayland-protocols/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml",
     "wayland-protocols/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml",
     "wayland-protocols/unstable/input-method/input-method-unstable-v1.xml",
@@ -55,6 +65,9 @@ const PROTOCOLS: &[&str] = &[
     "wayland-protocols/unstable/xdg-output/xdg-output-unstable-v1.xml",
     "wayland-protocols/unstable/xdg-shell/xdg-shell-unstable-v5.xml",
     "wayland-protocols/unstable/xdg-shell/xdg-shell-unstable-v6.xml",
+    "wayland-protocols/unstable/xwayland-keyboard-grab/xwayland-keyboard-grab-unstable-v1.xml",
+    
+    // Wlroots protocols
     "wlr-protocols/unstable/wlr-data-control-unstable-v1.xml",
     "wlr-protocols/unstable/wlr-export-dmabuf-unstable-v1.xml",
     "wlr-protocols/unstable/wlr-foreign-toplevel-management-unstable-v1.xml",
