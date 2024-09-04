@@ -9,8 +9,8 @@ anyhow = "1.0.86"
 heck = "0.5.0"
 proc-macro2 = { version = "1.0.86", default-features = false }
 quick-xml = { version = "0.36.1", features = ["serialize", "overlapped-lists"] }
-quote = { version = "1.0.36", default-features = false }
-serde = { version = "1.0.207", features = ["derive"] }
+quote = { version = "1.0.37", default-features = false }
+serde = { version = "1.0.209", features = ["derive"] }
 serde_json = "1.0.127"
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
