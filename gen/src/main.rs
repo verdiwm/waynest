@@ -65,7 +65,7 @@ const PROTOCOLS: &[&str] = &[
     "wayland-protocols/unstable/xdg-shell/xdg-shell-unstable-v5.xml",
     "wayland-protocols/unstable/xdg-shell/xdg-shell-unstable-v6.xml",
     "wayland-protocols/unstable/xwayland-keyboard-grab/xwayland-keyboard-grab-unstable-v1.xml",
-    
+
     // Wlroots protocols
     "wlr-protocols/unstable/wlr-data-control-unstable-v1.xml",
     "wlr-protocols/unstable/wlr-export-dmabuf-unstable-v1.xml",
@@ -102,6 +102,14 @@ fn main() -> Result<()> {
         .open("src/client/protocol.rs")?;
 
     write!(&mut client_path, "{}", generate_client_code(&protocols))?;
+
+    let mut json_path = OpenOptions::new()
+        .truncate(true)
+        .write(true)
+        .create(true)
+        .open("protocols.json")?;
+
+    serde_json::to_writer(&mut json_path, &protocols)?;
 
     Ok(())
 }
