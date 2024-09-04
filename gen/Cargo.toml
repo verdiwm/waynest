@@ -6,6 +6,7 @@ publish = false
 
 [dependencies]
 anyhow = "1.0.86"
+clap = { version = "4.5.16", features = ["derive"] }
 heck = "0.5.0"
 proc-macro2 = { version = "1.0.86", default-features = false }
 quick-xml = { version = "0.36.1", features = ["serialize", "overlapped-lists"] }
