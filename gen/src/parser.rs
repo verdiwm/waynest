@@ -6,7 +6,7 @@ use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use serde::{Deserialize, Serialize};
 
-use crate::utils::{find_enum, make_ident};
+use crate::utils::make_ident;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]

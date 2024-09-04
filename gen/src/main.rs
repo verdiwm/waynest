@@ -40,7 +40,6 @@ const PROTOCOLS: &[&str] = &[
     "wayland-protocols/staging/xdg-activation/xdg-activation-v1.xml",
     "wayland-protocols/staging/xdg-dialog/xdg-dialog-v1.xml",
     "wayland-protocols/staging/xdg-toplevel-drag/xdg-toplevel-drag-v1.xml",
-    "wayland-protocols/staging/xdg-toplevel-drag/xdg-toplevel-drag-v1.xml",
     "wayland-protocols/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml",
 
     // Unstable protocols
