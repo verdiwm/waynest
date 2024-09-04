@@ -11,118 +11,118 @@ use crate::utils::make_ident;
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Protocol {
-    #[serde(rename = "@name")]
+    #[serde(rename(deserialize = "@name"))]
     pub name: String,
     pub copyright: Option<String>,
     pub description: Option<String>,
-    #[serde(default, rename = "interface")]
+    #[serde(default, rename(deserialize = "interface"))]
     pub interfaces: Vec<Interface>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Interface {
-    #[serde(rename = "@name")]
+    #[serde(rename(deserialize = "@name"))]
     pub name: String,
-    #[serde(rename = "@version")]
+    #[serde(rename(deserialize = "@version"))]
     pub version: u32,
     pub description: Option<String>,
-    #[serde(default, rename = "request")]
+    #[serde(default, rename(deserialize = "request"))]
     pub requests: Vec<Message>,
-    #[serde(default, rename = "event")]
+    #[serde(default, rename(deserialize = "event"))]
     pub events: Vec<Message>,
-    #[serde(default, rename = "enum")]
+    #[serde(default, rename(deserialize = "enum"))]
     pub enums: Vec<Enum>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Message {
-    #[serde(rename = "@name")]
+    #[serde(rename(deserialize = "@name"))]
     pub name: String,
-    #[serde(rename = "@type")]
+    #[serde(rename(deserialize = "@type"))]
     pub ty: Option<MessageType>,
-    #[serde(rename = "@since")]
+    #[serde(rename(deserialize = "@since"))]
     pub since: Option<usize>,
-    #[serde(rename = "@deprecated-since")]
+    #[serde(rename(deserialize = "@deprecated-since"))]
     pub deprecated_since: Option<usize>,
     pub description: Option<String>,
-    #[serde(default, rename = "arg")]
+    #[serde(default, rename(deserialize = "arg"))]
     pub args: Vec<Arg>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 
 pub enum MessageType {
-    #[serde(rename = "destructor")]
+    #[serde(rename(deserialize = "destructor"))]
     Destructor,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Arg {
-    #[serde(rename = "@name")]
+    #[serde(rename(deserialize = "@name"))]
     pub name: String,
-    #[serde(rename = "@type")]
+    #[serde(rename(deserialize = "@type"))]
     pub ty: ArgType,
-    #[serde(rename = "@interface")]
+    #[serde(rename(deserialize = "@interface"))]
     pub interface: Option<String>,
-    #[serde(rename = "@enum")]
+    #[serde(rename(deserialize = "@enum"))]
     pub r#enum: Option<String>,
-    #[serde(default, rename = "@allow-null")]
+    #[serde(default, rename(deserialize = "@allow-null"))]
     pub allow_null: bool,
-    #[serde(rename = "@summary")]
+    #[serde(rename(deserialize = "@summary"))]
     pub summary: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
 pub enum ArgType {
-    #[serde(rename = "int")]
+    #[serde(rename(deserialize = "int"))]
     Int,
-    #[serde(rename = "uint")]
+    #[serde(rename(deserialize = "uint"))]
     Uint,
-    #[serde(rename = "fixed")]
+    #[serde(rename(deserialize = "fixed"))]
     Fixed,
-    #[serde(rename = "string")]
+    #[serde(rename(deserialize = "string"))]
     String,
-    #[serde(rename = "object")]
+    #[serde(rename(deserialize = "object"))]
     Object,
-    #[serde(rename = "new_id")]
+    #[serde(rename(deserialize = "new_id"))]
     NewId,
-    #[serde(rename = "array")]
+    #[serde(rename(deserialize = "array"))]
     Array,
-    #[serde(rename = "fd")]
+    #[serde(rename(deserialize = "fd"))]
     Fd,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Enum {
-    #[serde(rename = "@name")]
+    #[serde(rename(deserialize = "@name"))]
     pub name: String,
-    #[serde(default, rename = "@bitfield")]
+    #[serde(default, rename(deserialize = "@bitfield"))]
     pub bitfield: bool,
-    #[serde(rename = "@since")]
+    #[serde(rename(deserialize = "@since"))]
     pub since: Option<usize>,
-    #[serde(rename = "@deprecated-since")]
+    #[serde(rename(deserialize = "@deprecated-since"))]
     pub deprecated_since: Option<usize>,
     pub description: Option<String>,
-    #[serde(rename = "entry")]
+    #[serde(rename(deserialize = "entry"))]
     pub entries: Vec<Entry>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Entry {
-    #[serde(rename = "@name")]
+    #[serde(rename(deserialize = "@name"))]
     pub name: String,
-    #[serde(rename = "@value")]
+    #[serde(rename(deserialize = "@value"))]
     pub value: String,
-    #[serde(rename = "@summary")]
+    #[serde(rename(deserialize = "@summary"))]
     pub summary: Option<String>,
-    #[serde(rename = "@since")]
+    #[serde(rename(deserialize = "@since"))]
     pub since: Option<usize>,
-    #[serde(rename = "@deprecated-since")]
+    #[serde(rename(deserialize = "@deprecated-since"))]
     pub deprecated_since: Option<usize>,
     pub description: Option<String>,
 }
