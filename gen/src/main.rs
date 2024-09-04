@@ -1,6 +1,8 @@
 use anyhow::Result;
+use clap::Parser;
 use parser::Protocol;
 use std::{fs::OpenOptions, io::Write as _};
+use tracing::info;
 
 mod client;
 mod parser;
@@ -79,37 +81,50 @@ const PROTOCOLS: &[&str] = &[
     "wlr-protocols/unstable/wlr-virtual-pointer-unstable-v1.xml",
 ];
 
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    #[arg(short, long)]
+    json: bool,
+}
+
 fn main() -> Result<()> {
     tracing_subscriber::fmt::init();
+
+    let Args { json } = Args::parse();
 
     let protocols = PROTOCOLS
         .iter()
         .map(Protocol::from_path)
         .collect::<Result<Vec<Protocol>>>()?;
 
-    let mut server_path = OpenOptions::new()
-        .truncate(true)
-        .write(true)
-        .create(true)
-        .open("src/server/protocol.rs")?;
+    if json {
+        info!("Generating json file");
 
-    write!(&mut server_path, "{}", generate_server_code(&protocols))?;
+        let mut json_path = OpenOptions::new()
+            .truncate(true)
+            .write(true)
+            .create(true)
+            .open("protocols.json")?;
 
-    let mut client_path = OpenOptions::new()
-        .truncate(true)
-        .write(true)
-        .create(true)
-        .open("src/client/protocol.rs")?;
+        serde_json::to_writer(&mut json_path, &protocols)?;
+    } else {
+        let mut server_path = OpenOptions::new()
+            .truncate(true)
+            .write(true)
+            .create(true)
+            .open("src/server/protocol.rs")?;
 
-    write!(&mut client_path, "{}", generate_client_code(&protocols))?;
+        write!(&mut server_path, "{}", generate_server_code(&protocols))?;
 
-    let mut json_path = OpenOptions::new()
-        .truncate(true)
-        .write(true)
-        .create(true)
-        .open("protocols.json")?;
+        let mut client_path = OpenOptions::new()
+            .truncate(true)
+            .write(true)
+            .create(true)
+            .open("src/client/protocol.rs")?;
 
-    serde_json::to_writer(&mut json_path, &protocols)?;
+        write!(&mut client_path, "{}", generate_client_code(&protocols))?;
+    }
 
     Ok(())
 }
