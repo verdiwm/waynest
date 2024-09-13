@@ -3,6 +3,7 @@ pub mod wayland {
     #[doc = "The core global object.  This is a special singleton object.  It"]
     #[doc = "is used for internal Wayland protocol features."]
     pub mod wl_display {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These errors are global and can be emitted in response to any"]
         #[doc = "server request."]
@@ -116,6 +117,7 @@ pub mod wayland {
     #[doc = "emit events to the client and lets the client invoke requests on"]
     #[doc = "the object."]
     pub mod wl_registry {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_registry interface. See the module level documentation for more info"]
         pub trait WlRegistry {
@@ -156,6 +158,7 @@ pub mod wayland {
     #[doc = "Note, because wl_callback objects are created from multiple independent"]
     #[doc = "factory interfaces, the wl_callback interface is frozen at version 1."]
     pub mod wl_callback {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_callback interface. See the module level documentation for more info"]
         pub trait WlCallback {
@@ -175,6 +178,7 @@ pub mod wayland {
     #[doc = "compositor is in charge of combining the contents of multiple"]
     #[doc = "surfaces into one displayable output."]
     pub mod wl_compositor {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_compositor interface. See the module level documentation for more info"]
         pub trait WlCompositor {
@@ -230,6 +234,7 @@ pub mod wayland {
     #[doc = "setup/teardown overhead and is useful when interactively resizing"]
     #[doc = "a surface or for many small buffers."]
     pub mod wl_shm_pool {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_shm_pool interface. See the module level documentation for more info"]
         pub trait WlShmPool {
@@ -331,6 +336,7 @@ pub mod wayland {
     #[doc = "are emitted to inform clients about the valid pixel formats"]
     #[doc = "that can be used for buffers."]
     pub mod wl_shm {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These errors can be emitted in response to wl_shm requests."]
         #[repr(u32)]
@@ -807,6 +813,7 @@ pub mod wayland {
     #[doc = "Note, because wl_buffer objects are created from multiple independent"]
     #[doc = "factory interfaces, the wl_buffer interface is frozen at version 1."]
     pub mod wl_buffer {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_buffer interface. See the module level documentation for more info"]
         pub trait WlBuffer {
@@ -845,6 +852,7 @@ pub mod wayland {
     #[doc = "converted to and provides the mechanism for transferring the"]
     #[doc = "data directly from the source client."]
     pub mod wl_data_offer {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1040,6 +1048,7 @@ pub mod wayland {
     #[doc = "provides a way to describe the offered data and a way to respond"]
     #[doc = "to requests to transfer the data."]
     pub mod wl_data_source {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1139,6 +1148,7 @@ pub mod wayland {
     #[doc = "A wl_data_device provides access to inter-client data transfer"]
     #[doc = "mechanisms such as copy-and-paste and drag-and-drop."]
     pub mod wl_data_device {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1272,6 +1282,7 @@ pub mod wayland {
     #[doc = "functioning properly. See wl_data_source.set_actions,"]
     #[doc = "wl_data_offer.accept and wl_data_offer.finish for details."]
     pub mod wl_data_device_manager {
+        #[allow(unused)]
         use futures_util::SinkExt;
         bitflags::bitflags! { # [doc = "This is a bitmask of the available/preferred actions in a"] # [doc = "drag-and-drop operation."] # [doc = ""] # [doc = "In the compositor, the selected action is a result of matching the"] # [doc = "actions offered by the source and destination sides.  \"action\" events"] # [doc = "with a \"none\" action will be sent to both source and destination if"] # [doc = "there is no match. All further checks will effectively happen on"] # [doc = "(source actions ∩ destination actions)."] # [doc = ""] # [doc = "In addition, compositors may also pick different actions in"] # [doc = "reaction to key modifiers being pressed. One common design that"] # [doc = "is used in major toolkits (and the behavior recommended for"] # [doc = "compositors) is:"] # [doc = ""] # [doc = "- If no modifiers are pressed, the first match (in bit order)"] # [doc = "will be used."] # [doc = "- Pressing Shift selects \"move\", if enabled in the mask."] # [doc = "- Pressing Control selects \"copy\", if enabled in the mask."] # [doc = ""] # [doc = "Behavior beyond that is considered implementation-dependent."] # [doc = "Compositors may for example bind other modifiers (like Alt/Meta)"] # [doc = "or drags initiated with other buttons than BTN_LEFT to specific"] # [doc = "actions (e.g. \"ask\")."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct DndAction : u32 { # [doc = "no action"] const None = 0u32 ; # [doc = "copy action"] const Copy = 1u32 ; # [doc = "move action"] const Move = 2u32 ; # [doc = "ask action"] const Ask = 4u32 ; } }
         impl TryFrom<u32> for DndAction {
@@ -1341,6 +1352,7 @@ pub mod wayland {
     #[doc = "For desktop-style user interfaces, use xdg_shell. Compositors and clients"]
     #[doc = "should not implement this interface."]
     pub mod wl_shell {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1406,6 +1418,7 @@ pub mod wayland {
     #[doc = "wl_shell_surface_destroy() must be called before destroying"]
     #[doc = "the wl_surface object."]
     pub mod wl_shell_surface {
+        #[allow(unused)]
         use futures_util::SinkExt;
         bitflags::bitflags! { # [doc = "These values are used to indicate which edge of a surface"] # [doc = "is being dragged in a resize operation. The server may"] # [doc = "use this information to adapt its behavior, e.g. choose"] # [doc = "an appropriate cursor image."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Resize : u32 { # [doc = "no edge"] const None = 0u32 ; # [doc = "top edge"] const Top = 1u32 ; # [doc = "bottom edge"] const Bottom = 2u32 ; # [doc = "left edge"] const Left = 4u32 ; # [doc = "top and left edges"] const TopLeft = 5u32 ; # [doc = "bottom and left edges"] const BottomLeft = 6u32 ; # [doc = "right edge"] const Right = 8u32 ; # [doc = "top and right edges"] const TopRight = 9u32 ; # [doc = "bottom and right edges"] const BottomRight = 10u32 ; } }
         impl TryFrom<u32> for Resize {
@@ -1782,6 +1795,7 @@ pub mod wayland {
     #[doc = "a cursor (cursor is a different role than sub-surface, and role"]
     #[doc = "switching is not allowed)."]
     pub mod wl_surface {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These errors can be emitted in response to wl_surface requests."]
         #[repr(u32)]
@@ -2287,6 +2301,7 @@ pub mod wayland {
     #[doc = "device is hot plugged.  A seat typically has a pointer and"]
     #[doc = "maintains a keyboard focus and a pointer focus."]
     pub mod wl_seat {
+        #[allow(unused)]
         use futures_util::SinkExt;
         bitflags::bitflags! { # [doc = "This is a bitmask of capabilities this seat has; if a member is"] # [doc = "set, then it is present on the seat."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "the seat has pointer devices"] const Pointer = 1u32 ; # [doc = "the seat has one or more keyboards"] const Keyboard = 2u32 ; # [doc = "the seat has touch devices"] const Touch = 4u32 ; } }
         impl TryFrom<u32> for Capability {
@@ -2418,6 +2433,7 @@ pub mod wayland {
     #[doc = "and button and axis events for button presses, button releases"]
     #[doc = "and scrolling."]
     pub mod wl_pointer {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2636,6 +2652,7 @@ pub mod wayland {
     #[doc = "By default, the active surface is null, the keys currently logically down"]
     #[doc = "are empty, the active modifiers and the active group are 0."]
     pub mod wl_keyboard {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "This specifies the format of the keymap provided to the"]
         #[doc = "client with the wl_keyboard.keymap event."]
@@ -2713,6 +2730,7 @@ pub mod wayland {
     #[doc = "and ending with an up event. Events relating to the same"]
     #[doc = "contact point can be identified by the ID of the sequence."]
     pub mod wl_touch {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_touch interface. See the module level documentation for more info"]
         pub trait WlTouch {
@@ -2747,6 +2765,7 @@ pub mod wayland {
     #[doc = "displays part of the compositor space.  This object is published"]
     #[doc = "as global during start up, or when a monitor is hotplugged."]
     pub mod wl_output {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "This enumeration describes how the physical"]
         #[doc = "pixels on an output are laid out."]
@@ -2868,6 +2887,7 @@ pub mod wayland {
     #[doc = "Region objects are used to describe the opaque and input"]
     #[doc = "regions of a surface."]
     pub mod wl_region {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_region interface. See the module level documentation for more info"]
         pub trait WlRegion {
@@ -2960,6 +2980,7 @@ pub mod wayland {
     #[doc = "objects. This should allow the compositor to pass YUV video buffer"]
     #[doc = "processing to dedicated overlay hardware when possible."]
     pub mod wl_subcompositor {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3100,6 +3121,7 @@ pub mod wayland {
     #[doc = "The wl_surface.offset request is ignored: clients must use set_position"]
     #[doc = "instead to move the sub-surface."]
     pub mod wl_subsurface {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3346,6 +3368,7 @@ pub mod linux_dmabuf_v1 {
     #[doc = "wait and signal fences implicitly passed via the DMA-BUF's reservation"]
     #[doc = "mechanism."]
     pub mod zwp_linux_dmabuf_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
         pub trait ZwpLinuxDmabufV1 {
@@ -3457,6 +3480,7 @@ pub mod linux_dmabuf_v1 {
     #[doc = "All planes required by the format must be given exactly once, but can"]
     #[doc = "be given in any order. Each plane index can be set only once."]
     pub mod zwp_linux_buffer_params_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3727,6 +3751,7 @@ pub mod linux_dmabuf_v1 {
     #[doc = "event, tranche_formats events and then a tranche_done event), then one"]
     #[doc = "done event."]
     pub mod zwp_linux_dmabuf_feedback_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { # [doc = "direct scan-out tranche"] const Scanout = 1u32 ; } }
         impl TryFrom<u32> for TrancheFlags {
@@ -3785,6 +3810,7 @@ pub mod presentation_time {
     #[doc = "display update time and the update's target time, especially"]
     #[doc = "when the compositor misses its target vertical blanking period."]
     pub mod wp_presentation {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal presentation requests."]
@@ -3873,6 +3899,7 @@ pub mod presentation_time {
     #[doc = "Once a presentation_feedback object has delivered a 'presented'"]
     #[doc = "or 'discarded' event it is automatically destroyed."]
     pub mod wp_presentation_feedback {
+        #[allow(unused)]
         use futures_util::SinkExt;
         bitflags::bitflags! { # [doc = "These flags provide information about how the presentation of"] # [doc = "the related content update was done. The intent is to help"] # [doc = "clients assess the reliability of the feedback and the visual"] # [doc = "quality with respect to possible tearing and timings."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Kind : u32 { const Vsync = 1u32 ; const HwClock = 2u32 ; const HwCompletion = 4u32 ; const ZeroCopy = 8u32 ; } }
         impl TryFrom<u32> for Kind {
@@ -3977,6 +4004,7 @@ pub mod tablet_v2 {
     #[doc = "system. All tablets are associated with a seat, to get access to the"]
     #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
     pub mod zwp_tablet_manager_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletManagerV2 {
@@ -4029,6 +4057,7 @@ pub mod tablet_v2 {
     #[doc = "seat. After binding to this interface, the compositor sends a set of"]
     #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
     pub mod zwp_tablet_seat_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletSeatV2 {
@@ -4079,6 +4108,7 @@ pub mod tablet_v2 {
     #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
     #[doc = "considered part of the same hardware state change."]
     pub mod zwp_tablet_tool_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Describes the physical type of a tool. The physical type of a tool"]
         #[doc = "generally defines its base usage."]
@@ -4284,6 +4314,7 @@ pub mod tablet_v2 {
     #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
     #[doc = "terminated by a wp_tablet.done event."]
     pub mod zwp_tablet_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletV2 {
@@ -4318,6 +4349,7 @@ pub mod tablet_v2 {
     #[doc = "Events on a ring are logically grouped by the wl_tablet_pad_ring.frame"]
     #[doc = "event."]
     pub mod zwp_tablet_pad_ring_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Describes the source types for ring events. This indicates to the"]
         #[doc = "client how a ring event was physically generated; a client may"]
@@ -4408,6 +4440,7 @@ pub mod tablet_v2 {
     #[doc = "Events on a strip are logically grouped by the wl_tablet_pad_strip.frame"]
     #[doc = "event."]
     pub mod zwp_tablet_pad_strip_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Describes the source types for strip events. This indicates to the"]
         #[doc = "client how a strip event was physically generated; a client may"]
@@ -4514,6 +4547,7 @@ pub mod tablet_v2 {
     #[doc = "actions, and/or issue the respective .set_feedback requests to notify the"]
     #[doc = "compositor. See the wp_tablet_pad_group.mode_switch event for more details."]
     pub mod zwp_tablet_pad_group_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletPadGroupV2 {
@@ -4566,6 +4600,7 @@ pub mod tablet_v2 {
     #[doc = "actions to a single pad feature. Only one mode can be active per group,"]
     #[doc = "although different groups may have different active modes."]
     pub mod zwp_tablet_pad_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Describes the physical state of a button that caused the button"]
         #[doc = "event."]
@@ -4668,6 +4703,7 @@ pub mod viewporter {
     #[doc = "disconnecting the direct relationship between the buffer and the"]
     #[doc = "surface size."]
     pub mod wp_viewporter {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -4790,6 +4826,7 @@ pub mod viewporter {
     #[doc = "state is removed from the wl_surface. The change will be applied"]
     #[doc = "on the next wl_surface.commit."]
     pub mod wp_viewport {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -4910,6 +4947,7 @@ pub mod xdg_shell {
     #[doc = "create windows that can be dragged, resized, maximized, etc, as well as"]
     #[doc = "creating transient windows such as popup menus."]
     pub mod xdg_wm_base {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -5060,6 +5098,7 @@ pub mod xdg_shell {
     #[doc = "set_anchor_rect. Passing an incomplete xdg_positioner object when"]
     #[doc = "positioning a surface raises an invalid_positioner error."]
     pub mod xdg_positioner {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -5435,6 +5474,7 @@ pub mod xdg_shell {
     #[doc = "has not been destroyed, i.e. the client must perform the initial commit"]
     #[doc = "again before attaching a buffer."]
     pub mod xdg_surface {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -5668,6 +5708,7 @@ pub mod xdg_shell {
     #[doc = ""]
     #[doc = "Attaching a null buffer to a toplevel unmaps the surface."]
     pub mod xdg_toplevel {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -6306,6 +6347,7 @@ pub mod xdg_shell {
     #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
     #[doc = "for the xdg_popup state to take effect."]
     pub mod xdg_popup {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -6459,6 +6501,7 @@ pub mod alpha_modifier_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_alpha_modifier_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -6532,6 +6575,7 @@ pub mod alpha_modifier_v1 {
     #[doc = "wl_surface is destroyed, all request on this object will raise the"]
     #[doc = "no_surface error."]
     pub mod wp_alpha_modifier_surface_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -6617,6 +6661,7 @@ pub mod content_type_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_content_type_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -6694,6 +6739,7 @@ pub mod content_type_v1 {
     #[doc = "When the associated surface gets destroyed, this object becomes inert and"]
     #[doc = "the client should destroy it."]
     pub mod wp_content_type_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These values describe the available content types for a surface."]
         #[repr(u32)]
@@ -6780,6 +6826,7 @@ pub mod cursor_shape_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_cursor_shape_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_cursor_shape_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpCursorShapeManagerV1 {
@@ -6849,6 +6896,7 @@ pub mod cursor_shape_v1 {
     }
     #[doc = "This interface allows clients to set the cursor shape."]
     pub mod wp_cursor_shape_device_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "This enum describes cursor shapes."]
         #[doc = ""]
@@ -7082,6 +7130,7 @@ pub mod drm_lease_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_drm_lease_device_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_drm_lease_device_v1 interface. See the module level documentation for more info"]
         pub trait WpDrmLeaseDeviceV1 {
@@ -7144,6 +7193,7 @@ pub mod drm_lease_v1 {
     #[doc = "event. When the description is updated the compositor will send a"]
     #[doc = "description event followed by a done event."]
     pub mod wp_drm_lease_connector_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_drm_lease_connector_v1 interface. See the module level documentation for more info"]
         pub trait WpDrmLeaseConnectorV1 {
@@ -7181,6 +7231,7 @@ pub mod drm_lease_v1 {
     #[doc = "wish to lease, then use wp_drm_lease_request_v1.submit to submit the"]
     #[doc = "request."]
     pub mod wp_drm_lease_request_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -7277,6 +7328,7 @@ pub mod drm_lease_v1 {
     #[doc = "is denied, the compositor will send a finished event without a lease_fd"]
     #[doc = "event."]
     pub mod wp_drm_lease_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_drm_lease_v1 interface. See the module level documentation for more info"]
         pub trait WpDrmLeaseV1 {
@@ -7346,6 +7398,7 @@ pub mod ext_foreign_toplevel_list_v1 {
     #[doc = "event after the global is bound, the compositor must not send any"]
     #[doc = "ext_foreign_toplevel_list_v1.toplevel events."]
     pub mod ext_foreign_toplevel_list_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_foreign_toplevel_list_v1 interface. See the module level documentation for more info"]
         pub trait ExtForeignToplevelListV1 {
@@ -7402,6 +7455,7 @@ pub mod ext_foreign_toplevel_list_v1 {
     #[doc = "A ext_foreign_toplevel_handle_v1 object represents a mapped toplevel"]
     #[doc = "window. A single app may have multiple mapped toplevels."]
     pub mod ext_foreign_toplevel_handle_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
         pub trait ExtForeignToplevelHandleV1 {
@@ -7449,6 +7503,7 @@ pub mod ext_idle_notify_v1 {
     #[doc = "After binding to this global, clients can create ext_idle_notification_v1"]
     #[doc = "objects to get notified when the user is idle for a given amount of time."]
     pub mod ext_idle_notifier_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_idle_notifier_v1 interface. See the module level documentation for more info"]
         pub trait ExtIdleNotifierV1 {
@@ -7523,6 +7578,7 @@ pub mod ext_idle_notify_v1 {
     #[doc = "user activity starts again, the notification object stops being idle,"]
     #[doc = "a resumed event is sent and the timeout is restarted."]
     pub mod ext_idle_notification_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_idle_notification_v1 interface. See the module level documentation for more info"]
         pub trait ExtIdleNotificationV1 {
@@ -7573,6 +7629,7 @@ pub mod ext_image_capture_source_v1 {
     #[doc = "independent factory interfaces, the ext_image_capture_source_v1 interface is"]
     #[doc = "frozen at version 1."]
     pub mod ext_image_capture_source_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_image_capture_source_v1 interface. See the module level documentation for more info"]
         pub trait ExtImageCaptureSourceV1 {
@@ -7604,6 +7661,7 @@ pub mod ext_image_capture_source_v1 {
     }
     #[doc = "A manager for creating image capture source objects for wl_output objects."]
     pub mod ext_output_image_capture_source_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_output_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtOutputImageCaptureSourceManagerV1 {
@@ -7664,6 +7722,7 @@ pub mod ext_image_capture_source_v1 {
     #[doc = "A manager for creating image capture source objects for"]
     #[doc = "ext_foreign_toplevel_handle_v1 objects."]
     pub mod ext_foreign_toplevel_image_capture_source_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_foreign_toplevel_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtForeignToplevelImageCaptureSourceManagerV1 {
@@ -7731,6 +7790,7 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "This object is a manager which offers requests to start capturing from a"]
     #[doc = "source."]
     pub mod ext_image_copy_capture_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -7858,6 +7918,7 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "attach_buffer request, set the buffer damage using the damage_buffer"]
     #[doc = "request and then send the capture request."]
     pub mod ext_image_copy_capture_session_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -7943,6 +8004,7 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = ""]
     #[doc = "If the capture fails, the compositor must send the failed event."]
     pub mod ext_image_copy_capture_frame_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -8108,6 +8170,7 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "This object represents a cursor capture session. It extends the base"]
     #[doc = "capture session with cursor-specific metadata."]
     pub mod ext_image_copy_capture_cursor_session_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -8208,6 +8271,7 @@ pub mod ext_image_copy_capture_v1 {
 pub mod ext_session_lock_v1 {
     #[doc = "This interface is used to request that the session be locked."]
     pub mod ext_session_lock_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_session_lock_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtSessionLockManagerV1 {
@@ -8306,6 +8370,7 @@ pub mod ext_session_lock_v1 {
     #[doc = "for unlocking the session, they may even start a new lock client"]
     #[doc = "instance automatically."]
     pub mod ext_session_lock_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -8451,6 +8516,7 @@ pub mod ext_session_lock_v1 {
     #[doc = "give the first lock surface created keyboard focus and change keyboard"]
     #[doc = "focus if the user clicks on other surfaces."]
     pub mod ext_session_lock_surface_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -8574,6 +8640,7 @@ pub mod ext_session_lock_v1 {
 pub mod ext_transient_seat_v1 {
     #[doc = "The transient seat manager creates short-lived seats."]
     pub mod ext_transient_seat_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_transient_seat_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtTransientSeatManagerV1 {
@@ -8628,6 +8695,7 @@ pub mod ext_transient_seat_v1 {
     #[doc = "When the transient seat handle is destroyed, the seat itself will also be"]
     #[doc = "destroyed."]
     pub mod ext_transient_seat_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_transient_seat_v1 interface. See the module level documentation for more info"]
         pub trait ExtTransientSeatV1 {
@@ -8679,6 +8747,7 @@ pub mod ext_transient_seat_v1 {
 pub mod fractional_scale_v1 {
     #[doc = "A global interface for requesting surfaces to use fractional scales."]
     pub mod wp_fractional_scale_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -8752,6 +8821,7 @@ pub mod fractional_scale_v1 {
     #[doc = "An additional interface to a wl_surface object which allows the compositor"]
     #[doc = "to inform the client of the preferred scale."]
     pub mod wp_fractional_scale_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_fractional_scale_v1 interface. See the module level documentation for more info"]
         pub trait WpFractionalScaleV1 {
@@ -8814,6 +8884,7 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = ""]
     #[doc = "See wp_linux_drm_syncobj_surface_v1 for more information."]
     pub mod wp_linux_drm_syncobj_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -8919,6 +8990,7 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = "This object represents an explicit synchronization object timeline"]
     #[doc = "imported by the client to the compositor."]
     pub mod wp_linux_drm_syncobj_timeline_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_linux_drm_syncobj_timeline_v1 interface. See the module level documentation for more info"]
         pub trait WpLinuxDrmSyncobjTimelineV1 {
@@ -8978,6 +9050,7 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = "release point value, or else the conflicting_points protocol error is"]
     #[doc = "raised."]
     pub mod wp_linux_drm_syncobj_surface_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -9172,6 +9245,7 @@ pub mod security_context_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_security_context_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -9268,6 +9342,7 @@ pub mod security_context_v1 {
     #[doc = "When both are set, the combination of the instance ID and the sandbox"]
     #[doc = "engine must uniquely identify a running instance of an application."]
     pub mod wp_security_context_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -9435,6 +9510,7 @@ pub mod single_pixel_buffer_v1 {
     #[doc = "The wp_single_pixel_buffer_manager_v1 interface is a factory for"]
     #[doc = "single-pixel buffers."]
     pub mod wp_single_pixel_buffer_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_single_pixel_buffer_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpSinglePixelBufferManagerV1 {
@@ -9518,6 +9594,7 @@ pub mod tearing_control_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_tearing_control_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -9598,6 +9675,7 @@ pub mod tearing_control_v1 {
     #[doc = "If the associated wl_surface is destroyed, this object becomes inert and"]
     #[doc = "should be destroyed."]
     pub mod wp_tearing_control_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "This enum provides information for if submitted frames from the client"]
         #[doc = "may be presented with tearing."]
@@ -9714,6 +9792,7 @@ pub mod xdg_activation_v1 {
     #[doc = "being activated or started, or for applications to request to be"]
     #[doc = "activated."]
     pub mod xdg_activation_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the xdg_activation_v1 interface. See the module level documentation for more info"]
         pub trait XdgActivationV1 {
@@ -9800,6 +9879,7 @@ pub mod xdg_activation_v1 {
     #[doc = "done event with the token. In case the request's parameters are invalid,"]
     #[doc = "the compositor will provide an invalid token."]
     pub mod xdg_activation_token_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -9943,6 +10023,7 @@ pub mod xdg_dialog_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod xdg_wm_dialog_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -10020,6 +10101,7 @@ pub mod xdg_dialog_v1 {
     #[doc = "the purpose of the secondary toplevel. This interface has no effect"]
     #[doc = "on toplevels that are not attached to a parent toplevel."]
     pub mod xdg_dialog_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the xdg_dialog_v1 interface. See the module level documentation for more info"]
         pub trait XdgDialogV1 {
@@ -10123,6 +10205,7 @@ pub mod xdg_toplevel_drag_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod xdg_toplevel_drag_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -10200,6 +10283,7 @@ pub mod xdg_toplevel_drag_v1 {
         }
     }
     pub mod xdg_toplevel_drag_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -10303,6 +10387,7 @@ pub mod xdg_toplevel_icon_v1 {
     #[doc = "This interface allows clients to create toplevel window icons and set"]
     #[doc = "them on toplevel windows to be displayed to the user."]
     pub mod xdg_toplevel_icon_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the xdg_toplevel_icon_manager_v1 interface. See the module level documentation for more info"]
         pub trait XdgToplevelIconManagerV1 {
@@ -10398,6 +10483,7 @@ pub mod xdg_toplevel_icon_v1 {
     #[doc = "It is up to compositor policy whether to prefer using a buffer or loading"]
     #[doc = "an icon via its name. See 'set_name' and 'add_buffer' for details."]
     pub mod xdg_toplevel_icon_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -10555,6 +10641,7 @@ pub mod fullscreen_shell_unstable_v1 {
     #[doc = "version number in the protocol and interface names are removed and the"]
     #[doc = "interface version number is reset."]
     pub mod zwp_fullscreen_shell_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Various capabilities that can be advertised by the compositor.  They"]
         #[doc = "are advertised one-at-a-time when the wl_fullscreen_shell interface is"]
@@ -10784,6 +10871,7 @@ pub mod fullscreen_shell_unstable_v1 {
         }
     }
     pub mod zwp_fullscreen_shell_mode_feedback_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_fullscreen_shell_mode_feedback_v1 interface. See the module level documentation for more info"]
         pub trait ZwpFullscreenShellModeFeedbackV1 {
@@ -10814,6 +10902,7 @@ pub mod idle_inhibit_unstable_v1 {
     #[doc = "version number in the protocol and interface names are removed and the"]
     #[doc = "interface version number is reset."]
     pub mod zwp_idle_inhibit_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_idle_inhibit_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpIdleInhibitManagerV1 {
@@ -10876,6 +10965,7 @@ pub mod idle_inhibit_unstable_v1 {
     #[doc = "the time the inhibitor was established, although if the system later"]
     #[doc = "de-idles and re-idles the inhibitor will take effect."]
     pub mod zwp_idle_inhibitor_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_idle_inhibitor_v1 interface. See the module level documentation for more info"]
         pub trait ZwpIdleInhibitorV1 {
@@ -10930,6 +11020,7 @@ pub mod input_method_unstable_v1 {
     #[doc = "version number in the protocol and interface names are removed and the"]
     #[doc = "interface version number is reset."]
     pub mod zwp_input_method_context_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_input_method_context_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputMethodContextV1 {
@@ -11280,6 +11371,7 @@ pub mod input_method_unstable_v1 {
     #[doc = "object per seat. On activate there is a new input method context object"]
     #[doc = "created which allows the input method to communicate with the text input."]
     pub mod zwp_input_method_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_input_method_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputMethodV1 {
@@ -11297,6 +11389,7 @@ pub mod input_method_unstable_v1 {
     }
     #[doc = "Only one client can bind this interface at a time."]
     pub mod zwp_input_panel_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_input_panel_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputPanelV1 {
@@ -11333,6 +11426,7 @@ pub mod input_method_unstable_v1 {
         }
     }
     pub mod zwp_input_panel_surface_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -11418,6 +11512,7 @@ pub mod input_timestamps_unstable_v1 {
     #[doc = "A global interface used for requesting high-resolution timestamps"]
     #[doc = "for input events."]
     pub mod zwp_input_timestamps_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_input_timestamps_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputTimestampsManagerV1 {
@@ -11536,6 +11631,7 @@ pub mod input_timestamps_unstable_v1 {
     #[doc = "events. The set of subscribed input events is determined by the"]
     #[doc = "zwp_input_timestamps_manager_v1 request used to create this object."]
     pub mod zwp_input_timestamps_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_input_timestamps_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputTimestampsV1 {
@@ -11584,6 +11680,7 @@ pub mod input_timestamps_unstable_v1 {
 pub mod keyboard_shortcuts_inhibit_unstable_v1 {
     #[doc = "A global interface used for inhibiting the compositor keyboard shortcuts."]
     pub mod zwp_keyboard_shortcuts_inhibit_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -11692,6 +11789,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
     #[doc = "compositor will restore its own keyboard shortcuts but no \"inactive\""]
     #[doc = "event is emitted in this case."]
     pub mod zwp_keyboard_shortcuts_inhibitor_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_keyboard_shortcuts_inhibitor_v1 interface. See the module level documentation for more info"]
         pub trait ZwpKeyboardShortcutsInhibitorV1 {
@@ -11794,6 +11892,7 @@ pub mod linux_dmabuf_unstable_v1 {
     #[doc = "no longer used and only retained for backwards compatibility. The"]
     #[doc = "canonical version can be found in the stable/ directory."]
     pub mod zwp_linux_dmabuf_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
         pub trait ZwpLinuxDmabufV1 {
@@ -11905,6 +12004,7 @@ pub mod linux_dmabuf_unstable_v1 {
     #[doc = "All planes required by the format must be given exactly once, but can"]
     #[doc = "be given in any order. Each plane index can be set only once."]
     pub mod zwp_linux_buffer_params_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -12175,6 +12275,7 @@ pub mod linux_dmabuf_unstable_v1 {
     #[doc = "event, tranche_formats events and then a tranche_done event), then one"]
     #[doc = "done event."]
     pub mod zwp_linux_dmabuf_feedback_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { # [doc = "direct scan-out tranche"] const Scanout = 1u32 ; } }
         impl TryFrom<u32> for TrancheFlags {
@@ -12232,6 +12333,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
     #[doc = "version number in the protocol and interface names are removed and the"]
     #[doc = "interface version number is reset."]
     pub mod zwp_linux_explicit_synchronization_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -12343,6 +12445,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
     #[doc = "extension. Compositors are free to support explicit synchronization for"]
     #[doc = "additional buffer types."]
     pub mod zwp_linux_surface_synchronization_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -12504,6 +12607,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
     #[doc = "Once a buffer release object has delivered a 'fenced_release' or an"]
     #[doc = "'immediate_release' event it is automatically destroyed."]
     pub mod zwp_linux_buffer_release_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_linux_buffer_release_v1 interface. See the module level documentation for more info"]
         pub trait ZwpLinuxBufferReleaseV1 {
@@ -12553,6 +12657,7 @@ pub mod pointer_constraints_unstable_v1 {
     #[doc = "and with any of the wl_pointer objects of the same seat, an"]
     #[doc = "'already_constrained' error will be raised."]
     pub mod zwp_pointer_constraints_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These errors can be emitted in response to wp_pointer_constraints"]
         #[doc = "requests."]
@@ -12744,6 +12849,7 @@ pub mod pointer_constraints_unstable_v1 {
     #[doc = "yet activated, the wp_locked_pointer object is now defunct and must be"]
     #[doc = "destroyed."]
     pub mod zwp_locked_pointer_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_locked_pointer_v1 interface. See the module level documentation for more info"]
         pub trait ZwpLockedPointerV1 {
@@ -12840,6 +12946,7 @@ pub mod pointer_constraints_unstable_v1 {
     #[doc = "sent. The wp_confined_pointer object is at this point defunct and should"]
     #[doc = "be destroyed."]
     pub mod zwp_confined_pointer_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_confined_pointer_v1 interface. See the module level documentation for more info"]
         pub trait ZwpConfinedPointerV1 {
@@ -12917,6 +13024,7 @@ pub mod pointer_gestures_unstable_v1 {
     #[doc = "version number in the protocol and interface names are removed and the"]
     #[doc = "interface version number is reset."]
     pub mod zwp_pointer_gestures_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_pointer_gestures_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPointerGesturesV1 {
@@ -13028,6 +13136,7 @@ pub mod pointer_gestures_unstable_v1 {
     #[doc = "Clients should not consider performing permanent or irreversible"]
     #[doc = "actions until the end of a gesture has been received."]
     pub mod zwp_pointer_gesture_swipe_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_pointer_gesture_swipe_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPointerGestureSwipeV1 {
@@ -13071,6 +13180,7 @@ pub mod pointer_gestures_unstable_v1 {
     #[doc = "Clients should not consider performing permanent or irreversible"]
     #[doc = "actions until the end of a gesture has been received."]
     pub mod zwp_pointer_gesture_pinch_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_pointer_gesture_pinch_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPointerGesturePinchV1 {
@@ -13116,6 +13226,7 @@ pub mod pointer_gestures_unstable_v1 {
     #[doc = "Clients should not consider performing permanent or irreversible"]
     #[doc = "actions until the end of a gesture has been received."]
     pub mod zwp_pointer_gesture_hold_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_pointer_gesture_hold_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPointerGestureHoldV1 {
@@ -13191,6 +13302,7 @@ pub mod wp_primary_selection_unstable_v1 {
     #[doc = "wp_primary_selection_source objects, as well as retrieving the per-seat"]
     #[doc = "wp_primary_selection_device objects."]
     pub mod zwp_primary_selection_device_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_primary_selection_device_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPrimarySelectionDeviceManagerV1 {
@@ -13263,6 +13375,7 @@ pub mod wp_primary_selection_unstable_v1 {
         }
     }
     pub mod zwp_primary_selection_device_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_primary_selection_device_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPrimarySelectionDeviceV1 {
@@ -13321,6 +13434,7 @@ pub mod wp_primary_selection_unstable_v1 {
     #[doc = "be converted to and provides the mechanisms for transferring the data"]
     #[doc = "directly to the client."]
     pub mod zwp_primary_selection_offer_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_primary_selection_offer_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPrimarySelectionOfferV1 {
@@ -13379,6 +13493,7 @@ pub mod wp_primary_selection_unstable_v1 {
     #[doc = "describe the offered data and respond to requests to transfer the"]
     #[doc = "requested contents of the primary selection clipboard."]
     pub mod zwp_primary_selection_source_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_primary_selection_source_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPrimarySelectionSourceV1 {
@@ -13451,6 +13566,7 @@ pub mod relative_pointer_unstable_v1 {
     #[doc = "A global interface used for getting the relative pointer object for a"]
     #[doc = "given pointer."]
     pub mod zwp_relative_pointer_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_relative_pointer_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpRelativePointerManagerV1 {
@@ -13507,6 +13623,7 @@ pub mod relative_pointer_unstable_v1 {
     #[doc = "wl_pointer objects of the same seat and will only emit events when it has"]
     #[doc = "focus."]
     pub mod zwp_relative_pointer_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_relative_pointer_v1 interface. See the module level documentation for more info"]
         pub trait ZwpRelativePointerV1 {
@@ -13625,6 +13742,7 @@ pub mod tablet_unstable_v1 {
     #[doc = "system. All tablets are associated with a seat, to get access to the"]
     #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
     pub mod zwp_tablet_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpTabletManagerV1 {
@@ -13677,6 +13795,7 @@ pub mod tablet_unstable_v1 {
     #[doc = "seat. After binding to this interface, the compositor sends a set of"]
     #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
     pub mod zwp_tablet_seat_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_seat_v1 interface. See the module level documentation for more info"]
         pub trait ZwpTabletSeatV1 {
@@ -13727,6 +13846,7 @@ pub mod tablet_unstable_v1 {
     #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
     #[doc = "considered part of the same hardware state change."]
     pub mod zwp_tablet_tool_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Describes the physical type of a tool. The physical type of a tool"]
         #[doc = "generally defines its base usage."]
@@ -13934,6 +14054,7 @@ pub mod tablet_unstable_v1 {
     #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
     #[doc = "terminated by a wp_tablet.done event."]
     pub mod zwp_tablet_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_v1 interface. See the module level documentation for more info"]
         pub trait ZwpTabletV1 {
@@ -14048,6 +14169,7 @@ pub mod tablet_unstable_v2 {
     #[doc = "system. All tablets are associated with a seat, to get access to the"]
     #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
     pub mod zwp_tablet_manager_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletManagerV2 {
@@ -14100,6 +14222,7 @@ pub mod tablet_unstable_v2 {
     #[doc = "seat. After binding to this interface, the compositor sends a set of"]
     #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
     pub mod zwp_tablet_seat_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletSeatV2 {
@@ -14150,6 +14273,7 @@ pub mod tablet_unstable_v2 {
     #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
     #[doc = "considered part of the same hardware state change."]
     pub mod zwp_tablet_tool_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Describes the physical type of a tool. The physical type of a tool"]
         #[doc = "generally defines its base usage."]
@@ -14355,6 +14479,7 @@ pub mod tablet_unstable_v2 {
     #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
     #[doc = "terminated by a wp_tablet.done event."]
     pub mod zwp_tablet_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletV2 {
@@ -14389,6 +14514,7 @@ pub mod tablet_unstable_v2 {
     #[doc = "Events on a ring are logically grouped by the wl_tablet_pad_ring.frame"]
     #[doc = "event."]
     pub mod zwp_tablet_pad_ring_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Describes the source types for ring events. This indicates to the"]
         #[doc = "client how a ring event was physically generated; a client may"]
@@ -14479,6 +14605,7 @@ pub mod tablet_unstable_v2 {
     #[doc = "Events on a strip are logically grouped by the wl_tablet_pad_strip.frame"]
     #[doc = "event."]
     pub mod zwp_tablet_pad_strip_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Describes the source types for strip events. This indicates to the"]
         #[doc = "client how a strip event was physically generated; a client may"]
@@ -14585,6 +14712,7 @@ pub mod tablet_unstable_v2 {
     #[doc = "actions, and/or issue the respective .set_feedback requests to notify the"]
     #[doc = "compositor. See the wp_tablet_pad_group.mode_switch event for more details."]
     pub mod zwp_tablet_pad_group_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletPadGroupV2 {
@@ -14637,6 +14765,7 @@ pub mod tablet_unstable_v2 {
     #[doc = "actions to a single pad feature. Only one mode can be active per group,"]
     #[doc = "although different groups may have different active modes."]
     pub mod zwp_tablet_pad_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Describes the physical state of a button that caused the button"]
         #[doc = "event."]
@@ -14762,6 +14891,7 @@ pub mod text_input_unstable_v1 {
     #[doc = "version number in the protocol and interface names are removed and the"]
     #[doc = "interface version number is reset."]
     pub mod zwp_text_input_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behaviour"] const None = 0u32 ; # [doc = "auto completion, correction and capitalization"] const Default = 7u32 ; # [doc = "hidden and sensitive text"] const Password = 192u32 ; # [doc = "suggest word completions"] const AutoCompletion = 1u32 ; # [doc = "suggest word corrections"] const AutoCorrection = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; } }
         impl TryFrom<u32> for ContentHint {
@@ -15103,6 +15233,7 @@ pub mod text_input_unstable_v1 {
     }
     #[doc = "A factory for text_input objects. This object is a global singleton."]
     pub mod zwp_text_input_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_text_input_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpTextInputManagerV1 {
@@ -15181,6 +15312,7 @@ pub mod text_input_unstable_v3 {
     #[doc = "enter event or disable request all state information is invalidated and"]
     #[doc = "needs to be resent by the client."]
     pub mod zwp_text_input_v3 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Reason for the change of surrounding text or cursor posision."]
         #[repr(u32)]
@@ -15537,6 +15669,7 @@ pub mod text_input_unstable_v3 {
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
     pub mod zwp_text_input_manager_v3 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_text_input_manager_v3 interface. See the module level documentation for more info"]
         pub trait ZwpTextInputManagerV3 {
@@ -15611,6 +15744,7 @@ pub mod xdg_decoration_unstable_v1 {
     #[doc = "version number in the protocol and interface names are removed and the"]
     #[doc = "interface version number is reset."]
     pub mod zxdg_decoration_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zxdg_decoration_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgDecorationManagerV1 {
@@ -15674,6 +15808,7 @@ pub mod xdg_decoration_unstable_v1 {
     #[doc = "The xdg_toplevel_decoration object must be destroyed before its"]
     #[doc = "xdg_toplevel."]
     pub mod zxdg_toplevel_decoration_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -15828,6 +15963,7 @@ pub mod xdg_foreign_unstable_v1 {
     #[doc = "A global interface used for exporting surfaces that can later be imported"]
     #[doc = "using xdg_importer."]
     pub mod zxdg_exporter_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zxdg_exporter_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgExporterV1 {
@@ -15886,6 +16022,7 @@ pub mod xdg_foreign_unstable_v1 {
     #[doc = "With this interface, a client can create a reference to a surface of"]
     #[doc = "another client."]
     pub mod zxdg_importer_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zxdg_importer_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgImporterV1 {
@@ -15942,6 +16079,7 @@ pub mod xdg_foreign_unstable_v1 {
     #[doc = "destroyed. Destroying the xdg_exported invalidates any relationship the"]
     #[doc = "importer may have established using xdg_imported."]
     pub mod zxdg_exported_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zxdg_exported_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgExportedV1 {
@@ -15976,6 +16114,7 @@ pub mod xdg_foreign_unstable_v1 {
     #[doc = "by some client. A client can use this interface to manipulate"]
     #[doc = "relationships between its own surfaces and the imported surface."]
     pub mod zxdg_imported_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zxdg_imported_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgImportedV1 {
@@ -16059,6 +16198,7 @@ pub mod xdg_foreign_unstable_v2 {
     #[doc = "A global interface used for exporting surfaces that can later be imported"]
     #[doc = "using xdg_importer."]
     pub mod zxdg_exporter_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These errors can be emitted in response to invalid xdg_exporter"]
         #[doc = "requests."]
@@ -16136,6 +16276,7 @@ pub mod xdg_foreign_unstable_v2 {
     #[doc = "With this interface, a client can create a reference to a surface of"]
     #[doc = "another client."]
     pub mod zxdg_importer_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zxdg_importer_v2 interface. See the module level documentation for more info"]
         pub trait ZxdgImporterV2 {
@@ -16192,6 +16333,7 @@ pub mod xdg_foreign_unstable_v2 {
     #[doc = "destroyed. Destroying the xdg_exported invalidates any relationship the"]
     #[doc = "importer may have established using xdg_imported."]
     pub mod zxdg_exported_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zxdg_exported_v2 interface. See the module level documentation for more info"]
         pub trait ZxdgExportedV2 {
@@ -16226,6 +16368,7 @@ pub mod xdg_foreign_unstable_v2 {
     #[doc = "by some client. A client can use this interface to manipulate"]
     #[doc = "relationships between its own surfaces and the imported surface."]
     pub mod zxdg_imported_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These errors can be emitted in response to invalid xdg_imported"]
         #[doc = "requests."]
@@ -16325,6 +16468,7 @@ pub mod xdg_foreign_unstable_v2 {
 pub mod xdg_output_unstable_v1 {
     #[doc = "A global factory interface for xdg_output objects."]
     pub mod zxdg_output_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zxdg_output_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgOutputManagerV1 {
@@ -16384,6 +16528,7 @@ pub mod xdg_output_unstable_v1 {
     #[doc = "wl_output.done event is sent. This allows changes to the output"]
     #[doc = "properties to be seen as atomic, even if they happen via multiple events."]
     pub mod zxdg_output_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zxdg_output_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgOutputV1 {
@@ -16420,6 +16565,7 @@ pub mod xdg_shell_unstable_v5 {
     #[doc = "user. Everything about this interface is suited towards traditional"]
     #[doc = "desktop environments."]
     pub mod xdg_shell {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "The 'current' member of this enum gives the version of the"]
         #[doc = "protocol.  Implementations can compare this to the version"]
@@ -16613,6 +16759,7 @@ pub mod xdg_shell_unstable_v5 {
     #[doc = "For a surface to be mapped by the compositor the client must have"]
     #[doc = "committed both an xdg_surface state and a buffer."]
     pub mod xdg_surface {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These values are used to indicate which edge of a surface"]
         #[doc = "is being dragged in a resize operation."]
@@ -17164,6 +17311,7 @@ pub mod xdg_shell_unstable_v5 {
     #[doc = "For a surface to be mapped by the compositor the client must have"]
     #[doc = "committed both the xdg_popup state and a buffer."]
     pub mod xdg_popup {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the xdg_popup interface. See the module level documentation for more info"]
         pub trait XdgPopup {
@@ -17203,6 +17351,7 @@ pub mod xdg_shell_unstable_v6 {
     #[doc = "user. Everything about this interface is suited towards traditional"]
     #[doc = "desktop environments."]
     pub mod zxdg_shell_v6 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -17347,6 +17496,7 @@ pub mod xdg_shell_unstable_v6 {
     #[doc = "set_anchor_rect. Passing an incomplete xdg_positioner object when"]
     #[doc = "positioning a surface raises an error."]
     pub mod zxdg_positioner_v6 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -17604,6 +17754,7 @@ pub mod xdg_shell_unstable_v6 {
     #[doc = "the role dependent state to the surface and (3) the client has committed a"]
     #[doc = "buffer to the surface."]
     pub mod zxdg_surface_v6 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -17785,6 +17936,7 @@ pub mod xdg_shell_unstable_v6 {
     #[doc = "id, and well as trigger user interactive operations such as interactive"]
     #[doc = "resize and move."]
     pub mod zxdg_toplevel_v6 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These values are used to indicate which edge of a surface"]
         #[doc = "is being dragged in a resize operation."]
@@ -18329,6 +18481,7 @@ pub mod xdg_shell_unstable_v6 {
     #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
     #[doc = "for the xdg_popup state to take effect."]
     pub mod zxdg_popup_v6 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -18476,6 +18629,7 @@ pub mod xdg_shell_unstable_v6 {
 pub mod xwayland_keyboard_grab_unstable_v1 {
     #[doc = "A global interface used for grabbing the keyboard."]
     pub mod zwp_xwayland_keyboard_grab_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_xwayland_keyboard_grab_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpXwaylandKeyboardGrabManagerV1 {
@@ -18550,6 +18704,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
     }
     #[doc = "A global interface used for grabbing the keyboard."]
     pub mod zwp_xwayland_keyboard_grab_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_xwayland_keyboard_grab_v1 interface. See the module level documentation for more info"]
         pub trait ZwpXwaylandKeyboardGrabV1 {
@@ -18596,6 +18751,7 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "This interface is a manager that allows creating per-seat data device"]
     #[doc = "controls."]
     pub mod zwlr_data_control_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_data_control_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrDataControlManagerV1 {
@@ -18669,6 +18825,7 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = ""]
     #[doc = "When the seat is destroyed, this object becomes inert."]
     pub mod zwlr_data_control_device_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -18773,6 +18930,7 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "transfer and provides a way to describe the offered data and a way to"]
     #[doc = "respond to requests to transfer the data."]
     pub mod zwlr_data_control_source_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -18842,6 +19000,7 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "MIME types that the data can be converted to and provides the mechanism"]
     #[doc = "for transferring the data directly from the source client."]
     pub mod zwlr_data_control_offer_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_data_control_offer_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrDataControlOfferV1 {
@@ -18911,6 +19070,7 @@ pub mod wlr_data_control_unstable_v1 {
 pub mod wlr_export_dmabuf_unstable_v1 {
     #[doc = "This object is a manager with which to start capturing from sources."]
     pub mod zwlr_export_dmabuf_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_export_dmabuf_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrExportDmabufManagerV1 {
@@ -18978,6 +19138,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
     #[doc = ""]
     #[doc = "All frames are read-only and may not be written into or altered."]
     pub mod zwlr_export_dmabuf_frame_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Special flags that should be respected by the client."]
         #[repr(u32)]
@@ -19059,6 +19220,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
     #[doc = "After a client binds the zwlr_foreign_toplevel_manager_v1, each opened"]
     #[doc = "toplevel window will be sent via the toplevel event"]
     pub mod zwlr_foreign_toplevel_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_foreign_toplevel_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrForeignToplevelManagerV1 {
@@ -19097,6 +19259,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
     #[doc = "Each toplevel has a list of outputs it is visible on, conveyed to the"]
     #[doc = "client with the output_enter and output_leave events."]
     pub mod zwlr_foreign_toplevel_handle_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "The different states that a toplevel can have. These have the same meaning"]
         #[doc = "as the states with the same names defined in xdg-toplevel"]
@@ -19374,6 +19537,7 @@ pub mod wlr_gamma_control_unstable_v1 {
     #[doc = "This interface is a manager that allows creating per-output gamma"]
     #[doc = "controls."]
     pub mod zwlr_gamma_control_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_gamma_control_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrGammaControlManagerV1 {
@@ -19436,6 +19600,7 @@ pub mod wlr_gamma_control_unstable_v1 {
     #[doc = "has exclusive access to this particular output. When the gamma control"]
     #[doc = "object is destroyed, the gamma table is restored to its original value."]
     pub mod zwlr_gamma_control_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -19511,6 +19676,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
     #[doc = "Note! This protocol is deprecated and not intended for production use."]
     #[doc = "For screen lockers, use the ext-session-lock-v1 protocol."]
     pub mod zwlr_input_inhibit_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -19572,6 +19738,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
     #[doc = "The compositor may continue to send input events to selected clients,"]
     #[doc = "such as an on-screen keyboard (via the input-method protocol)."]
     pub mod zwlr_input_inhibitor_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_input_inhibitor_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrInputInhibitorV1 {
@@ -19610,6 +19777,7 @@ pub mod wlr_layer_shell_unstable_v1 {
     #[doc = "many desktop shell components, and a broad number of other applications"]
     #[doc = "that interact with the desktop."]
     pub mod zwlr_layer_shell_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -19749,6 +19917,7 @@ pub mod wlr_layer_shell_unstable_v1 {
     #[doc = "The client can re-map the surface by performing a commit without any"]
     #[doc = "buffer attached, waiting for a configure event and handling it as usual."]
     pub mod zwlr_layer_surface_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Types of keyboard interaction possible for layer shell surfaces. The"]
         #[doc = "rationale for this is twofold: (1) some applications are not interested"]
@@ -20126,6 +20295,7 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "output property advertisement protocol for regular clients. Instead,"]
     #[doc = "protocols such as xdg-output should be used."]
     pub mod zwlr_output_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_output_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrOutputManagerV1 {
@@ -20194,6 +20364,7 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "wlr_output_manager.done event. No guarantees are made regarding the order"]
     #[doc = "in which properties are sent."]
     pub mod zwlr_output_head_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -20251,6 +20422,7 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "wlr_output_manager.done event. No guarantees are made regarding the order"]
     #[doc = "in which properties are sent."]
     pub mod zwlr_output_mode_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_output_mode_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrOutputModeV1 {
@@ -20291,6 +20463,7 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "then reply with a succeeded, failed or cancelled event. Finally the client"]
     #[doc = "should destroy the configuration object."]
     pub mod zwlr_output_configuration_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -20434,6 +20607,7 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = ""]
     #[doc = "It is a protocol error to set the same property twice."]
     pub mod zwlr_output_configuration_head_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -20624,6 +20798,7 @@ pub mod wlr_output_power_management_unstable_v1 {
     #[doc = "This interface is a manager that allows creating per-output power"]
     #[doc = "management mode controls."]
     pub mod zwlr_output_power_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_output_power_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrOutputPowerManagerV1 {
@@ -20678,6 +20853,7 @@ pub mod wlr_output_power_management_unstable_v1 {
     #[doc = "This object offers requests to set the power management mode of"]
     #[doc = "an output."]
     pub mod zwlr_output_power_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -20775,6 +20951,7 @@ pub mod wlr_screencopy_unstable_v1 {
     #[doc = "This object is a manager which offers requests to start capturing from a"]
     #[doc = "source."]
     pub mod zwlr_screencopy_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_screencopy_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrScreencopyManagerV1 {
@@ -20879,6 +21056,7 @@ pub mod wlr_screencopy_unstable_v1 {
     #[doc = "Once either a \"ready\" or a \"failed\" event is received, the client should"]
     #[doc = "destroy the frame."]
     pub mod zwlr_screencopy_frame_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -20979,6 +21157,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
     #[doc = "This protocol allows clients to emulate a physical pointer device. The"]
     #[doc = "requests are mostly mirror opposites of those specified in wl_pointer."]
     pub mod zwlr_virtual_pointer_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -21188,6 +21367,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
     }
     #[doc = "This object allows clients to create individual virtual pointer objects."]
     pub mod zwlr_virtual_pointer_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_virtual_pointer_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrVirtualPointerManagerV1 {
@@ -21268,6 +21448,7 @@ pub mod appmenu {
     #[doc = "This interface allows a client to link a window (or wl_surface) to an com.canonical.dbusmenu"]
     #[doc = "interface registered on DBus."]
     pub mod org_kde_kwin_appmenu_manager {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_appmenu_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinAppmenuManager {
@@ -21304,6 +21485,7 @@ pub mod appmenu {
     #[doc = "The object should be registered on the session bus before sending this request."]
     #[doc = "If not applicable, clients should remove this object."]
     pub mod org_kde_kwin_appmenu {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_appmenu interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinAppmenu {
@@ -21353,6 +21535,7 @@ pub mod appmenu {
 }
 pub mod blur {
     pub mod org_kde_kwin_blur_manager {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_blur_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinBlurManager {
@@ -21401,6 +21584,7 @@ pub mod blur {
         }
     }
     pub mod org_kde_kwin_blur {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_blur interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinBlur {
@@ -21458,6 +21642,7 @@ pub mod blur {
 }
 pub mod contrast {
     pub mod org_kde_kwin_contrast_manager {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_contrast_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinContrastManager {
@@ -21506,6 +21691,7 @@ pub mod contrast {
         }
     }
     pub mod org_kde_kwin_contrast {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_contrast interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinContrast {
@@ -21673,6 +21859,7 @@ pub mod fullscreen_shell {
     #[doc = "output.  This way, the client can update the output's contents by"]
     #[doc = "simply attaching a new buffer."]
     pub mod _wl_fullscreen_shell {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Various capabilities that can be advertised by the compositor.  They"]
         #[doc = "are advertised one-at-a-time when the wl_fullscreen_shell interface is"]
@@ -21891,6 +22078,7 @@ pub mod fullscreen_shell {
         }
     }
     pub mod _wl_fullscreen_shell_mode_feedback {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the _wl_fullscreen_shell_mode_feedback interface. See the module level documentation for more info"]
         pub trait WlFullscreenShellModeFeedback {
@@ -21916,6 +22104,7 @@ pub mod idle {
     #[doc = "interacting with the system, e.g. chat applications setting the user as away, power"]
     #[doc = "management features to dim screen, etc.."]
     pub mod org_kde_kwin_idle {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_idle interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinIdle {
@@ -21951,6 +22140,7 @@ pub mod idle {
         }
     }
     pub mod org_kde_kwin_idle_timeout {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_idle_timeout interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinIdleTimeout {
@@ -21997,6 +22187,7 @@ pub mod idle {
 pub mod keystate {
     #[doc = "Keeps track of the states of the different keys that have a state attached to it."]
     pub mod org_kde_kwin_keystate {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -22115,6 +22306,7 @@ pub mod outputmanagement {
     #[doc = "Through this design the interface enables atomic output configuration changes if"]
     #[doc = "internally supported by the server."]
     pub mod org_kde_kwin_outputmanagement {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_outputmanagement interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinOutputmanagement {
@@ -22163,6 +22355,7 @@ pub mod outputmanagement {
     #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
     #[doc = "applied to the hardware and before the server side sends the applied event."]
     pub mod org_kde_kwin_outputconfiguration {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Describes when the compositor may employ variable refresh rate"]
         #[repr(u32)]
@@ -22441,6 +22634,7 @@ pub mod org_kde_kwin_outputdevice {
     #[doc = "display devices, or when one later becomes available, for example by"]
     #[doc = "being hotplugged via a physical connector."]
     pub mod org_kde_kwin_outputdevice {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
@@ -22593,6 +22787,7 @@ pub mod org_kde_kwin_outputdevice {
 }
 pub mod remote_access {
     pub mod org_kde_kwin_remote_access_manager {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_remote_access_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinRemoteAccessManager {
@@ -22644,6 +22839,7 @@ pub mod remote_access {
         }
     }
     pub mod org_kde_kwin_remote_buffer {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_remote_buffer interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinRemoteBuffer {
@@ -22675,6 +22871,7 @@ pub mod remote_access {
 pub mod server_decoration_palette {
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
     pub mod org_kde_kwin_server_decoration_palette_manager {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinServerDecorationPaletteManager {
@@ -22712,6 +22909,7 @@ pub mod server_decoration_palette {
     }
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
     pub mod org_kde_kwin_server_decoration_palette {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinServerDecorationPalette {
@@ -22773,6 +22971,7 @@ pub mod server_decoration {
     #[doc = ""]
     #[doc = "Use in conjunction with zxdg_decoration_manager_v1 is undefined."]
     pub mod org_kde_kwin_server_decoration_manager {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -22841,6 +23040,7 @@ pub mod server_decoration {
         }
     }
     pub mod org_kde_kwin_server_decoration {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -22909,6 +23109,7 @@ pub mod server_decoration {
 }
 pub mod shadow {
     pub mod org_kde_kwin_shadow_manager {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_shadow_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinShadowManager {
@@ -22970,6 +23171,7 @@ pub mod shadow {
         }
     }
     pub mod org_kde_kwin_shadow {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_shadow interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinShadow {
@@ -23188,6 +23390,7 @@ pub mod shadow {
 }
 pub mod slide {
     pub mod org_kde_kwin_slide_manager {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_slide_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinSlideManager {
@@ -23241,6 +23444,7 @@ pub mod slide {
     #[doc = "The from argument provides a clue about where the slide animation"]
     #[doc = "begins, offset is the distance from screen edge to begin the animation."]
     pub mod org_kde_kwin_slide {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -23332,6 +23536,7 @@ pub mod slide {
 }
 pub mod surface_extension {
     pub mod qt_surface_extension {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the qt_surface_extension interface. See the module level documentation for more info"]
         pub trait QtSurfaceExtension {
@@ -23368,6 +23573,7 @@ pub mod surface_extension {
         }
     }
     pub mod qt_extended_surface {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -23525,6 +23731,7 @@ pub mod text_input_unstable_v2 {
     #[doc = "client. A reset or entering a new widget on client side also"]
     #[doc = "invalidates all current state information."]
     pub mod zwp_text_input_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behaviour"] const None = 0u32 ; # [doc = "suggest word completions"] const AutoCompletion = 1u32 ; # [doc = "suggest word corrections"] const AutoCorrection = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; } }
         impl TryFrom<u32> for ContentHint {
@@ -23938,6 +24145,7 @@ pub mod text_input_unstable_v2 {
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
     pub mod zwp_text_input_manager_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_text_input_manager_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTextInputManagerV2 {
@@ -24009,6 +24217,7 @@ pub mod text {
     #[doc = "and keysym. The text input can then ignore events from the input method"]
     #[doc = "which are based on an outdated state (for example after a reset)."]
     pub mod wl_text_input {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Content hint is a bitmask to allow to modify the behavior of the text"]
         #[doc = "input."]
@@ -24393,6 +24602,7 @@ pub mod text {
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
     pub mod wl_text_input_manager {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_text_input_manager interface. See the module level documentation for more info"]
         pub trait WlTextInputManager {
@@ -24427,6 +24637,7 @@ pub mod text {
 }
 pub mod wl_eglstream_controller {
     pub mod wl_eglstream_controller {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "- dont_care: Using this enum will tell the server to make its own"]
         #[doc = "decisions regarding present mode."]
@@ -24550,6 +24761,7 @@ pub mod dpms {
     #[doc = "In addition it allows to request a state change. A compositor is not obliged to honor it"]
     #[doc = "and will normally automatically switch back to on state."]
     pub mod org_kde_kwin_dpms_manager {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_dpms_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinDpmsManager {
@@ -24591,6 +24803,7 @@ pub mod dpms {
     #[doc = "states are pushed. Whenever a state changes the set of changes is committed with the"]
     #[doc = "done event."]
     pub mod org_kde_kwin_dpms {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -24668,6 +24881,7 @@ pub mod fake_input {
     #[doc = "Clients should not expect that the compositor honors the requests from this"]
     #[doc = "interface."]
     pub mod org_kde_kwin_fake_input {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_fake_input interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinFakeInput {
@@ -24893,6 +25107,7 @@ pub mod kde_lockscreen_overlay_v1 {
     #[doc = ""]
     #[doc = "This is meant to be used for specific high urgency cases like phone calls or alarms."]
     pub mod kde_lockscreen_overlay_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -24972,6 +25187,7 @@ pub mod kde_output_device_v2 {
     #[doc = "display devices, or when one later becomes available, for example by"]
     #[doc = "being hotplugged via a physical connector."]
     pub mod kde_output_device_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
@@ -25147,6 +25363,7 @@ pub mod kde_output_device_v2 {
     #[doc = "kde_output_device.done event. No guarantees are made regarding the order"]
     #[doc = "in which properties are sent."]
     pub mod kde_output_device_mode_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the kde_output_device_mode_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputDeviceModeV2 {
@@ -25203,6 +25420,7 @@ pub mod kde_output_management_v2 {
     #[doc = "Through this design the interface enables atomic output configuration changes if"]
     #[doc = "internally supported by the server."]
     pub mod kde_output_management_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputManagementV2 {
@@ -25251,6 +25469,7 @@ pub mod kde_output_management_v2 {
     #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
     #[doc = "applied to the hardware and before the server side sends the applied event."]
     pub mod kde_output_configuration_v2 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These error can be emitted in response to kde_output_configuration_v2 requests."]
         #[repr(u32)]
@@ -25791,6 +26010,7 @@ pub mod kde_output_order_v1 {
     #[doc = "Announce the order in which desktop environment components should be placed on outputs."]
     #[doc = "The compositor will send the list of outputs when the global is bound and whenever there is a change."]
     pub mod kde_output_order_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the kde_output_order_v1 interface. See the module level documentation for more info"]
         pub trait KdeOutputOrderV1 {
@@ -25822,6 +26042,7 @@ pub mod kde_output_order_v1 {
 pub mod kde_primary_output_v1 {
     #[doc = "Protocol for telling which is the primary display among the selection of enabled outputs."]
     pub mod kde_primary_output_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the kde_primary_output_v1 interface. See the module level documentation for more info"]
         pub trait KdePrimaryOutputV1 {
@@ -25859,6 +26080,7 @@ pub mod kde_screen_edge_v1 {
     #[doc = "triggered if the pointer hits its associated screen border. Other ways may"]
     #[doc = "include using touchscreen or touchpad gestures."]
     pub mod kde_screen_edge_manager_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -25985,6 +26207,7 @@ pub mod kde_screen_edge_v1 {
     #[doc = "Another kde_auto_hide_screen_edge_v1.activate request must be made by the"]
     #[doc = "client to activate the screen edge."]
     pub mod kde_auto_hide_screen_edge_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the kde_auto_hide_screen_edge_v1 interface. See the module level documentation for more info"]
         pub trait KdeAutoHideScreenEdgeV1 {
@@ -26044,6 +26267,7 @@ pub mod kde_screen_edge_v1 {
 }
 pub mod org_kde_plasma_virtual_desktop {
     pub mod org_kde_plasma_virtual_desktop_management {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop_management interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaVirtualDesktopManagement {
@@ -26115,6 +26339,7 @@ pub mod org_kde_plasma_virtual_desktop {
         }
     }
     pub mod org_kde_plasma_virtual_desktop {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaVirtualDesktop {
@@ -26151,6 +26376,7 @@ pub mod plasma_shell {
     #[doc = "This interface is used by KF5 powered Wayland shells to communicate with"]
     #[doc = "the compositor and can only be bound one time."]
     pub mod org_kde_plasma_shell {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_plasma_shell interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaShell {
@@ -26198,6 +26424,7 @@ pub mod plasma_shell {
     #[doc = "org_kde_plasma_surface.destroy() must be called before"]
     #[doc = "destroying the wl_surface object."]
     pub mod org_kde_plasma_surface {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -26585,6 +26812,7 @@ pub mod plasma_window_management {
     #[doc = ""]
     #[doc = "Only one client can bind this interface at a time."]
     pub mod org_kde_plasma_window_management {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -26748,6 +26976,7 @@ pub mod plasma_window_management {
     #[doc = ""]
     #[doc = "Only one client can bind this interface at a time."]
     pub mod org_kde_plasma_window {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaWindow {
@@ -27035,6 +27264,7 @@ pub mod plasma_window_management {
     #[doc = "The activation manager interface provides a way to get notified"]
     #[doc = "when an application is about to be activated."]
     pub mod org_kde_plasma_activation_feedback {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_plasma_activation_feedback interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaActivationFeedback {
@@ -27068,6 +27298,7 @@ pub mod plasma_window_management {
         }
     }
     pub mod org_kde_plasma_activation {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_plasma_activation interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaActivation {
@@ -27101,6 +27332,7 @@ pub mod plasma_window_management {
     #[doc = "each window in the stacking order, and afterwards sends the done event"]
     #[doc = "and destroys this object."]
     pub mod org_kde_plasma_stacking_order {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_plasma_stacking_order interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaStackingOrder {
@@ -27119,6 +27351,7 @@ pub mod plasma_window_management {
 }
 pub mod zkde_screencast_unstable_v1 {
     pub mod zkde_screencast_unstable_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -27272,6 +27505,7 @@ pub mod zkde_screencast_unstable_v1 {
         }
     }
     pub mod zkde_screencast_stream_unstable_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zkde_screencast_stream_unstable_v1 interface. See the module level documentation for more info"]
         pub trait ZkdeScreencastStreamUnstableV1 {
@@ -27345,6 +27579,7 @@ pub mod color_management_v1 {
     #[doc = "getting the image description of outputs and setting the image"]
     #[doc = "description of surfaces."]
     pub mod xx_color_manager_v4 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -27673,6 +27908,7 @@ pub mod color_management_v1 {
     #[doc = "wl_output object has no impact, but the compositor removing the output"]
     #[doc = "global makes the xx_color_management_output_v4 object inert."]
     pub mod xx_color_management_output_v4 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the xx_color_management_output_v4 interface. See the module level documentation for more info"]
         pub trait XxColorManagementOutputV4 {
@@ -27757,6 +27993,7 @@ pub mod color_management_v1 {
     #[doc = "If the wl_surface associated with the xx_color_management_surface_v4 is"]
     #[doc = "destroyed, the xx_color_management_surface_v4 object becomes inert."]
     pub mod xx_color_management_surface_v4 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -27878,6 +28115,7 @@ pub mod color_management_v1 {
     #[doc = "If the wl_surface associated with this object is destroyed, the"]
     #[doc = "xx_color_management_feedback_surface_v4 object becomes inert."]
     pub mod xx_color_management_feedback_surface_v4 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -27985,6 +28223,7 @@ pub mod color_management_v1 {
     #[doc = "create the image description object, destroying the creator in the"]
     #[doc = "process."]
     pub mod xx_image_description_creator_icc_v4 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -28151,6 +28390,7 @@ pub mod color_management_v1 {
     #[doc = "create the image description object, destroying the creator in the"]
     #[doc = "process."]
     pub mod xx_image_description_creator_params_v4 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -28619,6 +28859,7 @@ pub mod color_management_v1 {
     #[doc = "xx_image_description_v4 object always refers to one fixed image"]
     #[doc = "description. It cannot change after creation."]
     pub mod xx_image_description_v4 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -28726,6 +28967,7 @@ pub mod color_management_v1 {
     #[doc = "Every xx_image_description_info_v4 created from the same"]
     #[doc = "xx_image_description_v4 shall always return the exact same data."]
     pub mod xx_image_description_info_v4 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the xx_image_description_info_v4 interface. See the module level documentation for more info"]
         pub trait XxImageDescriptionInfoV4 {
@@ -28744,6 +28986,7 @@ pub mod color_management_v1 {
 }
 pub mod ivi_application {
     pub mod ivi_surface {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
         pub trait IviSurface {
@@ -28777,6 +29020,7 @@ pub mod ivi_application {
     #[doc = "This interface is implemented by servers that provide IVI-style user interfaces."]
     #[doc = "It allows clients to associate an ivi_surface with wl_surface."]
     pub mod ivi_application {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -28854,6 +29098,7 @@ pub mod ivi_application {
 }
 pub mod ivi_hmi_controller {
     pub mod ivi_hmi_controller {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -28992,6 +29237,7 @@ pub mod ivi_hmi_controller {
 }
 pub mod text_cursor_position {
     pub mod text_cursor_position {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the text_cursor_position interface. See the module level documentation for more info"]
         pub trait TextCursorPosition {
@@ -29077,6 +29323,7 @@ pub mod weston_content_protection {
     #[doc = "which is an extension to the wl_surface to provide content-protection, and"]
     #[doc = "set the censored-visibility on the non-secured-outputs."]
     pub mod weston_content_protection {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -29184,6 +29431,7 @@ pub mod weston_content_protection {
     #[doc = "If the wl_surface associated with the protected_surface is destroyed,"]
     #[doc = "the protected_surface becomes inert."]
     pub mod weston_protected_surface {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -29342,6 +29590,7 @@ pub mod weston_debug {
     #[doc = "information and then closes it, or continuous where server keeps on"]
     #[doc = "printing until the client stops it. Or anything in between."]
     pub mod weston_debug_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_debug_v1 interface. See the module level documentation for more info"]
         pub trait WestonDebugV1 {
@@ -29405,6 +29654,7 @@ pub mod weston_debug {
     #[doc = "file descriptor until the object is destroyed or the server sends an"]
     #[doc = "event through the object."]
     pub mod weston_debug_stream_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_debug_stream_v1 interface. See the module level documentation for more info"]
         pub trait WestonDebugStreamV1 {
@@ -29444,6 +29694,7 @@ pub mod weston_desktop {
     #[doc = "foundations of typical desktops. Currently it's possible to set up"]
     #[doc = "background, panels and locking surfaces."]
     pub mod weston_desktop_shell {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -29651,6 +29902,7 @@ pub mod weston_desktop {
     }
     #[doc = "Only one client can bind this interface at a time."]
     pub mod weston_screensaver {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_screensaver interface. See the module level documentation for more info"]
         pub trait WestonScreensaver {
@@ -29715,6 +29967,7 @@ pub mod weston_direct_display {
     #[doc = "WARNING: This extension requires 'linux-dmabuf' protocol and"]
     #[doc = "'zwp_linux_buffer_params_v1' be already created by 'zwp_linux_buffer_v1'."]
     pub mod weston_direct_display_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_direct_display_v1 interface. See the module level documentation for more info"]
         pub trait WestonDirectDisplayV1 {
@@ -29775,6 +30028,7 @@ pub mod weston_output_capture {
     #[doc = ""]
     #[doc = "This is a privileged inteface."]
     pub mod weston_capture_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -29896,6 +30150,7 @@ pub mod weston_output_capture {
     #[doc = "output still exists and the specified pixel source is available on"]
     #[doc = "the output."]
     pub mod weston_capture_source_v1 {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -29998,6 +30253,7 @@ pub mod weston_test {
     #[doc = ""]
     #[doc = "These requests may allow clients to do very bad things."]
     pub mod weston_test {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -30266,6 +30522,7 @@ pub mod weston_test {
     #[doc = ""]
     #[doc = "Unknown test name will raise \"unknown_test\" protocol error."]
     pub mod weston_test_runner {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -30357,6 +30614,7 @@ pub mod weston_touch_calibration {
     #[doc = "the compositor. The compositor may take this new calibration into use and"]
     #[doc = "may write it into persistent storage."]
     pub mod weston_touch_calibration {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -30504,6 +30762,7 @@ pub mod weston_touch_calibration {
     #[doc = "from the [0.0, 1.0] real values, but the matrix elements do not need to"]
     #[doc = "fall into that range."]
     pub mod weston_touch_calibrator {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -30593,6 +30852,7 @@ pub mod weston_touch_calibration {
         }
     }
     pub mod weston_touch_coordinate {
+        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_touch_coordinate interface. See the module level documentation for more info"]
         pub trait WestonTouchCoordinate {

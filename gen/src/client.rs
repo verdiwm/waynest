@@ -32,6 +32,7 @@ pub fn generate_client_code(protocols: &[Protocol]) -> TokenStream {
             inner_modules.push(quote! {
                 #(#docs)*
                 pub mod #module_name {
+                    #[allow(unused)]
                     use futures_util::SinkExt;
 
                     #(#enums)*
