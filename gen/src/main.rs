@@ -110,6 +110,19 @@ const PROTOCOLS: &[&str] = &[
     "protocols/plasma-wayland-protocols/src/protocols/plasma-shell.xml",
     "protocols/plasma-wayland-protocols/src/protocols/plasma-window-management.xml",
     "protocols/plasma-wayland-protocols/src/protocols/zkde-screencast-unstable-v1.xml",
+
+    // Weston protocols
+    "protocols/weston/protocol/color-management-v1.xml",
+    "protocols/weston/protocol/ivi-application.xml",
+    "protocols/weston/protocol/ivi-hmi-controller.xml",
+    "protocols/weston/protocol/text-cursor-position.xml",
+    "protocols/weston/protocol/weston-content-protection.xml",
+    "protocols/weston/protocol/weston-debug.xml",
+    "protocols/weston/protocol/weston-desktop-shell.xml",
+    "protocols/weston/protocol/weston-direct-display.xml",
+    "protocols/weston/protocol/weston-output-capture.xml",
+    "protocols/weston/protocol/weston-test.xml",
+    "protocols/weston/protocol/weston-touch-calibration.xml",
 ];
 
 #[derive(Parser, Debug)]
