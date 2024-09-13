@@ -10,3 +10,6 @@
 [submodule "plasma-wayland-protocols"]
 	path = protocols/plasma-wayland-protocols
 	url = https://github.com/KDE/plasma-wayland-protocols.git
+[submodule "weston"]
+	path = protocols/weston
+	url = https://gitlab.freedesktop.org/wayland/weston.git
