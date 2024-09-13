@@ -5,6 +5,7 @@ use heck::ToUpperCamelCase;
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use serde::{Deserialize, Serialize};
+use tracing::debug;
 
 use crate::utils::make_ident;
 
@@ -73,6 +74,7 @@ pub struct Arg {
     pub allow_null: bool,
     #[serde(rename(deserialize = "@summary"))]
     pub summary: Option<String>,
+    pub description: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone)]
@@ -129,6 +131,7 @@ pub struct Entry {
 
 impl Protocol {
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Self> {
+        debug!("Parsing protocol {}", path.as_ref().display());
         Ok(quick_xml::de::from_str(&fs::read_to_string(path)?)?)
     }
 }
