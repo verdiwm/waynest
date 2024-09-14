@@ -30,11 +30,16 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
 
             let requests = write_requests(pairs, pair, interface);
 
+            let imports = if requests.is_empty() {
+                quote! {}
+            } else {
+                quote! {use futures_util::SinkExt;}
+            };
+
             inner_modules.push(quote! {
                 #(#docs)*
                 pub mod #module_name {
-                    #[allow(unused)]
-                    use futures_util::SinkExt;
+                    #imports
 
                     #(#enums)*
 

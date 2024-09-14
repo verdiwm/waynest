@@ -230,8 +230,8 @@ pub mod wlr;
 pub mod plasma;
 #[cfg(feature = "weston")]
 pub mod weston;
-#[cfg(feature = "cosmic")]
-pub mod cosmic;
+// #[cfg(feature = "cosmic")]
+// pub mod cosmic;
 "#;
 
         let mut server_module = OpenOptions::new()

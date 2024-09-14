@@ -41,7 +41,6 @@ pub mod color_management_v1 {
     #[doc = "getting the image description of outputs and setting the image"]
     #[doc = "description of surfaces."]
     pub mod xx_color_manager_v4 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -370,7 +369,6 @@ pub mod color_management_v1 {
     #[doc = "wl_output object has no impact, but the compositor removing the output"]
     #[doc = "global makes the xx_color_management_output_v4 object inert."]
     pub mod xx_color_management_output_v4 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the xx_color_management_output_v4 interface. See the module level documentation for more info"]
         pub trait XxColorManagementOutputV4 {
@@ -455,7 +453,6 @@ pub mod color_management_v1 {
     #[doc = "If the wl_surface associated with the xx_color_management_surface_v4 is"]
     #[doc = "destroyed, the xx_color_management_surface_v4 object becomes inert."]
     pub mod xx_color_management_surface_v4 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -577,7 +574,6 @@ pub mod color_management_v1 {
     #[doc = "If the wl_surface associated with this object is destroyed, the"]
     #[doc = "xx_color_management_feedback_surface_v4 object becomes inert."]
     pub mod xx_color_management_feedback_surface_v4 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -685,7 +681,6 @@ pub mod color_management_v1 {
     #[doc = "create the image description object, destroying the creator in the"]
     #[doc = "process."]
     pub mod xx_image_description_creator_icc_v4 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -852,7 +847,6 @@ pub mod color_management_v1 {
     #[doc = "create the image description object, destroying the creator in the"]
     #[doc = "process."]
     pub mod xx_image_description_creator_params_v4 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1321,7 +1315,6 @@ pub mod color_management_v1 {
     #[doc = "xx_image_description_v4 object always refers to one fixed image"]
     #[doc = "description. It cannot change after creation."]
     pub mod xx_image_description_v4 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1429,8 +1422,6 @@ pub mod color_management_v1 {
     #[doc = "Every xx_image_description_info_v4 created from the same"]
     #[doc = "xx_image_description_v4 shall always return the exact same data."]
     pub mod xx_image_description_info_v4 {
-        #[allow(unused)]
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the xx_image_description_info_v4 interface. See the module level documentation for more info"]
         pub trait XxImageDescriptionInfoV4 {
             const INTERFACE: &'static str = "xx_image_description_info_v4";
@@ -1448,7 +1439,6 @@ pub mod color_management_v1 {
 }
 pub mod ivi_application {
     pub mod ivi_surface {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
         pub trait IviSurface {
@@ -1482,7 +1472,6 @@ pub mod ivi_application {
     #[doc = "This interface is implemented by servers that provide IVI-style user interfaces."]
     #[doc = "It allows clients to associate an ivi_surface with wl_surface."]
     pub mod ivi_application {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1560,7 +1549,6 @@ pub mod ivi_application {
 }
 pub mod ivi_hmi_controller {
     pub mod ivi_hmi_controller {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1699,7 +1687,6 @@ pub mod ivi_hmi_controller {
 }
 pub mod text_cursor_position {
     pub mod text_cursor_position {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the text_cursor_position interface. See the module level documentation for more info"]
         pub trait TextCursorPosition {
@@ -1785,7 +1772,6 @@ pub mod weston_content_protection {
     #[doc = "which is an extension to the wl_surface to provide content-protection, and"]
     #[doc = "set the censored-visibility on the non-secured-outputs."]
     pub mod weston_content_protection {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1893,7 +1879,6 @@ pub mod weston_content_protection {
     #[doc = "If the wl_surface associated with the protected_surface is destroyed,"]
     #[doc = "the protected_surface becomes inert."]
     pub mod weston_protected_surface {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2052,7 +2037,6 @@ pub mod weston_debug {
     #[doc = "information and then closes it, or continuous where server keeps on"]
     #[doc = "printing until the client stops it. Or anything in between."]
     pub mod weston_debug_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_debug_v1 interface. See the module level documentation for more info"]
         pub trait WestonDebugV1 {
@@ -2116,7 +2100,6 @@ pub mod weston_debug {
     #[doc = "file descriptor until the object is destroyed or the server sends an"]
     #[doc = "event through the object."]
     pub mod weston_debug_stream_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_debug_stream_v1 interface. See the module level documentation for more info"]
         pub trait WestonDebugStreamV1 {
@@ -2156,7 +2139,6 @@ pub mod weston_desktop {
     #[doc = "foundations of typical desktops. Currently it's possible to set up"]
     #[doc = "background, panels and locking surfaces."]
     pub mod weston_desktop_shell {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2364,7 +2346,6 @@ pub mod weston_desktop {
     }
     #[doc = "Only one client can bind this interface at a time."]
     pub mod weston_screensaver {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_screensaver interface. See the module level documentation for more info"]
         pub trait WestonScreensaver {
@@ -2429,7 +2410,6 @@ pub mod weston_direct_display {
     #[doc = "WARNING: This extension requires 'linux-dmabuf' protocol and"]
     #[doc = "'zwp_linux_buffer_params_v1' be already created by 'zwp_linux_buffer_v1'."]
     pub mod weston_direct_display_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_direct_display_v1 interface. See the module level documentation for more info"]
         pub trait WestonDirectDisplayV1 {
@@ -2490,7 +2470,6 @@ pub mod weston_output_capture {
     #[doc = ""]
     #[doc = "This is a privileged inteface."]
     pub mod weston_capture_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2612,7 +2591,6 @@ pub mod weston_output_capture {
     #[doc = "output still exists and the specified pixel source is available on"]
     #[doc = "the output."]
     pub mod weston_capture_source_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2715,7 +2693,6 @@ pub mod weston_test {
     #[doc = ""]
     #[doc = "These requests may allow clients to do very bad things."]
     pub mod weston_test {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2984,7 +2961,6 @@ pub mod weston_test {
     #[doc = ""]
     #[doc = "Unknown test name will raise \"unknown_test\" protocol error."]
     pub mod weston_test_runner {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3076,7 +3052,6 @@ pub mod weston_touch_calibration {
     #[doc = "the compositor. The compositor may take this new calibration into use and"]
     #[doc = "may write it into persistent storage."]
     pub mod weston_touch_calibration {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3224,7 +3199,6 @@ pub mod weston_touch_calibration {
     #[doc = "from the [0.0, 1.0] real values, but the matrix elements do not need to"]
     #[doc = "fall into that range."]
     pub mod weston_touch_calibrator {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3314,8 +3288,6 @@ pub mod weston_touch_calibration {
         }
     }
     pub mod weston_touch_coordinate {
-        #[allow(unused)]
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_touch_coordinate interface. See the module level documentation for more info"]
         pub trait WestonTouchCoordinate {
             const INTERFACE: &'static str = "weston_touch_coordinate";

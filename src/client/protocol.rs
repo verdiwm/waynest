@@ -1,6 +1,4 @@
 pub mod core;
-// #[cfg(feature = "cosmic")]
-// pub mod cosmic;
 #[cfg(feature = "plasma")]
 pub mod plasma;
 #[cfg(feature = "stable")]
@@ -13,3 +11,5 @@ pub mod unstable;
 pub mod weston;
 #[cfg(feature = "wlr")]
 pub mod wlr;
+// #[cfg(feature = "cosmic")]
+// pub mod cosmic;

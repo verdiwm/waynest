@@ -1,4 +1,3 @@
-#![allow(unused)]
 #![allow(async_fn_in_trait)]
 pub mod wayland {
     #[doc = "The core global object.  This is a special singleton object.  It"]
@@ -273,8 +272,8 @@ pub mod wayland {
             }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 match message.opcode {

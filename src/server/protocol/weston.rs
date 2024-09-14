@@ -1,4 +1,3 @@
-#![allow(unused)]
 #![allow(async_fn_in_trait)]
 #[doc = "The aim of the color management extension is to allow clients to know"]
 #[doc = "the color properties of outputs, and to tell the compositor about the color"]
@@ -1665,8 +1664,8 @@ pub mod color_management_v1 {
             }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 match message.opcode {
@@ -4453,8 +4452,8 @@ pub mod weston_touch_calibration {
             }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 match message.opcode {

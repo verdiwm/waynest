@@ -3,7 +3,6 @@ pub mod appmenu {
     #[doc = "This interface allows a client to link a window (or wl_surface) to an com.canonical.dbusmenu"]
     #[doc = "interface registered on DBus."]
     pub mod org_kde_kwin_appmenu_manager {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_appmenu_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinAppmenuManager {
@@ -40,7 +39,6 @@ pub mod appmenu {
     #[doc = "The object should be registered on the session bus before sending this request."]
     #[doc = "If not applicable, clients should remove this object."]
     pub mod org_kde_kwin_appmenu {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_appmenu interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinAppmenu {
@@ -90,7 +88,6 @@ pub mod appmenu {
 }
 pub mod blur {
     pub mod org_kde_kwin_blur_manager {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_blur_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinBlurManager {
@@ -139,7 +136,6 @@ pub mod blur {
         }
     }
     pub mod org_kde_kwin_blur {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_blur interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinBlur {
@@ -197,7 +193,6 @@ pub mod blur {
 }
 pub mod contrast {
     pub mod org_kde_kwin_contrast_manager {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_contrast_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinContrastManager {
@@ -246,7 +241,6 @@ pub mod contrast {
         }
     }
     pub mod org_kde_kwin_contrast {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_contrast interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinContrast {
@@ -414,7 +408,6 @@ pub mod fullscreen_shell {
     #[doc = "output.  This way, the client can update the output's contents by"]
     #[doc = "simply attaching a new buffer."]
     pub mod _wl_fullscreen_shell {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Various capabilities that can be advertised by the compositor.  They"]
         #[doc = "are advertised one-at-a-time when the wl_fullscreen_shell interface is"]
@@ -633,8 +626,6 @@ pub mod fullscreen_shell {
         }
     }
     pub mod _wl_fullscreen_shell_mode_feedback {
-        #[allow(unused)]
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the _wl_fullscreen_shell_mode_feedback interface. See the module level documentation for more info"]
         pub trait WlFullscreenShellModeFeedback {
             const INTERFACE: &'static str = "_wl_fullscreen_shell_mode_feedback";
@@ -659,7 +650,6 @@ pub mod idle {
     #[doc = "interacting with the system, e.g. chat applications setting the user as away, power"]
     #[doc = "management features to dim screen, etc.."]
     pub mod org_kde_kwin_idle {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_idle interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinIdle {
@@ -695,7 +685,6 @@ pub mod idle {
         }
     }
     pub mod org_kde_kwin_idle_timeout {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_idle_timeout interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinIdleTimeout {
@@ -742,7 +731,6 @@ pub mod idle {
 pub mod keystate {
     #[doc = "Keeps track of the states of the different keys that have a state attached to it."]
     pub mod org_kde_kwin_keystate {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -861,7 +849,6 @@ pub mod outputmanagement {
     #[doc = "Through this design the interface enables atomic output configuration changes if"]
     #[doc = "internally supported by the server."]
     pub mod org_kde_kwin_outputmanagement {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_outputmanagement interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinOutputmanagement {
@@ -910,7 +897,6 @@ pub mod outputmanagement {
     #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
     #[doc = "applied to the hardware and before the server side sends the applied event."]
     pub mod org_kde_kwin_outputconfiguration {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Describes when the compositor may employ variable refresh rate"]
         #[repr(u32)]
@@ -1189,8 +1175,6 @@ pub mod org_kde_kwin_outputdevice {
     #[doc = "display devices, or when one later becomes available, for example by"]
     #[doc = "being hotplugged via a physical connector."]
     pub mod org_kde_kwin_outputdevice {
-        #[allow(unused)]
-        use futures_util::SinkExt;
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
         #[repr(u32)]
@@ -1342,7 +1326,6 @@ pub mod org_kde_kwin_outputdevice {
 }
 pub mod remote_access {
     pub mod org_kde_kwin_remote_access_manager {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_remote_access_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinRemoteAccessManager {
@@ -1394,7 +1377,6 @@ pub mod remote_access {
         }
     }
     pub mod org_kde_kwin_remote_buffer {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_remote_buffer interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinRemoteBuffer {
@@ -1426,7 +1408,6 @@ pub mod remote_access {
 pub mod server_decoration_palette {
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
     pub mod org_kde_kwin_server_decoration_palette_manager {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinServerDecorationPaletteManager {
@@ -1464,7 +1445,6 @@ pub mod server_decoration_palette {
     }
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
     pub mod org_kde_kwin_server_decoration_palette {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinServerDecorationPalette {
@@ -1526,7 +1506,6 @@ pub mod server_decoration {
     #[doc = ""]
     #[doc = "Use in conjunction with zxdg_decoration_manager_v1 is undefined."]
     pub mod org_kde_kwin_server_decoration_manager {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1595,7 +1574,6 @@ pub mod server_decoration {
         }
     }
     pub mod org_kde_kwin_server_decoration {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1664,7 +1642,6 @@ pub mod server_decoration {
 }
 pub mod shadow {
     pub mod org_kde_kwin_shadow_manager {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_shadow_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinShadowManager {
@@ -1726,7 +1703,6 @@ pub mod shadow {
         }
     }
     pub mod org_kde_kwin_shadow {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_shadow interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinShadow {
@@ -1945,7 +1921,6 @@ pub mod shadow {
 }
 pub mod slide {
     pub mod org_kde_kwin_slide_manager {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_slide_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinSlideManager {
@@ -1999,7 +1974,6 @@ pub mod slide {
     #[doc = "The from argument provides a clue about where the slide animation"]
     #[doc = "begins, offset is the distance from screen edge to begin the animation."]
     pub mod org_kde_kwin_slide {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2091,7 +2065,6 @@ pub mod slide {
 }
 pub mod surface_extension {
     pub mod qt_surface_extension {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the qt_surface_extension interface. See the module level documentation for more info"]
         pub trait QtSurfaceExtension {
@@ -2128,7 +2101,6 @@ pub mod surface_extension {
         }
     }
     pub mod qt_extended_surface {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2286,7 +2258,6 @@ pub mod text_input_unstable_v2 {
     #[doc = "client. A reset or entering a new widget on client side also"]
     #[doc = "invalidates all current state information."]
     pub mod zwp_text_input_v2 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behaviour"] const None = 0u32 ; # [doc = "suggest word completions"] const AutoCompletion = 1u32 ; # [doc = "suggest word corrections"] const AutoCorrection = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; } }
         impl TryFrom<u32> for ContentHint {
@@ -2700,7 +2671,6 @@ pub mod text_input_unstable_v2 {
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
     pub mod zwp_text_input_manager_v2 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_text_input_manager_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTextInputManagerV2 {
@@ -2772,7 +2742,6 @@ pub mod text {
     #[doc = "and keysym. The text input can then ignore events from the input method"]
     #[doc = "which are based on an outdated state (for example after a reset)."]
     pub mod wl_text_input {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Content hint is a bitmask to allow to modify the behavior of the text"]
         #[doc = "input."]
@@ -3157,7 +3126,6 @@ pub mod text {
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
     pub mod wl_text_input_manager {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_text_input_manager interface. See the module level documentation for more info"]
         pub trait WlTextInputManager {
@@ -3192,7 +3160,6 @@ pub mod text {
 }
 pub mod wl_eglstream_controller {
     pub mod wl_eglstream_controller {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "- dont_care: Using this enum will tell the server to make its own"]
         #[doc = "decisions regarding present mode."]
@@ -3316,7 +3283,6 @@ pub mod dpms {
     #[doc = "In addition it allows to request a state change. A compositor is not obliged to honor it"]
     #[doc = "and will normally automatically switch back to on state."]
     pub mod org_kde_kwin_dpms_manager {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_dpms_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinDpmsManager {
@@ -3358,7 +3324,6 @@ pub mod dpms {
     #[doc = "states are pushed. Whenever a state changes the set of changes is committed with the"]
     #[doc = "done event."]
     pub mod org_kde_kwin_dpms {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3436,7 +3401,6 @@ pub mod fake_input {
     #[doc = "Clients should not expect that the compositor honors the requests from this"]
     #[doc = "interface."]
     pub mod org_kde_kwin_fake_input {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_kwin_fake_input interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinFakeInput {
@@ -3662,7 +3626,6 @@ pub mod kde_lockscreen_overlay_v1 {
     #[doc = ""]
     #[doc = "This is meant to be used for specific high urgency cases like phone calls or alarms."]
     pub mod kde_lockscreen_overlay_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3742,8 +3705,6 @@ pub mod kde_output_device_v2 {
     #[doc = "display devices, or when one later becomes available, for example by"]
     #[doc = "being hotplugged via a physical connector."]
     pub mod kde_output_device_v2 {
-        #[allow(unused)]
-        use futures_util::SinkExt;
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
         #[repr(u32)]
@@ -3918,8 +3879,6 @@ pub mod kde_output_device_v2 {
     #[doc = "kde_output_device.done event. No guarantees are made regarding the order"]
     #[doc = "in which properties are sent."]
     pub mod kde_output_device_mode_v2 {
-        #[allow(unused)]
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the kde_output_device_mode_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputDeviceModeV2 {
             const INTERFACE: &'static str = "kde_output_device_mode_v2";
@@ -3975,7 +3934,6 @@ pub mod kde_output_management_v2 {
     #[doc = "Through this design the interface enables atomic output configuration changes if"]
     #[doc = "internally supported by the server."]
     pub mod kde_output_management_v2 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputManagementV2 {
@@ -4024,7 +3982,6 @@ pub mod kde_output_management_v2 {
     #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
     #[doc = "applied to the hardware and before the server side sends the applied event."]
     pub mod kde_output_configuration_v2 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These error can be emitted in response to kde_output_configuration_v2 requests."]
         #[repr(u32)]
@@ -4565,7 +4522,6 @@ pub mod kde_output_order_v1 {
     #[doc = "Announce the order in which desktop environment components should be placed on outputs."]
     #[doc = "The compositor will send the list of outputs when the global is bound and whenever there is a change."]
     pub mod kde_output_order_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the kde_output_order_v1 interface. See the module level documentation for more info"]
         pub trait KdeOutputOrderV1 {
@@ -4597,7 +4553,6 @@ pub mod kde_output_order_v1 {
 pub mod kde_primary_output_v1 {
     #[doc = "Protocol for telling which is the primary display among the selection of enabled outputs."]
     pub mod kde_primary_output_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the kde_primary_output_v1 interface. See the module level documentation for more info"]
         pub trait KdePrimaryOutputV1 {
@@ -4635,7 +4590,6 @@ pub mod kde_screen_edge_v1 {
     #[doc = "triggered if the pointer hits its associated screen border. Other ways may"]
     #[doc = "include using touchscreen or touchpad gestures."]
     pub mod kde_screen_edge_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -4762,7 +4716,6 @@ pub mod kde_screen_edge_v1 {
     #[doc = "Another kde_auto_hide_screen_edge_v1.activate request must be made by the"]
     #[doc = "client to activate the screen edge."]
     pub mod kde_auto_hide_screen_edge_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the kde_auto_hide_screen_edge_v1 interface. See the module level documentation for more info"]
         pub trait KdeAutoHideScreenEdgeV1 {
@@ -4822,7 +4775,6 @@ pub mod kde_screen_edge_v1 {
 }
 pub mod org_kde_plasma_virtual_desktop {
     pub mod org_kde_plasma_virtual_desktop_management {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop_management interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaVirtualDesktopManagement {
@@ -4894,7 +4846,6 @@ pub mod org_kde_plasma_virtual_desktop {
         }
     }
     pub mod org_kde_plasma_virtual_desktop {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaVirtualDesktop {
@@ -4931,7 +4882,6 @@ pub mod plasma_shell {
     #[doc = "This interface is used by KF5 powered Wayland shells to communicate with"]
     #[doc = "the compositor and can only be bound one time."]
     pub mod org_kde_plasma_shell {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_plasma_shell interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaShell {
@@ -4979,7 +4929,6 @@ pub mod plasma_shell {
     #[doc = "org_kde_plasma_surface.destroy() must be called before"]
     #[doc = "destroying the wl_surface object."]
     pub mod org_kde_plasma_surface {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -5367,7 +5316,6 @@ pub mod plasma_window_management {
     #[doc = ""]
     #[doc = "Only one client can bind this interface at a time."]
     pub mod org_kde_plasma_window_management {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -5531,7 +5479,6 @@ pub mod plasma_window_management {
     #[doc = ""]
     #[doc = "Only one client can bind this interface at a time."]
     pub mod org_kde_plasma_window {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaWindow {
@@ -5819,7 +5766,6 @@ pub mod plasma_window_management {
     #[doc = "The activation manager interface provides a way to get notified"]
     #[doc = "when an application is about to be activated."]
     pub mod org_kde_plasma_activation_feedback {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_plasma_activation_feedback interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaActivationFeedback {
@@ -5853,7 +5799,6 @@ pub mod plasma_window_management {
         }
     }
     pub mod org_kde_plasma_activation {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_plasma_activation interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaActivation {
@@ -5887,8 +5832,6 @@ pub mod plasma_window_management {
     #[doc = "each window in the stacking order, and afterwards sends the done event"]
     #[doc = "and destroys this object."]
     pub mod org_kde_plasma_stacking_order {
-        #[allow(unused)]
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the org_kde_plasma_stacking_order interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaStackingOrder {
             const INTERFACE: &'static str = "org_kde_plasma_stacking_order";
@@ -5906,7 +5849,6 @@ pub mod plasma_window_management {
 }
 pub mod zkde_screencast_unstable_v1 {
     pub mod zkde_screencast_unstable_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -6060,7 +6002,6 @@ pub mod zkde_screencast_unstable_v1 {
         }
     }
     pub mod zkde_screencast_stream_unstable_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zkde_screencast_stream_unstable_v1 interface. See the module level documentation for more info"]
         pub trait ZkdeScreencastStreamUnstableV1 {
