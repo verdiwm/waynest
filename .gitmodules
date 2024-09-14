@@ -13,3 +13,6 @@
 [submodule "weston"]
 	path = protocols/weston
 	url = https://gitlab.freedesktop.org/wayland/weston.git
+[submodule "cosmic-protocols"]
+	path = cosmic-protocols
+	url = https://github.com/pop-os/cosmic-protocols.git
