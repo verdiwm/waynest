@@ -17,6 +17,17 @@ include = ["src/**/*.rs", "README.md", "LICENSE"]
 [features]
 client = []
 server = []
+
+# Various protocols
+stable = []
+staging = []
+unstable = []
+wlr = []
+plasma = []
+weston = []
+cosmic = []
+
+# Internal features
 fuzz = ["dep:arbitrary"]
 
 [dependencies]

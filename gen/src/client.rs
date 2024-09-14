@@ -8,10 +8,10 @@ use crate::{
     utils::{description_to_docs, find_enum, make_ident, write_enums},
 };
 
-pub fn generate_client_code(protocols: &[Protocol]) -> TokenStream {
+pub fn generate_client_code(current: &[Protocol], protocols: &[Protocol]) -> TokenStream {
     let mut modules = Vec::new();
 
-    for protocol in protocols {
+    for protocol in current {
         debug!("Generating client code for \"{}\"", &protocol.name);
 
         let mut inner_modules = Vec::new();
@@ -27,7 +27,7 @@ pub fn generate_client_code(protocols: &[Protocol]) -> TokenStream {
 
             let enums = write_enums(&interface);
 
-            let requests = write_requests(&protocols, protocol, interface);
+            let requests = write_requests(current, protocols, protocol, interface);
 
             inner_modules.push(quote! {
                 #(#docs)*
@@ -77,6 +77,7 @@ pub fn generate_client_code(protocols: &[Protocol]) -> TokenStream {
 }
 
 fn write_requests(
+    _current: &[Protocol],
     protocols: &[Protocol],
     protocol: &Protocol,
     interface: &Interface,

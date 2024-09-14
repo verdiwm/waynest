@@ -8,10 +8,10 @@ use crate::{
     utils::{description_to_docs, find_enum, make_ident, write_enums},
 };
 
-pub fn generate_server_code(protocols: &[Protocol]) -> TokenStream {
+pub fn generate_server_code(current: &[Protocol], protocols: &[Protocol]) -> TokenStream {
     let mut modules = Vec::new();
 
-    for protocol in protocols {
+    for protocol in current {
         debug!("Generating server code for \"{}\"", &protocol.name);
 
         let mut inner_modules = Vec::new();
@@ -27,8 +27,8 @@ pub fn generate_server_code(protocols: &[Protocol]) -> TokenStream {
             let version = &interface.version;
 
             let dispatchers = write_dispatchers(&interface);
-            let requests = write_requests(&protocols, &protocol, &interface);
-            let events = write_events(&protocols, &protocol, &interface);
+            let requests = write_requests(protocols, &protocol, &interface);
+            let events = write_events(protocols, &protocol, &interface);
             let enums = write_enums(&interface);
 
             inner_modules.push(quote! {
@@ -184,7 +184,7 @@ fn write_events(
 
         for arg in &event.args {
             let mut ty =
-                arg.to_rust_type_token(arg.find_protocol(&protocols).as_ref().unwrap_or(protocol));
+                arg.to_rust_type_token(arg.find_protocol(protocols).as_ref().unwrap_or(protocol));
 
             if arg.allow_null {
                 ty = quote! {Option<#ty>};
