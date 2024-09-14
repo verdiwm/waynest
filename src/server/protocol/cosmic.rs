@@ -827,7 +827,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 client: &mut crate::server::Client,
                 identifier: String,
                 exclusive: u32,
-                layer: super::super::wlr_layer_shell_unstable_v1::zwlr_layer_shell_v1::Layer,
+                layer : super :: super :: super :: wlr :: wlr_layer_shell_unstable_v1 :: zwlr_layer_shell_v1 :: Layer,
                 x: i32,
                 y: i32,
                 width: i32,
@@ -1387,7 +1387,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                transform: super::super::wayland::wl_output::Transform,
+                transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zcosmic_screencopy_frame_v2#{}.transform()", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()

@@ -433,7 +433,7 @@ pub mod wayland {
                 width: i32,
                 height: i32,
                 stride: i32,
-                format: super::super::wayland::wl_shm::Format,
+                format: super::super::super::core::wayland::wl_shm::Format,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the shared memory pool."]
             #[doc = ""]
@@ -1222,8 +1222,8 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                dnd_actions: super::super::wayland::wl_data_device_manager::DndAction,
-                preferred_action: super::super::wayland::wl_data_device_manager::DndAction,
+                dnd_actions: super::super::super::core::wayland::wl_data_device_manager::DndAction,
+                preferred_action : super :: super :: super :: core :: wayland :: wl_data_device_manager :: DndAction,
             ) -> crate::server::Result<()>;
             #[doc = "Sent immediately after creating the wl_data_offer object.  One"]
             #[doc = "event per offered mime type."]
@@ -1250,7 +1250,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                source_actions: super::super::wayland::wl_data_device_manager::DndAction,
+                source_actions : super :: super :: super :: core :: wayland :: wl_data_device_manager :: DndAction,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_data_offer#{}.source_actions()", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1300,7 +1300,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                dnd_action: super::super::wayland::wl_data_device_manager::DndAction,
+                dnd_action: super::super::super::core::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_data_offer#{}.action()", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1409,7 +1409,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                dnd_actions: super::super::wayland::wl_data_device_manager::DndAction,
+                dnd_actions: super::super::super::core::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()>;
             #[doc = "Sent when a target accepts pointer_focus or motion events.  If"]
             #[doc = "a target does not accept any of the offered types, type is NULL."]
@@ -1550,7 +1550,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                dnd_action: super::super::wayland::wl_data_device_manager::DndAction,
+                dnd_action: super::super::super::core::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_data_source#{}.action()", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2840,7 +2840,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                transform: super::super::wayland::wl_output::Transform,
+                transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::server::Result<()>;
             #[doc = "This request sets an optional scaling factor on how the compositor"]
             #[doc = "interprets the contents of the buffer attached to the window."]
@@ -3013,7 +3013,7 @@ pub mod wayland {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                transform: super::super::wayland::wl_output::Transform,
+                transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> wl_surface#{}.preferred_buffer_transform()", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()

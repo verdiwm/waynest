@@ -268,7 +268,7 @@ pub mod wayland {
                 width: i32,
                 height: i32,
                 stride: i32,
-                format: super::super::wayland::wl_shm::Format,
+                format: super::super::super::core::wayland::wl_shm::Format,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> wl_shm_pool#{}.create_buffer()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1028,8 +1028,8 @@ pub mod wayland {
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
-                dnd_actions: super::super::wayland::wl_data_device_manager::DndAction,
-                preferred_action: super::super::wayland::wl_data_device_manager::DndAction,
+                dnd_actions: super::super::super::core::wayland::wl_data_device_manager::DndAction,
+                preferred_action : super :: super :: super :: core :: wayland :: wl_data_device_manager :: DndAction,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> wl_data_offer#{}.set_actions()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1129,7 +1129,7 @@ pub mod wayland {
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
-                dnd_actions: super::super::wayland::wl_data_device_manager::DndAction,
+                dnd_actions: super::super::super::core::wayland::wl_data_device_manager::DndAction,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> wl_data_source#{}.set_actions()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2165,7 +2165,7 @@ pub mod wayland {
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
-                transform: super::super::wayland::wl_output::Transform,
+                transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> wl_surface#{}.set_buffer_transform()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()

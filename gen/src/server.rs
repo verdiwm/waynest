@@ -4,14 +4,15 @@ use quote::{format_ident, quote};
 use tracing::debug;
 
 use crate::{
-    parser::{Interface, Protocol},
+    parser::{Interface, Pair},
     utils::{description_to_docs, find_enum, make_ident, write_enums},
 };
 
-pub fn generate_server_code(current: &[Protocol], protocols: &[Protocol]) -> TokenStream {
+pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
     let mut modules = Vec::new();
 
-    for protocol in current {
+    for pair in current {
+        let protocol = &pair.protocol;
         debug!("Generating server code for \"{}\"", &protocol.name);
 
         let mut inner_modules = Vec::new();
@@ -27,8 +28,8 @@ pub fn generate_server_code(current: &[Protocol], protocols: &[Protocol]) -> Tok
             let version = &interface.version;
 
             let dispatchers = write_dispatchers(&interface);
-            let requests = write_requests(protocols, &protocol, &interface);
-            let events = write_events(protocols, &protocol, &interface);
+            let requests = write_requests(pairs, pair, &interface);
+            let events = write_events(pairs, pair, &interface);
             let enums = write_enums(&interface);
 
             inner_modules.push(quote! {
@@ -124,11 +125,7 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
 
     dispatchers
 }
-fn write_requests(
-    protocols: &[Protocol],
-    protocol: &Protocol,
-    interface: &Interface,
-) -> Vec<TokenStream> {
+fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<TokenStream> {
     let mut requests = Vec::new();
 
     for request in &interface.requests {
@@ -141,8 +138,7 @@ fn write_requests(
         ];
 
         for arg in &request.args {
-            let mut ty =
-                arg.to_rust_type_token(arg.find_protocol(&protocols).as_ref().unwrap_or(protocol));
+            let mut ty = arg.to_rust_type_token(arg.find_protocol(pairs).as_ref().unwrap_or(pair));
 
             if arg.allow_null {
                 ty = quote! {Option<#ty>};
@@ -162,11 +158,7 @@ fn write_requests(
     requests
 }
 
-fn write_events(
-    protocols: &[Protocol],
-    protocol: &Protocol,
-    interface: &Interface,
-) -> Vec<TokenStream> {
+fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<TokenStream> {
     let mut events = Vec::new();
 
     for (opcode, event) in interface.events.iter().enumerate() {
@@ -183,8 +175,7 @@ fn write_events(
         ];
 
         for arg in &event.args {
-            let mut ty =
-                arg.to_rust_type_token(arg.find_protocol(protocols).as_ref().unwrap_or(protocol));
+            let mut ty = arg.to_rust_type_token(arg.find_protocol(&pairs).as_ref().unwrap_or(pair));
 
             if arg.allow_null {
                 ty = quote! {Option<#ty>};
@@ -205,10 +196,10 @@ fn write_events(
 
             if let Some((enum_interface, name)) = arg.to_enum_name() {
                 let e = if let Some(enum_interface) = enum_interface {
-                    protocols
+                    pairs
                         .iter()
-                        .find_map(|protocol| {
-                            protocol
+                        .find_map(|pair| {
+                            pair.protocol
                                 .interfaces
                                 .iter()
                                 .find(|e| e.name == enum_interface)
@@ -219,7 +210,7 @@ fn write_events(
                         .find(|e| e.name == name)
                         .unwrap()
                 } else {
-                    find_enum(&protocol, &name)
+                    find_enum(&pair.protocol, &name)
                 };
 
                 if e.bitfield {

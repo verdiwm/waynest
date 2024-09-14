@@ -2027,7 +2027,7 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                format: super::super::wayland::wl_shm::Format,
+                format: super::super::super::core::wayland::wl_shm::Format,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> ext_image_copy_capture_session_v1#{}.shm_format()",
@@ -2312,7 +2312,7 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                transform: super::super::wayland::wl_output::Transform,
+                transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> ext_image_copy_capture_frame_v1#{}.transform()",

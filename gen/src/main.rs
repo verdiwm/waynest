@@ -1,6 +1,6 @@
 use anyhow::Result;
 use clap::Parser;
-use parser::Protocol;
+use parser::Pair;
 use std::{fs::OpenOptions, io::Write as _};
 use tracing::info;
 
@@ -166,11 +166,18 @@ fn main() -> Result<()> {
 
     let Args { json } = Args::parse();
 
-    let protocols = PROTOCOLS
-        .into_iter()
-        .flat_map(|(_, proto)| proto)
-        .map(Protocol::from_path)
-        .collect::<Result<Vec<Protocol>>>()?;
+    let mut protocols = Vec::new();
+    let mut pairs = Vec::new();
+
+    for (module, protos) in PROTOCOLS {
+        let current = protos
+            .into_iter()
+            .map(|path| Pair::from_path(module, path))
+            .collect::<Result<Vec<Pair>>>()?;
+
+        pairs.extend(current.clone());
+        protocols.push((module, current))
+    }
 
     if json {
         info!("Generating json file");
@@ -183,12 +190,7 @@ fn main() -> Result<()> {
 
         serde_json::to_writer(&mut json_path, &protocols)?;
     } else {
-        for (module, current) in PROTOCOLS {
-            let current = current
-                .iter()
-                .map(Protocol::from_path)
-                .collect::<Result<Vec<Protocol>>>()?;
-
+        for (module, current) in protocols {
             let mut server_path = OpenOptions::new()
                 .truncate(true)
                 .write(true)
@@ -198,7 +200,7 @@ fn main() -> Result<()> {
             write!(
                 &mut server_path,
                 "{}",
-                generate_server_code(&current, &protocols)
+                generate_server_code(&current, &pairs)
             )?;
 
             let mut client_path = OpenOptions::new()
@@ -210,7 +212,7 @@ fn main() -> Result<()> {
             write!(
                 &mut client_path,
                 "{}",
-                generate_client_code(&current, &protocols)
+                generate_client_code(&current, &pairs)
             )?;
         }
 

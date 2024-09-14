@@ -1,4 +1,4 @@
-use std::{fs, path::Path};
+use std::{fmt::Display, fs, path::Path};
 
 use anyhow::Result;
 use heck::ToUpperCamelCase;
@@ -8,6 +8,12 @@ use serde::{Deserialize, Serialize};
 use tracing::debug;
 
 use crate::utils::make_ident;
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct Pair {
+    pub protocol: Protocol,
+    pub module: String,
+}
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
@@ -129,10 +135,13 @@ pub struct Entry {
     pub description: Option<String>,
 }
 
-impl Protocol {
-    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Self> {
+impl Pair {
+    pub fn from_path<D: Display, P: AsRef<Path>>(module: D, path: P) -> Result<Self> {
         debug!("Parsing protocol {}", path.as_ref().display());
-        Ok(quick_xml::de::from_str(&fs::read_to_string(path)?)?)
+        Ok(Self {
+            protocol: quick_xml::de::from_str(&fs::read_to_string(path)?)?,
+            module: module.to_string(),
+        })
     }
 }
 
@@ -149,14 +158,14 @@ impl Arg {
         None
     }
 
-    pub fn find_protocol(&self, protocols: &[Protocol]) -> Option<Protocol> {
+    pub fn find_protocol(&self, pairs: &[Pair]) -> Option<Pair> {
         if let Some((enum_interface, _name)) = self.to_enum_name() {
             if let Some(enum_interface) = enum_interface {
                 return Some(
-                    protocols
+                    pairs
                         .iter()
-                        .find(|protocol| {
-                            protocol
+                        .find(|pair| {
+                            pair.protocol
                                 .interfaces
                                 .iter()
                                 .find(|e| e.name == enum_interface)
@@ -173,14 +182,15 @@ impl Arg {
         None
     }
 
-    pub fn to_rust_type_token(&self, protocol: &Protocol) -> TokenStream {
+    pub fn to_rust_type_token(&self, pair: &Pair) -> TokenStream {
         if let Some(e) = &self.r#enum {
             if let Some((module, name)) = e.split_once('.') {
-                let protocol_name = make_ident(&protocol.name);
+                let protocol_name = make_ident(&pair.protocol.name);
                 let name = make_ident(name.to_upper_camel_case());
                 let module = make_ident(module);
+                let protocol_module = make_ident(&pair.module);
 
-                return quote! {super::super::#protocol_name::#module::#name};
+                return quote! {super::super::super::#protocol_module::#protocol_name::#module::#name};
             } else {
                 return make_ident(e.to_upper_camel_case()).to_token_stream();
             }

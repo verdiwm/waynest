@@ -1479,7 +1479,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
-                layer: super::super::wlr_layer_shell_unstable_v1::zwlr_layer_shell_v1::Layer,
+                layer : super :: super :: super :: wlr :: wlr_layer_shell_unstable_v1 :: zwlr_layer_shell_v1 :: Layer,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> zwlr_layer_surface_v1#{}.set_layer()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1988,7 +1988,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
-                transform: super::super::wayland::wl_output::Transform,
+                transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zwlr_output_configuration_head_v1#{}.set_transform()",
@@ -2025,7 +2025,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
-                state : super :: super :: wlr_output_management_unstable_v1 :: zwlr_output_head_v1 :: AdaptiveSyncState,
+                state : super :: super :: super :: wlr :: wlr_output_management_unstable_v1 :: zwlr_output_head_v1 :: AdaptiveSyncState,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zwlr_output_configuration_head_v1#{}.set_adaptive_sync()",
@@ -2510,7 +2510,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 object_id: crate::wire::ObjectId,
                 time: u32,
                 button: u32,
-                state: super::super::wayland::wl_pointer::ButtonState,
+                state: super::super::super::core::wayland::wl_pointer::ButtonState,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> zwlr_virtual_pointer_v1#{}.button()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2529,7 +2529,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
                 time: u32,
-                axis: super::super::wayland::wl_pointer::Axis,
+                axis: super::super::super::core::wayland::wl_pointer::Axis,
                 value: crate::wire::Fixed,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> zwlr_virtual_pointer_v1#{}.axis()", object_id);
@@ -2561,7 +2561,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
-                axis_source: super::super::wayland::wl_pointer::AxisSource,
+                axis_source: super::super::super::core::wayland::wl_pointer::AxisSource,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> zwlr_virtual_pointer_v1#{}.axis_source()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2578,7 +2578,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
                 time: u32,
-                axis: super::super::wayland::wl_pointer::Axis,
+                axis: super::super::super::core::wayland::wl_pointer::Axis,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> zwlr_virtual_pointer_v1#{}.axis_stop()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2599,7 +2599,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
                 time: u32,
-                axis: super::super::wayland::wl_pointer::Axis,
+                axis: super::super::super::core::wayland::wl_pointer::Axis,
                 value: crate::wire::Fixed,
                 discrete: i32,
             ) -> crate::client::Result<()> {
