@@ -123,6 +123,15 @@ const PROTOCOLS: &[&str] = &[
     "protocols/weston/protocol/weston-output-capture.xml",
     "protocols/weston/protocol/weston-test.xml",
     "protocols/weston/protocol/weston-touch-calibration.xml",
+
+    // Cosmic protocols
+    "protocols/cosmic-protocols/unstable/cosmic-image-source-unstable-v1.xml",
+    "protocols/cosmic-protocols/unstable/cosmic-output-management-unstable-v1.xml",
+    "protocols/cosmic-protocols/unstable/cosmic-overlap-notify-unstable-v1.xml",
+    "protocols/cosmic-protocols/unstable/cosmic-screencopy-unstable-v2.xml",
+    "protocols/cosmic-protocols/unstable/cosmic-toplevel-info-unstable-v1.xml",
+    "protocols/cosmic-protocols/unstable/cosmic-toplevel-management-unstable-v1.xml",
+    "protocols/cosmic-protocols/unstable/cosmic-workspace-unstable-v1.xml",
 ];
 
 #[derive(Parser, Debug)]
