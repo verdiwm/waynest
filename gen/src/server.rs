@@ -88,7 +88,7 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
 
     for (opcode, request) in interface.requests.iter().enumerate() {
         let opcode = opcode as u16;
-        let name = make_ident(&request.name);
+        let name = make_ident(&request.name.to_snek_case());
 
         let tracing_inner = format!("{}#{{}}.{}()", interface.name, request.name.to_snek_case());
 
