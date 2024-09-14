@@ -25,7 +25,7 @@ unstable = []
 wlr = []
 plasma = []
 weston = []
-cosmic = []
+# cosmic = []
 
 # Internal features
 fuzz = ["dep:arbitrary"]
