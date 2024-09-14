@@ -32510,7 +32510,7 @@ pub mod keystate {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_keystate#{}.fetch_states()", object.id);
-                        self.fetchStates(object, client).await
+                        self.fetch_states(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("org_kde_kwin_keystate#{}.destroy()", object.id);
@@ -42702,7 +42702,7 @@ pub mod ivi_hmi_controller {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("ivi_hmi_controller#{}.ui_ready()", object.id);
-                        self.UI_ready(object, client).await
+                        self.ui_ready(object, client).await
                     }
                     1u16 => {
                         tracing::debug!("ivi_hmi_controller#{}.workspace_control()", object.id);
