@@ -1,15 +1,15 @@
-mod core;
+pub mod core;
 #[cfg(feature = "cosmic")]
-mod cosmic;
+pub mod cosmic;
 #[cfg(feature = "plasma")]
-mod plasma;
+pub mod plasma;
 #[cfg(feature = "stable")]
-mod stable;
+pub mod stable;
 #[cfg(feature = "staging")]
-mod staging;
+pub mod staging;
 #[cfg(feature = "unstable")]
-mod unstable;
+pub mod unstable;
 #[cfg(feature = "weston")]
-mod weston;
+pub mod weston;
 #[cfg(feature = "wlr")]
-mod wlr;
+pub mod wlr;

@@ -217,21 +217,21 @@ fn main() -> Result<()> {
         }
 
         let module_content = r#"
-mod core;
+pub mod core;
 #[cfg(feature = "stable")]
-mod stable;
+pub mod stable;
 #[cfg(feature = "staging")]
-mod staging;
+pub mod staging;
 #[cfg(feature = "unstable")]
-mod unstable;
+pub mod unstable;
 #[cfg(feature = "wlr")]
-mod wlr;
+pub mod wlr;
 #[cfg(feature = "plasma")]
-mod plasma;
+pub mod plasma;
 #[cfg(feature = "weston")]
-mod weston;
+pub mod weston;
 #[cfg(feature = "cosmic")]
-mod cosmic;
+pub mod cosmic;
 "#;
 
         let mut server_module = OpenOptions::new()
