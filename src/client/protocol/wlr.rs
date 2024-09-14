@@ -15,7 +15,6 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "This interface is a manager that allows creating per-seat data device"]
     #[doc = "controls."]
     pub mod zwlr_data_control_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_data_control_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrDataControlManagerV1 {
@@ -89,7 +88,6 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = ""]
     #[doc = "When the seat is destroyed, this object becomes inert."]
     pub mod zwlr_data_control_device_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -194,7 +192,6 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "transfer and provides a way to describe the offered data and a way to"]
     #[doc = "respond to requests to transfer the data."]
     pub mod zwlr_data_control_source_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -264,7 +261,6 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "MIME types that the data can be converted to and provides the mechanism"]
     #[doc = "for transferring the data directly from the source client."]
     pub mod zwlr_data_control_offer_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_data_control_offer_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrDataControlOfferV1 {
@@ -334,7 +330,6 @@ pub mod wlr_data_control_unstable_v1 {
 pub mod wlr_export_dmabuf_unstable_v1 {
     #[doc = "This object is a manager with which to start capturing from sources."]
     pub mod zwlr_export_dmabuf_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_export_dmabuf_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrExportDmabufManagerV1 {
@@ -402,7 +397,6 @@ pub mod wlr_export_dmabuf_unstable_v1 {
     #[doc = ""]
     #[doc = "All frames are read-only and may not be written into or altered."]
     pub mod zwlr_export_dmabuf_frame_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Special flags that should be respected by the client."]
         #[repr(u32)]
@@ -484,7 +478,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
     #[doc = "After a client binds the zwlr_foreign_toplevel_manager_v1, each opened"]
     #[doc = "toplevel window will be sent via the toplevel event"]
     pub mod zwlr_foreign_toplevel_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_foreign_toplevel_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrForeignToplevelManagerV1 {
@@ -523,7 +516,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
     #[doc = "Each toplevel has a list of outputs it is visible on, conveyed to the"]
     #[doc = "client with the output_enter and output_leave events."]
     pub mod zwlr_foreign_toplevel_handle_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "The different states that a toplevel can have. These have the same meaning"]
         #[doc = "as the states with the same names defined in xdg-toplevel"]
@@ -801,7 +793,6 @@ pub mod wlr_gamma_control_unstable_v1 {
     #[doc = "This interface is a manager that allows creating per-output gamma"]
     #[doc = "controls."]
     pub mod zwlr_gamma_control_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_gamma_control_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrGammaControlManagerV1 {
@@ -864,7 +855,6 @@ pub mod wlr_gamma_control_unstable_v1 {
     #[doc = "has exclusive access to this particular output. When the gamma control"]
     #[doc = "object is destroyed, the gamma table is restored to its original value."]
     pub mod zwlr_gamma_control_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -940,7 +930,6 @@ pub mod wlr_input_inhibit_unstable_v1 {
     #[doc = "Note! This protocol is deprecated and not intended for production use."]
     #[doc = "For screen lockers, use the ext-session-lock-v1 protocol."]
     pub mod zwlr_input_inhibit_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1002,7 +991,6 @@ pub mod wlr_input_inhibit_unstable_v1 {
     #[doc = "The compositor may continue to send input events to selected clients,"]
     #[doc = "such as an on-screen keyboard (via the input-method protocol)."]
     pub mod zwlr_input_inhibitor_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_input_inhibitor_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrInputInhibitorV1 {
@@ -1041,7 +1029,6 @@ pub mod wlr_layer_shell_unstable_v1 {
     #[doc = "many desktop shell components, and a broad number of other applications"]
     #[doc = "that interact with the desktop."]
     pub mod zwlr_layer_shell_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1181,7 +1168,6 @@ pub mod wlr_layer_shell_unstable_v1 {
     #[doc = "The client can re-map the surface by performing a commit without any"]
     #[doc = "buffer attached, waiting for a configure event and handling it as usual."]
     pub mod zwlr_layer_surface_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Types of keyboard interaction possible for layer shell surfaces. The"]
         #[doc = "rationale for this is twofold: (1) some applications are not interested"]
@@ -1559,7 +1545,6 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "output property advertisement protocol for regular clients. Instead,"]
     #[doc = "protocols such as xdg-output should be used."]
     pub mod zwlr_output_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_output_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrOutputManagerV1 {
@@ -1628,7 +1613,6 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "wlr_output_manager.done event. No guarantees are made regarding the order"]
     #[doc = "in which properties are sent."]
     pub mod zwlr_output_head_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1686,7 +1670,6 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "wlr_output_manager.done event. No guarantees are made regarding the order"]
     #[doc = "in which properties are sent."]
     pub mod zwlr_output_mode_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_output_mode_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrOutputModeV1 {
@@ -1727,7 +1710,6 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "then reply with a succeeded, failed or cancelled event. Finally the client"]
     #[doc = "should destroy the configuration object."]
     pub mod zwlr_output_configuration_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1871,7 +1853,6 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = ""]
     #[doc = "It is a protocol error to set the same property twice."]
     pub mod zwlr_output_configuration_head_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2062,7 +2043,6 @@ pub mod wlr_output_power_management_unstable_v1 {
     #[doc = "This interface is a manager that allows creating per-output power"]
     #[doc = "management mode controls."]
     pub mod zwlr_output_power_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_output_power_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrOutputPowerManagerV1 {
@@ -2117,7 +2097,6 @@ pub mod wlr_output_power_management_unstable_v1 {
     #[doc = "This object offers requests to set the power management mode of"]
     #[doc = "an output."]
     pub mod zwlr_output_power_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2215,7 +2194,6 @@ pub mod wlr_screencopy_unstable_v1 {
     #[doc = "This object is a manager which offers requests to start capturing from a"]
     #[doc = "source."]
     pub mod zwlr_screencopy_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_screencopy_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrScreencopyManagerV1 {
@@ -2320,7 +2298,6 @@ pub mod wlr_screencopy_unstable_v1 {
     #[doc = "Once either a \"ready\" or a \"failed\" event is received, the client should"]
     #[doc = "destroy the frame."]
     pub mod zwlr_screencopy_frame_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2421,7 +2398,6 @@ pub mod wlr_virtual_pointer_unstable_v1 {
     #[doc = "This protocol allows clients to emulate a physical pointer device. The"]
     #[doc = "requests are mostly mirror opposites of those specified in wl_pointer."]
     pub mod zwlr_virtual_pointer_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2631,7 +2607,6 @@ pub mod wlr_virtual_pointer_unstable_v1 {
     }
     #[doc = "This object allows clients to create individual virtual pointer objects."]
     pub mod zwlr_virtual_pointer_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_virtual_pointer_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrVirtualPointerManagerV1 {

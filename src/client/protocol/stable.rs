@@ -65,7 +65,6 @@ pub mod linux_dmabuf_v1 {
     #[doc = "wait and signal fences implicitly passed via the DMA-BUF's reservation"]
     #[doc = "mechanism."]
     pub mod zwp_linux_dmabuf_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
         pub trait ZwpLinuxDmabufV1 {
@@ -177,7 +176,6 @@ pub mod linux_dmabuf_v1 {
     #[doc = "All planes required by the format must be given exactly once, but can"]
     #[doc = "be given in any order. Each plane index can be set only once."]
     pub mod zwp_linux_buffer_params_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -448,7 +446,6 @@ pub mod linux_dmabuf_v1 {
     #[doc = "event, tranche_formats events and then a tranche_done event), then one"]
     #[doc = "done event."]
     pub mod zwp_linux_dmabuf_feedback_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { # [doc = "direct scan-out tranche"] const Scanout = 1u32 ; } }
         impl TryFrom<u32> for TrancheFlags {
@@ -507,7 +504,6 @@ pub mod presentation_time {
     #[doc = "display update time and the update's target time, especially"]
     #[doc = "when the compositor misses its target vertical blanking period."]
     pub mod wp_presentation {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal presentation requests."]
@@ -596,8 +592,6 @@ pub mod presentation_time {
     #[doc = "Once a presentation_feedback object has delivered a 'presented'"]
     #[doc = "or 'discarded' event it is automatically destroyed."]
     pub mod wp_presentation_feedback {
-        #[allow(unused)]
-        use futures_util::SinkExt;
         bitflags::bitflags! { # [doc = "These flags provide information about how the presentation of"] # [doc = "the related content update was done. The intent is to help"] # [doc = "clients assess the reliability of the feedback and the visual"] # [doc = "quality with respect to possible tearing and timings."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Kind : u32 { const Vsync = 1u32 ; const HwClock = 2u32 ; const HwCompletion = 4u32 ; const ZeroCopy = 8u32 ; } }
         impl TryFrom<u32> for Kind {
             type Error = crate::wire::DecodeError;
@@ -701,7 +695,6 @@ pub mod tablet_v2 {
     #[doc = "system. All tablets are associated with a seat, to get access to the"]
     #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
     pub mod zwp_tablet_manager_v2 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletManagerV2 {
@@ -754,7 +747,6 @@ pub mod tablet_v2 {
     #[doc = "seat. After binding to this interface, the compositor sends a set of"]
     #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
     pub mod zwp_tablet_seat_v2 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletSeatV2 {
@@ -805,7 +797,6 @@ pub mod tablet_v2 {
     #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
     #[doc = "considered part of the same hardware state change."]
     pub mod zwp_tablet_tool_v2 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Describes the physical type of a tool. The physical type of a tool"]
         #[doc = "generally defines its base usage."]
@@ -1011,7 +1002,6 @@ pub mod tablet_v2 {
     #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
     #[doc = "terminated by a wp_tablet.done event."]
     pub mod zwp_tablet_v2 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletV2 {
@@ -1046,7 +1036,6 @@ pub mod tablet_v2 {
     #[doc = "Events on a ring are logically grouped by the wl_tablet_pad_ring.frame"]
     #[doc = "event."]
     pub mod zwp_tablet_pad_ring_v2 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Describes the source types for ring events. This indicates to the"]
         #[doc = "client how a ring event was physically generated; a client may"]
@@ -1137,7 +1126,6 @@ pub mod tablet_v2 {
     #[doc = "Events on a strip are logically grouped by the wl_tablet_pad_strip.frame"]
     #[doc = "event."]
     pub mod zwp_tablet_pad_strip_v2 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Describes the source types for strip events. This indicates to the"]
         #[doc = "client how a strip event was physically generated; a client may"]
@@ -1244,7 +1232,6 @@ pub mod tablet_v2 {
     #[doc = "actions, and/or issue the respective .set_feedback requests to notify the"]
     #[doc = "compositor. See the wp_tablet_pad_group.mode_switch event for more details."]
     pub mod zwp_tablet_pad_group_v2 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletPadGroupV2 {
@@ -1297,7 +1284,6 @@ pub mod tablet_v2 {
     #[doc = "actions to a single pad feature. Only one mode can be active per group,"]
     #[doc = "although different groups may have different active modes."]
     pub mod zwp_tablet_pad_v2 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Describes the physical state of a button that caused the button"]
         #[doc = "event."]
@@ -1400,7 +1386,6 @@ pub mod viewporter {
     #[doc = "disconnecting the direct relationship between the buffer and the"]
     #[doc = "surface size."]
     pub mod wp_viewporter {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1523,7 +1508,6 @@ pub mod viewporter {
     #[doc = "state is removed from the wl_surface. The change will be applied"]
     #[doc = "on the next wl_surface.commit."]
     pub mod wp_viewport {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1644,7 +1628,6 @@ pub mod xdg_shell {
     #[doc = "create windows that can be dragged, resized, maximized, etc, as well as"]
     #[doc = "creating transient windows such as popup menus."]
     pub mod xdg_wm_base {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1795,7 +1778,6 @@ pub mod xdg_shell {
     #[doc = "set_anchor_rect. Passing an incomplete xdg_positioner object when"]
     #[doc = "positioning a surface raises an invalid_positioner error."]
     pub mod xdg_positioner {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2171,7 +2153,6 @@ pub mod xdg_shell {
     #[doc = "has not been destroyed, i.e. the client must perform the initial commit"]
     #[doc = "again before attaching a buffer."]
     pub mod xdg_surface {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2405,7 +2386,6 @@ pub mod xdg_shell {
     #[doc = ""]
     #[doc = "Attaching a null buffer to a toplevel unmaps the surface."]
     pub mod xdg_toplevel {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3044,7 +3024,6 @@ pub mod xdg_shell {
     #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
     #[doc = "for the xdg_popup state to take effect."]
     pub mod xdg_popup {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]

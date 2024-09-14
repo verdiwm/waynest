@@ -9,7 +9,6 @@ pub mod alpha_modifier_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_alpha_modifier_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -83,7 +82,6 @@ pub mod alpha_modifier_v1 {
     #[doc = "wl_surface is destroyed, all request on this object will raise the"]
     #[doc = "no_surface error."]
     pub mod wp_alpha_modifier_surface_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -169,7 +167,6 @@ pub mod content_type_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_content_type_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -247,7 +244,6 @@ pub mod content_type_v1 {
     #[doc = "When the associated surface gets destroyed, this object becomes inert and"]
     #[doc = "the client should destroy it."]
     pub mod wp_content_type_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These values describe the available content types for a surface."]
         #[repr(u32)]
@@ -334,7 +330,6 @@ pub mod cursor_shape_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_cursor_shape_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_cursor_shape_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpCursorShapeManagerV1 {
@@ -404,7 +399,6 @@ pub mod cursor_shape_v1 {
     }
     #[doc = "This interface allows clients to set the cursor shape."]
     pub mod wp_cursor_shape_device_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "This enum describes cursor shapes."]
         #[doc = ""]
@@ -638,7 +632,6 @@ pub mod drm_lease_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_drm_lease_device_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_drm_lease_device_v1 interface. See the module level documentation for more info"]
         pub trait WpDrmLeaseDeviceV1 {
@@ -701,7 +694,6 @@ pub mod drm_lease_v1 {
     #[doc = "event. When the description is updated the compositor will send a"]
     #[doc = "description event followed by a done event."]
     pub mod wp_drm_lease_connector_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_drm_lease_connector_v1 interface. See the module level documentation for more info"]
         pub trait WpDrmLeaseConnectorV1 {
@@ -739,7 +731,6 @@ pub mod drm_lease_v1 {
     #[doc = "wish to lease, then use wp_drm_lease_request_v1.submit to submit the"]
     #[doc = "request."]
     pub mod wp_drm_lease_request_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -836,7 +827,6 @@ pub mod drm_lease_v1 {
     #[doc = "is denied, the compositor will send a finished event without a lease_fd"]
     #[doc = "event."]
     pub mod wp_drm_lease_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_drm_lease_v1 interface. See the module level documentation for more info"]
         pub trait WpDrmLeaseV1 {
@@ -906,7 +896,6 @@ pub mod ext_foreign_toplevel_list_v1 {
     #[doc = "event after the global is bound, the compositor must not send any"]
     #[doc = "ext_foreign_toplevel_list_v1.toplevel events."]
     pub mod ext_foreign_toplevel_list_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_foreign_toplevel_list_v1 interface. See the module level documentation for more info"]
         pub trait ExtForeignToplevelListV1 {
@@ -963,7 +952,6 @@ pub mod ext_foreign_toplevel_list_v1 {
     #[doc = "A ext_foreign_toplevel_handle_v1 object represents a mapped toplevel"]
     #[doc = "window. A single app may have multiple mapped toplevels."]
     pub mod ext_foreign_toplevel_handle_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
         pub trait ExtForeignToplevelHandleV1 {
@@ -1011,7 +999,6 @@ pub mod ext_idle_notify_v1 {
     #[doc = "After binding to this global, clients can create ext_idle_notification_v1"]
     #[doc = "objects to get notified when the user is idle for a given amount of time."]
     pub mod ext_idle_notifier_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_idle_notifier_v1 interface. See the module level documentation for more info"]
         pub trait ExtIdleNotifierV1 {
@@ -1086,7 +1073,6 @@ pub mod ext_idle_notify_v1 {
     #[doc = "user activity starts again, the notification object stops being idle,"]
     #[doc = "a resumed event is sent and the timeout is restarted."]
     pub mod ext_idle_notification_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_idle_notification_v1 interface. See the module level documentation for more info"]
         pub trait ExtIdleNotificationV1 {
@@ -1137,7 +1123,6 @@ pub mod ext_image_capture_source_v1 {
     #[doc = "independent factory interfaces, the ext_image_capture_source_v1 interface is"]
     #[doc = "frozen at version 1."]
     pub mod ext_image_capture_source_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_image_capture_source_v1 interface. See the module level documentation for more info"]
         pub trait ExtImageCaptureSourceV1 {
@@ -1169,7 +1154,6 @@ pub mod ext_image_capture_source_v1 {
     }
     #[doc = "A manager for creating image capture source objects for wl_output objects."]
     pub mod ext_output_image_capture_source_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_output_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtOutputImageCaptureSourceManagerV1 {
@@ -1230,7 +1214,6 @@ pub mod ext_image_capture_source_v1 {
     #[doc = "A manager for creating image capture source objects for"]
     #[doc = "ext_foreign_toplevel_handle_v1 objects."]
     pub mod ext_foreign_toplevel_image_capture_source_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_foreign_toplevel_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtForeignToplevelImageCaptureSourceManagerV1 {
@@ -1298,7 +1281,6 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "This object is a manager which offers requests to start capturing from a"]
     #[doc = "source."]
     pub mod ext_image_copy_capture_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1426,7 +1408,6 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "attach_buffer request, set the buffer damage using the damage_buffer"]
     #[doc = "request and then send the capture request."]
     pub mod ext_image_copy_capture_session_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1512,7 +1493,6 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = ""]
     #[doc = "If the capture fails, the compositor must send the failed event."]
     pub mod ext_image_copy_capture_frame_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1678,7 +1658,6 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "This object represents a cursor capture session. It extends the base"]
     #[doc = "capture session with cursor-specific metadata."]
     pub mod ext_image_copy_capture_cursor_session_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1779,7 +1758,6 @@ pub mod ext_image_copy_capture_v1 {
 pub mod ext_session_lock_v1 {
     #[doc = "This interface is used to request that the session be locked."]
     pub mod ext_session_lock_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_session_lock_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtSessionLockManagerV1 {
@@ -1878,7 +1856,6 @@ pub mod ext_session_lock_v1 {
     #[doc = "for unlocking the session, they may even start a new lock client"]
     #[doc = "instance automatically."]
     pub mod ext_session_lock_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2024,7 +2001,6 @@ pub mod ext_session_lock_v1 {
     #[doc = "give the first lock surface created keyboard focus and change keyboard"]
     #[doc = "focus if the user clicks on other surfaces."]
     pub mod ext_session_lock_surface_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2148,7 +2124,6 @@ pub mod ext_session_lock_v1 {
 pub mod ext_transient_seat_v1 {
     #[doc = "The transient seat manager creates short-lived seats."]
     pub mod ext_transient_seat_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_transient_seat_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtTransientSeatManagerV1 {
@@ -2203,7 +2178,6 @@ pub mod ext_transient_seat_v1 {
     #[doc = "When the transient seat handle is destroyed, the seat itself will also be"]
     #[doc = "destroyed."]
     pub mod ext_transient_seat_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_transient_seat_v1 interface. See the module level documentation for more info"]
         pub trait ExtTransientSeatV1 {
@@ -2255,7 +2229,6 @@ pub mod ext_transient_seat_v1 {
 pub mod fractional_scale_v1 {
     #[doc = "A global interface for requesting surfaces to use fractional scales."]
     pub mod wp_fractional_scale_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2329,7 +2302,6 @@ pub mod fractional_scale_v1 {
     #[doc = "An additional interface to a wl_surface object which allows the compositor"]
     #[doc = "to inform the client of the preferred scale."]
     pub mod wp_fractional_scale_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_fractional_scale_v1 interface. See the module level documentation for more info"]
         pub trait WpFractionalScaleV1 {
@@ -2392,7 +2364,6 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = ""]
     #[doc = "See wp_linux_drm_syncobj_surface_v1 for more information."]
     pub mod wp_linux_drm_syncobj_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2498,7 +2469,6 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = "This object represents an explicit synchronization object timeline"]
     #[doc = "imported by the client to the compositor."]
     pub mod wp_linux_drm_syncobj_timeline_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_linux_drm_syncobj_timeline_v1 interface. See the module level documentation for more info"]
         pub trait WpLinuxDrmSyncobjTimelineV1 {
@@ -2558,7 +2528,6 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = "release point value, or else the conflicting_points protocol error is"]
     #[doc = "raised."]
     pub mod wp_linux_drm_syncobj_surface_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2753,7 +2722,6 @@ pub mod security_context_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_security_context_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2850,7 +2818,6 @@ pub mod security_context_v1 {
     #[doc = "When both are set, the combination of the instance ID and the sandbox"]
     #[doc = "engine must uniquely identify a running instance of an application."]
     pub mod wp_security_context_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3018,7 +2985,6 @@ pub mod single_pixel_buffer_v1 {
     #[doc = "The wp_single_pixel_buffer_manager_v1 interface is a factory for"]
     #[doc = "single-pixel buffers."]
     pub mod wp_single_pixel_buffer_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_single_pixel_buffer_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpSinglePixelBufferManagerV1 {
@@ -3102,7 +3068,6 @@ pub mod tearing_control_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod wp_tearing_control_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3183,7 +3148,6 @@ pub mod tearing_control_v1 {
     #[doc = "If the associated wl_surface is destroyed, this object becomes inert and"]
     #[doc = "should be destroyed."]
     pub mod wp_tearing_control_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "This enum provides information for if submitted frames from the client"]
         #[doc = "may be presented with tearing."]
@@ -3300,7 +3264,6 @@ pub mod xdg_activation_v1 {
     #[doc = "being activated or started, or for applications to request to be"]
     #[doc = "activated."]
     pub mod xdg_activation_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the xdg_activation_v1 interface. See the module level documentation for more info"]
         pub trait XdgActivationV1 {
@@ -3387,7 +3350,6 @@ pub mod xdg_activation_v1 {
     #[doc = "done event with the token. In case the request's parameters are invalid,"]
     #[doc = "the compositor will provide an invalid token."]
     pub mod xdg_activation_token_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3531,7 +3493,6 @@ pub mod xdg_dialog_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod xdg_wm_dialog_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3609,7 +3570,6 @@ pub mod xdg_dialog_v1 {
     #[doc = "the purpose of the secondary toplevel. This interface has no effect"]
     #[doc = "on toplevels that are not attached to a parent toplevel."]
     pub mod xdg_dialog_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the xdg_dialog_v1 interface. See the module level documentation for more info"]
         pub trait XdgDialogV1 {
@@ -3713,7 +3673,6 @@ pub mod xdg_toplevel_drag_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     pub mod xdg_toplevel_drag_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3791,7 +3750,6 @@ pub mod xdg_toplevel_drag_v1 {
         }
     }
     pub mod xdg_toplevel_drag_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3895,7 +3853,6 @@ pub mod xdg_toplevel_icon_v1 {
     #[doc = "This interface allows clients to create toplevel window icons and set"]
     #[doc = "them on toplevel windows to be displayed to the user."]
     pub mod xdg_toplevel_icon_manager_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the xdg_toplevel_icon_manager_v1 interface. See the module level documentation for more info"]
         pub trait XdgToplevelIconManagerV1 {
@@ -3991,7 +3948,6 @@ pub mod xdg_toplevel_icon_v1 {
     #[doc = "It is up to compositor policy whether to prefer using a buffer or loading"]
     #[doc = "an icon via its name. See 'set_name' and 'add_buffer' for details."]
     pub mod xdg_toplevel_icon_v1 {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]

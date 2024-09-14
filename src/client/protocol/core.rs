@@ -3,7 +3,6 @@ pub mod wayland {
     #[doc = "The core global object.  This is a special singleton object.  It"]
     #[doc = "is used for internal Wayland protocol features."]
     pub mod wl_display {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These errors are global and can be emitted in response to any"]
         #[doc = "server request."]
@@ -117,7 +116,6 @@ pub mod wayland {
     #[doc = "emit events to the client and lets the client invoke requests on"]
     #[doc = "the object."]
     pub mod wl_registry {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_registry interface. See the module level documentation for more info"]
         pub trait WlRegistry {
@@ -158,8 +156,6 @@ pub mod wayland {
     #[doc = "Note, because wl_callback objects are created from multiple independent"]
     #[doc = "factory interfaces, the wl_callback interface is frozen at version 1."]
     pub mod wl_callback {
-        #[allow(unused)]
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_callback interface. See the module level documentation for more info"]
         pub trait WlCallback {
             const INTERFACE: &'static str = "wl_callback";
@@ -178,7 +174,6 @@ pub mod wayland {
     #[doc = "compositor is in charge of combining the contents of multiple"]
     #[doc = "surfaces into one displayable output."]
     pub mod wl_compositor {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_compositor interface. See the module level documentation for more info"]
         pub trait WlCompositor {
@@ -234,7 +229,6 @@ pub mod wayland {
     #[doc = "setup/teardown overhead and is useful when interactively resizing"]
     #[doc = "a surface or for many small buffers."]
     pub mod wl_shm_pool {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_shm_pool interface. See the module level documentation for more info"]
         pub trait WlShmPool {
@@ -336,7 +330,6 @@ pub mod wayland {
     #[doc = "are emitted to inform clients about the valid pixel formats"]
     #[doc = "that can be used for buffers."]
     pub mod wl_shm {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These errors can be emitted in response to wl_shm requests."]
         #[repr(u32)]
@@ -813,7 +806,6 @@ pub mod wayland {
     #[doc = "Note, because wl_buffer objects are created from multiple independent"]
     #[doc = "factory interfaces, the wl_buffer interface is frozen at version 1."]
     pub mod wl_buffer {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_buffer interface. See the module level documentation for more info"]
         pub trait WlBuffer {
@@ -852,7 +844,6 @@ pub mod wayland {
     #[doc = "converted to and provides the mechanism for transferring the"]
     #[doc = "data directly from the source client."]
     pub mod wl_data_offer {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1048,7 +1039,6 @@ pub mod wayland {
     #[doc = "provides a way to describe the offered data and a way to respond"]
     #[doc = "to requests to transfer the data."]
     pub mod wl_data_source {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1148,7 +1138,6 @@ pub mod wayland {
     #[doc = "A wl_data_device provides access to inter-client data transfer"]
     #[doc = "mechanisms such as copy-and-paste and drag-and-drop."]
     pub mod wl_data_device {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1282,7 +1271,6 @@ pub mod wayland {
     #[doc = "functioning properly. See wl_data_source.set_actions,"]
     #[doc = "wl_data_offer.accept and wl_data_offer.finish for details."]
     pub mod wl_data_device_manager {
-        #[allow(unused)]
         use futures_util::SinkExt;
         bitflags::bitflags! { # [doc = "This is a bitmask of the available/preferred actions in a"] # [doc = "drag-and-drop operation."] # [doc = ""] # [doc = "In the compositor, the selected action is a result of matching the"] # [doc = "actions offered by the source and destination sides.  \"action\" events"] # [doc = "with a \"none\" action will be sent to both source and destination if"] # [doc = "there is no match. All further checks will effectively happen on"] # [doc = "(source actions ∩ destination actions)."] # [doc = ""] # [doc = "In addition, compositors may also pick different actions in"] # [doc = "reaction to key modifiers being pressed. One common design that"] # [doc = "is used in major toolkits (and the behavior recommended for"] # [doc = "compositors) is:"] # [doc = ""] # [doc = "- If no modifiers are pressed, the first match (in bit order)"] # [doc = "will be used."] # [doc = "- Pressing Shift selects \"move\", if enabled in the mask."] # [doc = "- Pressing Control selects \"copy\", if enabled in the mask."] # [doc = ""] # [doc = "Behavior beyond that is considered implementation-dependent."] # [doc = "Compositors may for example bind other modifiers (like Alt/Meta)"] # [doc = "or drags initiated with other buttons than BTN_LEFT to specific"] # [doc = "actions (e.g. \"ask\")."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct DndAction : u32 { # [doc = "no action"] const None = 0u32 ; # [doc = "copy action"] const Copy = 1u32 ; # [doc = "move action"] const Move = 2u32 ; # [doc = "ask action"] const Ask = 4u32 ; } }
         impl TryFrom<u32> for DndAction {
@@ -1352,7 +1340,6 @@ pub mod wayland {
     #[doc = "For desktop-style user interfaces, use xdg_shell. Compositors and clients"]
     #[doc = "should not implement this interface."]
     pub mod wl_shell {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -1418,7 +1405,6 @@ pub mod wayland {
     #[doc = "wl_shell_surface_destroy() must be called before destroying"]
     #[doc = "the wl_surface object."]
     pub mod wl_shell_surface {
-        #[allow(unused)]
         use futures_util::SinkExt;
         bitflags::bitflags! { # [doc = "These values are used to indicate which edge of a surface"] # [doc = "is being dragged in a resize operation. The server may"] # [doc = "use this information to adapt its behavior, e.g. choose"] # [doc = "an appropriate cursor image."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Resize : u32 { # [doc = "no edge"] const None = 0u32 ; # [doc = "top edge"] const Top = 1u32 ; # [doc = "bottom edge"] const Bottom = 2u32 ; # [doc = "left edge"] const Left = 4u32 ; # [doc = "top and left edges"] const TopLeft = 5u32 ; # [doc = "bottom and left edges"] const BottomLeft = 6u32 ; # [doc = "right edge"] const Right = 8u32 ; # [doc = "top and right edges"] const TopRight = 9u32 ; # [doc = "bottom and right edges"] const BottomRight = 10u32 ; } }
         impl TryFrom<u32> for Resize {
@@ -1795,7 +1781,6 @@ pub mod wayland {
     #[doc = "a cursor (cursor is a different role than sub-surface, and role"]
     #[doc = "switching is not allowed)."]
     pub mod wl_surface {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "These errors can be emitted in response to wl_surface requests."]
         #[repr(u32)]
@@ -2301,7 +2286,6 @@ pub mod wayland {
     #[doc = "device is hot plugged.  A seat typically has a pointer and"]
     #[doc = "maintains a keyboard focus and a pointer focus."]
     pub mod wl_seat {
-        #[allow(unused)]
         use futures_util::SinkExt;
         bitflags::bitflags! { # [doc = "This is a bitmask of capabilities this seat has; if a member is"] # [doc = "set, then it is present on the seat."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "the seat has pointer devices"] const Pointer = 1u32 ; # [doc = "the seat has one or more keyboards"] const Keyboard = 2u32 ; # [doc = "the seat has touch devices"] const Touch = 4u32 ; } }
         impl TryFrom<u32> for Capability {
@@ -2433,7 +2417,6 @@ pub mod wayland {
     #[doc = "and button and axis events for button presses, button releases"]
     #[doc = "and scrolling."]
     pub mod wl_pointer {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2652,7 +2635,6 @@ pub mod wayland {
     #[doc = "By default, the active surface is null, the keys currently logically down"]
     #[doc = "are empty, the active modifiers and the active group are 0."]
     pub mod wl_keyboard {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "This specifies the format of the keymap provided to the"]
         #[doc = "client with the wl_keyboard.keymap event."]
@@ -2730,7 +2712,6 @@ pub mod wayland {
     #[doc = "and ending with an up event. Events relating to the same"]
     #[doc = "contact point can be identified by the ID of the sequence."]
     pub mod wl_touch {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_touch interface. See the module level documentation for more info"]
         pub trait WlTouch {
@@ -2765,7 +2746,6 @@ pub mod wayland {
     #[doc = "displays part of the compositor space.  This object is published"]
     #[doc = "as global during start up, or when a monitor is hotplugged."]
     pub mod wl_output {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "This enumeration describes how the physical"]
         #[doc = "pixels on an output are laid out."]
@@ -2887,7 +2867,6 @@ pub mod wayland {
     #[doc = "Region objects are used to describe the opaque and input"]
     #[doc = "regions of a surface."]
     pub mod wl_region {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wl_region interface. See the module level documentation for more info"]
         pub trait WlRegion {
@@ -2980,7 +2959,6 @@ pub mod wayland {
     #[doc = "objects. This should allow the compositor to pass YUV video buffer"]
     #[doc = "processing to dedicated overlay hardware when possible."]
     pub mod wl_subcompositor {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
@@ -3121,7 +3099,6 @@ pub mod wayland {
     #[doc = "The wl_surface.offset request is ignored: clients must use set_position"]
     #[doc = "instead to move the sub-surface."]
     pub mod wl_subsurface {
-        #[allow(unused)]
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]

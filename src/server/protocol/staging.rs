@@ -1,4 +1,3 @@
-#![allow(unused)]
 #![allow(async_fn_in_trait)]
 pub mod alpha_modifier_v1 {
     #[doc = "This interface allows a client to set a factor for the alpha values on a"]

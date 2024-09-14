@@ -1,4 +1,3 @@
-#![allow(unused)]
 #![allow(async_fn_in_trait)]
 pub mod appmenu {
     #[doc = "This interface allows a client to link a window (or wl_surface) to an com.canonical.dbusmenu"]
@@ -691,8 +690,8 @@ pub mod fullscreen_shell {
             }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 match message.opcode {
@@ -1554,8 +1553,8 @@ pub mod org_kde_kwin_outputdevice {
             }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 match message.opcode {
@@ -5334,8 +5333,8 @@ pub mod kde_output_device_v2 {
             }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 match message.opcode {
@@ -5847,8 +5846,8 @@ pub mod kde_output_device_v2 {
             }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 match message.opcode {
@@ -8690,8 +8689,8 @@ pub mod plasma_window_management {
             }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 match message.opcode {

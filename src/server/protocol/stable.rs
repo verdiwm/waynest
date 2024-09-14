@@ -1,4 +1,3 @@
-#![allow(unused)]
 #![allow(async_fn_in_trait)]
 pub mod linux_dmabuf_v1 {
     #[doc = "Following the interfaces from:"]
@@ -1000,8 +999,8 @@ pub mod presentation_time {
             }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 match message.opcode {

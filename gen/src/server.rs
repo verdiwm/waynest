@@ -32,6 +32,18 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
             let events = write_events(pairs, pair, &interface);
             let enums = write_enums(&interface);
 
+            let handler_args = if dispatchers.is_empty() {
+                quote! {
+                    _object: &crate::server::Object,
+                    _client: &mut crate::server::Client,
+                }
+            } else {
+                quote! {
+                    object: &crate::server::Object,
+                    client: &mut crate::server::Client,
+                }
+            };
+
             inner_modules.push(quote! {
                 #(#docs)*
                 pub mod #module_name {
@@ -49,8 +61,7 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
 
                         async fn handle_request(
                             &self,
-                            object: &crate::server::Object,
-                            client: &mut crate::server::Client,
+                            #handler_args
                             message: &mut crate::wire::Message,
                         ) -> crate::server::Result<()> {
                             match message.opcode {
@@ -78,7 +89,6 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
     }
 
     quote! {
-        #![allow(unused)]
         #![allow(async_fn_in_trait)]
         #(#modules)*
     }

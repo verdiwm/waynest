@@ -1,4 +1,3 @@
-#![allow(unused)]
 #![allow(async_fn_in_trait)]
 pub mod fullscreen_shell_unstable_v1 {
     #[doc = "Displays a single surface per output."]
@@ -309,8 +308,8 @@ pub mod fullscreen_shell_unstable_v1 {
             }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 match message.opcode {
@@ -998,8 +997,8 @@ pub mod input_method_unstable_v1 {
             }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 match message.opcode {
@@ -2741,8 +2740,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 match message.opcode {

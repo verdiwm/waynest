@@ -1,4 +1,3 @@
-#![allow(unused)]
 #![allow(async_fn_in_trait)]
 #[doc = "This protocol allows a privileged client to control data devices. In"]
 #[doc = "particular, the client will be able to manage the current selection and take"]
