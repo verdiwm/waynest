@@ -1,6 +1,6 @@
 pub mod core;
-#[cfg(feature = "cosmic")]
-pub mod cosmic;
+// #[cfg(feature = "cosmic")]
+// pub mod cosmic;
 #[cfg(feature = "plasma")]
 pub mod plasma;
 #[cfg(feature = "stable")]
