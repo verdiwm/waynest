@@ -36,7 +36,9 @@ async-trait = "0.1.82"
 bitflags = "2.6.0"
 bytes = "1.7.1"
 downcast-rs = "1.2.1"
-futures-util = { version = "0.3.30", default-features = false, features = ["sink"] }
+futures-util = { version = "0.3.30", default-features = false, features = [
+    "sink",
+] }
 pin-project-lite = "0.2.14"
 rustix = { version = "0.38.37", features = ["net"] }
 thiserror = "1.0.63"
@@ -51,4 +53,14 @@ tokio = { version = "1.40.0", features = ["rt-multi-thread", "macros"] }
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 
 [package.metadata.docs.rs]
-features = ["client", "server"]
+features = [
+    "client",
+    "server",
+    "stable",
+    "staging",
+    "unstable",
+    "wlr",
+    "plasma",
+    "weston",
+    # "cosmic" Cosmic is currently broken
+]
