@@ -4,7 +4,7 @@ exclude = ["gen", "fuzz"]
 
 [package]
 name = "waynest"
-version = "0.0.11"
+version = "0.0.12"
 edition = "2021"
 license = "Apache-2.0"
 authors = ["Federico Maria Morrone <contact@morrone.dev>"]
