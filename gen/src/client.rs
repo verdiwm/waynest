@@ -4,14 +4,15 @@ use quote::{format_ident, quote};
 use tracing::debug;
 
 use crate::{
-    parser::{Interface, Protocol},
+    parser::{Interface, Pair},
     utils::{description_to_docs, find_enum, make_ident, write_enums},
 };
 
-pub fn generate_client_code(current: &[Protocol], protocols: &[Protocol]) -> TokenStream {
+pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
     let mut modules = Vec::new();
 
-    for protocol in current {
+    for pair in current {
+        let protocol = &pair.protocol;
         debug!("Generating client code for \"{}\"", &protocol.name);
 
         let mut inner_modules = Vec::new();
@@ -27,7 +28,7 @@ pub fn generate_client_code(current: &[Protocol], protocols: &[Protocol]) -> Tok
 
             let enums = write_enums(&interface);
 
-            let requests = write_requests(current, protocols, protocol, interface);
+            let requests = write_requests(pairs, pair, interface);
 
             inner_modules.push(quote! {
                 #(#docs)*
@@ -76,12 +77,7 @@ pub fn generate_client_code(current: &[Protocol], protocols: &[Protocol]) -> Tok
     }
 }
 
-fn write_requests(
-    _current: &[Protocol],
-    protocols: &[Protocol],
-    protocol: &Protocol,
-    interface: &Interface,
-) -> Vec<TokenStream> {
+fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<TokenStream> {
     let mut requests = Vec::new();
 
     for (opcode, request) in interface.requests.iter().enumerate() {
@@ -102,8 +98,7 @@ fn write_requests(
         ];
 
         for arg in &request.args {
-            let mut ty =
-                arg.to_rust_type_token(arg.find_protocol(&protocols).as_ref().unwrap_or(protocol));
+            let mut ty = arg.to_rust_type_token(arg.find_protocol(pairs).as_ref().unwrap_or(pair));
 
             if arg.allow_null {
                 ty = quote! {Option<#ty>};
@@ -124,10 +119,10 @@ fn write_requests(
 
             if let Some((enum_interface, name)) = arg.to_enum_name() {
                 let e = if let Some(enum_interface) = enum_interface {
-                    protocols
+                    pairs
                         .iter()
-                        .find_map(|protocol| {
-                            protocol
+                        .find_map(|pair| {
+                            pair.protocol
                                 .interfaces
                                 .iter()
                                 .find(|e| e.name == enum_interface)
@@ -138,7 +133,7 @@ fn write_requests(
                         .find(|e| e.name == name)
                         .unwrap()
                 } else {
-                    find_enum(&protocol, &name)
+                    find_enum(&pair.protocol, &name)
                 };
 
                 if e.bitfield {

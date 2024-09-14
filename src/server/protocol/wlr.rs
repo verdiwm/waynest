@@ -1995,7 +1995,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                layer: super::super::wlr_layer_shell_unstable_v1::zwlr_layer_shell_v1::Layer,
+                layer : super :: super :: super :: wlr :: wlr_layer_shell_unstable_v1 :: zwlr_layer_shell_v1 :: Layer,
             ) -> crate::server::Result<()>;
             #[doc = "Requests an edge for the exclusive zone to apply. The exclusive"]
             #[doc = "edge will be automatically deduced from anchor points when possible,"]
@@ -2451,7 +2451,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                transform: super::super::wayland::wl_output::Transform,
+                transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> zwlr_output_head_v1#{}.transform()", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -3069,7 +3069,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                transform: super::super::wayland::wl_output::Transform,
+                transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::server::Result<()>;
             #[doc = "This request sets the head's scale."]
             async fn set_scale(
@@ -3084,7 +3084,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                state : super :: super :: wlr_output_management_unstable_v1 :: zwlr_output_head_v1 :: AdaptiveSyncState,
+                state : super :: super :: super :: wlr :: wlr_output_management_unstable_v1 :: zwlr_output_head_v1 :: AdaptiveSyncState,
             ) -> crate::server::Result<()>;
         }
     }
@@ -3535,7 +3535,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                format: super::super::wayland::wl_shm::Format,
+                format: super::super::super::core::wayland::wl_shm::Format,
                 width: u32,
                 height: u32,
                 stride: u32,
@@ -3838,7 +3838,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 client: &mut crate::server::Client,
                 time: u32,
                 button: u32,
-                state: super::super::wayland::wl_pointer::ButtonState,
+                state: super::super::super::core::wayland::wl_pointer::ButtonState,
             ) -> crate::server::Result<()>;
             #[doc = "Scroll and other axis requests."]
             async fn axis(
@@ -3846,7 +3846,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
                 time: u32,
-                axis: super::super::wayland::wl_pointer::Axis,
+                axis: super::super::super::core::wayland::wl_pointer::Axis,
                 value: crate::wire::Fixed,
             ) -> crate::server::Result<()>;
             #[doc = "Indicates the set of events that logically belong together."]
@@ -3860,7 +3860,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                axis_source: super::super::wayland::wl_pointer::AxisSource,
+                axis_source: super::super::super::core::wayland::wl_pointer::AxisSource,
             ) -> crate::server::Result<()>;
             #[doc = "Stop notification for scroll and other axes."]
             async fn axis_stop(
@@ -3868,7 +3868,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
                 time: u32,
-                axis: super::super::wayland::wl_pointer::Axis,
+                axis: super::super::super::core::wayland::wl_pointer::Axis,
             ) -> crate::server::Result<()>;
             #[doc = "Discrete step information for scroll and other axes."]
             #[doc = ""]
@@ -3879,7 +3879,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
                 time: u32,
-                axis: super::super::wayland::wl_pointer::Axis,
+                axis: super::super::super::core::wayland::wl_pointer::Axis,
                 value: crate::wire::Fixed,
                 discrete: i32,
             ) -> crate::server::Result<()>;

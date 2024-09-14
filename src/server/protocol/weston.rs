@@ -677,7 +677,7 @@ pub mod color_management_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
                 image_description: crate::wire::ObjectId,
-                render_intent: super::super::color_management_v1::xx_color_manager_v4::RenderIntent,
+                render_intent : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: RenderIntent,
             ) -> crate::server::Result<()>;
             #[doc = "This request removes any image description from the surface. See"]
             #[doc = "set_image_description for how a compositor handles a surface without"]
@@ -1228,7 +1228,7 @@ pub mod color_management_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                tf: super::super::color_management_v1::xx_color_manager_v4::TransferFunction,
+                tf : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: TransferFunction,
             ) -> crate::server::Result<()>;
             #[doc = "Sets the color component transfer characteristic to a power curve with"]
             #[doc = "the given exponent. This curve represents the conversion from electrical"]
@@ -1269,7 +1269,7 @@ pub mod color_management_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                primaries: super::super::color_management_v1::xx_color_manager_v4::Primaries,
+                primaries : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: Primaries,
             ) -> crate::server::Result<()>;
             #[doc = "Sets the color primaries and white point using CIE 1931 xy chromaticity"]
             #[doc = "coordinates. This describes the primary color volume which is the basis"]
@@ -1751,7 +1751,7 @@ pub mod color_management_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                primaries: super::super::color_management_v1::xx_color_manager_v4::Primaries,
+                primaries : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: Primaries,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> xx_image_description_info_v4#{}.primaries_named()",
@@ -1791,7 +1791,7 @@ pub mod color_management_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                tf: super::super::color_management_v1::xx_color_manager_v4::TransferFunction,
+                tf : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: TransferFunction,
             ) -> crate::server::Result<()> {
                 tracing::debug!("-> xx_image_description_info_v4#{}.tf_named()", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()

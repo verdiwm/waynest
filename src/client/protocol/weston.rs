@@ -535,7 +535,7 @@ pub mod color_management_v1 {
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
-                render_intent: super::super::color_management_v1::xx_color_manager_v4::RenderIntent,
+                render_intent : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: RenderIntent,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> xx_color_management_surface_v4#{}.set_image_description()",
@@ -959,7 +959,7 @@ pub mod color_management_v1 {
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
-                tf: super::super::color_management_v1::xx_color_manager_v4::TransferFunction,
+                tf : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: TransferFunction,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> xx_image_description_creator_params_v4#{}.set_tf_named()",
@@ -1022,7 +1022,7 @@ pub mod color_management_v1 {
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
-                primaries: super::super::color_management_v1::xx_color_manager_v4::Primaries,
+                primaries : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: Primaries,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> xx_image_description_creator_params_v4#{}.set_primaries_named()",
