@@ -40,7 +40,7 @@ futures-util = { version = "0.3.30", default-features = false, features = [
     "sink",
 ] }
 pin-project-lite = "0.2.14"
-rustix = { version = "0.38.37", features = ["net"] }
+rustix = { version = "0.38.37", features = ["fs", "net"] }
 thiserror = "1.0.63"
 tokio = { version = "1.40.0", features = ["net"] }
 tokio-stream = "0.1.16"
