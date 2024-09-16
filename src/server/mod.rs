@@ -1,7 +1,9 @@
 mod error;
+mod listener;
 pub mod protocol;
 
 pub use error::{Error, Result};
+pub use listener::Listener;
 pub use waynest_macros::Dispatcher;
 
 use async_trait::async_trait;
