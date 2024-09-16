@@ -1,7 +1,7 @@
 use std::{
     io,
     os::fd::FromRawFd,
-    path::PathBuf,
+    path::{Path, PathBuf},
     pin::Pin,
     task::{Context, Poll},
 };
@@ -10,6 +10,8 @@ use futures_util::Stream;
 use pin_project_lite::pin_project;
 use rustix::fd::OwnedFd;
 use tokio::net::{UnixListener, UnixStream};
+
+use crate::server::Error;
 
 pin_project! {
     pub struct Listener {
@@ -21,24 +23,34 @@ pin_project! {
 }
 
 impl Listener {
-    pub fn new() -> Option<Self> {
-        let runtime_dir: PathBuf = std::env::var("XDG_RUNTIME_DIR").ok()?.into();
+    pub fn new() -> Result<Self, Error> {
+        // FIXME: add a proper error
+        let runtime_dir: PathBuf = std::env::var("XDG_RUNTIME_DIR")
+            .map_err(|_| Error::Internal)?
+            .into();
 
         for i in 1..=32u8 {
             let path = runtime_dir.join(format!("wayland-{i}"));
 
-            if !path.exists() {
-                // FIXME: actually implement this
-                return Some(Self {
-                    unix_listener: UnixListener::bind(path).ok()?,
-                    _lock: unsafe { OwnedFd::from_raw_fd(5) },
-                    socket_path: PathBuf::new(),
-                    lock_path: PathBuf::new(),
-                });
-            }
+            return Self::new_with_path(path);
         }
 
-        None
+        Err(Error::Internal)
+    }
+
+    pub fn new_with_path<P: AsRef<Path>>(path: P) -> Result<Self, Error> {
+        if !path.as_ref().exists() {
+            // FIXME: add a proper error
+            return Err(Error::Internal);
+        }
+
+        // FIXME: actually implement this
+        Ok(Self {
+            unix_listener: UnixListener::bind(path)?,
+            _lock: unsafe { OwnedFd::from_raw_fd(5) },
+            socket_path: PathBuf::new(),
+            lock_path: PathBuf::new(),
+        })
     }
 }
 
