@@ -1,5 +1,6 @@
 use std::{
     io,
+    os::fd::FromRawFd,
     path::PathBuf,
     pin::Pin,
     task::{Context, Poll},
@@ -20,8 +21,24 @@ pin_project! {
 }
 
 impl Listener {
-    pub fn new() -> Self {
-        todo!()
+    pub fn new() -> Option<Self> {
+        let runtime_dir: PathBuf = std::env::var("XDG_RUNTIME_DIR").ok()?.into();
+
+        for i in 1..=32u8 {
+            let path = runtime_dir.join(format!("wayland-{i}"));
+
+            if !path.exists() {
+                // FIXME: actually implement this
+                return Some(Self {
+                    unix_listener: UnixListener::bind(path).ok()?,
+                    _lock: unsafe { OwnedFd::from_raw_fd(5) },
+                    socket_path: PathBuf::new(),
+                    lock_path: PathBuf::new(),
+                });
+            }
+        }
+
+        None
     }
 }
 
