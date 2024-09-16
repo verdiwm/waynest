@@ -9,10 +9,9 @@ pub use waynest_macros::Dispatcher;
 use async_trait::async_trait;
 use core::fmt;
 use downcast_rs::{impl_downcast, DowncastSync};
-use futures_util::SinkExt;
+use futures_util::{SinkExt, TryStreamExt};
 use std::{collections::HashMap, io, sync::Arc};
 use tokio::net::UnixStream;
-use tokio_stream::StreamExt;
 
 use crate::wire::{Message, ObjectId, Socket};
 

@@ -43,12 +43,11 @@ pin-project-lite = "0.2.14"
 rustix = { version = "0.38.37", features = ["fs", "net"] }
 thiserror = "1.0.63"
 tokio = { version = "1.40.0", features = ["net"] }
-tokio-stream = "0.1.16"
 tracing = "0.1.40"
 waynest-macros = { version = "0.0.2", path = "macros" }
 
 [dev-dependencies]
-anyhow = "1.0.88"
+anyhow = "1.0.89"
 tokio = { version = "1.40.0", features = ["rt-multi-thread", "macros"] }
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 
