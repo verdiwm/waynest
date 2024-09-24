@@ -13,3 +13,5 @@ pub mod weston;
 pub mod wlr;
 // #[cfg(feature = "cosmic")]
 // pub mod cosmic;
+#[cfg(feature = "frog")]
+pub mod frog;
