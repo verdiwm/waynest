@@ -26,6 +26,7 @@ wlr = []
 plasma = []
 weston = []
 # cosmic = []
+frog = []
 
 # Internal features
 fuzz = ["dep:arbitrary"]
@@ -62,4 +63,5 @@ features = [
     "plasma",
     "weston",
     # "cosmic" Cosmic is currently broken
+    "frog",
 ]

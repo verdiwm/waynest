@@ -12,7 +12,7 @@ mod utils;
 use client::generate_client_code;
 use server::generate_server_code;
 
-const PROTOCOLS: [(&str, &[&str]); 8] = [
+const PROTOCOLS: [(&str, &[&str]); 9] = [
     ("core", &["protocols/wayland/protocol/wayland.xml"]),
     (
         "stable",
@@ -152,6 +152,13 @@ const PROTOCOLS: [(&str, &[&str]); 8] = [
             "protocols/cosmic-protocols/unstable/cosmic-workspace-unstable-v1.xml",
         ],
     ),
+    (
+        "frog",
+        &[
+            "protocols/frog-protcols/frog-protocols/frog-color-management-v1.xml",
+            "protocols/frog-protcols/frog-protocols/frog-fifo-v1.xml",
+        ],
+    )
 ];
 
 #[derive(Parser, Debug)]
@@ -232,6 +239,8 @@ pub mod plasma;
 pub mod weston;
 // #[cfg(feature = "cosmic")]
 // pub mod cosmic;
+#[cfg(feature = "frog")]
+pub mod frog;
 "#;
 
         let mut server_module = OpenOptions::new()
