@@ -1,10 +1,10 @@
 use std::{borrow::Cow, collections::HashMap, os::unix::net::UnixStream, path::Path, sync::Arc};
 
 use anyhow::Result;
-use futures_util::{SinkExt, TryStreamExt};
+use futures_util::TryStreamExt;
 use waynest::{
-    client::{protocol::wayland::wl_display::WlDisplay, Dispatcher},
-    wire::{DecodeError, Message, ObjectId, PayloadBuilder, Socket},
+    client::{protocol::core::wayland::wl_display::WlDisplay, Dispatcher},
+    wire::{Message, ObjectId, Socket},
 };
 
 struct Client {
@@ -20,7 +20,7 @@ impl Client {
         Ok(Self { objects })
     }
 
-    pub async fn handle_message(&mut self, message: &Message) {
+    pub async fn _handle_message(&mut self, message: &Message) {
         let dispatcher = self
             .objects
             .get(&message.object_id)
@@ -51,7 +51,7 @@ impl Display {
 }
 
 impl Dispatcher for Display {
-    fn dispatch(&self, message: &Message) {
+    fn dispatch(&self, _message: &Message) {
         todo!()
     }
 }
