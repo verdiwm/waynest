@@ -25,10 +25,10 @@ unstable = []
 wlr = []
 plasma = []
 weston = []
-# cosmic = []
+cosmic = ["wlr"]
 frog = []
 
-# Internal features
+# Internal features     
 fuzz = ["dep:arbitrary"]
 
 [dependencies]
@@ -53,15 +53,4 @@ tokio = { version = "1.40.0", features = ["rt-multi-thread", "macros"] }
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 
 [package.metadata.docs.rs]
-features = [
-    "client",
-    "server",
-    "stable",
-    "staging",
-    "unstable",
-    "wlr",
-    "plasma",
-    "weston",
-    # "cosmic" Cosmic is currently broken
-    "frog",
-]
+all-features = true

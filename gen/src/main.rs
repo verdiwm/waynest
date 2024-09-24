@@ -149,7 +149,7 @@ const PROTOCOLS: [(&str, &[&str]); 9] = [
             "protocols/cosmic-protocols/unstable/cosmic-screencopy-unstable-v2.xml",
             "protocols/cosmic-protocols/unstable/cosmic-toplevel-info-unstable-v1.xml",
             "protocols/cosmic-protocols/unstable/cosmic-toplevel-management-unstable-v1.xml",
-            "protocols/cosmic-protocols/unstable/cosmic-workspace-unstable-v1.xml",
+            // "protocols/cosmic-protocols/unstable/cosmic-workspace-unstable-v1.xml",
         ],
     ),
     (
@@ -237,8 +237,8 @@ pub mod wlr;
 pub mod plasma;
 #[cfg(feature = "weston")]
 pub mod weston;
-// #[cfg(feature = "cosmic")]
-// pub mod cosmic;
+#[cfg(feature = "cosmic")]
+pub mod cosmic;
 #[cfg(feature = "frog")]
 pub mod frog;
 "#;
