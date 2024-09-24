@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::Parser;
 use parser::Pair;
-use std::{fs::OpenOptions, io::Write as _};
+use std::{fmt::Write as _, fs::OpenOptions, io::Write as _};
 use tracing::info;
 
 mod client;
@@ -197,7 +197,18 @@ fn main() -> Result<()> {
 
         serde_json::to_writer(&mut json_path, &protocols)?;
     } else {
+        let mut module_content = "pub mod core;".to_string();
+
         for (module, current) in protocols {
+            if module != "core" {
+                writeln!(
+                    &mut module_content,
+                    r#"#[cfg(feature = "{module}")]
+#[cfg_attr(docsrs, doc(cfg(feature = "{module}")))]
+pub mod {module};"#
+                )?;
+            }
+
             let mut server_path = OpenOptions::new()
                 .truncate(true)
                 .write(true)
@@ -222,26 +233,6 @@ fn main() -> Result<()> {
                 generate_client_code(&current, &pairs)
             )?;
         }
-
-        let module_content = r#"
-pub mod core;
-#[cfg(feature = "stable")]
-pub mod stable;
-#[cfg(feature = "staging")]
-pub mod staging;
-#[cfg(feature = "unstable")]
-pub mod unstable;
-#[cfg(feature = "wlr")]
-pub mod wlr;
-#[cfg(feature = "plasma")]
-pub mod plasma;
-#[cfg(feature = "weston")]
-pub mod weston;
-#[cfg(feature = "cosmic")]
-pub mod cosmic;
-#[cfg(feature = "frog")]
-pub mod frog;
-"#;
 
         let mut server_module = OpenOptions::new()
             .truncate(true)
