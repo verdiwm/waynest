@@ -726,6 +726,7 @@ version = "0.0.2"
 dependencies = [
  "quote",
  "syn",
+ "waynest-gen",
 ]
 
 [[package]]
