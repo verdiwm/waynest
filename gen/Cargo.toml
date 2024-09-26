@@ -10,9 +10,11 @@ documentation = "https://docs.rs/waynest"
 repository = "https://github.com/verdiwm/waynest"
 include = ["src/**/*.rs", "../README.md", "../LICENSE"]
 
+[features]
+bin = ["dep:anyhow", "dep:clap", "dep:tracing-subscriber"]
+
 [dependencies]
-anyhow = "1.0.89"
-clap = { version = "4.5.18", features = ["derive"] }
+thiserror = "1.0.64"
 heck = "0.5.0"
 proc-macro2 = { version = "1.0.86", default-features = false }
 quick-xml = { version = "0.36.2", features = ["serialize", "overlapped-lists"] }
@@ -20,4 +22,10 @@ quote = { version = "1.0.37", default-features = false }
 serde = { version = "1.0.210", features = ["derive"] }
 serde_json = "1.0.128"
 tracing = "0.1.40"
-tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+
+# Binary only deps
+anyhow = { version = "1.0.89", optional = true }
+clap = { version = "4.5.18", optional = true, features = ["derive"] }
+tracing-subscriber = { version = "0.3.18", optional = true, features = [
+    "env-filter",
+] }

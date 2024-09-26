@@ -1,13 +1,21 @@
-use std::{fmt::Display, fs, path::Path};
+use std::{fmt::Display, fs, io, path::Path};
 
-use anyhow::Result;
 use heck::ToUpperCamelCase;
 use proc_macro2::TokenStream;
+use quick_xml::DeError;
 use quote::{quote, ToTokens};
 use serde::{Deserialize, Serialize};
 use tracing::debug;
 
 use crate::utils::make_ident;
+
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error("{0}")]
+    IoError(#[from] io::Error),
+    #[error("{0}")]
+    Decode(#[from] DeError),
+}
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Pair {
@@ -136,7 +144,7 @@ pub struct Entry {
 }
 
 impl Pair {
-    pub fn from_path<D: Display, P: AsRef<Path>>(module: D, path: P) -> Result<Self> {
+    pub fn from_path<D: Display, P: AsRef<Path>>(module: D, path: P) -> Result<Self, Error> {
         debug!("Parsing protocol {}", path.as_ref().display());
         Ok(Self {
             protocol: quick_xml::de::from_str(&fs::read_to_string(path)?)?,

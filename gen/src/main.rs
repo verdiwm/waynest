@@ -3,7 +3,10 @@ use clap::Parser;
 use std::{fmt::Write as _, fs::OpenOptions, io::Write as _};
 use tracing::info;
 
-use waynest_gen::{generate_client_code, generate_server_code, parser::Pair};
+use waynest_gen::{
+    generate_client_code, generate_server_code,
+    parser::{Error, Pair},
+};
 
 const PROTOCOLS: [(&str, &[&str]); 9] = [
     ("core", &["protocols/wayland/protocol/wayland.xml"]),
@@ -173,7 +176,7 @@ fn main() -> Result<()> {
         let current = protos
             .into_iter()
             .map(|path| Pair::from_path(module, path))
-            .collect::<Result<Vec<Pair>>>()?;
+            .collect::<Result<Vec<Pair>, Error>>()?;
 
         pairs.extend(current.clone());
         protocols.push((module, current))
