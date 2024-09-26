@@ -29,3 +29,7 @@ clap = { version = "4.5.18", optional = true, features = ["derive"] }
 tracing-subscriber = { version = "0.3.18", optional = true, features = [
     "env-filter",
 ] }
+
+[[bin]]
+name = "waynest-gen"
+required-features = ["bin"]
