@@ -2,6 +2,13 @@
 name = "waynest-gen"
 version = "0.0.1"
 edition = "2021"
+license = "Apache-2.0"
+authors = ["Federico Maria Morrone <contact@morrone.dev>"]
+description = "Codegen glue for waynest"
+readme = "../README.md"
+documentation = "https://docs.rs/waynest"
+repository = "https://github.com/verdiwm/waynest"
+include = ["src/**/*.rs", "../README.md", "../LICENSE"]
 
 [dependencies]
 anyhow = "1.0.89"
