@@ -1,16 +1,9 @@
 use anyhow::Result;
 use clap::Parser;
-use parser::Pair;
 use std::{fmt::Write as _, fs::OpenOptions, io::Write as _};
 use tracing::info;
 
-mod client;
-mod parser;
-mod server;
-mod utils;
-
-use client::generate_client_code;
-use server::generate_server_code;
+use waynest_gen::{generate_client_code, generate_server_code, parser::Pair};
 
 const PROTOCOLS: [(&str, &[&str]); 9] = [
     ("core", &["protocols/wayland/protocol/wayland.xml"]),
