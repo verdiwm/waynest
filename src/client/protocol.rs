@@ -5,6 +5,9 @@ pub mod cosmic;
 #[cfg(feature = "frog")]
 #[cfg_attr(docsrs, doc(cfg(feature = "frog")))]
 pub mod frog;
+#[cfg(feature = "ivi")]
+#[cfg_attr(docsrs, doc(cfg(feature = "ivi")))]
+pub mod ivi;
 #[cfg(feature = "plasma")]
 #[cfg_attr(docsrs, doc(cfg(feature = "plasma")))]
 pub mod plasma;

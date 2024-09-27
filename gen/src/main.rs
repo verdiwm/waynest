@@ -8,7 +8,7 @@ use waynest_gen::{
     parser::{Error, Pair},
 };
 
-const PROTOCOLS: [(&str, &[&str]); 9] = [
+const PROTOCOLS: [(&str, &[&str]); 10] = [
     ("core", &["protocols/wayland/protocol/wayland.xml"]),
     (
         "stable",
@@ -153,6 +153,14 @@ const PROTOCOLS: [(&str, &[&str]); 9] = [
         &[
             "protocols/frog-protcols/frog-protocols/frog-color-management-v1.xml",
             "protocols/frog-protcols/frog-protocols/frog-fifo-v1.xml",
+        ],
+    ),
+    (
+        "ivi",
+        &[
+            "protocols/wayland-ivi-extension/protocol/ivi-application.xml",
+            "protocols/wayland-ivi-extension/protocol/ivi-input.xml",
+            "protocols/wayland-ivi-extension/protocol/ivi-wm.xml"
         ],
     )
 ];

@@ -27,6 +27,7 @@ plasma = []
 weston = []
 cosmic = ["wlr"]
 frog = []
+ivi = []
 
 # Internal features     
 fuzz = ["dep:arbitrary"]
