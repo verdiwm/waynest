@@ -28,6 +28,7 @@ weston = []
 cosmic = ["wlr"]
 frog = []
 ivi = []
+hyprland = []
 
 # Internal features     
 fuzz = ["dep:arbitrary"]
