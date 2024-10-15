@@ -60,6 +60,8 @@ impl WlDisplay for Display {}
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    tracing_subscriber::fmt::init();
+
     let registry = unsafe { ObjectId::from_raw(2) };
 
     let xdg_runtime_dir = std::env::var("XDG_RUNTIME_DIR")?;
