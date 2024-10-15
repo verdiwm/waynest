@@ -5161,6 +5161,8 @@ pub mod xdg_decoration_unstable_v1 {
             AlreadyConstructed = 1u32,
             #[doc = "xdg_toplevel destroyed before the decoration object"]
             Orphaned = 2u32,
+            #[doc = "invalid mode"]
+            InvalidMode = 3u32,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
@@ -5169,6 +5171,7 @@ pub mod xdg_decoration_unstable_v1 {
                     0u32 => Ok(Self::UnconfiguredBuffer),
                     1u32 => Ok(Self::AlreadyConstructed),
                     2u32 => Ok(Self::Orphaned),
+                    3u32 => Ok(Self::InvalidMode),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -5237,6 +5240,9 @@ pub mod xdg_decoration_unstable_v1 {
             #[doc = "Such clients are responsible for preventing configure loops and must"]
             #[doc = "make sure not to send multiple successive set_mode requests with the"]
             #[doc = "same decoration mode."]
+            #[doc = ""]
+            #[doc = "If an invalid mode is supplied by the client, the invalid_mode protocol"]
+            #[doc = "error is raised by the compositor."]
             async fn set_mode(
                 &self,
                 socket: &mut crate::wire::Socket,
