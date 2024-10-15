@@ -529,7 +529,7 @@ pub mod presentation_time {
         #[doc = "Trait to implement the wp_presentation interface. See the module level documentation for more info"]
         pub trait WpPresentation {
             const INTERFACE: &'static str = "wp_presentation";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,
@@ -602,7 +602,7 @@ pub mod presentation_time {
         #[doc = "Trait to implement the wp_presentation_feedback interface. See the module level documentation for more info"]
         pub trait WpPresentationFeedback {
             const INTERFACE: &'static str = "wp_presentation_feedback";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,
@@ -2130,7 +2130,8 @@ pub mod xdg_shell {
     #[doc = "manipulate a buffer prior to the first xdg_surface.configure call must"]
     #[doc = "also be treated as errors."]
     #[doc = ""]
-    #[doc = "After creating a role-specific object and setting it up, the client must"]
+    #[doc = "After creating a role-specific object and setting it up (e.g. by sending"]
+    #[doc = "the title, app ID, size constraints, parent, etc), the client must"]
     #[doc = "perform an initial commit without any buffer attached. The compositor"]
     #[doc = "will reply with initial wl_surface state such as"]
     #[doc = "wl_surface.preferred_buffer_scale followed by an xdg_surface.configure"]

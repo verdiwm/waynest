@@ -357,6 +357,9 @@ pub mod cursor_shape_v1 {
                     .map_err(crate::client::Error::IoError)
             }
             #[doc = "Obtain a wp_cursor_shape_device_v1 for a wl_pointer object."]
+            #[doc = ""]
+            #[doc = "When the pointer capability is removed from the wl_seat, the"]
+            #[doc = "wp_cursor_shape_device_v1 object becomes inert."]
             async fn get_pointer(
                 &self,
                 socket: &mut crate::wire::Socket,
@@ -375,6 +378,9 @@ pub mod cursor_shape_v1 {
                     .map_err(crate::client::Error::IoError)
             }
             #[doc = "Obtain a wp_cursor_shape_device_v1 for a zwp_tablet_tool_v2 object."]
+            #[doc = ""]
+            #[doc = "When the zwp_tablet_tool_v2 is removed, the wp_cursor_shape_device_v1"]
+            #[doc = "object becomes inert."]
             async fn get_tablet_tool_v2(
                 &self,
                 socket: &mut crate::wire::Socket,
@@ -843,6 +849,10 @@ pub mod drm_lease_v1 {
             #[doc = "The client should send this to indicate that it no longer wishes to use"]
             #[doc = "this lease. The compositor should use drmModeRevokeLease on the"]
             #[doc = "appropriate file descriptor, if necessary."]
+            #[doc = ""]
+            #[doc = "Upon destruction, the compositor should advertise the connector for"]
+            #[doc = "leasing again by sending the connector event through the"]
+            #[doc = "wp_drm_lease_device_v1 interface."]
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
@@ -1398,7 +1408,7 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "formats are supported for reading from the session. The compositor may"]
     #[doc = "re-send buffer constraint events whenever they change."]
     #[doc = ""]
-    #[doc = "The advertise buffer constraints, the compositor must send in no"]
+    #[doc = "To advertise buffer constraints, the compositor must send in no"]
     #[doc = "particular order: zero or more shm_format and dmabuf_format events, zero"]
     #[doc = "or one dmabuf_device event, and exactly one buffer_size event. Then the"]
     #[doc = "compositor must send a done event."]
@@ -1547,7 +1557,7 @@ pub mod ext_image_copy_capture_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
-            #[doc = "Destroys the session. This request can be sent at any time by the"]
+            #[doc = "Destroys the frame. This request can be sent at any time by the"]
             #[doc = "client."]
             async fn destroy(
                 &self,
@@ -2775,7 +2785,7 @@ pub mod security_context_v1 {
             #[doc = "sent by the client. In other words, the client must call bind(2) and"]
             #[doc = "listen(2) before sending the FD."]
             #[doc = ""]
-            #[doc = "close_fd is a FD closed by the client when the compositor should stop"]
+            #[doc = "close_fd is a FD that will signal hangup when the compositor should stop"]
             #[doc = "accepting new connections on listen_fd."]
             #[doc = ""]
             #[doc = "The compositor must continue to accept connections on listen_fd when"]
@@ -3801,9 +3811,10 @@ pub mod xdg_toplevel_drag_v1 {
             #[doc = "Request that the window will be moved with the cursor during the drag"]
             #[doc = "operation. The offset is a hint to the compositor how the toplevel"]
             #[doc = "should be positioned relative to the cursor hotspot in surface local"]
-            #[doc = "coordinates. For example it might only be used when an unmapped window"]
-            #[doc = "is attached. The attached window does not participate in the selection"]
-            #[doc = "of the drag target."]
+            #[doc = "coordinates and relative to the geometry of the toplevel being attached."]
+            #[doc = "See xdg_surface.set_window_geometry. For example it might only"]
+            #[doc = "be used when an unmapped window is attached. The attached window"]
+            #[doc = "does not participate in the selection of the drag target."]
             #[doc = ""]
             #[doc = "If the toplevel is unmapped while it is attached, it is automatically"]
             #[doc = "detached from the drag. In this case this request has to be called again"]
@@ -4046,7 +4057,9 @@ pub mod xdg_toplevel_icon_v1 {
             #[doc = "The wl_buffer must be kept alive for as long as the xdg_toplevel_icon"]
             #[doc = "it is associated with is not destroyed, otherwise a 'no_buffer' error"]
             #[doc = "is raised. The buffer contents must not be modified after it was"]
-            #[doc = "assigned to the icon."]
+            #[doc = "assigned to the icon. As a result, the region of the wl_shm_pool's"]
+            #[doc = "backing storage used for the wl_buffer must not be modified after this"]
+            #[doc = "request is sent. The wl_buffer.release event is unused."]
             #[doc = ""]
             #[doc = "If this request is made after the icon has been assigned to a toplevel"]
             #[doc = "via 'set_icon', a 'immutable' error must be raised."]
