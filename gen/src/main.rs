@@ -24,6 +24,7 @@ const PROTOCOLS: [(&str, &[&str]); 10] = [
         "staging", 
         &[
             "protocols/wayland-protocols/staging/alpha-modifier/alpha-modifier-v1.xml",
+            "protocols/wayland-protocols/staging/commit-timing/commit-timing-v1.xml",
             "protocols/wayland-protocols/staging/content-type/content-type-v1.xml",
             "protocols/wayland-protocols/staging/cursor-shape/cursor-shape-v1.xml",
             "protocols/wayland-protocols/staging/drm-lease/drm-lease-v1.xml",
@@ -33,6 +34,7 @@ const PROTOCOLS: [(&str, &[&str]); 10] = [
             "protocols/wayland-protocols/staging/ext-image-copy-capture/ext-image-copy-capture-v1.xml",
             "protocols/wayland-protocols/staging/ext-session-lock/ext-session-lock-v1.xml",
             "protocols/wayland-protocols/staging/ext-transient-seat/ext-transient-seat-v1.xml",
+            "protocols/wayland-protocols/staging/fifo/fifo-v1.xml",
             "protocols/wayland-protocols/staging/fractional-scale/fractional-scale-v1.xml",
             "protocols/wayland-protocols/staging/linux-drm-syncobj/linux-drm-syncobj-v1.xml",
             "protocols/wayland-protocols/staging/security-context/security-context-v1.xml",
@@ -40,6 +42,7 @@ const PROTOCOLS: [(&str, &[&str]); 10] = [
             "protocols/wayland-protocols/staging/tearing-control/tearing-control-v1.xml",
             "protocols/wayland-protocols/staging/xdg-activation/xdg-activation-v1.xml",
             "protocols/wayland-protocols/staging/xdg-dialog/xdg-dialog-v1.xml",
+            "protocols/wayland-protocols/staging/xdg-system-bell/xdg-system-bell-v1.xml",
             "protocols/wayland-protocols/staging/xdg-toplevel-drag/xdg-toplevel-drag-v1.xml",
             "protocols/wayland-protocols/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml"
         ]

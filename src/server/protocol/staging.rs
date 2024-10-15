@@ -167,6 +167,197 @@ pub mod alpha_modifier_v1 {
         }
     }
 }
+pub mod commit_timing_v1 {
+    #[doc = "When a compositor latches on to new content updates it will check for"]
+    #[doc = "any number of requirements of the available content updates (such as"]
+    #[doc = "fences of all buffers being signalled) to consider the update ready."]
+    #[doc = ""]
+    #[doc = "This protocol provides a method for adding a time constraint to surface"]
+    #[doc = "content. This constraint indicates to the compositor that a content"]
+    #[doc = "update should be presented as closely as possible to, but not before,"]
+    #[doc = "a specified time."]
+    #[doc = ""]
+    #[doc = "This protocol does not change the Wayland property that content"]
+    #[doc = "updates are applied in the order they are received, even when some"]
+    #[doc = "content updates contain timestamps and others do not."]
+    #[doc = ""]
+    #[doc = "To provide timestamps, this global factory interface must be used to"]
+    #[doc = "acquire a wp_commit_timing_v1 object for a surface, which may then be"]
+    #[doc = "used to provide timestamp information for commits."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    pub mod wp_commit_timing_manager_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "commit timer already exists for surface"]
+            CommitTimerExists = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::CommitTimerExists),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        #[doc = "Trait to implement the wp_commit_timing_manager_v1 interface. See the module level documentation for more info"]
+        pub trait WpCommitTimingManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "wp_commit_timing_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("wp_commit_timing_manager_v1#{}.destroy()", object.id);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        tracing::debug!("wp_commit_timing_manager_v1#{}.get_timer()", object.id);
+                        self.get_timer(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Informs the server that the client will no longer be using"]
+            #[doc = "this protocol object. Existing objects created by this object"]
+            #[doc = "are not affected."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Establish a timing controller for a surface."]
+            #[doc = ""]
+            #[doc = "Only one commit timer can be created for a surface, or a"]
+            #[doc = "commit_timer_exists protocol error will be generated."]
+            async fn get_timer(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+        }
+    }
+    #[doc = "An object to set a time constraint for a content update on a surface."]
+    pub mod wp_commit_timer_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "timestamp contains an invalid value"]
+            InvalidTimestamp = 0u32,
+            #[doc = "timestamp exists"]
+            TimestampExists = 1u32,
+            #[doc = "the associated surface no longer exists"]
+            SurfaceDestroyed = 2u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidTimestamp),
+                    1u32 => Ok(Self::TimestampExists),
+                    2u32 => Ok(Self::SurfaceDestroyed),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        #[doc = "Trait to implement the wp_commit_timer_v1 interface. See the module level documentation for more info"]
+        pub trait WpCommitTimerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "wp_commit_timer_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("wp_commit_timer_v1#{}.set_timestamp()", object.id);
+                        self.set_timestamp(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.uint()?,
+                            message.uint()?,
+                        )
+                        .await
+                    }
+                    1u16 => {
+                        tracing::debug!("wp_commit_timer_v1#{}.destroy()", object.id);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Provide a timing constraint for a surface content update."]
+            #[doc = ""]
+            #[doc = "A set_timestamp request may be made before a wl_surface.commit to"]
+            #[doc = "tell the compositor that the content is intended to be presented"]
+            #[doc = "as closely as possible to, but not before, the specified time."]
+            #[doc = "The time is in the domain of the compositor's presentation clock."]
+            #[doc = ""]
+            #[doc = "An invalid_timestamp error will be generated for invalid tv_nsec."]
+            #[doc = ""]
+            #[doc = "If a timestamp already exists on the surface, a timestamp_exists"]
+            #[doc = "error is generated."]
+            #[doc = ""]
+            #[doc = "Requesting set_timestamp after the commit_timer object's surface is"]
+            #[doc = "destroyed will generate a \"surface_destroyed\" error."]
+            async fn set_timestamp(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Informs the server that the client will no longer be using"]
+            #[doc = "this protocol object."]
+            #[doc = ""]
+            #[doc = "Existing timing constraints are not affected by the destruction."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+        }
+    }
+}
 pub mod content_type_v1 {
     #[doc = "This interface allows a client to describe the kind of content a surface"]
     #[doc = "will display, to allow the compositor to optimize its behavior for it."]
@@ -3239,6 +3430,210 @@ pub mod ext_transient_seat_v1 {
         }
     }
 }
+pub mod fifo_v1 {
+    #[doc = "When a Wayland compositor considers applying a content update,"]
+    #[doc = "it must ensure all the update's readiness constraints (fences, etc)"]
+    #[doc = "are met."]
+    #[doc = ""]
+    #[doc = "This protocol provides a way to use the completion of a display refresh"]
+    #[doc = "cycle as an additional readiness constraint."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    pub mod wp_fifo_manager_v1 {
+        #[doc = "These fatal protocol errors may be emitted in response to"]
+        #[doc = "illegal requests."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "fifo manager already exists for surface"]
+            AlreadyExists = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::AlreadyExists),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        #[doc = "Trait to implement the wp_fifo_manager_v1 interface. See the module level documentation for more info"]
+        pub trait WpFifoManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "wp_fifo_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("wp_fifo_manager_v1#{}.destroy()", object.id);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        tracing::debug!("wp_fifo_manager_v1#{}.get_fifo()", object.id);
+                        self.get_fifo(
+                            object,
+                            client,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                        )
+                        .await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Informs the server that the client will no longer be using"]
+            #[doc = "this protocol object. Existing objects created by this object"]
+            #[doc = "are not affected."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Establish a fifo object for a surface that may be used to add"]
+            #[doc = "display refresh constraints to content updates."]
+            #[doc = ""]
+            #[doc = "Only one such object may exist for a surface and attempting"]
+            #[doc = "to create more than one will result in an already_exists"]
+            #[doc = "protocol error. If a surface is acted on by multiple software"]
+            #[doc = "components, general best practice is that only the component"]
+            #[doc = "performing wl_surface.attach operations should use this protocol."]
+            async fn get_fifo(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+        }
+    }
+    #[doc = "A fifo object for a surface that may be used to add"]
+    #[doc = "display refresh constraints to content updates."]
+    pub mod wp_fifo_v1 {
+        #[doc = "These fatal protocol errors may be emitted in response to"]
+        #[doc = "illegal requests."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the associated surface no longer exists"]
+            SurfaceDestroyed = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::SurfaceDestroyed),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        #[doc = "Trait to implement the wp_fifo_v1 interface. See the module level documentation for more info"]
+        pub trait WpFifoV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "wp_fifo_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("wp_fifo_v1#{}.set_barrier()", object.id);
+                        self.set_barrier(object, client).await
+                    }
+                    1u16 => {
+                        tracing::debug!("wp_fifo_v1#{}.wait_barrier()", object.id);
+                        self.wait_barrier(object, client).await
+                    }
+                    2u16 => {
+                        tracing::debug!("wp_fifo_v1#{}.destroy()", object.id);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "When the content update containing the \"set_barrier\" is applied,"]
+            #[doc = "it sets a \"fifo_barrier\" condition on the surface associated with"]
+            #[doc = "the fifo object. The condition is cleared immediately after the"]
+            #[doc = "following latching deadline for non-tearing presentation."]
+            #[doc = ""]
+            #[doc = "The compositor may clear the condition early if it must do so to"]
+            #[doc = "ensure client forward progress assumptions."]
+            #[doc = ""]
+            #[doc = "To wait for this condition to clear, use the \"wait_barrier\" request."]
+            #[doc = ""]
+            #[doc = "\"set_barrier\" is double-buffered state, see wl_surface.commit."]
+            #[doc = ""]
+            #[doc = "Requesting set_barrier after the fifo object's surface is"]
+            #[doc = "destroyed will generate a \"surface_destroyed\" error."]
+            async fn set_barrier(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Indicate that this content update is not ready while a"]
+            #[doc = "\"fifo_barrier\" condition is present on the surface."]
+            #[doc = ""]
+            #[doc = "This means that when the content update containing \"set_barrier\""]
+            #[doc = "was made active at a latching deadline, it will be active for"]
+            #[doc = "at least one refresh cycle. A content update which is allowed to"]
+            #[doc = "tear might become active after a latching deadline if no content"]
+            #[doc = "update became active at the deadline."]
+            #[doc = ""]
+            #[doc = "The constraint must be ignored if the surface is a subsurface in"]
+            #[doc = "synchronized mode. If the surface is not being updated by the"]
+            #[doc = "compositor (off-screen, occluded) the compositor may ignore the"]
+            #[doc = "constraint. Clients must use an additional mechanism such as"]
+            #[doc = "frame callbacks or timestamps to ensure throttling occurs under"]
+            #[doc = "all conditions."]
+            #[doc = ""]
+            #[doc = "\"wait_barrier\" is double-buffered state, see wl_surface.commit."]
+            #[doc = ""]
+            #[doc = "Requesting \"wait_barrier\" after the fifo object's surface is"]
+            #[doc = "destroyed will generate a \"surface_destroyed\" error."]
+            async fn wait_barrier(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Informs the server that the client will no longer be using"]
+            #[doc = "this protocol object."]
+            #[doc = ""]
+            #[doc = "Surface state changes previously made by this protocol are"]
+            #[doc = "unaffected by this object's destruction."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+        }
+    }
+}
 #[doc = "This protocol allows a compositor to suggest for surfaces to render at"]
 #[doc = "fractional scales."]
 #[doc = ""]
@@ -4780,6 +5175,66 @@ pub mod xdg_dialog_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+        }
+    }
+}
+pub mod xdg_system_bell_v1 {
+    #[doc = "This global interface enables clients to ring the system bell."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    pub mod xdg_system_bell_v1 {
+        #[doc = "Trait to implement the xdg_system_bell_v1 interface. See the module level documentation for more info"]
+        pub trait XdgSystemBellV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "xdg_system_bell_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("xdg_system_bell_v1#{}.destroy()", object.id);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        tracing::debug!("xdg_system_bell_v1#{}.ring()", object.id);
+                        self.ring(object, client, message.object()?).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Notify that the object will no longer be used."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "This requests rings the system bell on behalf of a client. How ringing"]
+            #[doc = "the bell is implemented is up to the compositor. It may be an audible"]
+            #[doc = "sound, a visual feedback of some kind, or any other thing including"]
+            #[doc = "nothing."]
+            #[doc = ""]
+            #[doc = "The passed surface should correspond to a toplevel like surface role,"]
+            #[doc = "or be null, meaning the client doesn't have a particular toplevel it"]
+            #[doc = "wants to associate the bell ringing with. See the xdg-shell protocol"]
+            #[doc = "extension for a toplevel like surface role."]
+            async fn ring(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                surface: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
         }
     }
