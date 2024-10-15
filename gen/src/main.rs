@@ -8,7 +8,7 @@ use waynest_gen::{
     parser::{Error, Pair},
 };
 
-const PROTOCOLS: [(&str, &[&str]); 10] = [
+const PROTOCOLS: [(&str, &[&str]); 11] = [
     ("core", &["protocols/wayland/protocol/wayland.xml"]),
     (
         "stable",
@@ -165,6 +165,15 @@ const PROTOCOLS: [(&str, &[&str]); 10] = [
             "protocols/wayland-ivi-extension/protocol/ivi-input.xml",
             "protocols/wayland-ivi-extension/protocol/ivi-wm.xml"
         ],
+    ),
+    (
+        "hyprland",
+        &[
+            "protocols/hyprland-protocols/protocols/hyprland-ctm-control-v1.xml",
+            "protocols/hyprland-protocols/protocols/hyprland-focus-grab-v1.xml",
+            "protocols/hyprland-protocols/protocols/hyprland-global-shortcuts-v1.xml",
+            "protocols/hyprland-protocols/protocols/hyprland-toplevel-export-v1.xml",
+        ]
     )
 ];
 
