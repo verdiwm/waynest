@@ -139,10 +139,9 @@ impl Stream for Socket {
                     let frame = pinned
                         .codec
                         .decode_eof(&mut state.buffer, &mut state.fds)
-                        .map_err(|err| {
+                        .inspect_err(|err| {
                             trace!("Got an error, going to errored state");
                             state.has_errored = true;
-                            err
                         })?;
                     if frame.is_none() {
                         state.is_readable = false; // prepare pausing -> paused
@@ -157,10 +156,9 @@ impl Stream for Socket {
                 if let Some(frame) = pinned
                     .codec
                     .decode(&mut state.buffer, &mut state.fds)
-                    .map_err(|op| {
+                    .inspect_err(|op| {
                         trace!("Got an error, going to errored state");
                         state.has_errored = true;
-                        op
                     })?
                 {
                     trace!("frame decoded from buffer");
@@ -269,8 +267,7 @@ impl Sink<Message> for Socket {
                             io::ErrorKind::WriteZero,
                             "failed to \
                      write frame to transport",
-                        )
-                        .into()));
+                        )));
                     }
 
                     return Poll::Ready(Ok(()));

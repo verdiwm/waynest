@@ -106,7 +106,7 @@ impl Message {
     pub fn string(&mut self) -> Result<Option<String>, DecodeError> {
         let mut array = self.array()?;
 
-        if array.len() == 0 {
+        if array.is_empty() {
             return Ok(None);
         }
 
