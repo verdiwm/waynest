@@ -11,6 +11,12 @@ pub struct PayloadBuilder {
     fds: Vec<RawFd>,
 }
 
+impl Default for PayloadBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PayloadBuilder {
     pub fn new() -> Self {
         Self {
