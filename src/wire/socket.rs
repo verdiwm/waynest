@@ -139,7 +139,7 @@ impl Stream for Socket {
                     let frame = pinned
                         .codec
                         .decode_eof(&mut state.buffer, &mut state.fds)
-                        .inspect_err(|err| {
+                        .inspect_err(|_err| {
                             trace!("Got an error, going to errored state");
                             state.has_errored = true;
                         })?;
@@ -156,7 +156,7 @@ impl Stream for Socket {
                 if let Some(frame) = pinned
                     .codec
                     .decode(&mut state.buffer, &mut state.fds)
-                    .inspect_err(|op| {
+                    .inspect_err(|_op| {
                         trace!("Got an error, going to errored state");
                         state.has_errored = true;
                     })?
