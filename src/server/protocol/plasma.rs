@@ -4698,6 +4698,11 @@ pub mod dpms {
     #[doc = "Signaling state (see https://en.wikipedia.org/wiki/VESA_Display_Power_Management_Signaling )."]
     #[doc = "In addition it allows to request a state change. A compositor is not obliged to honor it"]
     #[doc = "and will normally automatically switch back to on state."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
     pub mod org_kde_kwin_dpms_manager {
         #[doc = "Trait to implement the org_kde_kwin_dpms_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinDpmsManager: crate::server::Dispatcher {
@@ -4880,6 +4885,11 @@ pub mod fake_input {
     #[doc = "A compositor should not trust the input received from this interface."]
     #[doc = "Clients should not expect that the compositor honors the requests from this"]
     #[doc = "interface."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
     pub mod org_kde_kwin_fake_input {
         #[doc = "Trait to implement the org_kde_kwin_fake_input interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinFakeInput: crate::server::Dispatcher {
@@ -5084,6 +5094,11 @@ pub mod kde_lockscreen_overlay_v1 {
     #[doc = "Allows a client to request a surface to be visible when the system is locked."]
     #[doc = ""]
     #[doc = "This is meant to be used for specific high urgency cases like phone calls or alarms."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
     pub mod kde_lockscreen_overlay_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -5169,6 +5184,11 @@ pub mod kde_output_device_v2 {
     #[doc = "This object is published as global during start up for every available"]
     #[doc = "display devices, or when one later becomes available, for example by"]
     #[doc = "being hotplugged via a physical connector."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
     pub mod kde_output_device_v2 {
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
@@ -5236,7 +5256,7 @@ pub mod kde_output_device_v2 {
                 }
             }
         }
-        bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this output_device can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; # [doc = "if setting the rgb range is possible"] const RgbRange = 4u32 ; # [doc = "if this outputdevice supports high dynamic range"] const HighDynamicRange = 8u32 ; # [doc = "if this outputdevice supports a wide color gamut"] const WideColorGamut = 16u32 ; # [doc = "if this outputdevice supports autorotation"] const AutoRotate = 32u32 ; # [doc = "if this outputdevice supports icc profiles"] const IccProfile = 64u32 ; } }
+        bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this output_device can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; # [doc = "if setting the rgb range is possible"] const RgbRange = 4u32 ; # [doc = "if this outputdevice supports high dynamic range"] const HighDynamicRange = 8u32 ; # [doc = "if this outputdevice supports a wide color gamut"] const WideColorGamut = 16u32 ; # [doc = "if this outputdevice supports autorotation"] const AutoRotate = 32u32 ; # [doc = "if this outputdevice supports icc profiles"] const IccProfile = 64u32 ; # [doc = "if this outputdevice supports the brightness setting"] const Brightness = 128u32 ; } }
         impl TryFrom<u32> for Capability {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -5324,7 +5344,7 @@ pub mod kde_output_device_v2 {
         #[doc = "Trait to implement the kde_output_device_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputDeviceV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "kde_output_device_v2";
-            const VERSION: u32 = 8u32;
+            const VERSION: u32 = 9u32;
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
             where
                 Self: Sized,
@@ -5960,6 +5980,10 @@ pub mod kde_output_management_v2 {
     #[doc = ""]
     #[doc = "Through this design the interface enables atomic output configuration changes if"]
     #[doc = "internally supported by the server."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment implementation"]
+    #[doc = "detail. Regular clients must not use this protocol. Backward incompatible"]
+    #[doc = "changes may be added without bumping the major version of the extension."]
     pub mod kde_output_management_v2 {
         #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputManagementV2: crate::server::Dispatcher {
@@ -6583,7 +6607,9 @@ pub mod kde_output_management_v2 {
             #[doc = "brightness values, like sdr_brightness and brightness_metadata."]
             #[doc = "0 is the minimum brightness (not completely dark) and 10000 is"]
             #[doc = "the maximum brightness."]
-            #[doc = "This is currently only supported / meaningful while HDR is active."]
+            #[doc = "This is supported while HDR is active in versions 8 and below,"]
+            #[doc = "or when the device supports the brightness_control capability in"]
+            #[doc = "versions 9 and above."]
             async fn set_brightness(
                 &self,
                 object: &crate::server::Object,
@@ -6624,6 +6650,11 @@ pub mod kde_output_management_v2 {
 pub mod kde_output_order_v1 {
     #[doc = "Announce the order in which desktop environment components should be placed on outputs."]
     #[doc = "The compositor will send the list of outputs when the global is bound and whenever there is a change."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
     pub mod kde_output_order_v1 {
         #[doc = "Trait to implement the kde_output_order_v1 interface. See the module level documentation for more info"]
         pub trait KdeOutputOrderV1: crate::server::Dispatcher {
@@ -6687,7 +6718,13 @@ pub mod kde_output_order_v1 {
     }
 }
 pub mod kde_primary_output_v1 {
-    #[doc = "Protocol for telling which is the primary display among the selection of enabled outputs."]
+    #[doc = "Protocol for telling which is the primary display among the selection"]
+    #[doc = "of enabled outputs."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
     pub mod kde_primary_output_v1 {
         #[doc = "Trait to implement the kde_primary_output_v1 interface. See the module level documentation for more info"]
         pub trait KdePrimaryOutputV1: crate::server::Dispatcher {
@@ -6745,6 +6782,11 @@ pub mod kde_screen_edge_v1 {
     #[doc = "policies. As an example, the compositor may consider the screen edge to be"]
     #[doc = "triggered if the pointer hits its associated screen border. Other ways may"]
     #[doc = "include using touchscreen or touchpad gestures."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
     pub mod kde_screen_edge_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6998,6 +7040,11 @@ pub mod org_kde_plasma_virtual_desktop {
                 }
             }
             #[doc = "Given the id of a particular virtual desktop, get the corresponding org_kde_plasma_virtual_desktop which represents only the desktop with that id."]
+            #[doc = ""]
+            #[doc = "Warning! The protocol described in this file is a desktop environment"]
+            #[doc = "implementation detail. Regular clients must not use this protocol."]
+            #[doc = "Backward incompatible changes may be added without bumping the major"]
+            #[doc = "version of the extension."]
             async fn get_virtual_desktop(
                 &self,
                 object: &crate::server::Object,
@@ -7234,6 +7281,11 @@ pub mod org_kde_plasma_virtual_desktop {
 pub mod plasma_shell {
     #[doc = "This interface is used by KF5 powered Wayland shells to communicate with"]
     #[doc = "the compositor and can only be bound one time."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
     pub mod org_kde_plasma_shell {
         #[doc = "Trait to implement the org_kde_plasma_shell interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaShell: crate::server::Dispatcher {
@@ -7683,6 +7735,11 @@ pub mod plasma_window_management {
     #[doc = "use it to manage the window."]
     #[doc = ""]
     #[doc = "Only one client can bind this interface at a time."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
     pub mod org_kde_plasma_window_management {
         #[repr(u32)]
         #[non_exhaustive]
@@ -7755,7 +7812,7 @@ pub mod plasma_window_management {
         #[doc = "Trait to implement the org_kde_plasma_window_management interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaWindowManagement: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_plasma_window_management";
-            const VERSION: u32 = 17u32;
+            const VERSION: u32 = 18u32;
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
             where
                 Self: Sized,
@@ -7973,7 +8030,7 @@ pub mod plasma_window_management {
         #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaWindow: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_plasma_window";
-            const VERSION: u32 = 17u32;
+            const VERSION: u32 = 18u32;
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
             where
                 Self: Sized,
@@ -8550,6 +8607,29 @@ pub mod plasma_window_management {
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
+            #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
+            #[doc = "The coordinates are in absolute coordinates of the windowing system."]
+            async fn client_geometry(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: u32,
+                height: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> org_kde_plasma_window#{}.client_geometry()", object.id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .put_uint(width)
+                    .put_uint(height)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 17u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
         }
     }
     #[doc = "The activation manager interface provides a way to get notified"]
@@ -8728,6 +8808,10 @@ pub mod plasma_window_management {
     }
 }
 pub mod zkde_screencast_unstable_v1 {
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
     pub mod zkde_screencast_unstable_v1 {
         #[repr(u32)]
         #[non_exhaustive]

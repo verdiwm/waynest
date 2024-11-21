@@ -2356,6 +2356,10 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "This event describes the physical size of the head. This event is only"]
             #[doc = "sent if the head has a physical size (e.g. is not a projector or a"]
             #[doc = "virtual device)."]
+            #[doc = ""]
+            #[doc = "The physical size event is sent after a wlr_output_head object is created. This"]
+            #[doc = "event is only sent once per object, and the physical size does not change over"]
+            #[doc = "the lifetime of the wlr_output_head object."]
             async fn physical_size(
                 &self,
                 object: &crate::server::Object,
@@ -2507,6 +2511,10 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "identify the head by available information from other events but should"]
             #[doc = "be aware that there is an increased risk of false positives."]
             #[doc = ""]
+            #[doc = "If sent, the make event is sent after a wlr_output_head object is"]
+            #[doc = "created and only sent once per object. The make does not change over"]
+            #[doc = "the lifetime of the wlr_output_head object."]
+            #[doc = ""]
             #[doc = "It is not recommended to display the make string in UI to users. For"]
             #[doc = "that the string provided by the description event should be preferred."]
             async fn make(
@@ -2540,6 +2548,10 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "identify the head by available information from other events but should"]
             #[doc = "be aware that there is an increased risk of false positives."]
             #[doc = ""]
+            #[doc = "If sent, the model event is sent after a wlr_output_head object is"]
+            #[doc = "created and only sent once per object. The model does not change over"]
+            #[doc = "the lifetime of the wlr_output_head object."]
+            #[doc = ""]
             #[doc = "It is not recommended to display the model string in UI to users. For"]
             #[doc = "that the string provided by the description event should be preferred."]
             async fn model(
@@ -2569,6 +2581,10 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "in the current setup. Clients can still try to identify the head by"]
             #[doc = "available information from other events but should be aware that there"]
             #[doc = "is an increased risk of false positives."]
+            #[doc = ""]
+            #[doc = "If sent, the serial number event is sent after a wlr_output_head object"]
+            #[doc = "is created and only sent once per object. The serial number does not"]
+            #[doc = "change over the lifetime of the wlr_output_head object."]
             #[doc = ""]
             #[doc = "It is not recommended to display the serial_number string in UI to"]
             #[doc = "users. For that the string provided by the description event should be"]

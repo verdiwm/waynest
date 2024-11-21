@@ -282,7 +282,7 @@ pub mod cosmic_output_management_unstable_v1 {
         #[doc = "Trait to implement the zcosmic_output_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicOutputManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_output_manager_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
             where
                 Self: Sized,
@@ -406,10 +406,54 @@ pub mod cosmic_output_management_unstable_v1 {
     #[doc = "Properties sent via this interface are applied atomically via the wlr_output_manager.done event."]
     #[doc = "No guarantees are made regarding the order in which properties are sent."]
     pub mod zcosmic_output_head_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum AdaptiveSyncAvailability {
+            #[doc = "adaptive sync is not supported"]
+            Unsupported = 0u32,
+            #[doc = "automatic adaptive_sync is unavailable"]
+            RequiresModeset = 1u32,
+            #[doc = "adaptive sync is supported in all states"]
+            Supported = 2u32,
+        }
+        impl TryFrom<u32> for AdaptiveSyncAvailability {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Unsupported),
+                    1u32 => Ok(Self::RequiresModeset),
+                    2u32 => Ok(Self::Supported),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum AdaptiveSyncStateExt {
+            #[doc = "adaptive sync is disabled"]
+            Disabled = 0u32,
+            #[doc = "adaptive sync will be actived automatically"]
+            Automatic = 1u32,
+            #[doc = "adaptive sync is forced to be always active"]
+            Always = 2u32,
+        }
+        impl TryFrom<u32> for AdaptiveSyncStateExt {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Disabled),
+                    1u32 => Ok(Self::Automatic),
+                    2u32 => Ok(Self::Always),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
         #[doc = "Trait to implement the zcosmic_output_head_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicOutputHeadV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_output_head_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
             where
                 Self: Sized,
@@ -473,6 +517,48 @@ pub mod cosmic_output_management_unstable_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_string(name).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This events describes if adaptive_sync is available for this head."]
+            #[doc = ""]
+            #[doc = "It is only sent if the output is enabled."]
+            async fn adaptive_sync_available(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                available: AdaptiveSyncAvailability,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zcosmic_output_head_v1#{}.adaptive_sync_available()",
+                    object.id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(available as u32)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This events describes the adaptive_sync state of this head."]
+            #[doc = ""]
+            #[doc = "It is only sent if the output is enabled."]
+            async fn adaptive_sync_ext(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                state: AdaptiveSyncStateExt,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zcosmic_output_head_v1#{}.adaptive_sync_ext()",
+                    object.id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(state as u32)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -603,12 +689,13 @@ pub mod cosmic_output_management_unstable_v1 {
     #[doc = ""]
     #[doc = "Adds additional/alternative parameters to the original zwlr_output_configuration_head_v1."]
     #[doc = ""]
-    #[doc = "Once the original `zwlr_output_configuration_head_v1` is destroyed this object will also be destroyed."]
+    #[doc = "Once the original `zwlr_output_configuration_head_v1` is destroyed this object will"]
+    #[doc = "become inert and all requests except `release` will be ignored."]
     pub mod zcosmic_output_configuration_head_v1 {
         #[doc = "Trait to implement the zcosmic_output_configuration_head_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicOutputConfigurationHeadV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_output_configuration_head_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
             where
                 Self: Sized,
@@ -636,6 +723,14 @@ pub mod cosmic_output_management_unstable_v1 {
                         );
                         self.release(object, client).await
                     }
+                    2u16 => {
+                        tracing::debug!(
+                            "zcosmic_output_configuration_head_v1#{}.set_adaptive_sync_ext()",
+                            object.id
+                        );
+                        self.set_adaptive_sync_ext(object, client, message.uint()?.try_into()?)
+                            .await
+                    }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
@@ -660,6 +755,19 @@ pub mod cosmic_output_management_unstable_v1 {
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "This request requests a new adaptive sync state."]
+            #[doc = ""]
+            #[doc = "This request is meant to be used in place of `zwlr_output_configuration_head_v1::set_adaptive_sync`."]
+            #[doc = "Using `set_adaptive_sync` and `set_adaptive_sync_ext` at once will thus raise an `already_set` error on the"]
+            #[doc = "original `zwlr_output_configuration_head_v1`."]
+            #[doc = ""]
+            #[doc = "Any request conflicting with `set_adaptive_sync` will also conflict with `set_adaptive_sync_ext`."]
+            async fn set_adaptive_sync_ext(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                state : super :: super :: super :: cosmic :: cosmic_output_management_unstable_v1 :: zcosmic_output_head_v1 :: AdaptiveSyncStateExt,
             ) -> crate::server::Result<()>;
         }
     }
