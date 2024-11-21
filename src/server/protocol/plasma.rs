@@ -1,7 +1,9 @@
 #![allow(async_fn_in_trait)]
+#[allow(clippy::module_inception)]
 pub mod appmenu {
     #[doc = "This interface allows a client to link a window (or wl_surface) to an com.canonical.dbusmenu"]
     #[doc = "interface registered on DBus."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_appmenu_manager {
         #[doc = "Trait to implement the org_kde_kwin_appmenu_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinAppmenuManager: crate::server::Dispatcher {
@@ -19,6 +21,7 @@ pub mod appmenu {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_appmenu_manager#{}.create()", object.id);
@@ -49,6 +52,7 @@ pub mod appmenu {
     #[doc = "The DBus service name and object path where the appmenu interface is present"]
     #[doc = "The object should be registered on the session bus before sending this request."]
     #[doc = "If not applicable, clients should remove this object."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_appmenu {
         #[doc = "Trait to implement the org_kde_kwin_appmenu interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinAppmenu: crate::server::Dispatcher {
@@ -66,6 +70,7 @@ pub mod appmenu {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_appmenu#{}.set_address()", object.id);
@@ -105,7 +110,9 @@ pub mod appmenu {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod blur {
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_blur_manager {
         #[doc = "Trait to implement the org_kde_kwin_blur_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinBlurManager: crate::server::Dispatcher {
@@ -123,6 +130,7 @@ pub mod blur {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_blur_manager#{}.create()", object.id);
@@ -167,6 +175,7 @@ pub mod blur {
             ) -> crate::server::Result<()>;
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_blur {
         #[doc = "Trait to implement the org_kde_kwin_blur interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinBlur: crate::server::Dispatcher {
@@ -184,6 +193,7 @@ pub mod blur {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_blur#{}.commit()", object.id);
@@ -219,7 +229,9 @@ pub mod blur {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod contrast {
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_contrast_manager {
         #[doc = "Trait to implement the org_kde_kwin_contrast_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinContrastManager: crate::server::Dispatcher {
@@ -237,6 +249,7 @@ pub mod contrast {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_contrast_manager#{}.create()", object.id);
@@ -281,6 +294,7 @@ pub mod contrast {
             ) -> crate::server::Result<()>;
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_contrast {
         #[doc = "Trait to implement the org_kde_kwin_contrast interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinContrast: crate::server::Dispatcher {
@@ -298,6 +312,7 @@ pub mod contrast {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_contrast#{}.commit()", object.id);
@@ -401,6 +416,7 @@ pub mod contrast {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod fullscreen_shell {
     #[doc = "Displays a single surface per output."]
     #[doc = ""]
@@ -426,6 +442,7 @@ pub mod fullscreen_shell {
     #[doc = "until either the client removes it or the compositor destroys the"]
     #[doc = "output.  This way, the client can update the output's contents by"]
     #[doc = "simply attaching a new buffer."]
+    #[allow(clippy::too_many_arguments)]
     pub mod _wl_fullscreen_shell {
         #[doc = "Various capabilities that can be advertised by the compositor.  They"]
         #[doc = "are advertised one-at-a-time when the wl_fullscreen_shell interface is"]
@@ -531,6 +548,7 @@ pub mod fullscreen_shell {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("_wl_fullscreen_shell#{}.release()", object.id);
@@ -677,6 +695,7 @@ pub mod fullscreen_shell {
             }
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod _wl_fullscreen_shell_mode_feedback {
         #[doc = "Trait to implement the _wl_fullscreen_shell_mode_feedback interface. See the module level documentation for more info"]
         pub trait WlFullscreenShellModeFeedback: crate::server::Dispatcher {
@@ -694,6 +713,7 @@ pub mod fullscreen_shell {
                 _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -764,6 +784,7 @@ pub mod fullscreen_shell {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod idle {
     #[doc = "This interface allows to monitor user idle time on a given seat. The interface"]
     #[doc = "allows to register timers which trigger after no user activity was registered"]
@@ -772,6 +793,7 @@ pub mod idle {
     #[doc = "This is useful for applications wanting to perform actions when the user is not"]
     #[doc = "interacting with the system, e.g. chat applications setting the user as away, power"]
     #[doc = "management features to dim screen, etc.."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_idle {
         #[doc = "Trait to implement the org_kde_kwin_idle interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinIdle: crate::server::Dispatcher {
@@ -789,6 +811,7 @@ pub mod idle {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_idle#{}.get_idle_timeout()", object.id);
@@ -818,6 +841,7 @@ pub mod idle {
             ) -> crate::server::Result<()>;
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_idle_timeout {
         #[doc = "Trait to implement the org_kde_kwin_idle_timeout interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinIdleTimeout: crate::server::Dispatcher {
@@ -835,6 +859,7 @@ pub mod idle {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_idle_timeout#{}.release()", object.id);
@@ -887,8 +912,10 @@ pub mod idle {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod keystate {
     #[doc = "Keeps track of the states of the different keys that have a state attached to it."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_keystate {
         #[repr(u32)]
         #[non_exhaustive]
@@ -944,6 +971,7 @@ pub mod keystate {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_keystate#{}.fetch_states()", object.id);
@@ -986,6 +1014,7 @@ pub mod keystate {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod outputmanagement {
     #[doc = "This interface enables clients to set properties of output devices for screen"]
     #[doc = "configuration purposes via the server. To this end output devices are referenced"]
@@ -1025,6 +1054,7 @@ pub mod outputmanagement {
     #[doc = ""]
     #[doc = "Through this design the interface enables atomic output configuration changes if"]
     #[doc = "internally supported by the server."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_outputmanagement {
         #[doc = "Trait to implement the org_kde_kwin_outputmanagement interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinOutputmanagement: crate::server::Dispatcher {
@@ -1042,6 +1072,7 @@ pub mod outputmanagement {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -1082,6 +1113,7 @@ pub mod outputmanagement {
     #[doc = "The server signals back whether the new settings have applied successfully"]
     #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
     #[doc = "applied to the hardware and before the server side sends the applied event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_outputconfiguration {
         #[doc = "Describes when the compositor may employ variable refresh rate"]
         #[repr(u32)]
@@ -1119,6 +1151,7 @@ pub mod outputmanagement {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_outputconfiguration#{}.enable()", object.id);
@@ -1389,6 +1422,7 @@ pub mod outputmanagement {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod org_kde_kwin_outputdevice {
     #[doc = "An outputdevice describes a display device available to the compositor."]
     #[doc = "outputdevice is similar to wl_output, but focuses on output"]
@@ -1406,6 +1440,7 @@ pub mod org_kde_kwin_outputdevice {
     #[doc = "This object is published as global during start up for every available"]
     #[doc = "display devices, or when one later becomes available, for example by"]
     #[doc = "being hotplugged via a physical connector."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_outputdevice {
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
@@ -1557,6 +1592,7 @@ pub mod org_kde_kwin_outputdevice {
                 _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1888,7 +1924,9 @@ pub mod org_kde_kwin_outputdevice {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod remote_access {
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_remote_access_manager {
         #[doc = "Trait to implement the org_kde_kwin_remote_access_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinRemoteAccessManager: crate::server::Dispatcher {
@@ -1906,6 +1944,7 @@ pub mod remote_access {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -1966,6 +2005,7 @@ pub mod remote_access {
             }
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_remote_buffer {
         #[doc = "Trait to implement the org_kde_kwin_remote_buffer interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinRemoteBuffer: crate::server::Dispatcher {
@@ -1983,6 +2023,7 @@ pub mod remote_access {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_remote_buffer#{}.release()", object.id);
@@ -2022,8 +2063,10 @@ pub mod remote_access {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod server_decoration_palette {
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration_palette_manager {
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinServerDecorationPaletteManager: crate::server::Dispatcher {
@@ -2041,6 +2084,7 @@ pub mod server_decoration_palette {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -2072,6 +2116,7 @@ pub mod server_decoration_palette {
         }
     }
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration_palette {
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinServerDecorationPalette: crate::server::Dispatcher {
@@ -2089,6 +2134,7 @@ pub mod server_decoration_palette {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -2131,6 +2177,7 @@ pub mod server_decoration_palette {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod server_decoration {
     #[doc = "This interface allows to coordinate whether the server should create"]
     #[doc = "a server-side window decoration around a wl_surface representing a"]
@@ -2139,6 +2186,7 @@ pub mod server_decoration {
     #[doc = "side decorations."]
     #[doc = ""]
     #[doc = "Use in conjunction with zxdg_decoration_manager_v1 is undefined."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration_manager {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2178,6 +2226,7 @@ pub mod server_decoration {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -2240,6 +2289,7 @@ pub mod server_decoration {
             }
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2279,6 +2329,7 @@ pub mod server_decoration {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_server_decoration#{}.release()", object.id);
@@ -2334,7 +2385,9 @@ pub mod server_decoration {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod shadow {
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_shadow_manager {
         #[doc = "Trait to implement the org_kde_kwin_shadow_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinShadowManager: crate::server::Dispatcher {
@@ -2352,6 +2405,7 @@ pub mod shadow {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_shadow_manager#{}.create()", object.id);
@@ -2406,6 +2460,7 @@ pub mod shadow {
             ) -> crate::server::Result<()>;
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_shadow {
         #[doc = "Trait to implement the org_kde_kwin_shadow interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinShadow: crate::server::Dispatcher {
@@ -2423,6 +2478,7 @@ pub mod shadow {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_shadow#{}.commit()", object.id);
@@ -2630,7 +2686,9 @@ pub mod shadow {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod slide {
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_slide_manager {
         #[doc = "Trait to implement the org_kde_kwin_slide_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinSlideManager: crate::server::Dispatcher {
@@ -2648,6 +2706,7 @@ pub mod slide {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_slide_manager#{}.create()", object.id);
@@ -2697,6 +2756,7 @@ pub mod slide {
     #[doc = ""]
     #[doc = "The from argument provides a clue about where the slide animation"]
     #[doc = "begins, offset is the distance from screen edge to begin the animation."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_slide {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2735,6 +2795,7 @@ pub mod slide {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_slide#{}.commit()", object.id);
@@ -2780,7 +2841,9 @@ pub mod slide {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod surface_extension {
+    #[allow(clippy::too_many_arguments)]
     pub mod qt_surface_extension {
         #[doc = "Trait to implement the qt_surface_extension interface. See the module level documentation for more info"]
         pub trait QtSurfaceExtension: crate::server::Dispatcher {
@@ -2798,6 +2861,7 @@ pub mod surface_extension {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -2828,6 +2892,7 @@ pub mod surface_extension {
             ) -> crate::server::Result<()>;
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod qt_extended_surface {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2887,6 +2952,7 @@ pub mod surface_extension {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -3003,6 +3069,7 @@ pub mod surface_extension {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod text_input_unstable_v2 {
     #[doc = "The zwp_text_input_v2 interface represents text input and input methods"]
     #[doc = "associated with a seat. It provides enter/leave events to follow the"]
@@ -3026,6 +3093,7 @@ pub mod text_input_unstable_v2 {
     #[doc = "all state information is invalidated and needs to be resent from the"]
     #[doc = "client. A reset or entering a new widget on client side also"]
     #[doc = "invalidates all current state information."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_v2 {
         bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behaviour"] const None = 0u32 ; # [doc = "suggest word completions"] const AutoCompletion = 1u32 ; # [doc = "suggest word corrections"] const AutoCorrection = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; } }
         impl TryFrom<u32> for ContentHint {
@@ -3211,6 +3279,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_text_input_v2#{}.destroy()", object.id);
@@ -3788,6 +3857,7 @@ pub mod text_input_unstable_v2 {
         }
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_manager_v2 {
         #[doc = "Trait to implement the zwp_text_input_manager_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTextInputManagerV2: crate::server::Dispatcher {
@@ -3805,6 +3875,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_text_input_manager_v2#{}.destroy()", object.id);
@@ -3844,6 +3915,7 @@ pub mod text_input_unstable_v2 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod text {
     #[doc = "An object used for text input. Adds support for text input and input"]
     #[doc = "methods to applications. A text-input object is created from a"]
@@ -3864,6 +3936,7 @@ pub mod text {
     #[doc = "the known text input state in events like preedit_string, commit_string,"]
     #[doc = "and keysym. The text input can then ignore events from the input method"]
     #[doc = "which are based on an outdated state (for example after a reset)."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wl_text_input {
         #[doc = "Content hint is a bitmask to allow to modify the behavior of the text"]
         #[doc = "input."]
@@ -4045,6 +4118,7 @@ pub mod text {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_text_input#{}.activate()", object.id);
@@ -4517,6 +4591,7 @@ pub mod text {
         }
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wl_text_input_manager {
         #[doc = "Trait to implement the wl_text_input_manager interface. See the module level documentation for more info"]
         pub trait WlTextInputManager: crate::server::Dispatcher {
@@ -4534,6 +4609,7 @@ pub mod text {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wl_text_input_manager#{}.create_text_input()", object.id);
@@ -4559,7 +4635,9 @@ pub mod text {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod wl_eglstream_controller {
+    #[allow(clippy::too_many_arguments)]
     pub mod wl_eglstream_controller {
         #[doc = "- dont_care: Using this enum will tell the server to make its own"]
         #[doc = "decisions regarding present mode."]
@@ -4631,6 +4709,7 @@ pub mod wl_eglstream_controller {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -4692,6 +4771,7 @@ pub mod wl_eglstream_controller {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod dpms {
     #[doc = "The Dpms manager allows to get a org_kde_kwin_dpms for a given wl_output."]
     #[doc = "The org_kde_kwin_dpms provides the currently used VESA Display Power Management"]
@@ -4703,6 +4783,7 @@ pub mod dpms {
     #[doc = "implementation detail. Regular clients must not use this protocol."]
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_dpms_manager {
         #[doc = "Trait to implement the org_kde_kwin_dpms_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinDpmsManager: crate::server::Dispatcher {
@@ -4720,6 +4801,7 @@ pub mod dpms {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_dpms_manager#{}.get()", object.id);
@@ -4755,6 +4837,7 @@ pub mod dpms {
     #[doc = "the currently used DPMS state and notifies the client through the done event once all"]
     #[doc = "states are pushed. Whenever a state changes the set of changes is committed with the"]
     #[doc = "done event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_dpms {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4793,6 +4876,7 @@ pub mod dpms {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_dpms#{}.set()", object.id);
@@ -4877,6 +4961,7 @@ pub mod dpms {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod fake_input {
     #[doc = "This interface allows other processes to provide fake input events."]
     #[doc = "Purpose is on the one hand side to provide testing facilities like XTest on X11."]
@@ -4890,6 +4975,7 @@ pub mod fake_input {
     #[doc = "implementation detail. Regular clients must not use this protocol."]
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_fake_input {
         #[doc = "Trait to implement the org_kde_kwin_fake_input interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinFakeInput: crate::server::Dispatcher {
@@ -4907,6 +4993,7 @@ pub mod fake_input {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_fake_input#{}.authenticate()", object.id);
@@ -5090,6 +5177,7 @@ pub mod fake_input {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod kde_lockscreen_overlay_v1 {
     #[doc = "Allows a client to request a surface to be visible when the system is locked."]
     #[doc = ""]
@@ -5099,6 +5187,7 @@ pub mod kde_lockscreen_overlay_v1 {
     #[doc = "implementation detail. Regular clients must not use this protocol."]
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod kde_lockscreen_overlay_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -5132,6 +5221,7 @@ pub mod kde_lockscreen_overlay_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("kde_lockscreen_overlay_v1#{}.allow()", object.id);
@@ -5167,6 +5257,7 @@ pub mod kde_lockscreen_overlay_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod kde_output_device_v2 {
     #[doc = "An output device describes a display device available to the compositor."]
     #[doc = "output_device is similar to wl_output, but focuses on output"]
@@ -5189,6 +5280,7 @@ pub mod kde_output_device_v2 {
     #[doc = "implementation detail. Regular clients must not use this protocol."]
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod kde_output_device_v2 {
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
@@ -5357,6 +5449,7 @@ pub mod kde_output_device_v2 {
                 _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5853,6 +5946,7 @@ pub mod kde_output_device_v2 {
     #[doc = "Properties sent via this interface are applied atomically via the"]
     #[doc = "kde_output_device.done event. No guarantees are made regarding the order"]
     #[doc = "in which properties are sent."]
+    #[allow(clippy::too_many_arguments)]
     pub mod kde_output_device_mode_v2 {
         #[doc = "Trait to implement the kde_output_device_mode_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputDeviceModeV2: crate::server::Dispatcher {
@@ -5870,6 +5964,7 @@ pub mod kde_output_device_v2 {
                 _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5941,6 +6036,7 @@ pub mod kde_output_device_v2 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod kde_output_management_v2 {
     #[doc = "This interface enables clients to set properties of output devices for screen"]
     #[doc = "configuration purposes via the server. To this end output devices are referenced"]
@@ -5984,6 +6080,7 @@ pub mod kde_output_management_v2 {
     #[doc = "Warning! The protocol described in this file is a desktop environment implementation"]
     #[doc = "detail. Regular clients must not use this protocol. Backward incompatible"]
     #[doc = "changes may be added without bumping the major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod kde_output_management_v2 {
         #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputManagementV2: crate::server::Dispatcher {
@@ -6001,6 +6098,7 @@ pub mod kde_output_management_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -6041,6 +6139,7 @@ pub mod kde_output_management_v2 {
     #[doc = "The server signals back whether the new settings have applied successfully"]
     #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
     #[doc = "applied to the hardware and before the server side sends the applied event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod kde_output_configuration_v2 {
         #[doc = "These error can be emitted in response to kde_output_configuration_v2 requests."]
         #[repr(u32)]
@@ -6153,6 +6252,7 @@ pub mod kde_output_management_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("kde_output_configuration_v2#{}.enable()", object.id);
@@ -6647,6 +6747,7 @@ pub mod kde_output_management_v2 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod kde_output_order_v1 {
     #[doc = "Announce the order in which desktop environment components should be placed on outputs."]
     #[doc = "The compositor will send the list of outputs when the global is bound and whenever there is a change."]
@@ -6655,6 +6756,7 @@ pub mod kde_output_order_v1 {
     #[doc = "implementation detail. Regular clients must not use this protocol."]
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod kde_output_order_v1 {
         #[doc = "Trait to implement the kde_output_order_v1 interface. See the module level documentation for more info"]
         pub trait KdeOutputOrderV1: crate::server::Dispatcher {
@@ -6672,6 +6774,7 @@ pub mod kde_output_order_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("kde_output_order_v1#{}.destroy()", object.id);
@@ -6717,6 +6820,7 @@ pub mod kde_output_order_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod kde_primary_output_v1 {
     #[doc = "Protocol for telling which is the primary display among the selection"]
     #[doc = "of enabled outputs."]
@@ -6725,6 +6829,7 @@ pub mod kde_primary_output_v1 {
     #[doc = "implementation detail. Regular clients must not use this protocol."]
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod kde_primary_output_v1 {
         #[doc = "Trait to implement the kde_primary_output_v1 interface. See the module level documentation for more info"]
         pub trait KdePrimaryOutputV1: crate::server::Dispatcher {
@@ -6742,6 +6847,7 @@ pub mod kde_primary_output_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("kde_primary_output_v1#{}.destroy()", object.id);
@@ -6774,6 +6880,7 @@ pub mod kde_primary_output_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod kde_screen_edge_v1 {
     #[doc = "This interface allows clients to associate actions with screen edges. For"]
     #[doc = "example, showing a surface by moving the pointer to a screen edge."]
@@ -6787,6 +6894,7 @@ pub mod kde_screen_edge_v1 {
     #[doc = "implementation detail. Regular clients must not use this protocol."]
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod kde_screen_edge_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6852,6 +6960,7 @@ pub mod kde_screen_edge_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("kde_screen_edge_manager_v1#{}.destroy()", object.id);
@@ -6921,6 +7030,7 @@ pub mod kde_screen_edge_v1 {
     #[doc = "If the screen edge has been triggered, it won't be re-activated again."]
     #[doc = "Another kde_auto_hide_screen_edge_v1.activate request must be made by the"]
     #[doc = "client to activate the screen edge."]
+    #[allow(clippy::too_many_arguments)]
     pub mod kde_auto_hide_screen_edge_v1 {
         #[doc = "Trait to implement the kde_auto_hide_screen_edge_v1 interface. See the module level documentation for more info"]
         pub trait KdeAutoHideScreenEdgeV1: crate::server::Dispatcher {
@@ -6938,6 +7048,7 @@ pub mod kde_screen_edge_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("kde_auto_hide_screen_edge_v1#{}.destroy()", object.id);
@@ -6977,7 +7088,9 @@ pub mod kde_screen_edge_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod org_kde_plasma_virtual_desktop {
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_virtual_desktop_management {
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop_management interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaVirtualDesktopManagement: crate::server::Dispatcher {
@@ -6995,6 +7108,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -7143,6 +7257,7 @@ pub mod org_kde_plasma_virtual_desktop {
             }
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_virtual_desktop {
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaVirtualDesktop: crate::server::Dispatcher {
@@ -7160,6 +7275,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -7278,6 +7394,7 @@ pub mod org_kde_plasma_virtual_desktop {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod plasma_shell {
     #[doc = "This interface is used by KF5 powered Wayland shells to communicate with"]
     #[doc = "the compositor and can only be bound one time."]
@@ -7286,6 +7403,7 @@ pub mod plasma_shell {
     #[doc = "implementation detail. Regular clients must not use this protocol."]
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_shell {
         #[doc = "Trait to implement the org_kde_plasma_shell interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaShell: crate::server::Dispatcher {
@@ -7303,6 +7421,7 @@ pub mod plasma_shell {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_plasma_shell#{}.get_surface()", object.id);
@@ -7344,6 +7463,7 @@ pub mod plasma_shell {
     #[doc = "the related wl_surface is destroyed.  On client side,"]
     #[doc = "org_kde_plasma_surface.destroy() must be called before"]
     #[doc = "destroying the wl_surface object."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_surface {
         #[repr(u32)]
         #[non_exhaustive]
@@ -7427,6 +7547,7 @@ pub mod plasma_shell {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_plasma_surface#{}.destroy()", object.id);
@@ -7728,6 +7849,7 @@ pub mod plasma_shell {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod plasma_window_management {
     #[doc = "This interface manages application windows."]
     #[doc = "It provides requests to show and hide the desktop and emits"]
@@ -7740,6 +7862,7 @@ pub mod plasma_window_management {
     #[doc = "implementation detail. Regular clients must not use this protocol."]
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_window_management {
         #[repr(u32)]
         #[non_exhaustive]
@@ -7825,6 +7948,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -8026,6 +8150,7 @@ pub mod plasma_window_management {
     #[doc = "Manages and control an application window."]
     #[doc = ""]
     #[doc = "Only one client can bind this interface at a time."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_window {
         #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaWindow: crate::server::Dispatcher {
@@ -8043,6 +8168,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_plasma_window#{}.set_state()", object.id);
@@ -8634,6 +8760,7 @@ pub mod plasma_window_management {
     }
     #[doc = "The activation manager interface provides a way to get notified"]
     #[doc = "when an application is about to be activated."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_activation_feedback {
         #[doc = "Trait to implement the org_kde_plasma_activation_feedback interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaActivationFeedback: crate::server::Dispatcher {
@@ -8651,6 +8778,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -8692,6 +8820,7 @@ pub mod plasma_window_management {
             }
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_activation {
         #[doc = "Trait to implement the org_kde_plasma_activation interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaActivation: crate::server::Dispatcher {
@@ -8709,6 +8838,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("org_kde_plasma_activation#{}.destroy()", object.id);
@@ -8756,6 +8886,7 @@ pub mod plasma_window_management {
     #[doc = "When this object is created, the compositor sends a window event for"]
     #[doc = "each window in the stacking order, and afterwards sends the done event"]
     #[doc = "and destroys this object."]
+    #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_stacking_order {
         #[doc = "Trait to implement the org_kde_plasma_stacking_order interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaStackingOrder: crate::server::Dispatcher {
@@ -8773,6 +8904,7 @@ pub mod plasma_window_management {
                 _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -8807,11 +8939,13 @@ pub mod plasma_window_management {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod zkde_screencast_unstable_v1 {
     #[doc = "Warning! The protocol described in this file is a desktop environment"]
     #[doc = "implementation detail. Regular clients must not use this protocol."]
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zkde_screencast_unstable_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -8851,6 +8985,7 @@ pub mod zkde_screencast_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -8983,6 +9118,7 @@ pub mod zkde_screencast_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod zkde_screencast_stream_unstable_v1 {
         #[doc = "Trait to implement the zkde_screencast_stream_unstable_v1 interface. See the module level documentation for more info"]
         pub trait ZkdeScreencastStreamUnstableV1: crate::server::Dispatcher {
@@ -9000,6 +9136,7 @@ pub mod zkde_screencast_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zkde_screencast_stream_unstable_v1#{}.close()", object.id);

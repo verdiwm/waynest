@@ -11,9 +11,11 @@
 #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
+#[allow(clippy::module_inception)]
 pub mod wlr_data_control_unstable_v1 {
     #[doc = "This interface is a manager that allows creating per-seat data device"]
     #[doc = "controls."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_data_control_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_data_control_manager_v1 interface. See the module level documentation for more info"]
@@ -24,6 +26,7 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -87,6 +90,7 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "This interface allows a client to manage a seat's selection."]
     #[doc = ""]
     #[doc = "When the seat is destroyed, this object becomes inert."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_data_control_device_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -113,6 +117,7 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -191,6 +196,7 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "wlr_data_control_offer. It is created by the source client in a data"]
     #[doc = "transfer and provides a way to describe the offered data and a way to"]
     #[doc = "respond to requests to transfer the data."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_data_control_source_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -217,6 +223,7 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -260,6 +267,7 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "by another client (the source client). The offer describes the different"]
     #[doc = "MIME types that the data can be converted to and provides the mechanism"]
     #[doc = "for transferring the data directly from the source client."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_data_control_offer_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_data_control_offer_v1 interface. See the module level documentation for more info"]
@@ -270,6 +278,7 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -327,8 +336,10 @@ pub mod wlr_data_control_unstable_v1 {
 #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
+#[allow(clippy::module_inception)]
 pub mod wlr_export_dmabuf_unstable_v1 {
     #[doc = "This object is a manager with which to start capturing from sources."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_export_dmabuf_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_export_dmabuf_manager_v1 interface. See the module level documentation for more info"]
@@ -339,6 +350,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -396,6 +408,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
     #[doc = "responsible for closing the associated file descriptor."]
     #[doc = ""]
     #[doc = "All frames are read-only and may not be written into or altered."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_export_dmabuf_frame_v1 {
         use futures_util::SinkExt;
         #[doc = "Special flags that should be respected by the client."]
@@ -446,6 +459,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -470,6 +484,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod wlr_foreign_toplevel_management_unstable_v1 {
     #[doc = "The purpose of this protocol is to enable the creation of taskbars"]
     #[doc = "and docks by providing them with a list of opened applications and"]
@@ -477,6 +492,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
     #[doc = ""]
     #[doc = "After a client binds the zwlr_foreign_toplevel_manager_v1, each opened"]
     #[doc = "toplevel window will be sent via the toplevel event"]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_foreign_toplevel_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_foreign_toplevel_manager_v1 interface. See the module level documentation for more info"]
@@ -487,6 +503,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -515,6 +532,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
     #[doc = ""]
     #[doc = "Each toplevel has a list of outputs it is visible on, conveyed to the"]
     #[doc = "client with the output_enter and output_leave events."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_foreign_toplevel_handle_v1 {
         use futures_util::SinkExt;
         #[doc = "The different states that a toplevel can have. These have the same meaning"]
@@ -568,6 +586,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -789,9 +808,11 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
 #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
+#[allow(clippy::module_inception)]
 pub mod wlr_gamma_control_unstable_v1 {
     #[doc = "This interface is a manager that allows creating per-output gamma"]
     #[doc = "controls."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_gamma_control_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_gamma_control_manager_v1 interface. See the module level documentation for more info"]
@@ -802,6 +823,7 @@ pub mod wlr_gamma_control_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -854,6 +876,7 @@ pub mod wlr_gamma_control_unstable_v1 {
     #[doc = "There can only be at most one gamma control object per output, which"]
     #[doc = "has exclusive access to this particular output. When the gamma control"]
     #[doc = "object is destroyed, the gamma table is restored to its original value."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_gamma_control_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -880,6 +903,7 @@ pub mod wlr_gamma_control_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -921,6 +945,7 @@ pub mod wlr_gamma_control_unstable_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod wlr_input_inhibit_unstable_v1 {
     #[doc = "Clients can use this interface to prevent input events from being sent to"]
     #[doc = "any surfaces but its own, which is useful for example in lock screen"]
@@ -929,6 +954,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
     #[doc = ""]
     #[doc = "Note! This protocol is deprecated and not intended for production use."]
     #[doc = "For screen lockers, use the ext-session-lock-v1 protocol."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_input_inhibit_manager_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -955,6 +981,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -990,6 +1017,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
     #[doc = ""]
     #[doc = "The compositor may continue to send input events to selected clients,"]
     #[doc = "such as an on-screen keyboard (via the input-method protocol)."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_input_inhibitor_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_input_inhibitor_v1 interface. See the module level documentation for more info"]
@@ -1000,6 +1028,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1020,6 +1049,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod wlr_layer_shell_unstable_v1 {
     #[doc = "Clients can use this interface to assign the surface_layer role to"]
     #[doc = "wl_surfaces. Such surfaces are assigned to a \"layer\" of the output and"]
@@ -1028,6 +1058,7 @@ pub mod wlr_layer_shell_unstable_v1 {
     #[doc = "semantics. This interface should be suitable for the implementation of"]
     #[doc = "many desktop shell components, and a broad number of other applications"]
     #[doc = "that interact with the desktop."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_layer_shell_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1087,6 +1118,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1167,6 +1199,7 @@ pub mod wlr_layer_shell_unstable_v1 {
     #[doc = "returns to the state it had right after layer_shell.get_layer_surface."]
     #[doc = "The client can re-map the surface by performing a commit without any"]
     #[doc = "buffer attached, waiting for a configure event and handling it as usual."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_layer_surface_v1 {
         use futures_util::SinkExt;
         #[doc = "Types of keyboard interaction possible for layer shell surfaces. The"]
@@ -1236,6 +1269,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1516,6 +1550,7 @@ pub mod wlr_layer_shell_unstable_v1 {
 #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
+#[allow(clippy::module_inception)]
 pub mod wlr_output_management_unstable_v1 {
     #[doc = "This interface is a manager that allows reading and writing the current"]
     #[doc = "output device configuration."]
@@ -1544,6 +1579,7 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "configuration purposes. This protocol is not designed to be a generic"]
     #[doc = "output property advertisement protocol for regular clients. Instead,"]
     #[doc = "protocols such as xdg-output should be used."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_output_manager_v1 interface. See the module level documentation for more info"]
@@ -1554,6 +1590,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1612,6 +1649,7 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "Properties sent via this interface are applied atomically via the"]
     #[doc = "wlr_output_manager.done event. No guarantees are made regarding the order"]
     #[doc = "in which properties are sent."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_head_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1641,6 +1679,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1669,6 +1708,7 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "Properties sent via this interface are applied atomically via the"]
     #[doc = "wlr_output_manager.done event. No guarantees are made regarding the order"]
     #[doc = "in which properties are sent."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_mode_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_output_mode_v1 interface. See the module level documentation for more info"]
@@ -1679,6 +1719,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1709,6 +1750,7 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "Then, the client can apply or test the configuration. The compositor will"]
     #[doc = "then reply with a succeeded, failed or cancelled event. Finally the client"]
     #[doc = "should destroy the configuration object."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_configuration_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1741,6 +1783,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1852,6 +1895,7 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "This object is used by the client to update a single head's configuration."]
     #[doc = ""]
     #[doc = "It is a protocol error to set the same property twice."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_configuration_head_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1893,6 +1937,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2039,9 +2084,11 @@ pub mod wlr_output_management_unstable_v1 {
 #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
+#[allow(clippy::module_inception)]
 pub mod wlr_output_power_management_unstable_v1 {
     #[doc = "This interface is a manager that allows creating per-output power"]
     #[doc = "management mode controls."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_power_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_output_power_manager_v1 interface. See the module level documentation for more info"]
@@ -2052,6 +2099,7 @@ pub mod wlr_output_power_management_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2096,6 +2144,7 @@ pub mod wlr_output_power_management_unstable_v1 {
     }
     #[doc = "This object offers requests to set the power management mode of"]
     #[doc = "an output."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_power_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -2141,6 +2190,7 @@ pub mod wlr_output_power_management_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2190,9 +2240,11 @@ pub mod wlr_output_power_management_unstable_v1 {
 #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
+#[allow(clippy::module_inception)]
 pub mod wlr_screencopy_unstable_v1 {
     #[doc = "This object is a manager which offers requests to start capturing from a"]
     #[doc = "source."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_screencopy_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_screencopy_manager_v1 interface. See the module level documentation for more info"]
@@ -2203,6 +2255,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2297,6 +2350,7 @@ pub mod wlr_screencopy_unstable_v1 {
     #[doc = ""]
     #[doc = "Once either a \"ready\" or a \"failed\" event is received, the client should"]
     #[doc = "destroy the frame."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_screencopy_frame_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -2333,6 +2387,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2394,9 +2449,11 @@ pub mod wlr_screencopy_unstable_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod wlr_virtual_pointer_unstable_v1 {
     #[doc = "This protocol allows clients to emulate a physical pointer device. The"]
     #[doc = "requests are mostly mirror opposites of those specified in wl_pointer."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_virtual_pointer_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -2426,6 +2483,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2606,6 +2664,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
         }
     }
     #[doc = "This object allows clients to create individual virtual pointer objects."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwlr_virtual_pointer_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_virtual_pointer_manager_v1 interface. See the module level documentation for more info"]
@@ -2616,6 +2675,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }

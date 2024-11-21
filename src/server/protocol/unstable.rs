@@ -1,4 +1,5 @@
 #![allow(async_fn_in_trait)]
+#[allow(clippy::module_inception)]
 pub mod fullscreen_shell_unstable_v1 {
     #[doc = "Displays a single surface per output."]
     #[doc = ""]
@@ -33,6 +34,7 @@ pub mod fullscreen_shell_unstable_v1 {
     #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
     #[doc = "version number in the protocol and interface names are removed and the"]
     #[doc = "interface version number is reset."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_fullscreen_shell_v1 {
         #[doc = "Various capabilities that can be advertised by the compositor.  They"]
         #[doc = "are advertised one-at-a-time when the wl_fullscreen_shell interface is"]
@@ -141,6 +143,7 @@ pub mod fullscreen_shell_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_fullscreen_shell_v1#{}.release()", object.id);
@@ -295,6 +298,7 @@ pub mod fullscreen_shell_unstable_v1 {
             }
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_fullscreen_shell_mode_feedback_v1 {
         #[doc = "Trait to implement the zwp_fullscreen_shell_mode_feedback_v1 interface. See the module level documentation for more info"]
         pub trait ZwpFullscreenShellModeFeedbackV1: crate::server::Dispatcher {
@@ -312,6 +316,7 @@ pub mod fullscreen_shell_unstable_v1 {
                 _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -382,6 +387,7 @@ pub mod fullscreen_shell_unstable_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod idle_inhibit_unstable_v1 {
     #[doc = "This interface permits inhibiting the idle behavior such as screen"]
     #[doc = "blanking, locking, and screensaving.  The client binds the idle manager"]
@@ -395,6 +401,7 @@ pub mod idle_inhibit_unstable_v1 {
     #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
     #[doc = "version number in the protocol and interface names are removed and the"]
     #[doc = "interface version number is reset."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_idle_inhibit_manager_v1 {
         #[doc = "Trait to implement the zwp_idle_inhibit_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpIdleInhibitManagerV1: crate::server::Dispatcher {
@@ -412,6 +419,7 @@ pub mod idle_inhibit_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_idle_inhibit_manager_v1#{}.destroy()", object.id);
@@ -465,6 +473,7 @@ pub mod idle_inhibit_unstable_v1 {
     #[doc = "Likewise, the inhibitor isn't honored if the system was already idled at"]
     #[doc = "the time the inhibitor was established, although if the system later"]
     #[doc = "de-idles and re-idles the inhibitor will take effect."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_idle_inhibitor_v1 {
         #[doc = "Trait to implement the zwp_idle_inhibitor_v1 interface. See the module level documentation for more info"]
         pub trait ZwpIdleInhibitorV1: crate::server::Dispatcher {
@@ -482,6 +491,7 @@ pub mod idle_inhibit_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_idle_inhibitor_v1#{}.destroy()", object.id);
@@ -499,6 +509,7 @@ pub mod idle_inhibit_unstable_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod input_method_unstable_v1 {
     #[doc = "Corresponds to a text input on the input method side. An input method context"]
     #[doc = "is created on text input activation on the input method side. It allows"]
@@ -523,6 +534,7 @@ pub mod input_method_unstable_v1 {
     #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
     #[doc = "version number in the protocol and interface names are removed and the"]
     #[doc = "interface version number is reset."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_method_context_v1 {
         #[doc = "Trait to implement the zwp_input_method_context_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputMethodContextV1: crate::server::Dispatcher {
@@ -540,6 +552,7 @@ pub mod input_method_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_input_method_context_v1#{}.destroy()", object.id);
@@ -984,6 +997,7 @@ pub mod input_method_unstable_v1 {
     #[doc = "input from hardware or virtual keyboards. There is one input method"]
     #[doc = "object per seat. On activate there is a new input method context object"]
     #[doc = "created which allows the input method to communicate with the text input."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_method_v1 {
         #[doc = "Trait to implement the zwp_input_method_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputMethodV1: crate::server::Dispatcher {
@@ -1001,6 +1015,7 @@ pub mod input_method_unstable_v1 {
                 _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1043,6 +1058,7 @@ pub mod input_method_unstable_v1 {
         }
     }
     #[doc = "Only one client can bind this interface at a time."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_panel_v1 {
         #[doc = "Trait to implement the zwp_input_panel_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputPanelV1: crate::server::Dispatcher {
@@ -1060,6 +1076,7 @@ pub mod input_method_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -1090,6 +1107,7 @@ pub mod input_method_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_panel_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1122,6 +1140,7 @@ pub mod input_method_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_input_panel_surface_v1#{}.set_toplevel()", object.id);
@@ -1178,9 +1197,11 @@ pub mod input_method_unstable_v1 {
 #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
+#[allow(clippy::module_inception)]
 pub mod input_timestamps_unstable_v1 {
     #[doc = "A global interface used for requesting high-resolution timestamps"]
     #[doc = "for input events."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_timestamps_manager_v1 {
         #[doc = "Trait to implement the zwp_input_timestamps_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputTimestampsManagerV1: crate::server::Dispatcher {
@@ -1198,6 +1219,7 @@ pub mod input_timestamps_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_input_timestamps_manager_v1#{}.destroy()", object.id);
@@ -1315,6 +1337,7 @@ pub mod input_timestamps_unstable_v1 {
     #[doc = "Provides high-resolution timestamp events for a set of subscribed input"]
     #[doc = "events. The set of subscribed input events is determined by the"]
     #[doc = "zwp_input_timestamps_manager_v1 request used to create this object."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_timestamps_v1 {
         #[doc = "Trait to implement the zwp_input_timestamps_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputTimestampsV1: crate::server::Dispatcher {
@@ -1332,6 +1355,7 @@ pub mod input_timestamps_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_input_timestamps_v1#{}.destroy()", object.id);
@@ -1398,8 +1422,10 @@ pub mod input_timestamps_unstable_v1 {
 #[doc = "the 'z' prefix and the version number in the protocol and"]
 #[doc = "interface names are removed and the interface version number is"]
 #[doc = "reset."]
+#[allow(clippy::module_inception)]
 pub mod keyboard_shortcuts_inhibit_unstable_v1 {
     #[doc = "A global interface used for inhibiting the compositor keyboard shortcuts."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_keyboard_shortcuts_inhibit_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1433,6 +1459,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -1518,6 +1545,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
     #[doc = "focus, the keyboard shortcuts inhibitor becomes irrelevant and the"]
     #[doc = "compositor will restore its own keyboard shortcuts but no \"inactive\""]
     #[doc = "event is emitted in this case."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_keyboard_shortcuts_inhibitor_v1 {
         #[doc = "Trait to implement the zwp_keyboard_shortcuts_inhibitor_v1 interface. See the module level documentation for more info"]
         pub trait ZwpKeyboardShortcutsInhibitorV1: crate::server::Dispatcher {
@@ -1535,6 +1563,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -1598,6 +1627,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod linux_dmabuf_unstable_v1 {
     #[doc = "Following the interfaces from:"]
     #[doc = "https://www.khronos.org/registry/egl/extensions/EXT/EGL_EXT_image_dma_buf_import.txt"]
@@ -1667,6 +1697,7 @@ pub mod linux_dmabuf_unstable_v1 {
     #[doc = "Disclaimer: This protocol extension has been marked stable. This copy is"]
     #[doc = "no longer used and only retained for backwards compatibility. The"]
     #[doc = "canonical version can be found in the stable/ directory."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_dmabuf_v1 {
         #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
         pub trait ZwpLinuxDmabufV1: crate::server::Dispatcher {
@@ -1684,6 +1715,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_linux_dmabuf_v1#{}.destroy()", object.id);
@@ -1850,6 +1882,7 @@ pub mod linux_dmabuf_unstable_v1 {
     #[doc = "from zero to the number of planes used by the drm_fourcc format code."]
     #[doc = "All planes required by the format must be given exactly once, but can"]
     #[doc = "be given in any order. Each plane index can be set only once."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_buffer_params_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1912,6 +1945,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_linux_buffer_params_v1#{}.destroy()", object.id);
@@ -2164,6 +2198,7 @@ pub mod linux_dmabuf_unstable_v1 {
     #[doc = "(each consisting of one tranche_target_device event, one tranche_flags"]
     #[doc = "event, tranche_formats events and then a tranche_done event), then one"]
     #[doc = "done event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_dmabuf_feedback_v1 {
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { # [doc = "direct scan-out tranche"] const Scanout = 1u32 ; } }
         impl TryFrom<u32> for TrancheFlags {
@@ -2188,6 +2223,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_linux_dmabuf_feedback_v1#{}.destroy()", object.id);
@@ -2425,6 +2461,7 @@ pub mod linux_dmabuf_unstable_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod zwp_linux_explicit_synchronization_unstable_v1 {
     #[doc = "This global is a factory interface, allowing clients to request"]
     #[doc = "explicit synchronization for buffers on a per-surface basis."]
@@ -2444,6 +2481,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
     #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
     #[doc = "version number in the protocol and interface names are removed and the"]
     #[doc = "interface version number is reset."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_explicit_synchronization_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2477,6 +2515,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -2563,6 +2602,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
     #[doc = "of platform specific buffers described in the EGL_WL_bind_wayland_display"]
     #[doc = "extension. Compositors are free to support explicit synchronization for"]
     #[doc = "additional buffer types."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_surface_synchronization_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2611,6 +2651,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -2727,6 +2768,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
     #[doc = ""]
     #[doc = "Once a buffer release object has delivered a 'fenced_release' or an"]
     #[doc = "'immediate_release' event it is automatically destroyed."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_buffer_release_v1 {
         #[doc = "Trait to implement the zwp_linux_buffer_release_v1 interface. See the module level documentation for more info"]
         pub trait ZwpLinuxBufferReleaseV1: crate::server::Dispatcher {
@@ -2744,6 +2786,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2822,6 +2865,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
 #[doc = "is to be declared stable, the 'z' prefix and the version number in the"]
 #[doc = "protocol and interface names are removed and the interface version number is"]
 #[doc = "reset."]
+#[allow(clippy::module_inception)]
 pub mod pointer_constraints_unstable_v1 {
     #[doc = "The global interface exposing pointer constraining functionality. It"]
     #[doc = "exposes two requests: lock_pointer for locking the pointer to its"]
@@ -2836,6 +2880,7 @@ pub mod pointer_constraints_unstable_v1 {
     #[doc = "when another lock or confinement is active or requested on the same surface"]
     #[doc = "and with any of the wl_pointer objects of the same seat, an"]
     #[doc = "'already_constrained' error will be raised."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_pointer_constraints_v1 {
         #[doc = "These errors can be emitted in response to wp_pointer_constraints"]
         #[doc = "requests."]
@@ -2891,6 +2936,7 @@ pub mod pointer_constraints_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_pointer_constraints_v1#{}.destroy()", object.id);
@@ -3043,6 +3089,7 @@ pub mod pointer_constraints_unstable_v1 {
     #[doc = "If the surface the lock was requested on is destroyed and the lock is not"]
     #[doc = "yet activated, the wp_locked_pointer object is now defunct and must be"]
     #[doc = "destroyed."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_locked_pointer_v1 {
         #[doc = "Trait to implement the zwp_locked_pointer_v1 interface. See the module level documentation for more info"]
         pub trait ZwpLockedPointerV1: crate::server::Dispatcher {
@@ -3060,6 +3107,7 @@ pub mod pointer_constraints_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_locked_pointer_v1#{}.destroy()", object.id);
@@ -3169,6 +3217,7 @@ pub mod pointer_constraints_unstable_v1 {
     #[doc = "If the compositor decides to unconfine the pointer the unconfined event is"]
     #[doc = "sent. The wp_confined_pointer object is at this point defunct and should"]
     #[doc = "be destroyed."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_confined_pointer_v1 {
         #[doc = "Trait to implement the zwp_confined_pointer_v1 interface. See the module level documentation for more info"]
         pub trait ZwpConfinedPointerV1: crate::server::Dispatcher {
@@ -3186,6 +3235,7 @@ pub mod pointer_constraints_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_confined_pointer_v1#{}.destroy()", object.id);
@@ -3260,6 +3310,7 @@ pub mod pointer_constraints_unstable_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod pointer_gestures_unstable_v1 {
     #[doc = "A global interface to provide semantic touchpad gestures for a given"]
     #[doc = "pointer."]
@@ -3277,6 +3328,7 @@ pub mod pointer_gestures_unstable_v1 {
     #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
     #[doc = "version number in the protocol and interface names are removed and the"]
     #[doc = "interface version number is reset."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_pointer_gestures_v1 {
         #[doc = "Trait to implement the zwp_pointer_gestures_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPointerGesturesV1: crate::server::Dispatcher {
@@ -3294,6 +3346,7 @@ pub mod pointer_gestures_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -3401,6 +3454,7 @@ pub mod pointer_gestures_unstable_v1 {
     #[doc = "A gesture may be cancelled by the compositor or the hardware."]
     #[doc = "Clients should not consider performing permanent or irreversible"]
     #[doc = "actions until the end of a gesture has been received."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_pointer_gesture_swipe_v1 {
         #[doc = "Trait to implement the zwp_pointer_gesture_swipe_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPointerGestureSwipeV1: crate::server::Dispatcher {
@@ -3418,6 +3472,7 @@ pub mod pointer_gestures_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_pointer_gesture_swipe_v1#{}.destroy()", object.id);
@@ -3521,6 +3576,7 @@ pub mod pointer_gestures_unstable_v1 {
     #[doc = "A gesture may be cancelled by the compositor or the hardware."]
     #[doc = "Clients should not consider performing permanent or irreversible"]
     #[doc = "actions until the end of a gesture has been received."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_pointer_gesture_pinch_v1 {
         #[doc = "Trait to implement the zwp_pointer_gesture_pinch_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPointerGesturePinchV1: crate::server::Dispatcher {
@@ -3538,6 +3594,7 @@ pub mod pointer_gestures_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_pointer_gesture_pinch_v1#{}.destroy()", object.id);
@@ -3654,6 +3711,7 @@ pub mod pointer_gestures_unstable_v1 {
     #[doc = "A gesture may be cancelled by the compositor or the hardware."]
     #[doc = "Clients should not consider performing permanent or irreversible"]
     #[doc = "actions until the end of a gesture has been received."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_pointer_gesture_hold_v1 {
         #[doc = "Trait to implement the zwp_pointer_gesture_hold_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPointerGestureHoldV1: crate::server::Dispatcher {
@@ -3671,6 +3729,7 @@ pub mod pointer_gestures_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_pointer_gesture_hold_v1#{}.destroy()", object.id);
@@ -3778,11 +3837,13 @@ pub mod pointer_gestures_unstable_v1 {
 #[doc = ""]
 #[doc = "The primary selection owner should be checking for errors during"]
 #[doc = "writes, merely cancelling the ongoing transfer if any happened."]
+#[allow(clippy::module_inception)]
 pub mod wp_primary_selection_unstable_v1 {
     #[doc = "The primary selection device manager is a singleton global object that"]
     #[doc = "provides access to the primary selection. It allows to create"]
     #[doc = "wp_primary_selection_source objects, as well as retrieving the per-seat"]
     #[doc = "wp_primary_selection_device objects."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_primary_selection_device_manager_v1 {
         #[doc = "Trait to implement the zwp_primary_selection_device_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPrimarySelectionDeviceManagerV1: crate::server::Dispatcher {
@@ -3800,6 +3861,7 @@ pub mod wp_primary_selection_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -3865,6 +3927,7 @@ pub mod wp_primary_selection_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_primary_selection_device_v1 {
         #[doc = "Trait to implement the zwp_primary_selection_device_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPrimarySelectionDeviceV1: crate::server::Dispatcher {
@@ -3882,6 +3945,7 @@ pub mod wp_primary_selection_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -3970,6 +4034,7 @@ pub mod wp_primary_selection_unstable_v1 {
     #[doc = "wl_data_offer, the offer also describes the mime types that the data can"]
     #[doc = "be converted to and provides the mechanisms for transferring the data"]
     #[doc = "directly to the client."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_primary_selection_offer_v1 {
         #[doc = "Trait to implement the zwp_primary_selection_offer_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPrimarySelectionOfferV1: crate::server::Dispatcher {
@@ -3987,6 +4052,7 @@ pub mod wp_primary_selection_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_primary_selection_offer_v1#{}.receive()", object.id);
@@ -4053,6 +4119,7 @@ pub mod wp_primary_selection_unstable_v1 {
     #[doc = "The source side of a wp_primary_selection_offer, it provides a way to"]
     #[doc = "describe the offered data and respond to requests to transfer the"]
     #[doc = "requested contents of the primary selection clipboard."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_primary_selection_source_v1 {
         #[doc = "Trait to implement the zwp_primary_selection_source_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPrimarySelectionSourceV1: crate::server::Dispatcher {
@@ -4070,6 +4137,7 @@ pub mod wp_primary_selection_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_primary_selection_source_v1#{}.offer()", object.id);
@@ -4165,9 +4233,11 @@ pub mod wp_primary_selection_unstable_v1 {
 #[doc = "is to be declared stable, the 'z' prefix and the version number in the"]
 #[doc = "protocol and interface names are removed and the interface version number is"]
 #[doc = "reset."]
+#[allow(clippy::module_inception)]
 pub mod relative_pointer_unstable_v1 {
     #[doc = "A global interface used for getting the relative pointer object for a"]
     #[doc = "given pointer."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_relative_pointer_manager_v1 {
         #[doc = "Trait to implement the zwp_relative_pointer_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpRelativePointerManagerV1: crate::server::Dispatcher {
@@ -4185,6 +4255,7 @@ pub mod relative_pointer_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_relative_pointer_manager_v1#{}.destroy()", object.id);
@@ -4232,6 +4303,7 @@ pub mod relative_pointer_unstable_v1 {
     #[doc = "used for emitting relative pointer events. It shares the same focus as"]
     #[doc = "wl_pointer objects of the same seat and will only emit events when it has"]
     #[doc = "focus."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_relative_pointer_v1 {
         #[doc = "Trait to implement the zwp_relative_pointer_v1 interface. See the module level documentation for more info"]
         pub trait ZwpRelativePointerV1: crate::server::Dispatcher {
@@ -4249,6 +4321,7 @@ pub mod relative_pointer_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_relative_pointer_v1#{}.destroy()", object.id);
@@ -4405,10 +4478,12 @@ pub mod relative_pointer_unstable_v1 {
 #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
+#[allow(clippy::module_inception)]
 pub mod tablet_unstable_v1 {
     #[doc = "An object that provides access to the graphics tablets available on this"]
     #[doc = "system. All tablets are associated with a seat, to get access to the"]
     #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_manager_v1 {
         #[doc = "Trait to implement the zwp_tablet_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpTabletManagerV1: crate::server::Dispatcher {
@@ -4426,6 +4501,7 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_manager_v1#{}.get_tablet_seat()", object.id);
@@ -4469,6 +4545,7 @@ pub mod tablet_unstable_v1 {
     #[doc = "An object that provides access to the graphics tablets available on this"]
     #[doc = "seat. After binding to this interface, the compositor sends a set of"]
     #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_seat_v1 {
         #[doc = "Trait to implement the zwp_tablet_seat_v1 interface. See the module level documentation for more info"]
         pub trait ZwpTabletSeatV1: crate::server::Dispatcher {
@@ -4486,6 +4563,7 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_seat_v1#{}.destroy()", object.id);
@@ -4561,6 +4639,7 @@ pub mod tablet_unstable_v1 {
     #[doc = "Tablet tool events are grouped by wp_tablet_tool.frame events."]
     #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
     #[doc = "considered part of the same hardware state change."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_tool_v1 {
         #[doc = "Describes the physical type of a tool. The physical type of a tool"]
         #[doc = "generally defines its base usage."]
@@ -4695,6 +4774,7 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_tool_v1#{}.set_cursor()", object.id);
@@ -5203,6 +5283,7 @@ pub mod tablet_unstable_v1 {
     #[doc = "pid/vid. These capabilities are sent in an event sequence after the"]
     #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
     #[doc = "terminated by a wp_tablet.done event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_v1 {
         #[doc = "Trait to implement the zwp_tablet_v1 interface. See the module level documentation for more info"]
         pub trait ZwpTabletV1: crate::server::Dispatcher {
@@ -5220,6 +5301,7 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_v1#{}.destroy()", object.id);
@@ -5415,10 +5497,12 @@ pub mod tablet_unstable_v1 {
 #[doc = "Disclaimer: This protocol extension has been marked stable. This copy is"]
 #[doc = "no longer used and only retained for backwards compatibility. The"]
 #[doc = "canonical version can be found in the stable/ directory."]
+#[allow(clippy::module_inception)]
 pub mod tablet_unstable_v2 {
     #[doc = "An object that provides access to the graphics tablets available on this"]
     #[doc = "system. All tablets are associated with a seat, to get access to the"]
     #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_manager_v2 {
         #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletManagerV2: crate::server::Dispatcher {
@@ -5436,6 +5520,7 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_manager_v2#{}.get_tablet_seat()", object.id);
@@ -5479,6 +5564,7 @@ pub mod tablet_unstable_v2 {
     #[doc = "An object that provides access to the graphics tablets available on this"]
     #[doc = "seat. After binding to this interface, the compositor sends a set of"]
     #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_seat_v2 {
         #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletSeatV2: crate::server::Dispatcher {
@@ -5496,6 +5582,7 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_seat_v2#{}.destroy()", object.id);
@@ -5596,6 +5683,7 @@ pub mod tablet_unstable_v2 {
     #[doc = "Tablet tool events are grouped by wp_tablet_tool.frame events."]
     #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
     #[doc = "considered part of the same hardware state change."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_tool_v2 {
         #[doc = "Describes the physical type of a tool. The physical type of a tool"]
         #[doc = "generally defines its base usage."]
@@ -5730,6 +5818,7 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_tool_v2#{}.set_cursor()", object.id);
@@ -6238,6 +6327,7 @@ pub mod tablet_unstable_v2 {
     #[doc = "pid/vid. These capabilities are sent in an event sequence after the"]
     #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
     #[doc = "terminated by a wp_tablet.done event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_v2 {
         #[doc = "Trait to implement the zwp_tablet_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletV2: crate::server::Dispatcher {
@@ -6255,6 +6345,7 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_v2#{}.destroy()", object.id);
@@ -6383,6 +6474,7 @@ pub mod tablet_unstable_v2 {
     #[doc = ""]
     #[doc = "Events on a ring are logically grouped by the wl_tablet_pad_ring.frame"]
     #[doc = "event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_ring_v2 {
         #[doc = "Describes the source types for ring events. This indicates to the"]
         #[doc = "client how a ring event was physically generated; a client may"]
@@ -6420,6 +6512,7 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_pad_ring_v2#{}.set_feedback()", object.id);
@@ -6573,6 +6666,7 @@ pub mod tablet_unstable_v2 {
     #[doc = ""]
     #[doc = "Events on a strip are logically grouped by the wl_tablet_pad_strip.frame"]
     #[doc = "event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_strip_v2 {
         #[doc = "Describes the source types for strip events. This indicates to the"]
         #[doc = "client how a strip event was physically generated; a client may"]
@@ -6610,6 +6704,7 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_pad_strip_v2#{}.set_feedback()", object.id);
@@ -6781,6 +6876,7 @@ pub mod tablet_unstable_v2 {
     #[doc = "although it is at clients' discretion whether to actually perform different"]
     #[doc = "actions, and/or issue the respective .set_feedback requests to notify the"]
     #[doc = "compositor. See the wp_tablet_pad_group.mode_switch event for more details."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_group_v2 {
         #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletPadGroupV2: crate::server::Dispatcher {
@@ -6798,6 +6894,7 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_pad_group_v2#{}.destroy()", object.id);
@@ -6991,6 +7088,7 @@ pub mod tablet_unstable_v2 {
     #[doc = "Groups may have multiple modes. Modes allow clients to map multiple"]
     #[doc = "actions to a single pad feature. Only one mode can be active per group,"]
     #[doc = "although different groups may have different active modes."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_v2 {
         #[doc = "Describes the physical state of a button that caused the button"]
         #[doc = "event."]
@@ -7029,6 +7127,7 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_pad_v2#{}.set_feedback()", object.id);
@@ -7248,6 +7347,7 @@ pub mod tablet_unstable_v2 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod text_input_unstable_v1 {
     #[doc = "An object used for text input. Adds support for text input and input"]
     #[doc = "methods to applications. A text_input object is created from a"]
@@ -7278,6 +7378,7 @@ pub mod text_input_unstable_v1 {
     #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
     #[doc = "version number in the protocol and interface names are removed and the"]
     #[doc = "interface version number is reset."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_v1 {
         bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behaviour"] const None = 0u32 ; # [doc = "auto completion, correction and capitalization"] const Default = 7u32 ; # [doc = "hidden and sensitive text"] const Password = 192u32 ; # [doc = "suggest word completions"] const AutoCompletion = 1u32 ; # [doc = "suggest word corrections"] const AutoCorrection = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; } }
         impl TryFrom<u32> for ContentHint {
@@ -7412,6 +7513,7 @@ pub mod text_input_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_text_input_v1#{}.activate()", object.id);
@@ -7893,6 +7995,7 @@ pub mod text_input_unstable_v1 {
         }
     }
     #[doc = "A factory for text_input objects. This object is a global singleton."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_manager_v1 {
         #[doc = "Trait to implement the zwp_text_input_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpTextInputManagerV1: crate::server::Dispatcher {
@@ -7910,6 +8013,7 @@ pub mod text_input_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -7953,6 +8057,7 @@ pub mod text_input_unstable_v1 {
 #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
 #[doc = "version number in the protocol and interface names are removed and the"]
 #[doc = "interface version number is reset."]
+#[allow(clippy::module_inception)]
 pub mod text_input_unstable_v3 {
     #[doc = "The zwp_text_input_v3 interface represents text input and input methods"]
     #[doc = "associated with a seat. It provides enter/leave events to follow the"]
@@ -7980,6 +8085,7 @@ pub mod text_input_unstable_v3 {
     #[doc = "set_content_type and set_cursor_rectangle) and a commit request. After an"]
     #[doc = "enter event or disable request all state information is invalidated and"]
     #[doc = "needs to be resent by the client."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_v3 {
         #[doc = "Reason for the change of surrounding text or cursor posision."]
         #[repr(u32)]
@@ -8084,6 +8190,7 @@ pub mod text_input_unstable_v3 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_text_input_v3#{}.destroy()", object.id);
@@ -8510,6 +8617,7 @@ pub mod text_input_unstable_v3 {
         }
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_manager_v3 {
         #[doc = "Trait to implement the zwp_text_input_manager_v3 interface. See the module level documentation for more info"]
         pub trait ZwpTextInputManagerV3: crate::server::Dispatcher {
@@ -8527,6 +8635,7 @@ pub mod text_input_unstable_v3 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_text_input_manager_v3#{}.destroy()", object.id);
@@ -8566,6 +8675,7 @@ pub mod text_input_unstable_v3 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod xdg_decoration_unstable_v1 {
     #[doc = "This interface allows a compositor to announce support for server-side"]
     #[doc = "decorations."]
@@ -8589,6 +8699,7 @@ pub mod xdg_decoration_unstable_v1 {
     #[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
     #[doc = "version number in the protocol and interface names are removed and the"]
     #[doc = "interface version number is reset."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_decoration_manager_v1 {
         #[doc = "Trait to implement the zxdg_decoration_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgDecorationManagerV1: crate::server::Dispatcher {
@@ -8606,6 +8717,7 @@ pub mod xdg_decoration_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_decoration_manager_v1#{}.destroy()", object.id);
@@ -8660,6 +8772,7 @@ pub mod xdg_decoration_unstable_v1 {
     #[doc = ""]
     #[doc = "The xdg_toplevel_decoration object must be destroyed before its"]
     #[doc = "xdg_toplevel."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_toplevel_decoration_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -8722,6 +8835,7 @@ pub mod xdg_decoration_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_toplevel_decoration_v1#{}.destroy()", object.id);
@@ -8836,9 +8950,11 @@ pub mod xdg_decoration_unstable_v1 {
 #[doc = "is to be declared stable, the 'z' prefix and the version number in the"]
 #[doc = "protocol and interface names are removed and the interface version number is"]
 #[doc = "reset."]
+#[allow(clippy::module_inception)]
 pub mod xdg_foreign_unstable_v1 {
     #[doc = "A global interface used for exporting surfaces that can later be imported"]
     #[doc = "using xdg_importer."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_exporter_v1 {
         #[doc = "Trait to implement the zxdg_exporter_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgExporterV1: crate::server::Dispatcher {
@@ -8856,6 +8972,7 @@ pub mod xdg_foreign_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_exporter_v1#{}.destroy()", object.id);
@@ -8905,6 +9022,7 @@ pub mod xdg_foreign_unstable_v1 {
     #[doc = "A global interface used for importing surfaces exported by xdg_exporter."]
     #[doc = "With this interface, a client can create a reference to a surface of"]
     #[doc = "another client."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_importer_v1 {
         #[doc = "Trait to implement the zxdg_importer_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgImporterV1: crate::server::Dispatcher {
@@ -8922,6 +9040,7 @@ pub mod xdg_foreign_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_importer_v1#{}.destroy()", object.id);
@@ -8969,6 +9088,7 @@ pub mod xdg_foreign_unstable_v1 {
     #[doc = "exported surface may be referenced as long as the xdg_exported object not"]
     #[doc = "destroyed. Destroying the xdg_exported invalidates any relationship the"]
     #[doc = "importer may have established using xdg_imported."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_exported_v1 {
         #[doc = "Trait to implement the zxdg_exported_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgExportedV1: crate::server::Dispatcher {
@@ -8986,6 +9106,7 @@ pub mod xdg_foreign_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_exported_v1#{}.destroy()", object.id);
@@ -9026,6 +9147,7 @@ pub mod xdg_foreign_unstable_v1 {
     #[doc = "An xdg_imported object represents an imported reference to surface exported"]
     #[doc = "by some client. A client can use this interface to manipulate"]
     #[doc = "relationships between its own surfaces and the imported surface."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_imported_v1 {
         #[doc = "Trait to implement the zxdg_imported_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgImportedV1: crate::server::Dispatcher {
@@ -9043,6 +9165,7 @@ pub mod xdg_foreign_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_imported_v1#{}.destroy()", object.id);
@@ -9128,9 +9251,11 @@ pub mod xdg_foreign_unstable_v1 {
 #[doc = "is to be declared stable, the 'z' prefix and the version number in the"]
 #[doc = "protocol and interface names are removed and the interface version number is"]
 #[doc = "reset."]
+#[allow(clippy::module_inception)]
 pub mod xdg_foreign_unstable_v2 {
     #[doc = "A global interface used for exporting surfaces that can later be imported"]
     #[doc = "using xdg_importer."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_exporter_v2 {
         #[doc = "These errors can be emitted in response to invalid xdg_exporter"]
         #[doc = "requests."]
@@ -9166,6 +9291,7 @@ pub mod xdg_foreign_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_exporter_v2#{}.destroy()", object.id);
@@ -9216,6 +9342,7 @@ pub mod xdg_foreign_unstable_v2 {
     #[doc = "A global interface used for importing surfaces exported by xdg_exporter."]
     #[doc = "With this interface, a client can create a reference to a surface of"]
     #[doc = "another client."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_importer_v2 {
         #[doc = "Trait to implement the zxdg_importer_v2 interface. See the module level documentation for more info"]
         pub trait ZxdgImporterV2: crate::server::Dispatcher {
@@ -9233,6 +9360,7 @@ pub mod xdg_foreign_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_importer_v2#{}.destroy()", object.id);
@@ -9280,6 +9408,7 @@ pub mod xdg_foreign_unstable_v2 {
     #[doc = "exported surface may be referenced as long as the xdg_exported object not"]
     #[doc = "destroyed. Destroying the xdg_exported invalidates any relationship the"]
     #[doc = "importer may have established using xdg_imported."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_exported_v2 {
         #[doc = "Trait to implement the zxdg_exported_v2 interface. See the module level documentation for more info"]
         pub trait ZxdgExportedV2: crate::server::Dispatcher {
@@ -9297,6 +9426,7 @@ pub mod xdg_foreign_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_exported_v2#{}.destroy()", object.id);
@@ -9337,6 +9467,7 @@ pub mod xdg_foreign_unstable_v2 {
     #[doc = "An xdg_imported object represents an imported reference to surface exported"]
     #[doc = "by some client. A client can use this interface to manipulate"]
     #[doc = "relationships between its own surfaces and the imported surface."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_imported_v2 {
         #[doc = "These errors can be emitted in response to invalid xdg_imported"]
         #[doc = "requests."]
@@ -9372,6 +9503,7 @@ pub mod xdg_foreign_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_imported_v2#{}.destroy()", object.id);
@@ -9456,8 +9588,10 @@ pub mod xdg_foreign_unstable_v2 {
 #[doc = "the 'z' prefix and the version number in the protocol and"]
 #[doc = "interface names are removed and the interface version number is"]
 #[doc = "reset."]
+#[allow(clippy::module_inception)]
 pub mod xdg_output_unstable_v1 {
     #[doc = "A global factory interface for xdg_output objects."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_output_manager_v1 {
         #[doc = "Trait to implement the zxdg_output_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgOutputManagerV1: crate::server::Dispatcher {
@@ -9475,6 +9609,7 @@ pub mod xdg_output_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_output_manager_v1#{}.destroy()", object.id);
@@ -9525,6 +9660,7 @@ pub mod xdg_output_unstable_v1 {
     #[doc = "sent (when the object is created and when properties are updated), a"]
     #[doc = "wl_output.done event is sent. This allows changes to the output"]
     #[doc = "properties to be seen as atomic, even if they happen via multiple events."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_output_v1 {
         #[doc = "Trait to implement the zxdg_output_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgOutputV1: crate::server::Dispatcher {
@@ -9542,6 +9678,7 @@ pub mod xdg_output_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_output_v1#{}.destroy()", object.id);
@@ -9720,11 +9857,13 @@ pub mod xdg_output_unstable_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod xdg_shell_unstable_v5 {
     #[doc = "xdg_shell allows clients to turn a wl_surface into a \"real window\""]
     #[doc = "which can be dragged, resized, stacked, and moved around by the"]
     #[doc = "user. Everything about this interface is suited towards traditional"]
     #[doc = "desktop environments."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_shell {
         #[doc = "The 'current' member of this enum gives the version of the"]
         #[doc = "protocol.  Implementations can compare this to the version"]
@@ -9787,6 +9926,7 @@ pub mod xdg_shell_unstable_v5 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_shell#{}.destroy()", object.id);
@@ -9953,6 +10093,7 @@ pub mod xdg_shell_unstable_v5 {
     #[doc = ""]
     #[doc = "For a surface to be mapped by the compositor the client must have"]
     #[doc = "committed both an xdg_surface state and a buffer."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_surface {
         #[doc = "These values are used to indicate which edge of a surface"]
         #[doc = "is being dragged in a resize operation."]
@@ -10046,6 +10187,7 @@ pub mod xdg_shell_unstable_v5 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_surface#{}.destroy()", object.id);
@@ -10558,6 +10700,7 @@ pub mod xdg_shell_unstable_v5 {
     #[doc = ""]
     #[doc = "For a surface to be mapped by the compositor the client must have"]
     #[doc = "committed both the xdg_popup state and a buffer."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_popup {
         #[doc = "Trait to implement the xdg_popup interface. See the module level documentation for more info"]
         pub trait XdgPopup: crate::server::Dispatcher {
@@ -10575,6 +10718,7 @@ pub mod xdg_shell_unstable_v5 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_popup#{}.destroy()", object.id);
@@ -10611,11 +10755,13 @@ pub mod xdg_shell_unstable_v5 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod xdg_shell_unstable_v6 {
     #[doc = "xdg_shell allows clients to turn a wl_surface into a \"real window\""]
     #[doc = "which can be dragged, resized, stacked, and moved around by the"]
     #[doc = "user. Everything about this interface is suited towards traditional"]
     #[doc = "desktop environments."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_shell_v6 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -10664,6 +10810,7 @@ pub mod xdg_shell_unstable_v6 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_shell_v6#{}.destroy()", object.id);
@@ -10791,6 +10938,7 @@ pub mod xdg_shell_unstable_v6 {
     #[doc = "non-zero size set by set_size, and a non-zero anchor rectangle set by"]
     #[doc = "set_anchor_rect. Passing an incomplete xdg_positioner object when"]
     #[doc = "positioning a surface raises an error."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_positioner_v6 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -10845,6 +10993,7 @@ pub mod xdg_shell_unstable_v6 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_positioner_v6#{}.destroy()", object.id);
@@ -11030,6 +11179,7 @@ pub mod xdg_shell_unstable_v6 {
     #[doc = "surface, (2) the client has set and committed the xdg_surface state and"]
     #[doc = "the role dependent state to the surface and (3) the client has committed a"]
     #[doc = "buffer to the surface."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_surface_v6 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -11066,6 +11216,7 @@ pub mod xdg_shell_unstable_v6 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_surface_v6#{}.destroy()", object.id);
@@ -11249,6 +11400,7 @@ pub mod xdg_shell_unstable_v6 {
     #[doc = "fullscreen, and minimize, set application-specific metadata like title and"]
     #[doc = "id, and well as trigger user interactive operations such as interactive"]
     #[doc = "resize and move."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_toplevel_v6 {
         #[doc = "These values are used to indicate which edge of a surface"]
         #[doc = "is being dragged in a resize operation."]
@@ -11330,6 +11482,7 @@ pub mod xdg_shell_unstable_v6 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.destroy()", object.id);
@@ -11833,6 +11986,7 @@ pub mod xdg_shell_unstable_v6 {
     #[doc = ""]
     #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
     #[doc = "for the xdg_popup state to take effect."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zxdg_popup_v6 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -11866,6 +12020,7 @@ pub mod xdg_shell_unstable_v6 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zxdg_popup_v6#{}.destroy()", object.id);
@@ -12027,8 +12182,10 @@ pub mod xdg_shell_unstable_v6 {
 #[doc = "the 'z' prefix and the version number in the protocol and"]
 #[doc = "interface names are removed and the interface version number is"]
 #[doc = "reset."]
+#[allow(clippy::module_inception)]
 pub mod xwayland_keyboard_grab_unstable_v1 {
     #[doc = "A global interface used for grabbing the keyboard."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_xwayland_keyboard_grab_manager_v1 {
         #[doc = "Trait to implement the zwp_xwayland_keyboard_grab_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpXwaylandKeyboardGrabManagerV1: crate::server::Dispatcher {
@@ -12046,6 +12203,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -12113,6 +12271,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
         }
     }
     #[doc = "A global interface used for grabbing the keyboard."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_xwayland_keyboard_grab_v1 {
         #[doc = "Trait to implement the zwp_xwayland_keyboard_grab_v1 interface. See the module level documentation for more info"]
         pub trait ZwpXwaylandKeyboardGrabV1: crate::server::Dispatcher {
@@ -12130,6 +12289,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_xwayland_keyboard_grab_v1#{}.destroy()", object.id);

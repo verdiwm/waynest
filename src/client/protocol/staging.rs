@@ -1,4 +1,5 @@
 #![allow(async_fn_in_trait)]
+#[allow(clippy::module_inception)]
 pub mod alpha_modifier_v1 {
     #[doc = "This interface allows a client to set a factor for the alpha values on a"]
     #[doc = "surface, which can be used to offload such operations to the compositor,"]
@@ -8,6 +9,7 @@ pub mod alpha_modifier_v1 {
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_alpha_modifier_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -34,6 +36,7 @@ pub mod alpha_modifier_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -81,6 +84,7 @@ pub mod alpha_modifier_v1 {
     #[doc = "This object has to be destroyed before the associated wl_surface. Once the"]
     #[doc = "wl_surface is destroyed, all request on this object will raise the"]
     #[doc = "no_surface error."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_alpha_modifier_surface_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -107,6 +111,7 @@ pub mod alpha_modifier_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -158,6 +163,7 @@ pub mod alpha_modifier_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod commit_timing_v1 {
     #[doc = "When a compositor latches on to new content updates it will check for"]
     #[doc = "any number of requirements of the available content updates (such as"]
@@ -180,6 +186,7 @@ pub mod commit_timing_v1 {
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_commit_timing_manager_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -206,6 +213,7 @@ pub mod commit_timing_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -249,6 +257,7 @@ pub mod commit_timing_v1 {
         }
     }
     #[doc = "An object to set a time constraint for a content update on a surface."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_commit_timer_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -281,6 +290,7 @@ pub mod commit_timing_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -337,6 +347,7 @@ pub mod commit_timing_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod content_type_v1 {
     #[doc = "This interface allows a client to describe the kind of content a surface"]
     #[doc = "will display, to allow the compositor to optimize its behavior for it."]
@@ -345,6 +356,7 @@ pub mod content_type_v1 {
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_content_type_manager_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -371,6 +383,7 @@ pub mod content_type_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -422,6 +435,7 @@ pub mod content_type_v1 {
     #[doc = "The client may request to switch to another content type at any time."]
     #[doc = "When the associated surface gets destroyed, this object becomes inert and"]
     #[doc = "the client should destroy it."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_content_type_v1 {
         use futures_util::SinkExt;
         #[doc = "These values describe the available content types for a surface."]
@@ -454,6 +468,7 @@ pub mod content_type_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -499,6 +514,7 @@ pub mod content_type_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod cursor_shape_v1 {
     #[doc = "This global offers an alternative, optional way to set cursor images. This"]
     #[doc = "new way uses enumerated cursors instead of a wl_surface like"]
@@ -508,6 +524,7 @@ pub mod cursor_shape_v1 {
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_cursor_shape_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_cursor_shape_manager_v1 interface. See the module level documentation for more info"]
@@ -518,6 +535,7 @@ pub mod cursor_shape_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -583,6 +601,7 @@ pub mod cursor_shape_v1 {
         }
     }
     #[doc = "This interface allows clients to set the cursor shape."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_cursor_shape_device_v1 {
         use futures_util::SinkExt;
         #[doc = "This enum describes cursor shapes."]
@@ -728,6 +747,7 @@ pub mod cursor_shape_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -785,6 +805,7 @@ pub mod cursor_shape_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod drm_lease_v1 {
     #[doc = "This protocol is used by Wayland compositors which act as Direct"]
     #[doc = "Rendering Manager (DRM) masters to lease DRM resources to Wayland"]
@@ -816,6 +837,7 @@ pub mod drm_lease_v1 {
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_drm_lease_device_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_drm_lease_device_v1 interface. See the module level documentation for more info"]
@@ -826,6 +848,7 @@ pub mod drm_lease_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -878,6 +901,7 @@ pub mod drm_lease_v1 {
     #[doc = "compositor will send a name, a description, a connector_id and a done"]
     #[doc = "event. When the description is updated the compositor will send a"]
     #[doc = "description event followed by a done event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_drm_lease_connector_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_drm_lease_connector_v1 interface. See the module level documentation for more info"]
@@ -888,6 +912,7 @@ pub mod drm_lease_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -915,6 +940,7 @@ pub mod drm_lease_v1 {
     #[doc = "connectors advertised with wp_drm_lease_device_v1.connector that they"]
     #[doc = "wish to lease, then use wp_drm_lease_request_v1.submit to submit the"]
     #[doc = "request."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_drm_lease_request_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -947,6 +973,7 @@ pub mod drm_lease_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1011,6 +1038,7 @@ pub mod drm_lease_v1 {
     #[doc = "granted, the compositor will send a lease_fd event. If the lease request"]
     #[doc = "is denied, the compositor will send a finished event without a lease_fd"]
     #[doc = "event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_drm_lease_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_drm_lease_v1 interface. See the module level documentation for more info"]
@@ -1021,6 +1049,7 @@ pub mod drm_lease_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1067,6 +1096,7 @@ pub mod drm_lease_v1 {
 #[doc = "phase. Backward compatible changes may be added together with the"]
 #[doc = "corresponding interface version bump. Backward incompatible changes can"]
 #[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
 pub mod ext_foreign_toplevel_list_v1 {
     #[doc = "A toplevel is defined as a surface with a role similar to xdg_toplevel."]
     #[doc = "XWayland surfaces may be treated like toplevels in this protocol."]
@@ -1084,6 +1114,7 @@ pub mod ext_foreign_toplevel_list_v1 {
     #[doc = "If a compositor implementation sends the ext_foreign_toplevel_list_v1.finished"]
     #[doc = "event after the global is bound, the compositor must not send any"]
     #[doc = "ext_foreign_toplevel_list_v1.toplevel events."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_foreign_toplevel_list_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_foreign_toplevel_list_v1 interface. See the module level documentation for more info"]
@@ -1094,6 +1125,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1140,6 +1172,7 @@ pub mod ext_foreign_toplevel_list_v1 {
     }
     #[doc = "A ext_foreign_toplevel_handle_v1 object represents a mapped toplevel"]
     #[doc = "window. A single app may have multiple mapped toplevels."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_foreign_toplevel_handle_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
@@ -1150,6 +1183,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1182,11 +1216,13 @@ pub mod ext_foreign_toplevel_list_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod ext_idle_notify_v1 {
     #[doc = "This interface allows clients to monitor user idle status."]
     #[doc = ""]
     #[doc = "After binding to this global, clients can create ext_idle_notification_v1"]
     #[doc = "objects to get notified when the user is idle for a given amount of time."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_idle_notifier_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_idle_notifier_v1 interface. See the module level documentation for more info"]
@@ -1197,6 +1233,7 @@ pub mod ext_idle_notify_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1261,6 +1298,7 @@ pub mod ext_idle_notify_v1 {
     #[doc = "When the notification object becomes idle, an idled event is sent. When"]
     #[doc = "user activity starts again, the notification object stops being idle,"]
     #[doc = "a resumed event is sent and the timeout is restarted."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_idle_notification_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_idle_notification_v1 interface. See the module level documentation for more info"]
@@ -1271,6 +1309,7 @@ pub mod ext_idle_notify_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1303,6 +1342,7 @@ pub mod ext_idle_notify_v1 {
 #[doc = "phase. Backward compatible changes may be added together with the"]
 #[doc = "corresponding interface version bump. Backward incompatible changes can"]
 #[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
 pub mod ext_image_capture_source_v1 {
     #[doc = "The image capture source object is an opaque descriptor for a capturable"]
     #[doc = "resource.  This resource may be any sort of entity from which an image"]
@@ -1311,6 +1351,7 @@ pub mod ext_image_capture_source_v1 {
     #[doc = "Note, because ext_image_capture_source_v1 objects are created from multiple"]
     #[doc = "independent factory interfaces, the ext_image_capture_source_v1 interface is"]
     #[doc = "frozen at version 1."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_image_capture_source_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_image_capture_source_v1 interface. See the module level documentation for more info"]
@@ -1321,6 +1362,7 @@ pub mod ext_image_capture_source_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1342,6 +1384,7 @@ pub mod ext_image_capture_source_v1 {
         }
     }
     #[doc = "A manager for creating image capture source objects for wl_output objects."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_output_image_capture_source_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_output_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
@@ -1352,6 +1395,7 @@ pub mod ext_image_capture_source_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1402,6 +1446,7 @@ pub mod ext_image_capture_source_v1 {
     }
     #[doc = "A manager for creating image capture source objects for"]
     #[doc = "ext_foreign_toplevel_handle_v1 objects."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_foreign_toplevel_image_capture_source_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_foreign_toplevel_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
@@ -1412,6 +1457,7 @@ pub mod ext_image_capture_source_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1466,9 +1512,11 @@ pub mod ext_image_capture_source_v1 {
 #[doc = "phase. Backward compatible changes may be added together with the"]
 #[doc = "corresponding interface version bump. Backward incompatible changes can"]
 #[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
 pub mod ext_image_copy_capture_v1 {
     #[doc = "This object is a manager which offers requests to start capturing from a"]
     #[doc = "source."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_image_copy_capture_manager_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1502,6 +1550,7 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1596,6 +1645,7 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "buffer accordingly, attach it to the capture session using the"]
     #[doc = "attach_buffer request, set the buffer damage using the damage_buffer"]
     #[doc = "request and then send the capture request."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_image_copy_capture_session_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1622,6 +1672,7 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1681,6 +1732,7 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "event."]
     #[doc = ""]
     #[doc = "If the capture fails, the compositor must send the failed event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_image_copy_capture_frame_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1732,6 +1784,7 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1846,6 +1899,7 @@ pub mod ext_image_copy_capture_v1 {
     }
     #[doc = "This object represents a cursor capture session. It extends the base"]
     #[doc = "capture session with cursor-specific metadata."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_image_copy_capture_cursor_session_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1872,6 +1926,7 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1944,8 +1999,10 @@ pub mod ext_image_copy_capture_v1 {
 #[doc = "testing phase. Backward compatible changes may be added together with"]
 #[doc = "the corresponding interface version bump. Backward incompatible changes"]
 #[doc = "can only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
 pub mod ext_session_lock_v1 {
     #[doc = "This interface is used to request that the session be locked."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_session_lock_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_session_lock_manager_v1 interface. See the module level documentation for more info"]
@@ -1956,6 +2013,7 @@ pub mod ext_session_lock_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2044,6 +2102,7 @@ pub mod ext_session_lock_v1 {
     #[doc = "client to create a ext_session_lock_v1 object and take responsibility"]
     #[doc = "for unlocking the session, they may even start a new lock client"]
     #[doc = "instance automatically."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_session_lock_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -2082,6 +2141,7 @@ pub mod ext_session_lock_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2189,6 +2249,7 @@ pub mod ext_session_lock_v1 {
     #[doc = "surfaces however it chooses. A reasonable way to do this would be to"]
     #[doc = "give the first lock surface created keyboard focus and change keyboard"]
     #[doc = "focus if the user clicks on other surfaces."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_session_lock_surface_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -2224,6 +2285,7 @@ pub mod ext_session_lock_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2310,8 +2372,10 @@ pub mod ext_session_lock_v1 {
 #[doc = "* Wait for the transient seat to be created"]
 #[doc = "* Locate a \"wl_seat\" global with a matching name"]
 #[doc = "* Create virtual inputs using the resulting \"wl_seat\" global"]
+#[allow(clippy::module_inception)]
 pub mod ext_transient_seat_v1 {
     #[doc = "The transient seat manager creates short-lived seats."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_transient_seat_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_transient_seat_manager_v1 interface. See the module level documentation for more info"]
@@ -2322,6 +2386,7 @@ pub mod ext_transient_seat_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2366,6 +2431,7 @@ pub mod ext_transient_seat_v1 {
     }
     #[doc = "When the transient seat handle is destroyed, the seat itself will also be"]
     #[doc = "destroyed."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ext_transient_seat_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ext_transient_seat_v1 interface. See the module level documentation for more info"]
@@ -2376,6 +2442,7 @@ pub mod ext_transient_seat_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2397,6 +2464,7 @@ pub mod ext_transient_seat_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod fifo_v1 {
     #[doc = "When a Wayland compositor considers applying a content update,"]
     #[doc = "it must ensure all the update's readiness constraints (fences, etc)"]
@@ -2409,6 +2477,7 @@ pub mod fifo_v1 {
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_fifo_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "These fatal protocol errors may be emitted in response to"]
@@ -2437,6 +2506,7 @@ pub mod fifo_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2485,6 +2555,7 @@ pub mod fifo_v1 {
     }
     #[doc = "A fifo object for a surface that may be used to add"]
     #[doc = "display refresh constraints to content updates."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_fifo_v1 {
         use futures_util::SinkExt;
         #[doc = "These fatal protocol errors may be emitted in response to"]
@@ -2513,6 +2584,7 @@ pub mod fifo_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2613,8 +2685,10 @@ pub mod fifo_v1 {
 #[doc = ""]
 #[doc = "For toplevel surfaces, the size is rounded halfway away from zero. The"]
 #[doc = "rounding algorithm for subsurface position and size is not defined."]
+#[allow(clippy::module_inception)]
 pub mod fractional_scale_v1 {
     #[doc = "A global interface for requesting surfaces to use fractional scales."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_fractional_scale_manager_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -2641,6 +2715,7 @@ pub mod fractional_scale_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2688,6 +2763,7 @@ pub mod fractional_scale_v1 {
     }
     #[doc = "An additional interface to a wl_surface object which allows the compositor"]
     #[doc = "to inform the client of the preferred scale."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_fractional_scale_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_fractional_scale_v1 interface. See the module level documentation for more info"]
@@ -2698,6 +2774,7 @@ pub mod fractional_scale_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2745,11 +2822,13 @@ pub mod fractional_scale_v1 {
 #[doc = "phase. Backward compatible changes may be added together with the"]
 #[doc = "corresponding interface version bump. Backward incompatible changes can"]
 #[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
 pub mod linux_drm_syncobj_v1 {
     #[doc = "This global is a factory interface, allowing clients to request"]
     #[doc = "explicit synchronization for buffers on a per-surface basis."]
     #[doc = ""]
     #[doc = "See wp_linux_drm_syncobj_surface_v1 for more information."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_linux_drm_syncobj_manager_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -2779,6 +2858,7 @@ pub mod linux_drm_syncobj_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2855,6 +2935,7 @@ pub mod linux_drm_syncobj_v1 {
     }
     #[doc = "This object represents an explicit synchronization object timeline"]
     #[doc = "imported by the client to the compositor."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_linux_drm_syncobj_timeline_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_linux_drm_syncobj_timeline_v1 interface. See the module level documentation for more info"]
@@ -2865,6 +2946,7 @@ pub mod linux_drm_syncobj_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2914,6 +2996,7 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = "are identical, the acquire point value must be strictly less than the"]
     #[doc = "release point value, or else the conflicting_points protocol error is"]
     #[doc = "raised."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_linux_drm_syncobj_surface_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -2955,6 +3038,7 @@ pub mod linux_drm_syncobj_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3089,6 +3173,7 @@ pub mod linux_drm_syncobj_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod security_context_v1 {
     #[doc = "This interface allows a client to register a new Wayland connection to"]
     #[doc = "the compositor and attach a security context to it."]
@@ -3108,6 +3193,7 @@ pub mod security_context_v1 {
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_security_context_manager_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -3137,6 +3223,7 @@ pub mod security_context_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3204,6 +3291,7 @@ pub mod security_context_v1 {
     #[doc = ""]
     #[doc = "When both are set, the combination of the instance ID and the sandbox"]
     #[doc = "engine must uniquely identify a running instance of an application."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_security_context_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -3236,6 +3324,7 @@ pub mod security_context_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3368,9 +3457,11 @@ pub mod security_context_v1 {
 #[doc = "phase. Backward compatible changes may be added together with the"]
 #[doc = "corresponding interface version bump. Backward incompatible changes can"]
 #[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
 pub mod single_pixel_buffer_v1 {
     #[doc = "The wp_single_pixel_buffer_manager_v1 interface is a factory for"]
     #[doc = "single-pixel buffers."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_single_pixel_buffer_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the wp_single_pixel_buffer_manager_v1 interface. See the module level documentation for more info"]
@@ -3381,6 +3472,7 @@ pub mod single_pixel_buffer_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3438,6 +3530,7 @@ pub mod single_pixel_buffer_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod tearing_control_v1 {
     #[doc = "For some use cases like games or drawing tablets it can make sense to"]
     #[doc = "reduce latency by accepting tearing with the use of asynchronous page"]
@@ -3454,6 +3547,7 @@ pub mod tearing_control_v1 {
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_tearing_control_manager_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -3480,6 +3574,7 @@ pub mod tearing_control_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3534,6 +3629,7 @@ pub mod tearing_control_v1 {
     #[doc = ""]
     #[doc = "If the associated wl_surface is destroyed, this object becomes inert and"]
     #[doc = "should be destroyed."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_tearing_control_v1 {
         use futures_util::SinkExt;
         #[doc = "This enum provides information for if submitted frames from the client"]
@@ -3563,6 +3659,7 @@ pub mod tearing_control_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3646,10 +3743,12 @@ pub mod tearing_control_v1 {
 #[doc = "phase. Backward compatible changes may be added together with the"]
 #[doc = "corresponding interface version bump. Backward incompatible changes can"]
 #[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
 pub mod xdg_activation_v1 {
     #[doc = "A global interface used for informing the compositor about applications"]
     #[doc = "being activated or started, or for applications to request to be"]
     #[doc = "activated."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_activation_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the xdg_activation_v1 interface. See the module level documentation for more info"]
@@ -3660,6 +3759,7 @@ pub mod xdg_activation_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3736,6 +3836,7 @@ pub mod xdg_activation_v1 {
     #[doc = "and serial information and committed. The compositor shall then issue a"]
     #[doc = "done event with the token. In case the request's parameters are invalid,"]
     #[doc = "the compositor will provide an invalid token."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_activation_token_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -3762,6 +3863,7 @@ pub mod xdg_activation_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3867,6 +3969,7 @@ pub mod xdg_activation_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod xdg_dialog_v1 {
     #[doc = "The xdg_wm_dialog_v1 interface is exposed as a global object allowing"]
     #[doc = "to register surfaces with a xdg_toplevel role as \"dialogs\" relative to"]
@@ -3879,6 +3982,7 @@ pub mod xdg_dialog_v1 {
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_wm_dialog_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -3905,6 +4009,7 @@ pub mod xdg_dialog_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3956,6 +4061,7 @@ pub mod xdg_dialog_v1 {
     #[doc = "Through this object, the client may provide additional hints about"]
     #[doc = "the purpose of the secondary toplevel. This interface has no effect"]
     #[doc = "on toplevels that are not attached to a parent toplevel."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_dialog_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the xdg_dialog_v1 interface. See the module level documentation for more info"]
@@ -3966,6 +4072,7 @@ pub mod xdg_dialog_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4025,6 +4132,7 @@ pub mod xdg_dialog_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod xdg_system_bell_v1 {
     #[doc = "This global interface enables clients to ring the system bell."]
     #[doc = ""]
@@ -4032,6 +4140,7 @@ pub mod xdg_system_bell_v1 {
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_system_bell_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the xdg_system_bell_v1 interface. See the module level documentation for more info"]
@@ -4042,6 +4151,7 @@ pub mod xdg_system_bell_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4086,6 +4196,7 @@ pub mod xdg_system_bell_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod xdg_toplevel_drag_v1 {
     #[doc = "This protocol enhances normal drag and drop with the ability to move a"]
     #[doc = "window at the same time. This allows having detachable parts of a window"]
@@ -4120,6 +4231,7 @@ pub mod xdg_toplevel_drag_v1 {
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_drag_manager_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -4146,6 +4258,7 @@ pub mod xdg_toplevel_drag_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4197,6 +4310,7 @@ pub mod xdg_toplevel_drag_v1 {
             }
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_drag_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -4226,6 +4340,7 @@ pub mod xdg_toplevel_drag_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4298,9 +4413,11 @@ pub mod xdg_toplevel_drag_v1 {
 #[doc = "phase. Backward compatible changes may be added together with the"]
 #[doc = "corresponding interface version bump. Backward incompatible changes can"]
 #[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
 pub mod xdg_toplevel_icon_v1 {
     #[doc = "This interface allows clients to create toplevel window icons and set"]
     #[doc = "them on toplevel windows to be displayed to the user."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_icon_manager_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the xdg_toplevel_icon_manager_v1 interface. See the module level documentation for more info"]
@@ -4311,6 +4428,7 @@ pub mod xdg_toplevel_icon_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4396,6 +4514,7 @@ pub mod xdg_toplevel_icon_v1 {
     #[doc = ""]
     #[doc = "It is up to compositor policy whether to prefer using a buffer or loading"]
     #[doc = "an icon via its name. See 'set_name' and 'add_buffer' for details."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_icon_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -4428,6 +4547,7 @@ pub mod xdg_toplevel_icon_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }

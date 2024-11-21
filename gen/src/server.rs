@@ -46,6 +46,7 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
 
             inner_modules.push(quote! {
                 #(#docs)*
+                #[allow(clippy::too_many_arguments)]
                 pub mod #module_name {
                     #(#enums)*
 
@@ -64,6 +65,7 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                             #handler_args
                             message: &mut crate::wire::Message,
                         ) -> crate::server::Result<()> {
+                            #[allow(clippy::match_single_binding)]
                             match message.opcode {
                                 #(#dispatchers),*
                                 _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -82,6 +84,7 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
 
         modules.push(quote! {
             #(#docs)*
+            #[allow(clippy::module_inception)]
             pub mod #module_name {
                 #(#inner_modules)*
             }
