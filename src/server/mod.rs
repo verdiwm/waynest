@@ -105,7 +105,7 @@ impl Store {
     }
 
     fn get(&self, id: &ObjectId) -> Option<Object> {
-        self.objects.get(id).map(|id| id.clone())
+        self.objects.get(id).cloned()
     }
 }
 
