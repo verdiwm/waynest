@@ -116,7 +116,7 @@ impl Message {
                 .map(Some);
         }
 
-        return Err(DecodeError::MalformedPayload);
+        Err(DecodeError::MalformedPayload)
     }
 
     pub fn object(&mut self) -> Result<Option<ObjectId>, DecodeError> {
