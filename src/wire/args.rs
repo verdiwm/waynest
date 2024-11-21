@@ -9,6 +9,8 @@ impl fmt::Display for Fixed {
 }
 
 impl Fixed {
+    /// # Safety
+    /// The caller must ensure the passed u32 is actually a fixed
     pub const unsafe fn from_raw(raw: u32) -> Self {
         Self(raw)
     }
@@ -34,6 +36,8 @@ impl ObjectId {
         self.0.get()
     }
 
+    /// # Safety
+    /// The value must not be zero.
     pub const unsafe fn from_raw(id: u32) -> Self {
         Self(NonZeroU32::new_unchecked(id))
     }
