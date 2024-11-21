@@ -44,7 +44,7 @@ impl MessageCodec {
     fn decode(
         &mut self,
         src: &mut BytesMut,
-        fds: &mut Vec<RawFd>,
+        fds: &mut [RawFd],
     ) -> std::result::Result<Option<Message>, DecodeError> {
         if src.is_empty() {
             return Ok(None);
@@ -56,7 +56,7 @@ impl MessageCodec {
     fn decode_eof(
         &mut self,
         buf: &mut BytesMut,
-        fds: &mut Vec<RawFd>,
+        fds: &mut [RawFd],
     ) -> Result<Option<Message>, DecodeError> {
         match self.decode(buf, fds)? {
             Some(frame) => Ok(Some(frame)),
