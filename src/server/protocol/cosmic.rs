@@ -1,4 +1,120 @@
 #![allow(async_fn_in_trait)]
+#[doc = "This protocol provides a relatively straightforward mapping of AtpsiDevice"]
+#[doc = "in the at-spi2-core library, so it's possible to add a Wayland backend for it."]
+#[doc = ""]
+#[doc = "This provides a way for screen reader key bindings to work."]
+#[doc = ""]
+#[doc = "This is a temporary solution until a better protocol is available for this purpose."]
+pub mod cosmic_atspi_v1 {
+    #[doc = "Manager for adding grabs and monitoring key input."]
+    pub mod cosmic_atspi_manager_v1 {
+        #[doc = "Trait to implement the cosmic_atspi_manager_v1 interface. See the module level documentation for more info"]
+        pub trait CosmicAtspiManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "cosmic_atspi_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("cosmic_atspi_manager_v1#{}.destroy()", object.id);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        tracing::debug!("cosmic_atspi_manager_v1#{}.add_key_grab()", object.id);
+                        self.add_key_grab(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.array()?,
+                            message.uint()?,
+                        )
+                        .await
+                    }
+                    2u16 => {
+                        tracing::debug!("cosmic_atspi_manager_v1#{}.remove_key_grab()", object.id);
+                        self.remove_key_grab(
+                            object,
+                            client,
+                            message.uint()?,
+                            message.array()?,
+                            message.uint()?,
+                        )
+                        .await
+                    }
+                    3u16 => {
+                        tracing::debug!("cosmic_atspi_manager_v1#{}.grab_keyboard()", object.id);
+                        self.grab_keyboard(object, client).await
+                    }
+                    4u16 => {
+                        tracing::debug!("cosmic_atspi_manager_v1#{}.ungrab_keyboard()", object.id);
+                        self.ungrab_keyboard(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Any grabs that are still active will be disabled."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Grab the given key combination, so it will not be sent to clients."]
+            async fn add_key_grab(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                mods: u32,
+                virtual_mods: Vec<u8>,
+                key: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Disables a grab added with add_key_grab."]
+            async fn remove_key_grab(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                mods: u32,
+                virtual_mods: Vec<u8>,
+                key: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Grab keyboard, so key input will not be sent to clients."]
+            async fn grab_keyboard(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Disables a grab added with grab_keyboard."]
+            async fn ungrab_keyboard(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Produces an fd that can be used with libei to monitor keyboard input."]
+            async fn key_events_eis(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                fd: rustix::fd::OwnedFd,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> cosmic_atspi_manager_v1#{}.key_events_eis()", object.id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(fd).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
 #[doc = "This protocol serves as an intermediary between screen capturing protocols"]
 #[doc = "and potential image sources such as outputs and toplevels."]
 #[doc = ""]

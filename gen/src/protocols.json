@@ -119,6 +119,7 @@
     ],
 
     "cosmic": [
+        "protocols/cosmic-protocols/unstable/cosmic-atspi-unstable-v1.xml",
         "protocols/cosmic-protocols/unstable/cosmic-image-source-unstable-v1.xml",
         "protocols/cosmic-protocols/unstable/cosmic-output-management-unstable-v1.xml",
         "protocols/cosmic-protocols/unstable/cosmic-overlap-notify-unstable-v1.xml",
