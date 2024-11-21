@@ -1,4 +1,108 @@
 #![allow(async_fn_in_trait)]
+#[doc = "This protocol provides a relatively straightforward mapping of AtpsiDevice"]
+#[doc = "in the at-spi2-core library, so it's possible to add a Wayland backend for it."]
+#[doc = ""]
+#[doc = "This provides a way for screen reader key bindings to work."]
+#[doc = ""]
+#[doc = "This is a temporary solution until a better protocol is available for this purpose."]
+pub mod cosmic_atspi_v1 {
+    #[doc = "Manager for adding grabs and monitoring key input."]
+    pub mod cosmic_atspi_manager_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the cosmic_atspi_manager_v1 interface. See the module level documentation for more info"]
+        pub trait CosmicAtspiManagerV1 {
+            const INTERFACE: &'static str = "cosmic_atspi_manager_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Any grabs that are still active will be disabled."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> cosmic_atspi_manager_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Grab the given key combination, so it will not be sent to clients."]
+            async fn add_key_grab(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                mods: u32,
+                virtual_mods: Vec<u8>,
+                key: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> cosmic_atspi_manager_v1#{}.add_key_grab()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(mods)
+                    .put_array(virtual_mods)
+                    .put_uint(key)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Disables a grab added with add_key_grab."]
+            async fn remove_key_grab(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                mods: u32,
+                virtual_mods: Vec<u8>,
+                key: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> cosmic_atspi_manager_v1#{}.remove_key_grab()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(mods)
+                    .put_array(virtual_mods)
+                    .put_uint(key)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Grab keyboard, so key input will not be sent to clients."]
+            async fn grab_keyboard(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> cosmic_atspi_manager_v1#{}.grab_keyboard()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Disables a grab added with grab_keyboard."]
+            async fn ungrab_keyboard(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> cosmic_atspi_manager_v1#{}.ungrab_keyboard()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
 #[doc = "This protocol serves as an intermediary between screen capturing protocols"]
 #[doc = "and potential image sources such as outputs and toplevels."]
 #[doc = ""]
