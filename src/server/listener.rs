@@ -29,8 +29,11 @@ impl Listener {
             .map_err(|_| Error::Internal)?
             .into();
 
+        #[allow(clippy::never_loop)]
         for i in 1..=32u8 {
             let path = runtime_dir.join(format!("wayland-{i}"));
+
+            // FIXME: actually check
 
             return Self::new_with_path(path);
         }
