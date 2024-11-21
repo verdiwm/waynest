@@ -48,7 +48,7 @@ impl Message {
         fds.extend_from_slice(&self.fds);
     }
 
-    pub fn from_bytes(bytes: &mut BytesMut, fds: &mut Vec<RawFd>) -> Result<Self, DecodeError> {
+    pub fn from_bytes(bytes: &mut BytesMut, fds: &mut [RawFd]) -> Result<Self, DecodeError> {
         if bytes.remaining() < 8 {
             return Err(DecodeError::MalformedHeader);
         }
@@ -79,7 +79,7 @@ impl Message {
             object_id,
             opcode,
             payload,
-            fds: fds.clone(),
+            fds: fds.to_owned(),
         })
     }
 
