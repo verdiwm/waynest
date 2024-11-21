@@ -1,4 +1,5 @@
 #![allow(async_fn_in_trait)]
+#[allow(clippy::module_inception)]
 pub mod linux_dmabuf_v1 {
     #[doc = "Following the interfaces from:"]
     #[doc = "https://www.khronos.org/registry/egl/extensions/EXT/EGL_EXT_image_dma_buf_import.txt"]
@@ -64,6 +65,7 @@ pub mod linux_dmabuf_v1 {
     #[doc = "synchronization is used. In other words, compositors and clients must"]
     #[doc = "wait and signal fences implicitly passed via the DMA-BUF's reservation"]
     #[doc = "mechanism."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_dmabuf_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
@@ -74,6 +76,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -175,6 +178,7 @@ pub mod linux_dmabuf_v1 {
     #[doc = "from zero to the number of planes used by the drm_fourcc format code."]
     #[doc = "All planes required by the format must be given exactly once, but can"]
     #[doc = "be given in any order. Each plane index can be set only once."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_buffer_params_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -230,6 +234,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -445,6 +450,7 @@ pub mod linux_dmabuf_v1 {
     #[doc = "(each consisting of one tranche_target_device event, one tranche_flags"]
     #[doc = "event, tranche_formats events and then a tranche_done event), then one"]
     #[doc = "done event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_dmabuf_feedback_v1 {
         use futures_util::SinkExt;
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { # [doc = "direct scan-out tranche"] const Scanout = 1u32 ; } }
@@ -462,6 +468,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -483,6 +490,7 @@ pub mod linux_dmabuf_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod presentation_time {
     #[doc = "The main feature of this interface is accurate presentation"]
     #[doc = "timing feedback to ensure smooth video playback while maintaining"]
@@ -503,6 +511,7 @@ pub mod presentation_time {
     #[doc = "presentation time can differ from the compositor's predicted"]
     #[doc = "display update time and the update's target time, especially"]
     #[doc = "when the compositor misses its target vertical blanking period."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_presentation {
         use futures_util::SinkExt;
         #[doc = "These fatal protocol errors may be emitted in response to"]
@@ -534,6 +543,7 @@ pub mod presentation_time {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -591,6 +601,7 @@ pub mod presentation_time {
     #[doc = ""]
     #[doc = "Once a presentation_feedback object has delivered a 'presented'"]
     #[doc = "or 'discarded' event it is automatically destroyed."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_presentation_feedback {
         bitflags::bitflags! { # [doc = "These flags provide information about how the presentation of"] # [doc = "the related content update was done. The intent is to help"] # [doc = "clients assess the reliability of the feedback and the visual"] # [doc = "quality with respect to possible tearing and timings."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Kind : u32 { const Vsync = 1u32 ; const HwClock = 2u32 ; const HwCompletion = 4u32 ; const ZeroCopy = 8u32 ; } }
         impl TryFrom<u32> for Kind {
@@ -607,6 +618,7 @@ pub mod presentation_time {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -690,10 +702,12 @@ pub mod presentation_time {
 #[doc = "compositor-specific policy when a tool can be removed. Common approaches"]
 #[doc = "will likely include some form of removing a tool when all tablets the"]
 #[doc = "tool was used on are removed."]
+#[allow(clippy::module_inception)]
 pub mod tablet_v2 {
     #[doc = "An object that provides access to the graphics tablets available on this"]
     #[doc = "system. All tablets are associated with a seat, to get access to the"]
     #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_manager_v2 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
@@ -704,6 +718,7 @@ pub mod tablet_v2 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -746,6 +761,7 @@ pub mod tablet_v2 {
     #[doc = "An object that provides access to the graphics tablets available on this"]
     #[doc = "seat. After binding to this interface, the compositor sends a set of"]
     #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_seat_v2 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
@@ -756,6 +772,7 @@ pub mod tablet_v2 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -796,6 +813,7 @@ pub mod tablet_v2 {
     #[doc = "Tablet tool events are grouped by wp_tablet_tool.frame events."]
     #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
     #[doc = "considered part of the same hardware state change."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_tool_v2 {
         use futures_util::SinkExt;
         #[doc = "Describes the physical type of a tool. The physical type of a tool"]
@@ -923,6 +941,7 @@ pub mod tablet_v2 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1001,6 +1020,7 @@ pub mod tablet_v2 {
     #[doc = "pid/vid. These capabilities are sent in an event sequence after the"]
     #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
     #[doc = "terminated by a wp_tablet.done event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_v2 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_v2 interface. See the module level documentation for more info"]
@@ -1011,6 +1031,7 @@ pub mod tablet_v2 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1035,6 +1056,7 @@ pub mod tablet_v2 {
     #[doc = ""]
     #[doc = "Events on a ring are logically grouped by the wl_tablet_pad_ring.frame"]
     #[doc = "event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_ring_v2 {
         use futures_util::SinkExt;
         #[doc = "Describes the source types for ring events. This indicates to the"]
@@ -1065,6 +1087,7 @@ pub mod tablet_v2 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1125,6 +1148,7 @@ pub mod tablet_v2 {
     #[doc = ""]
     #[doc = "Events on a strip are logically grouped by the wl_tablet_pad_strip.frame"]
     #[doc = "event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_strip_v2 {
         use futures_util::SinkExt;
         #[doc = "Describes the source types for strip events. This indicates to the"]
@@ -1155,6 +1179,7 @@ pub mod tablet_v2 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1231,6 +1256,7 @@ pub mod tablet_v2 {
     #[doc = "although it is at clients' discretion whether to actually perform different"]
     #[doc = "actions, and/or issue the respective .set_feedback requests to notify the"]
     #[doc = "compositor. See the wp_tablet_pad_group.mode_switch event for more details."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_group_v2 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
@@ -1241,6 +1267,7 @@ pub mod tablet_v2 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1283,6 +1310,7 @@ pub mod tablet_v2 {
     #[doc = "Groups may have multiple modes. Modes allow clients to map multiple"]
     #[doc = "actions to a single pad feature. Only one mode can be active per group,"]
     #[doc = "although different groups may have different active modes."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_v2 {
         use futures_util::SinkExt;
         #[doc = "Describes the physical state of a button that caused the button"]
@@ -1314,6 +1342,7 @@ pub mod tablet_v2 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1378,6 +1407,7 @@ pub mod tablet_v2 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod viewporter {
     #[doc = "The global interface exposing surface cropping and scaling"]
     #[doc = "capabilities is used to instantiate an interface extension for a"]
@@ -1385,6 +1415,7 @@ pub mod viewporter {
     #[doc = "cropping and scaling the surface contents, effectively"]
     #[doc = "disconnecting the direct relationship between the buffer and the"]
     #[doc = "surface size."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_viewporter {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1411,6 +1442,7 @@ pub mod viewporter {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1507,6 +1539,7 @@ pub mod viewporter {
     #[doc = "If the wp_viewport object is destroyed, the crop and scale"]
     #[doc = "state is removed from the wl_surface. The change will be applied"]
     #[doc = "on the next wl_surface.commit."]
+    #[allow(clippy::too_many_arguments)]
     pub mod wp_viewport {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1542,6 +1575,7 @@ pub mod viewporter {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1621,12 +1655,14 @@ pub mod viewporter {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod xdg_shell {
     #[doc = "The xdg_wm_base interface is exposed as a global object enabling clients"]
     #[doc = "to turn their wl_surfaces into windows in a desktop environment. It"]
     #[doc = "defines the basic functionality needed for clients and the compositor to"]
     #[doc = "create windows that can be dragged, resized, maximized, etc, as well as"]
     #[doc = "creating transient windows such as popup menus."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_wm_base {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1671,6 +1707,7 @@ pub mod xdg_shell {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1777,6 +1814,7 @@ pub mod xdg_shell {
     #[doc = "non-zero size set by set_size, and a non-zero anchor rectangle set by"]
     #[doc = "set_anchor_rect. Passing an incomplete xdg_positioner object when"]
     #[doc = "positioning a surface raises an invalid_positioner error."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_positioner {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1872,6 +1910,7 @@ pub mod xdg_shell {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2153,6 +2192,7 @@ pub mod xdg_shell {
     #[doc = "of the 3 required conditions for mapping a surface if its role surface"]
     #[doc = "has not been destroyed, i.e. the client must perform the initial commit"]
     #[doc = "again before attaching a buffer."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_surface {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -2194,6 +2234,7 @@ pub mod xdg_shell {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2386,6 +2427,7 @@ pub mod xdg_shell {
     #[doc = "xdg_surface description)."]
     #[doc = ""]
     #[doc = "Attaching a null buffer to a toplevel unmaps the surface."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -2518,6 +2560,7 @@ pub mod xdg_shell {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3024,6 +3067,7 @@ pub mod xdg_shell {
     #[doc = ""]
     #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
     #[doc = "for the xdg_popup state to take effect."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xdg_popup {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -3050,6 +3094,7 @@ pub mod xdg_shell {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }

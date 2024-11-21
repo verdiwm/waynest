@@ -1,5 +1,7 @@
 #![allow(async_fn_in_trait)]
+#[allow(clippy::module_inception)]
 pub mod ivi_application {
+    #[allow(clippy::too_many_arguments)]
     pub mod ivi_surface {
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
         pub trait IviSurface: crate::server::Dispatcher {
@@ -17,6 +19,7 @@ pub mod ivi_application {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("ivi_surface#{}.destroy()", object.id);
@@ -65,6 +68,7 @@ pub mod ivi_application {
     #[doc = "This interface is exposed as a global singleton."]
     #[doc = "This interface is implemented by servers that provide IVI-style user interfaces."]
     #[doc = "It allows clients to associate an ivi_surface with wl_surface."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ivi_application {
         #[repr(u32)]
         #[non_exhaustive]
@@ -101,6 +105,7 @@ pub mod ivi_application {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("ivi_application#{}.surface_create()", object.id);
@@ -152,9 +157,11 @@ pub mod ivi_application {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod ivi_input {
     #[doc = "This includes handling the existence of seats, seat capabilities,"]
     #[doc = "seat acceptance and input focus."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ivi_input {
         #[doc = "Trait to implement the ivi_input interface. See the module level documentation for more info"]
         pub trait IviInput: crate::server::Dispatcher {
@@ -172,6 +179,7 @@ pub mod ivi_input {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("ivi_input#{}.set_input_focus()", object.id);
@@ -328,7 +336,9 @@ pub mod ivi_input {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod ivi_wm {
+    #[allow(clippy::too_many_arguments)]
     pub mod ivi_wm_screen {
         #[repr(u32)]
         #[non_exhaustive]
@@ -368,6 +378,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("ivi_wm_screen#{}.destroy()", object.id);
@@ -523,6 +534,7 @@ pub mod ivi_wm {
     #[doc = "An ivi_screenshot object receives a single \"done\" or \"error\" event."]
     #[doc = "The server will destroy this resource after the event has been send,"]
     #[doc = "so the client shall then destroy its proxy too."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ivi_screenshot {
         #[repr(u32)]
         #[non_exhaustive]
@@ -574,6 +586,7 @@ pub mod ivi_wm {
                 _client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -615,6 +628,7 @@ pub mod ivi_wm {
             }
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod ivi_wm {
         #[repr(u32)]
         #[non_exhaustive]
@@ -732,6 +746,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("ivi_wm#{}.commit_changes()", object.id);

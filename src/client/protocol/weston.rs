@@ -34,12 +34,14 @@
 #[doc = "color encoding terminology where possible. The glossary in the color-and-hdr"]
 #[doc = "repository shall be the authority on the definition of terms in this"]
 #[doc = "protocol."]
+#[allow(clippy::module_inception)]
 pub mod color_management_v1 {
     #[doc = "A global interface used for getting color management extensions for"]
     #[doc = "wl_surface and wl_output objects, and for creating client defined image"]
     #[doc = "description objects. The extension interfaces allow"]
     #[doc = "getting the image description of outputs and setting the image"]
     #[doc = "description of surfaces."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xx_color_manager_v4 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -222,6 +224,7 @@ pub mod color_management_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -368,6 +371,7 @@ pub mod color_management_v1 {
     #[doc = "underlying the wl_output object. Therefore the client destroying the"]
     #[doc = "wl_output object has no impact, but the compositor removing the output"]
     #[doc = "global makes the xx_color_management_output_v4 object inert."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xx_color_management_output_v4 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the xx_color_management_output_v4 interface. See the module level documentation for more info"]
@@ -378,6 +382,7 @@ pub mod color_management_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -452,6 +457,7 @@ pub mod color_management_v1 {
     #[doc = ""]
     #[doc = "If the wl_surface associated with the xx_color_management_surface_v4 is"]
     #[doc = "destroyed, the xx_color_management_surface_v4 object becomes inert."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xx_color_management_surface_v4 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -481,6 +487,7 @@ pub mod color_management_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -573,6 +580,7 @@ pub mod color_management_v1 {
     #[doc = ""]
     #[doc = "If the wl_surface associated with this object is destroyed, the"]
     #[doc = "xx_color_management_feedback_surface_v4 object becomes inert."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xx_color_management_feedback_surface_v4 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -599,6 +607,7 @@ pub mod color_management_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -680,6 +689,7 @@ pub mod color_management_v1 {
     #[doc = "Once all properties have been set, the create request must be used to"]
     #[doc = "create the image description object, destroying the creator in the"]
     #[doc = "process."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_creator_icc_v4 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -718,6 +728,7 @@ pub mod color_management_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -846,6 +857,7 @@ pub mod color_management_v1 {
     #[doc = "Once all properties have been set, the create request must be used to"]
     #[doc = "create the image description object, destroying the creator in the"]
     #[doc = "process."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_creator_params_v4 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -893,6 +905,7 @@ pub mod color_management_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1314,6 +1327,7 @@ pub mod color_management_v1 {
     #[doc = "Once created and regardless of how it was created, a"]
     #[doc = "xx_image_description_v4 object always refers to one fixed image"]
     #[doc = "description. It cannot change after creation."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_v4 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1368,6 +1382,7 @@ pub mod color_management_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1421,6 +1436,7 @@ pub mod color_management_v1 {
     #[doc = ""]
     #[doc = "Every xx_image_description_info_v4 created from the same"]
     #[doc = "xx_image_description_v4 shall always return the exact same data."]
+    #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_info_v4 {
         #[doc = "Trait to implement the xx_image_description_info_v4 interface. See the module level documentation for more info"]
         pub trait XxImageDescriptionInfoV4 {
@@ -1430,6 +1446,7 @@ pub mod color_management_v1 {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1437,7 +1454,9 @@ pub mod color_management_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod ivi_application {
+    #[allow(clippy::too_many_arguments)]
     pub mod ivi_surface {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
@@ -1448,6 +1467,7 @@ pub mod ivi_application {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1471,6 +1491,7 @@ pub mod ivi_application {
     #[doc = "This interface is exposed as a global singleton."]
     #[doc = "This interface is implemented by servers that provide IVI-style user interfaces."]
     #[doc = "It allows clients to associate an ivi_surface with wl_surface."]
+    #[allow(clippy::too_many_arguments)]
     pub mod ivi_application {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1500,6 +1521,7 @@ pub mod ivi_application {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1547,7 +1569,9 @@ pub mod ivi_application {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod ivi_hmi_controller {
+    #[allow(clippy::too_many_arguments)]
     pub mod ivi_hmi_controller {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1596,6 +1620,7 @@ pub mod ivi_hmi_controller {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1685,7 +1710,9 @@ pub mod ivi_hmi_controller {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod text_cursor_position {
+    #[allow(clippy::too_many_arguments)]
     pub mod text_cursor_position {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the text_cursor_position interface. See the module level documentation for more info"]
@@ -1696,6 +1723,7 @@ pub mod text_cursor_position {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1763,6 +1791,7 @@ pub mod text_cursor_position {
 #[doc = "outputs. It will be up to the client to adapt to secure and non-secure"]
 #[doc = "presentation. In \"enforce\" mode, the compositor will censor the parts of"]
 #[doc = "protected content that would otherwise show on non-secure outputs."]
+#[allow(clippy::module_inception)]
 pub mod weston_content_protection {
     #[doc = "The global interface weston_content_protection is used for exposing the"]
     #[doc = "content protection capabilities to a client. It provides a way for clients"]
@@ -1771,6 +1800,7 @@ pub mod weston_content_protection {
     #[doc = "Using this interface clients can request for a weston_protected_surface"]
     #[doc = "which is an extension to the wl_surface to provide content-protection, and"]
     #[doc = "set the censored-visibility on the non-secured-outputs."]
+    #[allow(clippy::too_many_arguments)]
     pub mod weston_content_protection {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1797,6 +1827,7 @@ pub mod weston_content_protection {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1878,6 +1909,7 @@ pub mod weston_content_protection {
     #[doc = ""]
     #[doc = "If the wl_surface associated with the protected_surface is destroyed,"]
     #[doc = "the protected_surface becomes inert."]
+    #[allow(clippy::too_many_arguments)]
     pub mod weston_protected_surface {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -1933,6 +1965,7 @@ pub mod weston_content_protection {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2016,6 +2049,7 @@ pub mod weston_content_protection {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod weston_debug {
     #[doc = "This is a generic debugging interface for Weston internals, the global"]
     #[doc = "object advertized through wl_registry."]
@@ -2036,6 +2070,7 @@ pub mod weston_debug {
     #[doc = "A debug stream can be one-shot where the server prints the requested"]
     #[doc = "information and then closes it, or continuous where server keeps on"]
     #[doc = "printing until the client stops it. Or anything in between."]
+    #[allow(clippy::too_many_arguments)]
     pub mod weston_debug_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_debug_v1 interface. See the module level documentation for more info"]
@@ -2046,6 +2081,7 @@ pub mod weston_debug {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2099,6 +2135,7 @@ pub mod weston_debug {
     #[doc = "with a given file descriptor. The server will continue writing to the"]
     #[doc = "file descriptor until the object is destroyed or the server sends an"]
     #[doc = "event through the object."]
+    #[allow(clippy::too_many_arguments)]
     pub mod weston_debug_stream_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_debug_stream_v1 interface. See the module level documentation for more info"]
@@ -2109,6 +2146,7 @@ pub mod weston_debug {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2134,10 +2172,12 @@ pub mod weston_debug {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod weston_desktop {
     #[doc = "Traditional user interfaces can rely on this interface to define the"]
     #[doc = "foundations of typical desktops. Currently it's possible to set up"]
     #[doc = "background, panels and locking surfaces."]
+    #[allow(clippy::too_many_arguments)]
     pub mod weston_desktop_shell {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -2222,6 +2262,7 @@ pub mod weston_desktop {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2345,6 +2386,7 @@ pub mod weston_desktop {
         }
     }
     #[doc = "Only one client can bind this interface at a time."]
+    #[allow(clippy::too_many_arguments)]
     pub mod weston_screensaver {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_screensaver interface. See the module level documentation for more info"]
@@ -2355,6 +2397,7 @@ pub mod weston_desktop {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2381,6 +2424,7 @@ pub mod weston_desktop {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod weston_direct_display {
     #[doc = "Weston extension to instruct the compositor to avoid any import"]
     #[doc = "of the dmabuf created by 'linux-dmabuf' protocol other than the display"]
@@ -2409,6 +2453,7 @@ pub mod weston_direct_display {
     #[doc = ""]
     #[doc = "WARNING: This extension requires 'linux-dmabuf' protocol and"]
     #[doc = "'zwp_linux_buffer_params_v1' be already created by 'zwp_linux_buffer_v1'."]
+    #[allow(clippy::too_many_arguments)]
     pub mod weston_direct_display_v1 {
         use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_direct_display_v1 interface. See the module level documentation for more info"]
@@ -2419,6 +2464,7 @@ pub mod weston_direct_display {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2464,11 +2510,13 @@ pub mod weston_direct_display {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod weston_output_capture {
     #[doc = "The global interface exposing Weston screenshooting functionality"]
     #[doc = "intended for single shots."]
     #[doc = ""]
     #[doc = "This is a privileged inteface."]
+    #[allow(clippy::too_many_arguments)]
     pub mod weston_capture_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -2520,6 +2568,7 @@ pub mod weston_output_capture {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2590,6 +2639,7 @@ pub mod weston_output_capture {
     #[doc = "source. When created, it sends the initial events if and only if the"]
     #[doc = "output still exists and the specified pixel source is available on"]
     #[doc = "the output."]
+    #[allow(clippy::too_many_arguments)]
     pub mod weston_capture_source_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -2619,6 +2669,7 @@ pub mod weston_output_capture {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2684,6 +2735,7 @@ pub mod weston_output_capture {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod weston_test {
     #[doc = "Internal testing facilities for the weston compositor."]
     #[doc = ""]
@@ -2692,6 +2744,7 @@ pub mod weston_test {
     #[doc = "never be installed."]
     #[doc = ""]
     #[doc = "These requests may allow clients to do very bad things."]
+    #[allow(clippy::too_many_arguments)]
     pub mod weston_test {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -2734,6 +2787,7 @@ pub mod weston_test {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2960,6 +3014,7 @@ pub mod weston_test {
     #[doc = "error \"test_failed\", but it may also exit with an error (e.g. SEGV)."]
     #[doc = ""]
     #[doc = "Unknown test name will raise \"unknown_test\" protocol error."]
+    #[allow(clippy::too_many_arguments)]
     pub mod weston_test_runner {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -2989,6 +3044,7 @@ pub mod weston_test {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3023,6 +3079,7 @@ pub mod weston_test {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod weston_touch_calibration {
     #[doc = "This is the global interface for calibrating a touchscreen input"]
     #[doc = "coordinate transformation. It is recommended to make this interface"]
@@ -3051,6 +3108,7 @@ pub mod weston_touch_calibration {
     #[doc = "weston_touch_calibration.save request to load the new calibration into"]
     #[doc = "the compositor. The compositor may take this new calibration into use and"]
     #[doc = "may write it into persistent storage."]
+    #[allow(clippy::too_many_arguments)]
     pub mod weston_touch_calibration {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -3083,6 +3141,7 @@ pub mod weston_touch_calibration {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3198,6 +3257,7 @@ pub mod weston_touch_calibration {
     #[doc = "real value by dividing by 2^32-1. A calibration matrix must be computed"]
     #[doc = "from the [0.0, 1.0] real values, but the matrix elements do not need to"]
     #[doc = "fall into that range."]
+    #[allow(clippy::too_many_arguments)]
     pub mod weston_touch_calibrator {
         use futures_util::SinkExt;
         #[repr(u32)]
@@ -3230,6 +3290,7 @@ pub mod weston_touch_calibration {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3287,6 +3348,7 @@ pub mod weston_touch_calibration {
             }
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod weston_touch_coordinate {
         #[doc = "Trait to implement the weston_touch_coordinate interface. See the module level documentation for more info"]
         pub trait WestonTouchCoordinate {
@@ -3296,6 +3358,7 @@ pub mod weston_touch_calibration {
                 &self,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }

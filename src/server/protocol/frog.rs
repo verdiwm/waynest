@@ -4,8 +4,10 @@
 #[doc = "protocol is ready to be merged."]
 #[doc = "For that purpose it's intentionally limited and cut down and does not serve"]
 #[doc = "all uses cases."]
+#[allow(clippy::module_inception)]
 pub mod frog_color_management_v1 {
     #[doc = "The color management factory singleton creates color managed surface objects."]
+    #[allow(clippy::too_many_arguments)]
     pub mod frog_color_management_factory_v1 {
         #[doc = "Trait to implement the frog_color_management_factory_v1 interface. See the module level documentation for more info"]
         pub trait FrogColorManagementFactoryV1: crate::server::Dispatcher {
@@ -23,6 +25,7 @@ pub mod frog_color_management_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("frog_color_management_factory_v1#{}.destroy()", object.id);
@@ -67,6 +70,7 @@ pub mod frog_color_management_v1 {
     #[doc = "An implementation must: support every part of the version"]
     #[doc = "of the frog_color_managed_surface interface it exposes."]
     #[doc = "Including all known enums associated with a given version."]
+    #[allow(clippy::too_many_arguments)]
     pub mod frog_color_managed_surface {
         #[doc = "Extended information on the transfer functions described"]
         #[doc = "here can be found in the Khronos Data Format specification:"]
@@ -158,6 +162,7 @@ pub mod frog_color_management_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("frog_color_managed_surface#{}.destroy()", object.id);
@@ -325,6 +330,7 @@ pub mod frog_color_management_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod frog_fifo_v1 {
     #[doc = "When a Wayland compositor considers applying a content update,"]
     #[doc = "it must ensure all the update's readiness constraints (fences, etc)"]
@@ -337,6 +343,7 @@ pub mod frog_fifo_v1 {
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
     pub mod frog_fifo_manager_v1 {
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
@@ -372,6 +379,7 @@ pub mod frog_fifo_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("frog_fifo_manager_v1#{}.destroy()", object.id);
@@ -421,6 +429,7 @@ pub mod frog_fifo_v1 {
     }
     #[doc = "A fifo object for a surface that may be used to add"]
     #[doc = "display refresh constraints to content updates."]
+    #[allow(clippy::too_many_arguments)]
     pub mod frog_fifo_surface_v1 {
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
@@ -456,6 +465,7 @@ pub mod frog_fifo_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("frog_fifo_surface_v1#{}.set_barrier()", object.id);

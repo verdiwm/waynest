@@ -5,8 +5,10 @@
 #[doc = "This provides a way for screen reader key bindings to work."]
 #[doc = ""]
 #[doc = "This is a temporary solution until a better protocol is available for this purpose."]
+#[allow(clippy::module_inception)]
 pub mod cosmic_atspi_v1 {
     #[doc = "Manager for adding grabs and monitoring key input."]
+    #[allow(clippy::too_many_arguments)]
     pub mod cosmic_atspi_manager_v1 {
         #[doc = "Trait to implement the cosmic_atspi_manager_v1 interface. See the module level documentation for more info"]
         pub trait CosmicAtspiManagerV1: crate::server::Dispatcher {
@@ -24,6 +26,7 @@ pub mod cosmic_atspi_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("cosmic_atspi_manager_v1#{}.destroy()", object.id);
@@ -126,6 +129,7 @@ pub mod cosmic_atspi_v1 {
 #[doc = "phase. Backward compatible changes may be added together with the"]
 #[doc = "corresponding interface version bump. Backward incompatible changes can"]
 #[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
 pub mod cosmic_image_source_unstable_v1 {
     #[doc = "The image source object is an opaque descriptor for a capturable resource."]
     #[doc = "This resource may be any sort of entity from which an image may be"]
@@ -134,6 +138,7 @@ pub mod cosmic_image_source_unstable_v1 {
     #[doc = "Note, because zcosmic_image_source_v1 objects are created from multiple"]
     #[doc = "independent factory interfaces, the zcosmic_image_source_v1 interface is"]
     #[doc = "frozen at version 1."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_image_source_v1 {
         #[doc = "Trait to implement the zcosmic_image_source_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicImageSourceV1: crate::server::Dispatcher {
@@ -151,6 +156,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zcosmic_image_source_v1#{}.destroy()", object.id);
@@ -169,6 +175,7 @@ pub mod cosmic_image_source_unstable_v1 {
         }
     }
     #[doc = "A manager for creating image source objects for wl_output objects."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_output_image_source_manager_v1 {
         #[doc = "Trait to implement the zcosmic_output_image_source_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicOutputImageSourceManagerV1: crate::server::Dispatcher {
@@ -186,6 +193,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -236,6 +244,7 @@ pub mod cosmic_image_source_unstable_v1 {
         }
     }
     #[doc = "A manager for creating image source objects for wl_output objects."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_workspace_image_source_manager_v1 {
         #[doc = "Trait to implement the zcosmic_workspace_image_source_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicWorkspaceImageSourceManagerV1: crate::server::Dispatcher {
@@ -253,6 +262,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -304,6 +314,7 @@ pub mod cosmic_image_source_unstable_v1 {
     }
     #[doc = "A manager for creating image source objects for"]
     #[doc = "zcosmic_toplevel_handle_v1 objects."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_toplevel_image_source_manager_v1 {
         #[doc = "Trait to implement the zcosmic_toplevel_image_source_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicToplevelImageSourceManagerV1: crate::server::Dispatcher {
@@ -321,6 +332,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -376,8 +388,10 @@ pub mod cosmic_image_source_unstable_v1 {
 #[doc = ""]
 #[doc = "It was designed against version 4 of wlr-output-management, but tries"]
 #[doc = "it's best to be forward compatible."]
+#[allow(clippy::module_inception)]
 pub mod cosmic_output_management_unstable_v1 {
     #[doc = "This interface provides extension points for wlr-output-management types."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_output_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -411,6 +425,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zcosmic_output_manager_v1#{}.get_head()", object.id);
@@ -521,6 +536,7 @@ pub mod cosmic_output_management_unstable_v1 {
     #[doc = ""]
     #[doc = "Properties sent via this interface are applied atomically via the wlr_output_manager.done event."]
     #[doc = "No guarantees are made regarding the order in which properties are sent."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_output_head_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -582,6 +598,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zcosmic_output_head_v1#{}.release()", object.id);
@@ -683,6 +700,7 @@ pub mod cosmic_output_management_unstable_v1 {
     #[doc = "Extension to zwlr_output_configuration_v1."]
     #[doc = ""]
     #[doc = "Adds additional parameters to be tested/applyed via the original zwlr_output_configuration_v1."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_output_configuration_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -719,6 +737,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -807,6 +826,7 @@ pub mod cosmic_output_management_unstable_v1 {
     #[doc = ""]
     #[doc = "Once the original `zwlr_output_configuration_head_v1` is destroyed this object will"]
     #[doc = "become inert and all requests except `release` will be ignored."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_output_configuration_head_v1 {
         #[doc = "Trait to implement the zcosmic_output_configuration_head_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicOutputConfigurationHeadV1: crate::server::Dispatcher {
@@ -824,6 +844,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -888,6 +909,7 @@ pub mod cosmic_output_management_unstable_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod cosmic_overlap_notify_unstable_v1 {
     #[doc = "The purpose of this protocol is to enable layer-shell client to get"]
     #[doc = "notifications if part of their surfaces are occluded other elements"]
@@ -895,6 +917,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
     #[doc = ""]
     #[doc = "You can request a notification object for any of your zwlr_layer_surface_v1"]
     #[doc = "surfaces, which will then emit overlap events."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_overlap_notify_v1 {
         #[doc = "Trait to implement the zcosmic_overlap_notify_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicOverlapNotifyV1: crate::server::Dispatcher {
@@ -912,6 +935,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -948,6 +972,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             ) -> crate::server::Result<()>;
         }
     }
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_overlap_notification_v1 {
         #[doc = "Trait to implement the zcosmic_overlap_notification_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicOverlapNotificationV1: crate::server::Dispatcher {
@@ -965,6 +990,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zcosmic_overlap_notification_v1#{}.destroy()", object.id);
@@ -1103,9 +1129,11 @@ pub mod cosmic_overlap_notify_unstable_v1 {
 #[doc = "phase. Backward compatible changes may be added together with the"]
 #[doc = "corresponding interface version bump. Backward incompatible changes can"]
 #[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
 pub mod cosmic_screencopy_unstable_v2 {
     #[doc = "This object is a manager which offers requests to start capturing from a"]
     #[doc = "source."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_screencopy_manager_v2 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1146,6 +1174,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -1245,6 +1274,7 @@ pub mod cosmic_screencopy_unstable_v2 {
     #[doc = "buffer accordingly, attach it to the screencopy session using the"]
     #[doc = "attach_buffer request, set the buffer damage using the damage_buffer"]
     #[doc = "request and then send the capture request."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_screencopy_session_v2 {
         #[doc = "Trait to implement the zcosmic_screencopy_session_v2 interface. See the module level documentation for more info"]
         pub trait ZcosmicScreencopySessionV2: crate::server::Dispatcher {
@@ -1262,6 +1292,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -1442,6 +1473,7 @@ pub mod cosmic_screencopy_unstable_v2 {
     #[doc = "the ready event."]
     #[doc = ""]
     #[doc = "If the screen capture fails, the compositor will send the failed event."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_screencopy_frame_v2 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1500,6 +1532,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zcosmic_screencopy_frame_v2#{}.destroy()", object.id);
@@ -1721,6 +1754,7 @@ pub mod cosmic_screencopy_unstable_v2 {
     }
     #[doc = "This object represents a cursor capture session. It extends the base"]
     #[doc = "capture session with cursor-specific metadata."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_screencopy_cursor_session_v2 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1754,6 +1788,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -1903,6 +1938,7 @@ pub mod cosmic_screencopy_unstable_v2 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod cosmic_toplevel_info_unstable_v1 {
     #[doc = "The purpose of this protocol is to enable clients such as taskbars"]
     #[doc = "or docks to access a list of opened applications and basic properties"]
@@ -1910,6 +1946,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
     #[doc = ""]
     #[doc = "It thus extends ext_foreign_toplevel_v1 to provide more information"]
     #[doc = "and actions on foreign toplevels."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_toplevel_info_v1 {
         #[doc = "Trait to implement the zcosmic_toplevel_info_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicToplevelInfoV1: crate::server::Dispatcher {
@@ -1927,6 +1964,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zcosmic_toplevel_info_v1#{}.stop()", object.id);
@@ -2047,6 +2085,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
     #[doc = ""]
     #[doc = "Each toplevel has a list of outputs it is visible on, exposed to the"]
     #[doc = "client via the output_enter and output_leave events."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_toplevel_handle_v1 {
         #[doc = "The different states that a toplevel may have. These have the same"]
         #[doc = "meaning as the states with the same names defined in xdg-toplevel"]
@@ -2094,6 +2133,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zcosmic_toplevel_handle_v1#{}.destroy()", object.id);
@@ -2317,10 +2357,12 @@ pub mod cosmic_toplevel_info_unstable_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
 pub mod cosmic_toplevel_management_unstable_v1 {
     #[doc = "This protocol allows clients such as a taskbar to request the compositor"]
     #[doc = "to preform typical actions on open toplevels. The compositor is in all"]
     #[doc = "cases free to ignore the request."]
+    #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_toplevel_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2388,6 +2430,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zcosmic_toplevel_manager_v1#{}.destroy()", object.id);

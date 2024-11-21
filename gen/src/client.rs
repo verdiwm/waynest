@@ -38,6 +38,7 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
 
             inner_modules.push(quote! {
                 #(#docs)*
+                #[allow(clippy::too_many_arguments)]
                 pub mod #module_name {
                     #imports
 
@@ -52,6 +53,7 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                             &self,
                             message: &mut crate::wire::Message,
                         ) -> crate::client::Result<()> {
+                            #[allow(clippy::match_single_binding)]
                             match message.opcode {
                                 // #(#dispatchers),*
                                 _ => Err(crate::client::Error::UnknownOpcode),
@@ -70,6 +72,7 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
 
         modules.push(quote! {
             #(#docs)*
+            #[allow(clippy::module_inception)]
             pub mod #module_name {
                 #(#inner_modules)*
             }

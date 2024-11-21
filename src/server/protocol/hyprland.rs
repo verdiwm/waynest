@@ -2,11 +2,13 @@
 #[doc = "This protocol allows a client to control outputs' color transform matrix (CTM)."]
 #[doc = ""]
 #[doc = "This protocol is privileged and should not be exposed to unprivileged clients."]
+#[allow(clippy::module_inception)]
 pub mod hyprland_ctm_control_v1 {
     #[doc = "This object is a manager which offers requests to control CTMs."]
     #[doc = ""]
     #[doc = "If any changes are done, once this object is destroyed, CTMs are reset back to"]
     #[doc = "an identity matrix."]
+    #[allow(clippy::too_many_arguments)]
     pub mod hyprland_ctm_control_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -40,6 +42,7 @@ pub mod hyprland_ctm_control_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -124,8 +127,10 @@ pub mod hyprland_ctm_control_v1 {
 #[doc = "This protocol allows clients to limit input focus to a specific set"]
 #[doc = "of surfaces and receive a notification when the limiter is removed as"]
 #[doc = "detailed below."]
+#[allow(clippy::module_inception)]
 pub mod hyprland_focus_grab_v1 {
     #[doc = "This interface allows a client to create surface grab objects."]
+    #[allow(clippy::too_many_arguments)]
     pub mod hyprland_focus_grab_manager_v1 {
         #[doc = "Trait to implement the hyprland_focus_grab_manager_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandFocusGrabManagerV1: crate::server::Dispatcher {
@@ -143,6 +148,7 @@ pub mod hyprland_focus_grab_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -196,6 +202,7 @@ pub mod hyprland_focus_grab_v1 {
     #[doc = "clear the whitelist, rendering the grab inert and sending the cleared"]
     #[doc = "event. The same will happen if another focus grab or similar action"]
     #[doc = "is started at the compositor's discretion."]
+    #[allow(clippy::too_many_arguments)]
     pub mod hyprland_focus_grab_v1 {
         #[doc = "Trait to implement the hyprland_focus_grab_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandFocusGrabV1: crate::server::Dispatcher {
@@ -213,6 +220,7 @@ pub mod hyprland_focus_grab_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("hyprland_focus_grab_v1#{}.add_surface()", object.id);
@@ -306,8 +314,10 @@ pub mod hyprland_focus_grab_v1 {
 }
 #[doc = "This protocol allows a client to register triggerable actions,"]
 #[doc = "meant to be global shortcuts."]
+#[allow(clippy::module_inception)]
 pub mod hyprland_global_shortcuts_v1 {
     #[doc = "This object is a manager which offers requests to create global shortcuts."]
+    #[allow(clippy::too_many_arguments)]
     pub mod hyprland_global_shortcuts_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -341,6 +351,7 @@ pub mod hyprland_global_shortcuts_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -405,6 +416,7 @@ pub mod hyprland_global_shortcuts_v1 {
         }
     }
     #[doc = "This object represents a single shortcut."]
+    #[allow(clippy::too_many_arguments)]
     pub mod hyprland_global_shortcut_v1 {
         #[doc = "Trait to implement the hyprland_global_shortcut_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandGlobalShortcutV1: crate::server::Dispatcher {
@@ -422,6 +434,7 @@ pub mod hyprland_global_shortcuts_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("hyprland_global_shortcut_v1#{}.destroy()", object.id);
@@ -487,9 +500,11 @@ pub mod hyprland_global_shortcuts_v1 {
 #[doc = "surface(s) to a buffer."]
 #[doc = ""]
 #[doc = "Particularly useful for sharing a single window."]
+#[allow(clippy::module_inception)]
 pub mod hyprland_toplevel_export_v1 {
     #[doc = "This object is a manager which offers requests to start capturing from a"]
     #[doc = "source."]
+    #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_export_manager_v1 {
         #[doc = "Trait to implement the hyprland_toplevel_export_manager_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandToplevelExportManagerV1: crate::server::Dispatcher {
@@ -507,6 +522,7 @@ pub mod hyprland_toplevel_export_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!(
@@ -600,6 +616,7 @@ pub mod hyprland_toplevel_export_v1 {
     #[doc = ""]
     #[doc = "Once either a \"ready\" or a \"failed\" event is received, the client should"]
     #[doc = "destroy the frame."]
+    #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_export_frame_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -643,6 +660,7 @@ pub mod hyprland_toplevel_export_v1 {
                 client: &mut crate::server::Client,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("hyprland_toplevel_export_frame_v1#{}.copy()", object.id);
