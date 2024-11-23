@@ -1,7 +1,12 @@
 use anyhow::Result;
 use clap::Parser;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use std::{collections::HashMap, fmt::Write as _, fs::OpenOptions, io::Write as _};
+use std::{
+    collections::HashMap,
+    fmt::Write as _,
+    fs::OpenOptions,
+    io::{stdout, Write as _},
+};
 use tracing::info;
 
 use waynest_gen::{
@@ -40,13 +45,9 @@ fn main() -> Result<()> {
     if json {
         info!("Generating json file");
 
-        let mut json_path = OpenOptions::new()
-            .truncate(true)
-            .write(true)
-            .create(true)
-            .open("protocols.json")?;
+        let mut stdout = stdout().lock();
 
-        serde_json::to_writer(&mut json_path, &protocols)?;
+        serde_json::to_writer(&mut stdout, &protocols)?;
     } else {
         let mut module_content = "pub mod core;".to_string();
 
