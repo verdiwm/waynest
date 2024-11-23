@@ -1,5 +1,6 @@
 use anyhow::Result;
 use clap::Parser;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use std::{collections::HashMap, fmt::Write as _, fs::OpenOptions, io::Write as _};
 use tracing::info;
 
@@ -49,16 +50,18 @@ fn main() -> Result<()> {
     } else {
         let mut module_content = "pub mod core;".to_string();
 
-        for (module, current) in protocols {
-            if module != "core" {
+        for (module, _current) in &protocols {
+            if module.as_str() != "core" {
                 writeln!(
                     &mut module_content,
                     r#"#[cfg(feature = "{module}")]
-#[cfg_attr(docsrs, doc(cfg(feature = "{module}")))]
-pub mod {module};"#
+        #[cfg_attr(docsrs, doc(cfg(feature = "{module}")))]
+        pub mod {module};"#
                 )?;
             }
+        }
 
+        protocols.par_iter().try_for_each(|(module, current)| {
             let mut server_path = OpenOptions::new()
                 .truncate(true)
                 .write(true)
@@ -82,7 +85,9 @@ pub mod {module};"#
                 "{}",
                 generate_client_code(&current, &pairs)
             )?;
-        }
+
+            anyhow::Ok(())
+        })?;
 
         let mut server_module = OpenOptions::new()
             .truncate(true)
