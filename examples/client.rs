@@ -3,56 +3,87 @@ use std::{borrow::Cow, collections::HashMap, os::unix::net::UnixStream, path::Pa
 use anyhow::Result;
 use futures_util::TryStreamExt;
 use waynest::{
-    client::{protocol::core::wayland::wl_display::WlDisplay, Dispatcher},
+    client::{protocol::core::wayland::wl_display::WlDisplay, Connection, ConnectionRef, Object},
     wire::{Message, ObjectId, Socket},
 };
 
-struct Client {
-    objects: HashMap<ObjectId, Arc<dyn Dispatcher>>,
+use std::{
+    collections::HashMap,
+    sync::{Arc, Weak},
+};
+
+use futures_util::{Sink, SinkExt};
+use tokio::sync::{mpsc, Mutex};
+
+#[derive(Clone)]
+struct State {
+    tx: mpsc::Sender<Message>,
+    objects: HashMap<ObjectId, Arc<dyn Object>>,
+    next_id: u32,
+    _socket: Arc<Socket>,
 }
 
-impl Client {
-    pub fn new() -> Result<Self> {
-        let mut objects: HashMap<ObjectId, Arc<dyn Dispatcher>> = HashMap::new();
-
-        objects.insert(ObjectId::DISPLAY, Arc::new(Display::new()));
-
-        Ok(Self { objects })
+#[async_trait]
+impl ConnectionState for State {
+    async fn send(&self, value: Message) -> Result<(), Error> {
+        todo!()
     }
 
-    pub async fn _handle_message(&mut self, message: &Message) {
-        let dispatcher = self
-            .objects
-            .get(&message.object_id)
-            .expect("Invalid object id");
-
-        dispatcher.dispatch(message);
+    pub async fn register_object(
+        &self,
+        id: ObjectId,
+        object: Arc<dyn Object>,
+    ) -> Result<(), Error> {
+        let state = self.state.upgrade().ok_or(Error::Internal)?;
+        let mut state = state.lock().await;
+        state.objects.insert(id, object);
+        Ok(())
     }
 
-    pub fn display(&self) -> &Display {
-        let dispatcher = self
-            .objects
-            .get(&ObjectId::DISPLAY)
-            .expect("Invalid object id");
+    pub async fn unregister_object(&self, id: &ObjectId) -> Result<(), Error> {
+        let state = self.state.upgrade().ok_or(Error::Internal)?;
+        let mut state = state.lock().await;
+        state.objects.remove(id);
+        Ok(())
+    }
+}
 
-        dispatcher.downcast_ref().unwrap()
+impl State {
+    pub async fn next_id(&self) -> Result<ObjectId, Error> {
+        let state = self.state.upgrade().ok_or(Error::Internal)?;
+        let mut state = state.lock().await;
+        let id = state.next_id;
+        state.next_id += 1;
+        Ok(unsafe { ObjectId::from_raw(id) })
     }
 }
 
 #[derive(Clone)]
 struct Display {
-    // socket: Socket,
+    connection: ConnectionRef,
 }
 
 impl Display {
-    pub fn new() -> Self {
-        Self {}
+    pub fn new(connection: ConnectionRef) -> Self {
+        Self { connection }
     }
 }
 
-impl Dispatcher for Display {
-    fn dispatch(&self, _message: &Message) {
-        todo!()
+impl Object for Display {
+    fn interface(&self) -> &'static str {
+        Self::INTERFACE
+    }
+
+    fn version(&self) -> u32 {
+        Self::VERSION
+    }
+
+    fn id(&self) -> ObjectId {
+        ObjectId::DISPLAY
+    }
+
+    fn connection(&self) -> &ConnectionRef {
+        &self.connection
     }
 }
 
@@ -75,7 +106,7 @@ impl WlDisplay for Display {
 async fn main() -> Result<()> {
     tracing_subscriber::fmt::init();
 
-    let registry = unsafe { ObjectId::from_raw(2) };
+    // let registry = unsafe { ObjectId::from_raw(2) };
 
     let xdg_runtime_dir = std::env::var("XDG_RUNTIME_DIR")?;
     let wayland_connection = std::env::var("WAYLAND_DISPLAY")
@@ -86,17 +117,32 @@ async fn main() -> Result<()> {
 
     let mut socket = Socket::new(UnixStream::connect(socket_path)?)?;
 
-    let client = Client::new()?;
+    let connection = Connection::new(socket).await;
 
-    let display = client.display();
+    let display = Display::new(connection.downgrade());
 
-    display
-        .get_registry(&mut socket, ObjectId::DISPLAY, registry)
-        .await?;
+    // display
+    //     .connection()
+    //     .register_object(ObjectId::DISPLAY, Arc::new(display));
 
-    while let Some(message) = socket.try_next().await? {
-        dbg!(message);
-    }
+    // let client = Client::new()?;
+
+    // let display : &Display {
+    //     let dispatcher = self
+    //         .objects
+    //         .get(&ObjectId::DISPLAY)
+    //         .expect("Invalid object id");
+
+    //     dispatcher.downcast_ref().unwrap()
+    // }
+
+    // display
+    //     .get_registry(&mut socket, ObjectId::DISPLAY, registry)
+    //     .await?;
+
+    // while let Some(message) = socket.try_next().await? {
+    //     dbg!(message);
+    // }
 
     Ok(())
 }

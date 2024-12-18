@@ -17,9 +17,8 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "controls."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_data_control_manager_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_data_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrDataControlManagerV1 {
+        pub trait ZwlrDataControlManagerV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_data_control_manager_v1";
             const VERSION: u32 = 2u32;
             async fn handle_event(
@@ -34,10 +33,9 @@ pub mod wlr_data_control_unstable_v1 {
             #[doc = "Create a new data source."]
             async fn create_data_source(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_data_control_manager_v1#{}.create_data_source()",
                     object_id
@@ -45,19 +43,17 @@ pub mod wlr_data_control_unstable_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Create a data device that can be used to manage a seat's selection."]
             async fn get_data_device(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_data_control_manager_v1#{}.get_data_device()",
                     object_id
@@ -66,24 +62,19 @@ pub mod wlr_data_control_unstable_v1 {
                     .put_object(Some(id))
                     .put_object(Some(seat))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_data_control_manager_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -92,7 +83,6 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "When the seat is destroyed, this object becomes inert."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_data_control_device_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -110,7 +100,7 @@ pub mod wlr_data_control_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_data_control_device_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrDataControlDeviceV1 {
+        pub trait ZwlrDataControlDeviceV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_data_control_device_v1";
             const VERSION: u32 = 2u32;
             async fn handle_event(
@@ -132,10 +122,9 @@ pub mod wlr_data_control_unstable_v1 {
             #[doc = "To unset the selection, set the source to NULL."]
             async fn set_selection(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 source: Option<crate::wire::ObjectId>,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_data_control_device_v1#{}.set_selection()",
                     object_id
@@ -143,23 +132,18 @@ pub mod wlr_data_control_unstable_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(source)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Destroys the data device object."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_data_control_device_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This request asks the compositor to set the primary selection to the"]
             #[doc = "data from the source on behalf of the client."]
@@ -174,10 +158,9 @@ pub mod wlr_data_control_unstable_v1 {
             #[doc = "selection."]
             async fn set_primary_selection(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 source: Option<crate::wire::ObjectId>,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_data_control_device_v1#{}.set_primary_selection()",
                     object_id
@@ -185,10 +168,9 @@ pub mod wlr_data_control_unstable_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(source)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "The data_offer event introduces a new wlr_data_control_offer object,"]
             #[doc = "which will subsequently be used in either the"]
@@ -243,7 +225,6 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "respond to requests to transfer the data."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_data_control_source_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -261,7 +242,7 @@ pub mod wlr_data_control_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_data_control_source_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrDataControlSourceV1 {
+        pub trait ZwlrDataControlSourceV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_data_control_source_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -278,33 +259,24 @@ pub mod wlr_data_control_unstable_v1 {
             #[doc = ""]
             #[doc = "Calling this after wlr_data_control_device.set_selection is a protocol"]
             #[doc = "error."]
-            async fn offer(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                mime_type: String,
-            ) -> crate::client::Result<()> {
+            async fn offer(&self, mime_type: String) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_data_control_source_v1#{}.offer()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(mime_type))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Destroys the data source object."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_data_control_source_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Request for data from the client. Send the data as the specified MIME"]
             #[doc = "type over the passed file descriptor, then close it."]
@@ -326,9 +298,8 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "for transferring the data directly from the source client."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_data_control_offer_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_data_control_offer_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrDataControlOfferV1 {
+        pub trait ZwlrDataControlOfferV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_data_control_offer_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -352,33 +323,27 @@ pub mod wlr_data_control_unstable_v1 {
             #[doc = "This request may happen multiple times for different MIME types."]
             async fn receive(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_data_control_offer_v1#{}.receive()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(mime_type))
                     .put_fd(fd)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Destroys the data offer object."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_data_control_offer_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Sent immediately after creating the wlr_data_control_offer object."]
             #[doc = "One event per offered MIME type."]
@@ -401,9 +366,8 @@ pub mod wlr_export_dmabuf_unstable_v1 {
     #[doc = "This object is a manager with which to start capturing from sources."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_export_dmabuf_manager_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_export_dmabuf_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrExportDmabufManagerV1 {
+        pub trait ZwlrExportDmabufManagerV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_export_dmabuf_manager_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -418,12 +382,11 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             #[doc = "Capture the next frame of an entire output."]
             async fn capture_output(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 frame: crate::wire::ObjectId,
                 overlay_cursor: i32,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_export_dmabuf_manager_v1#{}.capture_output()",
                     object_id
@@ -433,24 +396,19 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                     .put_int(overlay_cursor)
                     .put_object(Some(output))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_export_dmabuf_manager_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -470,7 +428,6 @@ pub mod wlr_export_dmabuf_unstable_v1 {
     #[doc = "All frames are read-only and may not be written into or altered."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_export_dmabuf_frame_v1 {
-        use futures_util::SinkExt;
         #[doc = "Special flags that should be respected by the client."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -512,7 +469,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_export_dmabuf_frame_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrExportDmabufFrameV1 {
+        pub trait ZwlrExportDmabufFrameV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_export_dmabuf_frame_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -529,17 +486,13 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             #[doc = ""]
             #[doc = "It can be called at any time by the client. The client will still have"]
             #[doc = "to close any FDs it has been given."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_export_dmabuf_frame_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Main event supplying the client with information about the frame. If the"]
             #[doc = "capture didn't fail, this event is always emitted first before any other"]
@@ -615,9 +568,8 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
     #[doc = "toplevel window will be sent via the toplevel event"]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_foreign_toplevel_manager_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_foreign_toplevel_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrForeignToplevelManagerV1 {
+        pub trait ZwlrForeignToplevelManagerV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_foreign_toplevel_manager_v1";
             const VERSION: u32 = 3u32;
             async fn handle_event(
@@ -634,17 +586,13 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             #[doc = "the finished event is emitted."]
             #[doc = ""]
             #[doc = "The client must not send any more requests after this one."]
-            async fn stop(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn stop(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_foreign_toplevel_manager_v1#{}.stop()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This event is emitted whenever a new toplevel window is created. It"]
             #[doc = "is emitted for all toplevels, regardless of the app that has created"]
@@ -668,7 +616,6 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
     #[doc = "client with the output_enter and output_leave events."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_foreign_toplevel_handle_v1 {
-        use futures_util::SinkExt;
         #[doc = "The different states that a toplevel can have. These have the same meaning"]
         #[doc = "as the states with the same names defined in xdg-toplevel"]
         #[repr(u32)]
@@ -713,7 +660,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrForeignToplevelHandleV1 {
+        pub trait ZwlrForeignToplevelHandleV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_foreign_toplevel_handle_v1";
             const VERSION: u32 = 3u32;
             async fn handle_event(
@@ -727,80 +674,60 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             }
             #[doc = "Requests that the toplevel be maximized. If the maximized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
-            async fn set_maximized(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn set_maximized(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_foreign_toplevel_handle_v1#{}.set_maximized()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Requests that the toplevel be unmaximized. If the maximized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
-            async fn unset_maximized(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn unset_maximized(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_foreign_toplevel_handle_v1#{}.unset_maximized()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Requests that the toplevel be minimized. If the minimized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
-            async fn set_minimized(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn set_minimized(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_foreign_toplevel_handle_v1#{}.set_minimized()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Requests that the toplevel be unminimized. If the minimized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
-            async fn unset_minimized(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn unset_minimized(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_foreign_toplevel_handle_v1#{}.unset_minimized()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 3u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Request that this toplevel be activated on the given seat."]
             #[doc = "There is no guarantee the toplevel will be actually activated."]
-            async fn activate(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                seat: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn activate(&self, seat: crate::wire::ObjectId) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_foreign_toplevel_handle_v1#{}.activate()",
                     object_id
@@ -808,10 +735,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(seat))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 4u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Send a request to the toplevel to close itself. The compositor would"]
             #[doc = "typically use a shell-specific method to carry out this request, for"]
@@ -819,17 +745,13 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             #[doc = "no guarantees the toplevel will actually be destroyed. If and when"]
             #[doc = "this happens, the zwlr_foreign_toplevel_handle_v1.closed event will"]
             #[doc = "be emitted."]
-            async fn close(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn close(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.close()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 5u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "The rectangle of the surface specified in this request corresponds to"]
             #[doc = "the place where the app using this protocol represents the given toplevel."]
@@ -844,14 +766,13 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             #[doc = "Setting width=height=0 removes the already-set rectangle."]
             async fn set_rectangle(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
                 width: i32,
                 height: i32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_foreign_toplevel_handle_v1#{}.set_rectangle()",
                     object_id
@@ -863,27 +784,22 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                     .put_int(width)
                     .put_int(height)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 6u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 6u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Destroys the zwlr_foreign_toplevel_handle_v1 object."]
             #[doc = ""]
             #[doc = "This request should be called either when the client does not want to"]
             #[doc = "use the toplevel anymore or after the closed event to finalize the"]
             #[doc = "destruction of the object."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 7u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 7u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Requests that the toplevel be fullscreened on the given output. If the"]
             #[doc = "fullscreen state and/or the outputs the toplevel is visible on actually"]
@@ -895,10 +811,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             #[doc = "fullscreened on, if at all."]
             async fn set_fullscreen(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 output: Option<crate::wire::ObjectId>,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_foreign_toplevel_handle_v1#{}.set_fullscreen()",
                     object_id
@@ -906,27 +821,22 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(output)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 8u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 8u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Requests that the toplevel be unfullscreened. If the fullscreen state"]
             #[doc = "actually changes, this will be indicated by the state event."]
-            async fn unset_fullscreen(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn unset_fullscreen(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_foreign_toplevel_handle_v1#{}.unset_fullscreen()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 9u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 9u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This event is emitted whenever the title of the toplevel changes."]
             async fn title(&self, title: String) -> crate::client::Result<()>;
@@ -987,9 +897,8 @@ pub mod wlr_gamma_control_unstable_v1 {
     #[doc = "controls."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_gamma_control_manager_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_gamma_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrGammaControlManagerV1 {
+        pub trait ZwlrGammaControlManagerV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_gamma_control_manager_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -1005,11 +914,10 @@ pub mod wlr_gamma_control_unstable_v1 {
             #[doc = "provided output."]
             async fn get_gamma_control(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_gamma_control_manager_v1#{}.get_gamma_control()",
                     object_id
@@ -1018,24 +926,19 @@ pub mod wlr_gamma_control_unstable_v1 {
                     .put_object(Some(id))
                     .put_object(Some(output))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_gamma_control_manager_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -1051,7 +954,6 @@ pub mod wlr_gamma_control_unstable_v1 {
     #[doc = "object is destroyed, the gamma table is restored to its original value."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_gamma_control_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1069,7 +971,7 @@ pub mod wlr_gamma_control_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_gamma_control_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrGammaControlV1 {
+        pub trait ZwlrGammaControlV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_gamma_control_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -1088,32 +990,23 @@ pub mod wlr_gamma_control_unstable_v1 {
             #[doc = ""]
             #[doc = "The file descriptor data must have the same length as three times the"]
             #[doc = "gamma size."]
-            async fn set_gamma(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                fd: rustix::fd::OwnedFd,
-            ) -> crate::client::Result<()> {
+            async fn set_gamma(&self, fd: rustix::fd::OwnedFd) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_gamma_control_v1#{}.set_gamma()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(fd).build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Destroys the gamma control object. If the object is still valid, this"]
             #[doc = "restores the original gamma tables."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_gamma_control_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Advertise the size of each gamma ramp."]
             #[doc = ""]
@@ -1142,7 +1035,6 @@ pub mod wlr_input_inhibit_unstable_v1 {
     #[doc = "For screen lockers, use the ext-session-lock-v1 protocol."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_input_inhibit_manager_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1160,7 +1052,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_input_inhibit_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrInputInhibitManagerV1 {
+        pub trait ZwlrInputInhibitManagerV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_input_inhibit_manager_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -1174,12 +1066,8 @@ pub mod wlr_input_inhibit_unstable_v1 {
             }
             #[doc = "Activates the input inhibitor. As long as the inhibitor is active, the"]
             #[doc = "compositor will not send input events to other clients."]
-            async fn get_inhibitor(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn get_inhibitor(&self, id: crate::wire::ObjectId) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_input_inhibit_manager_v1#{}.get_inhibitor()",
                     object_id
@@ -1187,10 +1075,9 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -1205,9 +1092,8 @@ pub mod wlr_input_inhibit_unstable_v1 {
     #[doc = "such as an on-screen keyboard (via the input-method protocol)."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_input_inhibitor_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_input_inhibitor_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrInputInhibitorV1 {
+        pub trait ZwlrInputInhibitorV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_input_inhibitor_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -1220,17 +1106,13 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 }
             }
             #[doc = "Destroy the inhibitor and allow other clients to receive input."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_input_inhibitor_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -1246,7 +1128,6 @@ pub mod wlr_layer_shell_unstable_v1 {
     #[doc = "that interact with the desktop."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_layer_shell_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1297,7 +1178,7 @@ pub mod wlr_layer_shell_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_layer_shell_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrLayerShellV1 {
+        pub trait ZwlrLayerShellV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_layer_shell_v1";
             const VERSION: u32 = 5u32;
             async fn handle_event(
@@ -1332,14 +1213,13 @@ pub mod wlr_layer_shell_unstable_v1 {
             #[doc = "surface."]
             async fn get_layer_surface(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 output: Option<crate::wire::ObjectId>,
                 layer: Layer,
                 namespace: String,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_layer_shell_v1#{}.get_layer_surface()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
@@ -1348,25 +1228,20 @@ pub mod wlr_layer_shell_unstable_v1 {
                     .put_uint(layer as u32)
                     .put_string(Some(namespace))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This request indicates that the client will not use the layer_shell"]
             #[doc = "object any more. Objects that have been created through this instance"]
             #[doc = "are not affected."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_layer_shell_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -1387,7 +1262,6 @@ pub mod wlr_layer_shell_unstable_v1 {
     #[doc = "buffer attached, waiting for a configure event and handling it as usual."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_layer_surface_v1 {
-        use futures_util::SinkExt;
         #[doc = "Types of keyboard interaction possible for layer shell surfaces. The"]
         #[doc = "rationale for this is twofold: (1) some applications are not interested"]
         #[doc = "in keyboard events and not allowing them to be focused can improve the"]
@@ -1448,7 +1322,7 @@ pub mod wlr_layer_shell_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_layer_surface_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrLayerSurfaceV1 {
+        pub trait ZwlrLayerSurfaceV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_layer_surface_v1";
             const VERSION: u32 = 5u32;
             async fn handle_event(
@@ -1470,22 +1344,16 @@ pub mod wlr_layer_shell_unstable_v1 {
             #[doc = "protocol error. Both values are 0 by default."]
             #[doc = ""]
             #[doc = "Size is double-buffered, see wl_surface.commit."]
-            async fn set_size(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                width: u32,
-                height: u32,
-            ) -> crate::client::Result<()> {
+            async fn set_size(&self, width: u32, height: u32) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_layer_surface_v1#{}.set_size()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(width)
                     .put_uint(height)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Requests that the compositor anchor the surface to the specified edges"]
             #[doc = "and corners. If two orthogonal edges are specified (e.g. 'top' and"]
@@ -1494,20 +1362,15 @@ pub mod wlr_layer_shell_unstable_v1 {
             #[doc = "will be centered on that edge, or in the center if none is specified."]
             #[doc = ""]
             #[doc = "Anchor is double-buffered, see wl_surface.commit."]
-            async fn set_anchor(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                anchor: Anchor,
-            ) -> crate::client::Result<()> {
+            async fn set_anchor(&self, anchor: Anchor) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_layer_surface_v1#{}.set_anchor()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(anchor.bits())
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Requests that the compositor avoids occluding an area with other"]
             #[doc = "surfaces. The compositor's use of this information is"]
@@ -1541,21 +1404,16 @@ pub mod wlr_layer_shell_unstable_v1 {
             #[doc = "The default value is 0."]
             #[doc = ""]
             #[doc = "Exclusive zone is double-buffered, see wl_surface.commit."]
-            async fn set_exclusive_zone(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                zone: i32,
-            ) -> crate::client::Result<()> {
+            async fn set_exclusive_zone(&self, zone: i32) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_layer_surface_v1#{}.set_exclusive_zone()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(zone).build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Requests that the surface be placed some distance away from the anchor"]
             #[doc = "point on the output, in surface-local coordinates. Setting this value"]
@@ -1566,13 +1424,12 @@ pub mod wlr_layer_shell_unstable_v1 {
             #[doc = "Margin is double-buffered, see wl_surface.commit."]
             async fn set_margin(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 top: i32,
                 right: i32,
                 bottom: i32,
                 left: i32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_layer_surface_v1#{}.set_margin()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(top)
@@ -1580,10 +1437,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                     .put_int(bottom)
                     .put_int(left)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 3u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Set how keyboard events are delivered to this surface. By default,"]
             #[doc = "layer shell surfaces do not receive keyboard events; this request can"]
@@ -1599,10 +1455,9 @@ pub mod wlr_layer_shell_unstable_v1 {
             #[doc = "Keyboard interactivity is double-buffered, see wl_surface.commit."]
             async fn set_keyboard_interactivity(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 keyboard_interactivity: KeyboardInteractivity,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_layer_surface_v1#{}.set_keyboard_interactivity()",
                     object_id
@@ -1610,10 +1465,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(keyboard_interactivity as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 4u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This assigns an xdg_popup's parent to this layer_surface.  This popup"]
             #[doc = "should have been created via xdg_surface::get_popup with the parent set"]
@@ -1622,20 +1476,15 @@ pub mod wlr_layer_shell_unstable_v1 {
             #[doc = ""]
             #[doc = "See the documentation of xdg_popup for more details about what an"]
             #[doc = "xdg_popup is and how it is used."]
-            async fn get_popup(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                popup: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn get_popup(&self, popup: crate::wire::ObjectId) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_layer_surface_v1#{}.get_popup()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(popup))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 5u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "When a configure event is received, if a client commits the"]
             #[doc = "surface in response to the configure event, then the client"]
@@ -1652,49 +1501,38 @@ pub mod wlr_layer_shell_unstable_v1 {
             #[doc = "A client may send multiple ack_configure requests before committing, but"]
             #[doc = "only the last request sent before a commit indicates which configure"]
             #[doc = "event the client really is responding to."]
-            async fn ack_configure(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                serial: u32,
-            ) -> crate::client::Result<()> {
+            async fn ack_configure(&self, serial: u32) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_layer_surface_v1#{}.ack_configure()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 6u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 6u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This request destroys the layer surface."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_layer_surface_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 7u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 7u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Change the layer that the surface is rendered on."]
             #[doc = ""]
             #[doc = "Layer is double-buffered, see wl_surface.commit."]
             async fn set_layer(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 layer : super :: super :: super :: wlr :: wlr_layer_shell_unstable_v1 :: zwlr_layer_shell_v1 :: Layer,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_layer_surface_v1#{}.set_layer()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 8u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 8u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Requests an edge for the exclusive zone to apply. The exclusive"]
             #[doc = "edge will be automatically deduced from anchor points when possible,"]
@@ -1704,12 +1542,8 @@ pub mod wlr_layer_shell_unstable_v1 {
             #[doc = ""]
             #[doc = "The edge must be one the surface is anchored to, otherwise the"]
             #[doc = "invalid_exclusive_edge protocol error will be raised."]
-            async fn set_exclusive_edge(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                edge: Anchor,
-            ) -> crate::client::Result<()> {
+            async fn set_exclusive_edge(&self, edge: Anchor) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_layer_surface_v1#{}.set_exclusive_edge()",
                     object_id
@@ -1717,10 +1551,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(edge.bits())
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 9u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 9u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "The configure event asks the client to resize its surface."]
             #[doc = ""]
@@ -1799,9 +1632,8 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "protocols such as xdg-output should be used."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_manager_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputManagerV1 {
+        pub trait ZwlrOutputManagerV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_output_manager_v1";
             const VERSION: u32 = 4u32;
             async fn handle_event(
@@ -1817,11 +1649,10 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "properties."]
             async fn create_configuration(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 serial: u32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_output_manager_v1#{}.create_configuration()",
                     object_id
@@ -1830,27 +1661,22 @@ pub mod wlr_output_management_unstable_v1 {
                     .put_object(Some(id))
                     .put_uint(serial)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Indicates the client no longer wishes to receive events for output"]
             #[doc = "configuration changes. However the compositor may emit further events,"]
             #[doc = "until the finished event is emitted."]
             #[doc = ""]
             #[doc = "The client must not send any more requests after this one."]
-            async fn stop(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn stop(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_output_manager_v1#{}.stop()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This event introduces a new head. This happens whenever a new head"]
             #[doc = "appears (e.g. a monitor is plugged in) or after the output manager is"]
@@ -1890,7 +1716,6 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "in which properties are sent."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_head_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1911,7 +1736,7 @@ pub mod wlr_output_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_output_head_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputHeadV1 {
+        pub trait ZwlrOutputHeadV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_output_head_v1";
             const VERSION: u32 = 4u32;
             async fn handle_event(
@@ -1925,17 +1750,13 @@ pub mod wlr_output_management_unstable_v1 {
             }
             #[doc = "This request indicates that the client will no longer use this head"]
             #[doc = "object."]
-            async fn release(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn release(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_output_head_v1#{}.release()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This event describes the head name."]
             #[doc = ""]
@@ -2090,9 +1911,8 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "in which properties are sent."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_mode_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_output_mode_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputModeV1 {
+        pub trait ZwlrOutputModeV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_output_mode_v1";
             const VERSION: u32 = 3u32;
             async fn handle_event(
@@ -2106,17 +1926,13 @@ pub mod wlr_output_management_unstable_v1 {
             }
             #[doc = "This request indicates that the client will no longer use this mode"]
             #[doc = "object."]
-            async fn release(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn release(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_output_mode_v1#{}.release()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This event describes the mode size. The size is given in physical"]
             #[doc = "hardware units of the output device. This is not necessarily the same as"]
@@ -2146,7 +1962,6 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "should destroy the configuration object."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_configuration_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2170,7 +1985,7 @@ pub mod wlr_output_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_output_configuration_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputConfigurationV1 {
+        pub trait ZwlrOutputConfigurationV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_output_configuration_v1";
             const VERSION: u32 = 4u32;
             async fn handle_event(
@@ -2186,11 +2001,10 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "be used to change the head's properties."]
             async fn enable_head(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 head: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_output_configuration_v1#{}.enable_head()",
                     object_id
@@ -2199,18 +2013,13 @@ pub mod wlr_output_management_unstable_v1 {
                     .put_object(Some(id))
                     .put_object(Some(head))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Disable a head."]
-            async fn disable_head(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                head: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn disable_head(&self, head: crate::wire::ObjectId) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_output_configuration_v1#{}.disable_head()",
                     object_id
@@ -2218,10 +2027,9 @@ pub mod wlr_output_management_unstable_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(head))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Apply the new output configuration."]
             #[doc = ""]
@@ -2233,17 +2041,13 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "After this request has been sent, the compositor must respond with an"]
             #[doc = "succeeded, failed or cancelled event. Sending a request that isn't the"]
             #[doc = "destructor is a protocol error."]
-            async fn apply(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn apply(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_output_configuration_v1#{}.apply()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Test the new output configuration. The configuration won't be applied,"]
             #[doc = "but will only be validated."]
@@ -2254,17 +2058,13 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "After this request has been sent, the compositor must respond with an"]
             #[doc = "succeeded, failed or cancelled event. Sending a request that isn't the"]
             #[doc = "destructor is a protocol error."]
-            async fn test(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn test(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_output_configuration_v1#{}.test()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 3u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Using this request a client can tell the compositor that it is not going"]
             #[doc = "to use the configuration object anymore. Any changes to the outputs"]
@@ -2272,17 +2072,13 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = ""]
             #[doc = "This request also destroys wlr_output_configuration_head objects created"]
             #[doc = "via this object."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_output_configuration_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 4u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Sent after the compositor has successfully applied the changes or"]
             #[doc = "tested them."]
@@ -2314,7 +2110,6 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "It is a protocol error to set the same property twice."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_configuration_head_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2347,7 +2142,7 @@ pub mod wlr_output_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_output_configuration_head_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputConfigurationHeadV1 {
+        pub trait ZwlrOutputConfigurationHeadV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_output_configuration_head_v1";
             const VERSION: u32 = 4u32;
             async fn handle_event(
@@ -2360,12 +2155,8 @@ pub mod wlr_output_management_unstable_v1 {
                 }
             }
             #[doc = "This request sets the head's mode."]
-            async fn set_mode(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                mode: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn set_mode(&self, mode: crate::wire::ObjectId) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_output_configuration_head_v1#{}.set_mode()",
                     object_id
@@ -2373,10 +2164,9 @@ pub mod wlr_output_management_unstable_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(mode))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This request assigns a custom mode to the head. The size is given in"]
             #[doc = "physical hardware units of the output device. If set to zero, the"]
@@ -2385,12 +2175,11 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "It is a protocol error to set both a mode and a custom mode."]
             async fn set_custom_mode(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
                 refresh: i32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_output_configuration_head_v1#{}.set_custom_mode()",
                     object_id
@@ -2400,19 +2189,13 @@ pub mod wlr_output_management_unstable_v1 {
                     .put_int(height)
                     .put_int(refresh)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This request sets the head's position in the global compositor space."]
-            async fn set_position(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                x: i32,
-                y: i32,
-            ) -> crate::client::Result<()> {
+            async fn set_position(&self, x: i32, y: i32) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_output_configuration_head_v1#{}.set_position()",
                     object_id
@@ -2421,18 +2204,16 @@ pub mod wlr_output_management_unstable_v1 {
                     .put_int(x)
                     .put_int(y)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This request sets the head's transform."]
             async fn set_transform(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_output_configuration_head_v1#{}.set_transform()",
                     object_id
@@ -2440,36 +2221,29 @@ pub mod wlr_output_management_unstable_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(transform as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 3u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This request sets the head's scale."]
-            async fn set_scale(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                scale: crate::wire::Fixed,
-            ) -> crate::client::Result<()> {
+            async fn set_scale(&self, scale: crate::wire::Fixed) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_output_configuration_head_v1#{}.set_scale()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_fixed(scale).build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 4u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This request enables/disables adaptive sync. Adaptive sync is also"]
             #[doc = "known as Variable Refresh Rate or VRR."]
             async fn set_adaptive_sync(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 state : super :: super :: super :: wlr :: wlr_output_management_unstable_v1 :: zwlr_output_head_v1 :: AdaptiveSyncState,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_output_configuration_head_v1#{}.set_adaptive_sync()",
                     object_id
@@ -2477,10 +2251,9 @@ pub mod wlr_output_management_unstable_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(state as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 5u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -2507,9 +2280,8 @@ pub mod wlr_output_power_management_unstable_v1 {
     #[doc = "management mode controls."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_power_manager_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_output_power_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputPowerManagerV1 {
+        pub trait ZwlrOutputPowerManagerV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_output_power_manager_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -2525,11 +2297,10 @@ pub mod wlr_output_power_management_unstable_v1 {
             #[doc = "adjust the power management mode for a given output."]
             async fn get_output_power(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_output_power_manager_v1#{}.get_output_power()",
                     object_id
@@ -2538,24 +2309,19 @@ pub mod wlr_output_power_management_unstable_v1 {
                     .put_object(Some(id))
                     .put_object(Some(output))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_output_power_manager_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -2563,7 +2329,6 @@ pub mod wlr_output_power_management_unstable_v1 {
     #[doc = "an output."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_power_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2600,7 +2365,7 @@ pub mod wlr_output_power_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_output_power_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputPowerV1 {
+        pub trait ZwlrOutputPowerV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_output_power_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -2615,33 +2380,24 @@ pub mod wlr_output_power_management_unstable_v1 {
             #[doc = "Set an output's power save mode to the given mode. The mode change"]
             #[doc = "is effective immediately. If the output does not support the given"]
             #[doc = "mode a failed event is sent."]
-            async fn set_mode(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                mode: Mode,
-            ) -> crate::client::Result<()> {
+            async fn set_mode(&self, mode: Mode) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_output_power_v1#{}.set_mode()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(mode as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Destroys the output power management mode control object."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_output_power_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Report the power management mode change of an output."]
             #[doc = ""]
@@ -2681,9 +2437,8 @@ pub mod wlr_screencopy_unstable_v1 {
     #[doc = "source."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_screencopy_manager_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_screencopy_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrScreencopyManagerV1 {
+        pub trait ZwlrScreencopyManagerV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_screencopy_manager_v1";
             const VERSION: u32 = 3u32;
             async fn handle_event(
@@ -2698,12 +2453,11 @@ pub mod wlr_screencopy_unstable_v1 {
             #[doc = "Capture the next frame of an entire output."]
             async fn capture_output(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 frame: crate::wire::ObjectId,
                 overlay_cursor: i32,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_screencopy_manager_v1#{}.capture_output()",
                     object_id
@@ -2713,10 +2467,9 @@ pub mod wlr_screencopy_unstable_v1 {
                     .put_int(overlay_cursor)
                     .put_object(Some(output))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Capture the next frame of an output's region."]
             #[doc = ""]
@@ -2725,8 +2478,6 @@ pub mod wlr_screencopy_unstable_v1 {
             #[doc = "extents."]
             async fn capture_output_region(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 frame: crate::wire::ObjectId,
                 overlay_cursor: i32,
                 output: crate::wire::ObjectId,
@@ -2735,6 +2486,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 width: i32,
                 height: i32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_screencopy_manager_v1#{}.capture_output_region()",
                     object_id
@@ -2748,24 +2500,19 @@ pub mod wlr_screencopy_unstable_v1 {
                     .put_int(width)
                     .put_int(height)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_screencopy_manager_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -2787,7 +2534,6 @@ pub mod wlr_screencopy_unstable_v1 {
     #[doc = "destroy the frame."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_screencopy_frame_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2815,7 +2561,7 @@ pub mod wlr_screencopy_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_screencopy_frame_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrScreencopyFrameV1 {
+        pub trait ZwlrScreencopyFrameV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_screencopy_frame_v1";
             const VERSION: u32 = 3u32;
             async fn handle_event(
@@ -2834,41 +2580,31 @@ pub mod wlr_screencopy_unstable_v1 {
             #[doc = ""]
             #[doc = "If the frame is successfully copied, a \"flags\" and a \"ready\" events are"]
             #[doc = "sent. Otherwise, a \"failed\" event is sent."]
-            async fn copy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                buffer: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn copy(&self, buffer: crate::wire::ObjectId) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_screencopy_frame_v1#{}.copy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(buffer))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Destroys the frame. This request can be sent at any time by the client."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_screencopy_frame_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Same as copy, except it waits until there is damage to copy."]
             async fn copy_with_damage(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_screencopy_frame_v1#{}.copy_with_damage()",
                     object_id
@@ -2876,10 +2612,9 @@ pub mod wlr_screencopy_unstable_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(buffer))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Provides information about wl_shm buffer parameters that need to be"]
             #[doc = "used for this frame. This event is sent once after the frame is created"]
@@ -2956,7 +2691,6 @@ pub mod wlr_virtual_pointer_unstable_v1 {
     #[doc = "requests are mostly mirror opposites of those specified in wl_pointer."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_virtual_pointer_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2977,7 +2711,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_virtual_pointer_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrVirtualPointerV1 {
+        pub trait ZwlrVirtualPointerV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_virtual_pointer_v1";
             const VERSION: u32 = 2u32;
             async fn handle_event(
@@ -2994,22 +2728,20 @@ pub mod wlr_virtual_pointer_unstable_v1 {
             #[doc = "Values are in the global compositor space."]
             async fn motion(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 time: u32,
                 dx: crate::wire::Fixed,
                 dy: crate::wire::Fixed,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_virtual_pointer_v1#{}.motion()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_fixed(dx)
                     .put_fixed(dy)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "The pointer has moved in an absolute coordinate frame."]
             #[doc = ""]
@@ -3017,14 +2749,13 @@ pub mod wlr_virtual_pointer_unstable_v1 {
             #[doc = "to y_extent."]
             async fn motion_absolute(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 time: u32,
                 x: u32,
                 y: u32,
                 x_extent: u32,
                 y_extent: u32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_virtual_pointer_v1#{}.motion_absolute()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
@@ -3033,97 +2764,84 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                     .put_uint(x_extent)
                     .put_uint(y_extent)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "A button was pressed or released."]
             async fn button(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 time: u32,
                 button: u32,
                 state: super::super::super::core::wayland::wl_pointer::ButtonState,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_virtual_pointer_v1#{}.button()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_uint(button)
                     .put_uint(state as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Scroll and other axis requests."]
             async fn axis(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 time: u32,
                 axis: super::super::super::core::wayland::wl_pointer::Axis,
                 value: crate::wire::Fixed,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_virtual_pointer_v1#{}.axis()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_uint(axis as u32)
                     .put_fixed(value)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 3u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Indicates the set of events that logically belong together."]
-            async fn frame(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn frame(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_virtual_pointer_v1#{}.frame()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 4u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Source information for scroll and other axis."]
             async fn axis_source(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 axis_source: super::super::super::core::wayland::wl_pointer::AxisSource,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_virtual_pointer_v1#{}.axis_source()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(axis_source as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 5u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Stop notification for scroll and other axes."]
             async fn axis_stop(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 time: u32,
                 axis: super::super::super::core::wayland::wl_pointer::Axis,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_virtual_pointer_v1#{}.axis_stop()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_uint(axis as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 6u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 6u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Discrete step information for scroll and other axes."]
             #[doc = ""]
@@ -3131,13 +2849,12 @@ pub mod wlr_virtual_pointer_unstable_v1 {
             #[doc = "event with discrete value."]
             async fn axis_discrete(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 time: u32,
                 axis: super::super::super::core::wayland::wl_pointer::Axis,
                 value: crate::wire::Fixed,
                 discrete: i32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_virtual_pointer_v1#{}.axis_discrete()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
@@ -3145,31 +2862,25 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                     .put_fixed(value)
                     .put_int(discrete)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 7u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 7u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_virtual_pointer_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 8u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 8u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
     #[doc = "This object allows clients to create individual virtual pointer objects."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_virtual_pointer_manager_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the zwlr_virtual_pointer_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrVirtualPointerManagerV1 {
+        pub trait ZwlrVirtualPointerManagerV1: crate::client::Object {
             const INTERFACE: &'static str = "zwlr_virtual_pointer_manager_v1";
             const VERSION: u32 = 2u32;
             async fn handle_event(
@@ -3185,11 +2896,10 @@ pub mod wlr_virtual_pointer_unstable_v1 {
             #[doc = "compositor."]
             async fn create_virtual_pointer(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 seat: Option<crate::wire::ObjectId>,
                 id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_virtual_pointer_manager_v1#{}.create_virtual_pointer()",
                     object_id
@@ -3198,22 +2908,17 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                     .put_object(seat)
                     .put_object(Some(id))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> zwlr_virtual_pointer_manager_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Creates a new virtual pointer. The seat and the output arguments are"]
             #[doc = "optional. If the seat argument is set, the compositor should assign the"]
@@ -3221,12 +2926,11 @@ pub mod wlr_virtual_pointer_unstable_v1 {
             #[doc = "compositor should map the input device to the requested output."]
             async fn create_virtual_pointer_with_output(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 seat: Option<crate::wire::ObjectId>,
                 output: Option<crate::wire::ObjectId>,
                 id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> zwlr_virtual_pointer_manager_v1#{}.create_virtual_pointer_with_output()",
                     object_id
@@ -3236,10 +2940,9 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                     .put_object(output)
                     .put_object(Some(id))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }

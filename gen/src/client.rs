@@ -31,22 +31,22 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
             let requests = write_requests(pairs, pair, interface);
             let events = write_events(pairs, pair, interface);
 
-            let imports = if requests.is_empty() {
-                quote! {}
-            } else {
-                quote! {use futures_util::SinkExt;}
-            };
+            // let imports = if requests.is_empty() {
+            //     quote! {}
+            // } else {
+            //     quote! {use futures_util::SinkExt;}
+            // };
 
             inner_modules.push(quote! {
                 #(#docs)*
                 #[allow(clippy::too_many_arguments)]
                 pub mod #module_name {
-                    #imports
+                    // #imports
 
                     #(#enums)*
 
                     #[doc = #trait_docs]
-                    pub trait #trait_name {
+                    pub trait #trait_name: crate::client::Object {
                         const INTERFACE: &'static str = #name;
                         const VERSION: u32 = #version;
 
@@ -100,11 +100,7 @@ fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Tok
             request.name.to_snek_case()
         );
 
-        let mut args = vec![
-            quote! { &self },
-            quote! { socket: &mut crate::wire::Socket },
-            quote! { object_id: crate::wire::ObjectId },
-        ];
+        let mut args = vec![quote! { &self }];
 
         for arg in &request.args {
             let mut ty = arg.to_rust_type_token(arg.find_protocol(pairs).as_ref().unwrap_or(pair));
@@ -165,16 +161,17 @@ fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Tok
         requests.push(quote! {
             #(#docs)*
             async fn #name(#(#args),*) -> crate::client::Result<()> {
+                let object_id = self.id();
+
                 tracing::debug!(#tracing_inner, object_id);
 
                 let (payload,fds) = crate::wire::PayloadBuilder::new()
                     #(#build_args)*
                     .build();
 
-                socket
-                    .send(crate::wire::Message::new(object_id, #opcode, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, #opcode, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         });
     }
@@ -188,11 +185,7 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
     for request in &interface.events {
         let docs = description_to_docs(request.description.as_ref());
         let name = make_ident(request.name.to_snek_case());
-        let mut args = vec![
-            quote! {&self },
-            // quote! {object: &crate::server::Object},
-            // quote! {client: &mut crate::server::Client},
-        ];
+        let mut args = vec![quote! {&self }];
 
         for arg in &request.args {
             let mut ty = arg.to_rust_type_token(arg.find_protocol(pairs).as_ref().unwrap_or(pair));

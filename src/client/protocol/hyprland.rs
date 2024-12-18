@@ -10,7 +10,6 @@ pub mod hyprland_ctm_control_v1 {
     #[doc = "an identity matrix."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_ctm_control_manager_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -28,7 +27,7 @@ pub mod hyprland_ctm_control_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_ctm_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandCtmControlManagerV1 {
+        pub trait HyprlandCtmControlManagerV1: crate::client::Object {
             const INTERFACE: &'static str = "hyprland_ctm_control_manager_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -55,8 +54,6 @@ pub mod hyprland_ctm_control_v1 {
             #[doc = "that output will get its CTM reset to an identity matrix."]
             async fn set_ctm_for_output(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
                 mat0: crate::wire::Fixed,
                 mat1: crate::wire::Fixed,
@@ -68,6 +65,7 @@ pub mod hyprland_ctm_control_v1 {
                 mat7: crate::wire::Fixed,
                 mat8: crate::wire::Fixed,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> hyprland_ctm_control_manager_v1#{}.set_ctm_for_output()",
                     object_id
@@ -84,39 +82,30 @@ pub mod hyprland_ctm_control_v1 {
                     .put_fixed(mat7)
                     .put_fixed(mat8)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Commits the pending state(s) set by set_ctm_for_output."]
-            async fn commit(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn commit(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> hyprland_ctm_control_manager_v1#{}.commit()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
             #[doc = ""]
             #[doc = "The CTMs of all outputs will be reset to an identity matrix."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> hyprland_ctm_control_manager_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -129,9 +118,8 @@ pub mod hyprland_focus_grab_v1 {
     #[doc = "This interface allows a client to create surface grab objects."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_focus_grab_manager_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the hyprland_focus_grab_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandFocusGrabManagerV1 {
+        pub trait HyprlandFocusGrabManagerV1: crate::client::Object {
             const INTERFACE: &'static str = "hyprland_focus_grab_manager_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -144,12 +132,8 @@ pub mod hyprland_focus_grab_v1 {
                 }
             }
             #[doc = "Create a surface grab object."]
-            async fn create_grab(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                grab: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn create_grab(&self, grab: crate::wire::ObjectId) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> hyprland_focus_grab_manager_v1#{}.create_grab()",
                     object_id
@@ -157,24 +141,19 @@ pub mod hyprland_focus_grab_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(grab))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Destroy the focus grab manager."]
             #[doc = "This doesn't destroy existing focus grab objects."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> hyprland_focus_grab_manager_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -195,9 +174,8 @@ pub mod hyprland_focus_grab_v1 {
     #[doc = "is started at the compositor's discretion."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_focus_grab_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the hyprland_focus_grab_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandFocusGrabV1 {
+        pub trait HyprlandFocusGrabV1: crate::client::Object {
             const INTERFACE: &'static str = "hyprland_focus_grab_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -216,18 +194,16 @@ pub mod hyprland_focus_grab_v1 {
             #[doc = "Does not take effect until commit is called."]
             async fn add_surface(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> hyprland_focus_grab_v1#{}.add_surface()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(surface))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Remove a surface from the whitelist. Destroying the surface is treated"]
             #[doc = "the same as an explicit call to this function."]
@@ -238,48 +214,38 @@ pub mod hyprland_focus_grab_v1 {
             #[doc = "Does not take effect until commit is called."]
             async fn remove_surface(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> hyprland_focus_grab_v1#{}.remove_surface()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(surface))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Commit pending changes to the surface whitelist."]
             #[doc = ""]
             #[doc = "If the list previously had no entries and now has at least one, the grab"]
             #[doc = "will start. If it previously had entries and now has none, the grab will"]
             #[doc = "become inert."]
-            async fn commit(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn commit(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> hyprland_focus_grab_v1#{}.commit()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Destroy the grab object and remove the grab if active."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> hyprland_focus_grab_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 3u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Sent when an active grab is cancelled by the compositor,"]
             #[doc = "regardless of cause."]
@@ -294,7 +260,6 @@ pub mod hyprland_global_shortcuts_v1 {
     #[doc = "This object is a manager which offers requests to create global shortcuts."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_global_shortcuts_manager_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -312,7 +277,7 @@ pub mod hyprland_global_shortcuts_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_global_shortcuts_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandGlobalShortcutsManagerV1 {
+        pub trait HyprlandGlobalShortcutsManagerV1: crate::client::Object {
             const INTERFACE: &'static str = "hyprland_global_shortcuts_manager_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -333,14 +298,13 @@ pub mod hyprland_global_shortcuts_v1 {
             #[doc = "In the case of a duplicate app_id + id combination, the already_taken protocol error is raised."]
             async fn register_shortcut(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 shortcut: crate::wire::ObjectId,
                 id: String,
                 app_id: String,
                 description: String,
                 trigger_description: String,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> hyprland_global_shortcuts_manager_v1#{}.register_shortcut()",
                     object_id
@@ -352,36 +316,30 @@ pub mod hyprland_global_shortcuts_v1 {
                     .put_string(Some(description))
                     .put_string(Some(trigger_description))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> hyprland_global_shortcuts_manager_v1#{}.destroy()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
     #[doc = "This object represents a single shortcut."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_global_shortcut_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the hyprland_global_shortcut_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandGlobalShortcutV1 {
+        pub trait HyprlandGlobalShortcutV1: crate::client::Object {
             const INTERFACE: &'static str = "hyprland_global_shortcut_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -394,17 +352,13 @@ pub mod hyprland_global_shortcuts_v1 {
                 }
             }
             #[doc = "Destroys the shortcut. Can be sent at any time by the client."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> hyprland_global_shortcut_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "The keystroke was pressed."]
             #[doc = ""]
@@ -437,9 +391,8 @@ pub mod hyprland_toplevel_export_v1 {
     #[doc = "source."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_export_manager_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the hyprland_toplevel_export_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelExportManagerV1 {
+        pub trait HyprlandToplevelExportManagerV1: crate::client::Object {
             const INTERFACE: &'static str = "hyprland_toplevel_export_manager_v1";
             const VERSION: u32 = 2u32;
             async fn handle_event(
@@ -463,12 +416,11 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = "For example, for d161e7b0 it would be 3512854448."]
             async fn capture_toplevel(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 frame: crate::wire::ObjectId,
                 overlay_cursor: i32,
                 handle: u32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> hyprland_toplevel_export_manager_v1#{}.capture_toplevel()",
                     object_id
@@ -478,47 +430,40 @@ pub mod hyprland_toplevel_export_v1 {
                     .put_int(overlay_cursor)
                     .put_uint(handle)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> hyprland_toplevel_export_manager_v1#{}.destroy()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Same as capture_toplevel, but with a zwlr_foreign_toplevel_handle_v1 handle."]
             async fn capture_toplevel_with_wlr_toplevel_handle(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 frame: crate::wire::ObjectId,
                 overlay_cursor: i32,
                 handle: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing :: debug ! ("-> hyprland_toplevel_export_manager_v1#{}.capture_toplevel_with_wlr_toplevel_handle()" , object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(frame))
                     .put_int(overlay_cursor)
                     .put_object(Some(handle))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -539,7 +484,6 @@ pub mod hyprland_toplevel_export_v1 {
     #[doc = "destroy the frame."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_export_frame_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -567,7 +511,7 @@ pub mod hyprland_toplevel_export_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_toplevel_export_frame_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelExportFrameV1 {
+        pub trait HyprlandToplevelExportFrameV1: crate::client::Object {
             const INTERFACE: &'static str = "hyprland_toplevel_export_frame_v1";
             const VERSION: u32 = 2u32;
             async fn handle_event(
@@ -591,36 +535,30 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = "arg is set to a non-zero value."]
             async fn copy(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
                 ignore_damage: i32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> hyprland_toplevel_export_frame_v1#{}.copy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(buffer))
                     .put_int(ignore_damage)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Destroys the frame. This request can be sent at any time by the client."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> hyprland_toplevel_export_frame_v1#{}.destroy()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Provides information about wl_shm buffer parameters that need to be"]
             #[doc = "used for this frame. This event is sent once after the frame is created"]

@@ -43,7 +43,6 @@ pub mod color_management_v1 {
     #[doc = "description of surfaces."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_color_manager_v4 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -217,7 +216,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_color_manager_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagerV4 {
+        pub trait XxColorManagerV4: crate::client::Object {
             const INTERFACE: &'static str = "xx_color_manager_v4";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -231,17 +230,13 @@ pub mod color_management_v1 {
             }
             #[doc = "Destroy the xx_color_manager_v4 object. This does not affect any other"]
             #[doc = "objects in any way."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> xx_color_manager_v4#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This creates a new xx_color_management_output_v4 object for the"]
             #[doc = "given wl_output."]
@@ -249,20 +244,18 @@ pub mod color_management_v1 {
             #[doc = "See the xx_color_management_output_v4 interface for more details."]
             async fn get_output(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> xx_color_manager_v4#{}.get_output()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(output))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "If a xx_color_management_surface_v4 object already exists for the given"]
             #[doc = "wl_surface, the protocol error surface_exists is raised."]
@@ -273,20 +266,18 @@ pub mod color_management_v1 {
             #[doc = "See the xx_color_management_surface_v4 interface for more details."]
             async fn get_surface(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> xx_color_manager_v4#{}.get_surface()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This creates a new color xx_color_management_feedback_surface_v4 object"]
             #[doc = "for the given wl_surface."]
@@ -295,11 +286,10 @@ pub mod color_management_v1 {
             #[doc = "details."]
             async fn get_feedback_surface(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_color_manager_v4#{}.get_feedback_surface()",
                     object_id
@@ -308,10 +298,9 @@ pub mod color_management_v1 {
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 3u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Makes a new ICC-based image description creator object with all"]
             #[doc = "properties initially unset. The client can then use the object's"]
@@ -323,18 +312,16 @@ pub mod color_management_v1 {
             #[doc = "Otherwise this request raises the protocol error unsupported_feature."]
             async fn new_icc_creator(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 obj: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> xx_color_manager_v4#{}.new_icc_creator()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(obj))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 4u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Makes a new parametric image description creator object with all"]
             #[doc = "properties initially unset. The client can then use the object's"]
@@ -346,10 +333,9 @@ pub mod color_management_v1 {
             #[doc = "Otherwise this request raises the protocol error unsupported_feature."]
             async fn new_parametric_creator(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 obj: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_color_manager_v4#{}.new_parametric_creator()",
                     object_id
@@ -357,10 +343,9 @@ pub mod color_management_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(obj))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 5u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each rendering intent the compositor supports."]
@@ -393,9 +378,8 @@ pub mod color_management_v1 {
     #[doc = "global makes the xx_color_management_output_v4 object inert."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_color_management_output_v4 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the xx_color_management_output_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagementOutputV4 {
+        pub trait XxColorManagementOutputV4: crate::client::Object {
             const INTERFACE: &'static str = "xx_color_management_output_v4";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -409,17 +393,13 @@ pub mod color_management_v1 {
             }
             #[doc = "Destroy the color xx_color_management_output_v4 object. This does not"]
             #[doc = "affect any remaining protocol objects."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> xx_color_management_output_v4#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This creates a new xx_image_description_v4 object for the current image"]
             #[doc = "description of the output. There always is exactly one image description"]
@@ -454,10 +434,9 @@ pub mod color_management_v1 {
             #[doc = "Otherwise the object shall immediately deliver the ready event."]
             async fn get_image_description(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_color_management_output_v4#{}.get_image_description()",
                     object_id
@@ -465,10 +444,9 @@ pub mod color_management_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(image_description))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This event is sent whenever the image description of the output changed,"]
             #[doc = "followed by one wl_output.done event common to output events across all"]
@@ -487,7 +465,6 @@ pub mod color_management_v1 {
     #[doc = "destroyed, the xx_color_management_surface_v4 object becomes inert."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_color_management_surface_v4 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -508,7 +485,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_color_management_surface_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagementSurfaceV4 {
+        pub trait XxColorManagementSurfaceV4: crate::client::Object {
             const INTERFACE: &'static str = "xx_color_management_surface_v4";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -522,17 +499,13 @@ pub mod color_management_v1 {
             }
             #[doc = "Destroy the xx_color_management_surface_v4 object and do the same as"]
             #[doc = "unset_image_description."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> xx_color_management_surface_v4#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Set the image description of the underlying surface. The image"]
             #[doc = "description and rendering intent are double-buffered state, see"]
@@ -564,11 +537,10 @@ pub mod color_management_v1 {
             #[doc = "requirements."]
             async fn set_image_description(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
                 render_intent : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: RenderIntent,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_color_management_surface_v4#{}.set_image_description()",
                     object_id
@@ -577,29 +549,24 @@ pub mod color_management_v1 {
                     .put_object(Some(image_description))
                     .put_uint(render_intent as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This request removes any image description from the surface. See"]
             #[doc = "set_image_description for how a compositor handles a surface without"]
             #[doc = "an image description. This is double-buffered state, see"]
             #[doc = "wl_surface.commit."]
-            async fn unset_image_description(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn unset_image_description(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_color_management_surface_v4#{}.unset_image_description()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -610,7 +577,6 @@ pub mod color_management_v1 {
     #[doc = "xx_color_management_feedback_surface_v4 object becomes inert."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_color_management_feedback_surface_v4 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -628,7 +594,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_color_management_feedback_surface_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagementFeedbackSurfaceV4 {
+        pub trait XxColorManagementFeedbackSurfaceV4: crate::client::Object {
             const INTERFACE: &'static str = "xx_color_management_feedback_surface_v4";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -641,20 +607,16 @@ pub mod color_management_v1 {
                 }
             }
             #[doc = "Destroy the xx_color_management_feedback_surface_v4 object."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_color_management_feedback_surface_v4#{}.destroy()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "If this protocol object is inert, the protocol error inert is raised."]
             #[doc = ""]
@@ -685,10 +647,9 @@ pub mod color_management_v1 {
             #[doc = "otherwise the object shall immediately deliver the ready event."]
             async fn get_preferred(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_color_management_feedback_surface_v4#{}.get_preferred()",
                     object_id
@@ -696,10 +657,9 @@ pub mod color_management_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(image_description))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "The preferred image description is the one which likely has the most"]
             #[doc = "performance and/or quality benefits for the compositor if used by the"]
@@ -735,7 +695,6 @@ pub mod color_management_v1 {
     #[doc = "process."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_creator_icc_v4 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -765,7 +724,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_image_description_creator_icc_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionCreatorIccV4 {
+        pub trait XxImageDescriptionCreatorIccV4: crate::client::Object {
             const INTERFACE: &'static str = "xx_image_description_creator_icc_v4";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -798,10 +757,9 @@ pub mod color_management_v1 {
             #[doc = "request."]
             async fn create(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_image_description_creator_icc_v4#{}.create()",
                     object_id
@@ -809,10 +767,9 @@ pub mod color_management_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(image_description))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Sets the ICC profile file to be used as the basis of the image"]
             #[doc = "description."]
@@ -855,12 +812,11 @@ pub mod color_management_v1 {
             #[doc = "already_set is raised."]
             async fn set_icc_file(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 icc_profile: rustix::fd::OwnedFd,
                 offset: u32,
                 length: u32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_image_description_creator_icc_v4#{}.set_icc_file()",
                     object_id
@@ -870,10 +826,9 @@ pub mod color_management_v1 {
                     .put_uint(offset)
                     .put_uint(length)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -903,7 +858,6 @@ pub mod color_management_v1 {
     #[doc = "process."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_creator_params_v4 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -942,7 +896,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_image_description_creator_params_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionCreatorParamsV4 {
+        pub trait XxImageDescriptionCreatorParamsV4: crate::client::Object {
             const INTERFACE: &'static str = "xx_image_description_creator_params_v4";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -978,10 +932,9 @@ pub mod color_management_v1 {
             #[doc = "request."]
             async fn create(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_image_description_creator_params_v4#{}.create()",
                     object_id
@@ -989,10 +942,9 @@ pub mod color_management_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(image_description))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Sets the transfer characteristic using explicitly enumerated named"]
             #[doc = "functions."]
@@ -1008,10 +960,9 @@ pub mod color_management_v1 {
             #[doc = "protocol error already_set is raised."]
             async fn set_tf_named(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 tf : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: TransferFunction,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_image_description_creator_params_v4#{}.set_tf_named()",
                     object_id
@@ -1019,10 +970,9 @@ pub mod color_management_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tf as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Sets the color component transfer characteristic to a power curve with"]
             #[doc = "the given exponent. This curve represents the conversion from electrical"]
@@ -1043,21 +993,16 @@ pub mod color_management_v1 {
             #[doc = "This request can be used when the compositor advertises"]
             #[doc = "xx_color_manager_v4.feature.set_tf_power. Otherwise this request raises"]
             #[doc = "the protocol error unsupported_feature."]
-            async fn set_tf_power(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                eexp: u32,
-            ) -> crate::client::Result<()> {
+            async fn set_tf_power(&self, eexp: u32) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_image_description_creator_params_v4#{}.set_tf_power()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(eexp).build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Sets the color primaries and white point using explicitly named sets."]
             #[doc = "This describes the primary color volume which is the basis for color"]
@@ -1071,10 +1016,9 @@ pub mod color_management_v1 {
             #[doc = "already_set is raised."]
             async fn set_primaries_named(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 primaries : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: Primaries,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_image_description_creator_params_v4#{}.set_primaries_named()",
                     object_id
@@ -1082,10 +1026,9 @@ pub mod color_management_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(primaries as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 3u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Sets the color primaries and white point using CIE 1931 xy chromaticity"]
             #[doc = "coordinates. This describes the primary color volume which is the basis"]
@@ -1102,8 +1045,6 @@ pub mod color_management_v1 {
             #[doc = "the protocol error unsupported_feature."]
             async fn set_primaries(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 r_x: i32,
                 r_y: i32,
                 g_x: i32,
@@ -1113,6 +1054,7 @@ pub mod color_management_v1 {
                 w_x: i32,
                 w_y: i32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_image_description_creator_params_v4#{}.set_primaries()",
                     object_id
@@ -1127,10 +1069,9 @@ pub mod color_management_v1 {
                     .put_int(w_x)
                     .put_int(w_y)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 4u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Sets the primary color volume luminance range and the reference white"]
             #[doc = "luminance level."]
@@ -1175,12 +1116,11 @@ pub mod color_management_v1 {
             #[doc = "raises the protocol error unsupported_feature."]
             async fn set_luminances(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
                 reference_lum: u32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_image_description_creator_params_v4#{}.set_luminances()",
                     object_id
@@ -1190,10 +1130,9 @@ pub mod color_management_v1 {
                     .put_uint(max_lum)
                     .put_uint(reference_lum)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 5u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Provides the color primaries and white point of the mastering display"]
             #[doc = "using CIE 1931 xy chromaticity coordinates. This is compatible with the"]
@@ -1242,8 +1181,6 @@ pub mod color_management_v1 {
             #[doc = "description gracefully, but it may as well result in color artifacts."]
             async fn set_mastering_display_primaries(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 r_x: i32,
                 r_y: i32,
                 g_x: i32,
@@ -1253,6 +1190,7 @@ pub mod color_management_v1 {
                 w_x: i32,
                 w_y: i32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing :: debug ! ("-> xx_image_description_creator_params_v4#{}.set_mastering_display_primaries()" , object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(r_x)
@@ -1264,10 +1202,9 @@ pub mod color_management_v1 {
                     .put_int(w_x)
                     .put_int(w_y)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 6u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 6u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Sets the luminance range that was used during the content mastering"]
             #[doc = "process as the minimum and maximum absolute luminance L. This is"]
@@ -1282,11 +1219,10 @@ pub mod color_management_v1 {
             #[doc = "and carry precision of 4 decimals. Max L value is unscaled for max_lum."]
             async fn set_mastering_luminance(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_image_description_creator_params_v4#{}.set_mastering_luminance()",
                     object_id
@@ -1295,10 +1231,9 @@ pub mod color_management_v1 {
                     .put_uint(min_lum)
                     .put_uint(max_lum)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 7u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 7u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Sets the maximum content light level (max_cll) as defined by CTA-861-H."]
             #[doc = ""]
@@ -1308,21 +1243,16 @@ pub mod color_management_v1 {
             #[doc = "error."]
             #[doc = ""]
             #[doc = "max_cll is undefined by default."]
-            async fn set_max_cll(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                max_cll: u32,
-            ) -> crate::client::Result<()> {
+            async fn set_max_cll(&self, max_cll: u32) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_image_description_creator_params_v4#{}.set_max_cll()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(max_cll).build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 8u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 8u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Sets the maximum frame-average light level (max_fall) as defined by"]
             #[doc = "CTA-861-H."]
@@ -1332,12 +1262,8 @@ pub mod color_management_v1 {
             #[doc = "Otherwise, 'create' request shall raise inconsistent_set protocol error."]
             #[doc = ""]
             #[doc = "max_fall is undefined by default."]
-            async fn set_max_fall(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                max_fall: u32,
-            ) -> crate::client::Result<()> {
+            async fn set_max_fall(&self, max_fall: u32) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> xx_image_description_creator_params_v4#{}.set_max_fall()",
                     object_id
@@ -1345,10 +1271,9 @@ pub mod color_management_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(max_fall)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 9u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 9u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -1373,7 +1298,6 @@ pub mod color_management_v1 {
     #[doc = "description. It cannot change after creation."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_v4 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1419,7 +1343,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_image_description_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionV4 {
+        pub trait XxImageDescriptionV4: crate::client::Object {
             const INTERFACE: &'static str = "xx_image_description_v4";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -1436,17 +1360,13 @@ pub mod color_management_v1 {
             #[doc = "Destroying a xx_image_description_v4 object has no side-effects, not"]
             #[doc = "even if a xx_color_management_surface_v4.set_image_description has not"]
             #[doc = "yet been followed by a wl_surface.commit."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> xx_image_description_v4#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Creates a xx_image_description_info_v4 object which delivers the"]
             #[doc = "information that makes up the image description."]
@@ -1457,18 +1377,16 @@ pub mod color_management_v1 {
             #[doc = "error no_information is raised."]
             async fn get_information(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 information: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> xx_image_description_v4#{}.get_information()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(information))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "If creating a xx_image_description_v4 object fails for a reason that is"]
             #[doc = "not defined as a protocol error, this event is sent."]
@@ -1521,7 +1439,7 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_info_v4 {
         #[doc = "Trait to implement the xx_image_description_info_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionInfoV4 {
+        pub trait XxImageDescriptionInfoV4: crate::client::Object {
             const INTERFACE: &'static str = "xx_image_description_info_v4";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -1651,9 +1569,8 @@ pub mod color_management_v1 {
 pub mod ivi_application {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_surface {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
-        pub trait IviSurface {
+        pub trait IviSurface: crate::client::Object {
             const INTERFACE: &'static str = "ivi_surface";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -1667,17 +1584,13 @@ pub mod ivi_application {
             }
             #[doc = "This removes the link from ivi_id to wl_surface and destroys ivi_surface."]
             #[doc = "The ID, ivi_id, is free and can be used for surface_create again."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> ivi_surface#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "The configure event asks the client to resize its surface."]
             #[doc = ""]
@@ -1698,7 +1611,6 @@ pub mod ivi_application {
     #[doc = "It allows clients to associate an ivi_surface with wl_surface."]
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_application {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1719,7 +1631,7 @@ pub mod ivi_application {
             }
         }
         #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
-        pub trait IviApplication {
+        pub trait IviApplication: crate::client::Object {
             const INTERFACE: &'static str = "ivi_application";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -1754,22 +1666,20 @@ pub mod ivi_application {
             #[doc = "ivi_id which is assigned to the ivi_surface is free for reuse."]
             async fn surface_create(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 ivi_id: u32,
                 surface: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> ivi_application#{}.surface_create()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(ivi_id)
                     .put_object(Some(surface))
                     .put_object(Some(id))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -1778,7 +1688,6 @@ pub mod ivi_application {
 pub mod ivi_hmi_controller {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_hmi_controller {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1818,7 +1727,7 @@ pub mod ivi_hmi_controller {
             }
         }
         #[doc = "Trait to implement the ivi_hmi_controller interface. See the module level documentation for more info"]
-        pub trait IviHmiController {
+        pub trait IviHmiController: crate::client::Object {
             const INTERFACE: &'static str = "ivi_hmi_controller";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -1830,17 +1739,13 @@ pub mod ivi_hmi_controller {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
-            async fn ui_ready(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn ui_ready(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> ivi_hmi_controller#{}.ui_ready()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Reference protocol to control a surface by server."]
             #[doc = "To control a surface by server, it gives seat to the server"]
@@ -1853,37 +1758,30 @@ pub mod ivi_hmi_controller {
             #[doc = "by event \"workspace_end_control\"."]
             async fn workspace_control(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 serial: u32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> ivi_hmi_controller#{}.workspace_control()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(seat))
                     .put_uint(serial)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "hmi-controller loaded to ivi-shall implements 4 types of layout"]
             #[doc = "as a reference; tiling, side by side, full_screen, and random."]
-            async fn switch_mode(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                layout_mode: u32,
-            ) -> crate::client::Result<()> {
+            async fn switch_mode(&self, layout_mode: u32) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> ivi_hmi_controller#{}.switch_mode()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layout_mode)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "home screen is a reference implementation of launcher to launch"]
             #[doc = "wayland applications. The home screen has several workspaces to"]
@@ -1899,18 +1797,13 @@ pub mod ivi_hmi_controller {
             #[doc = ": path to icon image"]
             #[doc = "path=/home/user/review/build-ivi-shell/weston-dnd"]
             #[doc = ": path to wayland application"]
-            async fn home(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                home: u32,
-            ) -> crate::client::Result<()> {
+            async fn home(&self, home: u32) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> ivi_hmi_controller#{}.home()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(home).build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 3u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             async fn workspace_end_control(&self, is_controlled: i32) -> crate::client::Result<()>;
         }
@@ -1920,9 +1813,8 @@ pub mod ivi_hmi_controller {
 pub mod text_cursor_position {
     #[allow(clippy::too_many_arguments)]
     pub mod text_cursor_position {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the text_cursor_position interface. See the module level documentation for more info"]
-        pub trait TextCursorPosition {
+        pub trait TextCursorPosition: crate::client::Object {
             const INTERFACE: &'static str = "text_cursor_position";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -1936,22 +1828,20 @@ pub mod text_cursor_position {
             }
             async fn notify(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> text_cursor_position#{}.notify()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(surface))
                     .put_fixed(x)
                     .put_fixed(y)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -2008,7 +1898,6 @@ pub mod weston_content_protection {
     #[doc = "set the censored-visibility on the non-secured-outputs."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_content_protection {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2026,7 +1915,7 @@ pub mod weston_content_protection {
             }
         }
         #[doc = "Trait to implement the weston_content_protection interface. See the module level documentation for more info"]
-        pub trait WestonContentProtection {
+        pub trait WestonContentProtection: crate::client::Object {
             const INTERFACE: &'static str = "weston_content_protection";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -2041,17 +1930,13 @@ pub mod weston_content_protection {
             #[doc = "Informs the server that the client will not be using this"]
             #[doc = "protocol object anymore. This does not affect any other objects,"]
             #[doc = "protected_surface objects included."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_content_protection#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Instantiate an interface extension for the given wl_surface to"]
             #[doc = "provide surface protection. If the given wl_surface already has"]
@@ -2059,11 +1944,10 @@ pub mod weston_content_protection {
             #[doc = "error is raised."]
             async fn get_protection(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> weston_content_protection#{}.get_protection()",
                     object_id
@@ -2072,10 +1956,9 @@ pub mod weston_content_protection {
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -2117,7 +2000,6 @@ pub mod weston_content_protection {
     #[doc = "the protected_surface becomes inert."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_protected_surface {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2164,7 +2046,7 @@ pub mod weston_content_protection {
             }
         }
         #[doc = "Trait to implement the weston_protected_surface interface. See the module level documentation for more info"]
-        pub trait WestonProtectedSurface {
+        pub trait WestonProtectedSurface: crate::client::Object {
             const INTERFACE: &'static str = "weston_protected_surface";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -2179,17 +2061,13 @@ pub mod weston_content_protection {
             #[doc = "If the protected_surface is destroyed, the wl_surface desired protection"]
             #[doc = "level returns to unprotected, as if set_type request was sent with type"]
             #[doc = "as 'unprotected'."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_protected_surface#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Informs the server about the type of content. The level of"]
             #[doc = "content-protection depends upon the content-type set by the client"]
@@ -2202,36 +2080,27 @@ pub mod weston_content_protection {
             #[doc = ""]
             #[doc = "The requested content protection is double-buffered, see"]
             #[doc = "wl_surface.commit."]
-            async fn set_type(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                r#type: Type,
-            ) -> crate::client::Result<()> {
+            async fn set_type(&self, r#type: Type) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_protected_surface#{}.set_type()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(r#type as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Censor the visibility of the wl_surface contents on non-secure outputs."]
             #[doc = "See weston_protected_surface for the description."]
             #[doc = ""]
             #[doc = "The force constrain mode is double-buffered, see wl_surface.commit"]
-            async fn enforce(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn enforce(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_protected_surface#{}.enforce()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Do not enforce censored-visibility of the wl_surface contents on"]
             #[doc = "non-secure-outputs. See weston_protected_surface for the description."]
@@ -2240,17 +2109,13 @@ pub mod weston_content_protection {
             #[doc = "for enforcing the censored-visibility."]
             #[doc = ""]
             #[doc = "The relax mode is double-buffered, see wl_surface.commit"]
-            async fn relax(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn relax(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_protected_surface#{}.relax()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 3u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This event is sent to the client to inform about the actual protection"]
             #[doc = "level for its surface in the relax mode."]
@@ -2303,9 +2168,8 @@ pub mod weston_debug {
     #[doc = "printing until the client stops it. Or anything in between."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_debug_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_debug_v1 interface. See the module level documentation for more info"]
-        pub trait WestonDebugV1 {
+        pub trait WestonDebugV1: crate::client::Object {
             const INTERFACE: &'static str = "weston_debug_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -2318,17 +2182,13 @@ pub mod weston_debug {
                 }
             }
             #[doc = "Destroys the factory object, but does not affect any other objects."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_debug_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Subscribe to a named debug stream. The server will start printing"]
             #[doc = "to the given file descriptor."]
@@ -2342,22 +2202,20 @@ pub mod weston_debug {
             #[doc = "immediately respond with weston_debug_stream_v1.failure event."]
             async fn subscribe(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 name: String,
                 streamfd: rustix::fd::OwnedFd,
                 stream: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_debug_v1#{}.subscribe()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .put_fd(streamfd)
                     .put_object(Some(stream))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Advertises an available debug scope which the client may be able to"]
             #[doc = "bind to. No information is provided by the server about the content"]
@@ -2377,9 +2235,8 @@ pub mod weston_debug {
     #[doc = "event through the object."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_debug_stream_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_debug_stream_v1 interface. See the module level documentation for more info"]
-        pub trait WestonDebugStreamV1 {
+        pub trait WestonDebugStreamV1: crate::client::Object {
             const INTERFACE: &'static str = "weston_debug_stream_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -2397,17 +2254,13 @@ pub mod weston_debug {
             #[doc = ""]
             #[doc = "Use a wl_display.sync if the clients needs to guarantee the file"]
             #[doc = "descriptor is closed before continuing."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_debug_stream_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "The server has successfully finished writing to and has closed the"]
             #[doc = "associated file descriptor."]
@@ -2434,7 +2287,6 @@ pub mod weston_desktop {
     #[doc = "background, panels and locking surfaces."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_desktop_shell {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2510,7 +2362,7 @@ pub mod weston_desktop {
             }
         }
         #[doc = "Trait to implement the weston_desktop_shell interface. See the module level documentation for more info"]
-        pub trait WestonDesktopShell {
+        pub trait WestonDesktopShell: crate::client::Object {
             const INTERFACE: &'static str = "weston_desktop_shell";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -2524,64 +2376,54 @@ pub mod weston_desktop {
             }
             async fn set_background(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_desktop_shell#{}.set_background()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(output))
                     .put_object(Some(surface))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             async fn set_panel(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_desktop_shell#{}.set_panel()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(output))
                     .put_object(Some(surface))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             async fn set_lock_surface(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_desktop_shell#{}.set_lock_surface()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(surface))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
-            async fn unlock(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn unlock(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_desktop_shell#{}.unlock()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 3u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "The surface set by this request will receive a fake"]
             #[doc = "pointer.enter event during grabs at position 0, 0 and is"]
@@ -2589,18 +2431,16 @@ pub mod weston_desktop {
             #[doc = "the grab_cursor event sent just before the enter event."]
             async fn set_grab_surface(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_desktop_shell#{}.set_grab_surface()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(surface))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 4u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Tell the server, that enough desktop elements have been drawn"]
             #[doc = "to make the desktop look ready for use. During start-up, the"]
@@ -2608,35 +2448,26 @@ pub mod weston_desktop {
             #[doc = "starting to fade in the desktop, for instance. If the client"]
             #[doc = "parts of a desktop take a long time to initialize, we avoid"]
             #[doc = "showing temporary garbage."]
-            async fn desktop_ready(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn desktop_ready(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_desktop_shell#{}.desktop_ready()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 5u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Tell the shell which side of the screen the panel is"]
             #[doc = "located. This is so that new windows do not overlap the panel"]
             #[doc = "and maximized windows maximize properly."]
-            async fn set_panel_position(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                position: u32,
-            ) -> crate::client::Result<()> {
+            async fn set_panel_position(&self, position: u32) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_desktop_shell#{}.set_panel_position()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(position)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 6u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 6u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             async fn configure(
                 &self,
@@ -2659,9 +2490,8 @@ pub mod weston_desktop {
     #[doc = "Only one client can bind this interface at a time."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_screensaver {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_screensaver interface. See the module level documentation for more info"]
-        pub trait WestonScreensaver {
+        pub trait WestonScreensaver: crate::client::Object {
             const INTERFACE: &'static str = "weston_screensaver";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -2677,20 +2507,18 @@ pub mod weston_desktop {
             #[doc = "idle timeout."]
             async fn set_surface(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_screensaver#{}.set_surface()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(surface))
                     .put_object(Some(output))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -2726,9 +2554,8 @@ pub mod weston_direct_display {
     #[doc = "'zwp_linux_buffer_params_v1' be already created by 'zwp_linux_buffer_v1'."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_direct_display_v1 {
-        use futures_util::SinkExt;
         #[doc = "Trait to implement the weston_direct_display_v1 interface. See the module level documentation for more info"]
-        pub trait WestonDirectDisplayV1 {
+        pub trait WestonDirectDisplayV1: crate::client::Object {
             const INTERFACE: &'static str = "weston_direct_display_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -2750,33 +2577,24 @@ pub mod weston_direct_display {
             #[doc = ""]
             #[doc = "Assumes that 'zwp_linux_buffer_params_v1' was already created"]
             #[doc = "by 'zwp_linux_dmabuf_v1_create_params'."]
-            async fn enable(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                dmabuf: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn enable(&self, dmabuf: crate::wire::ObjectId) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_direct_display_v1#{}.enable()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(dmabuf))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Destroys the factory object, but does not affect any other objects."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_direct_display_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -2789,7 +2607,6 @@ pub mod weston_output_capture {
     #[doc = "This is a privileged inteface."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_capture_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2832,7 +2649,7 @@ pub mod weston_output_capture {
             }
         }
         #[doc = "Trait to implement the weston_capture_v1 interface. See the module level documentation for more info"]
-        pub trait WestonCaptureV1 {
+        pub trait WestonCaptureV1: crate::client::Object {
             const INTERFACE: &'static str = "weston_capture_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -2845,17 +2662,13 @@ pub mod weston_output_capture {
                 }
             }
             #[doc = "Affects no other protocol objects in any way."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_capture_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This creates a weston_capture_source_v1 object corresponding to the"]
             #[doc = "given wl_output. The object delivers information for allocating"]
@@ -2887,22 +2700,20 @@ pub mod weston_output_capture {
             #[doc = "'invalid_source' protocol error is raised."]
             async fn create(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
                 source: Source,
                 capture_source_new_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_capture_v1#{}.create()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(output))
                     .put_uint(source as u32)
                     .put_object(Some(capture_source_new_id))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
     }
@@ -2912,7 +2723,6 @@ pub mod weston_output_capture {
     #[doc = "the output."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_capture_source_v1 {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2933,7 +2743,7 @@ pub mod weston_output_capture {
             }
         }
         #[doc = "Trait to implement the weston_capture_source_v1 interface. See the module level documentation for more info"]
-        pub trait WestonCaptureSourceV1 {
+        pub trait WestonCaptureSourceV1: crate::client::Object {
             const INTERFACE: &'static str = "weston_capture_source_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -2949,17 +2759,13 @@ pub mod weston_output_capture {
             #[doc = "make the image buffer contents undefined."]
             #[doc = ""]
             #[doc = "This object is destroyed."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_capture_source_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "If the given wl_buffer is compatible, the associated output will go"]
             #[doc = "through a repaint some time after this request has been processed,"]
@@ -2988,20 +2794,15 @@ pub mod weston_output_capture {
             #[doc = ""]
             #[doc = "A compositor is required to implement capture into wl_shm buffers."]
             #[doc = "Other buffer types may or may not be supported."]
-            async fn capture(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                buffer: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn capture(&self, buffer: crate::wire::ObjectId) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_capture_source_v1#{}.capture()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(buffer))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This event delivers the pixel format that should be used for the"]
             #[doc = "image buffer. Any buffer is incompatible if it does not have"]
@@ -3056,7 +2857,6 @@ pub mod weston_test {
     #[doc = "These requests may allow clients to do very bad things."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_test {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3090,7 +2890,7 @@ pub mod weston_test {
             }
         }
         #[doc = "Trait to implement the weston_test interface. See the module level documentation for more info"]
-        pub trait WestonTest {
+        pub trait WestonTest: crate::client::Object {
             const INTERFACE: &'static str = "weston_test";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -3104,33 +2904,30 @@ pub mod weston_test {
             }
             async fn move_surface(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_test#{}.move_surface()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(surface))
                     .put_int(x)
                     .put_int(y)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             async fn move_pointer(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
                 x: i32,
                 y: i32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_test#{}.move_pointer()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
@@ -3139,21 +2936,19 @@ pub mod weston_test {
                     .put_int(x)
                     .put_int(y)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             async fn send_button(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
                 button: i32,
                 state: u32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_test#{}.send_button()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
@@ -3162,21 +2957,19 @@ pub mod weston_test {
                     .put_int(button)
                     .put_uint(state)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             async fn send_axis(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
                 axis: u32,
                 value: crate::wire::Fixed,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_test#{}.send_axis()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
@@ -3185,36 +2978,32 @@ pub mod weston_test {
                     .put_uint(axis)
                     .put_fixed(value)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 3u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             async fn activate_surface(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 surface: Option<crate::wire::ObjectId>,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_test#{}.activate_surface()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(surface)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 4u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             async fn send_key(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
                 key: u32,
                 state: u32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_test#{}.send_key()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
@@ -3223,45 +3012,32 @@ pub mod weston_test {
                     .put_uint(key)
                     .put_uint(state)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 5u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
-            async fn device_release(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                device: String,
-            ) -> crate::client::Result<()> {
+            async fn device_release(&self, device: String) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_test#{}.device_release()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(device))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 6u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 6u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
-            async fn device_add(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                device: String,
-            ) -> crate::client::Result<()> {
+            async fn device_add(&self, device: String) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_test#{}.device_add()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(device))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 7u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 7u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             async fn send_touch(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
@@ -3270,6 +3046,7 @@ pub mod weston_test {
                 y: crate::wire::Fixed,
                 touch_type: u32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_test#{}.send_touch()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
@@ -3280,30 +3057,27 @@ pub mod weston_test {
                     .put_fixed(y)
                     .put_uint(touch_type)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 8u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 8u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "Request that the compositor pauses execution at a certain point. When"]
             #[doc = "execution is paused, the compositor will signal the shared semaphore"]
             #[doc = "to the client."]
             async fn client_break(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 breakpoint: Breakpoint,
                 resource_id: u32,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_test#{}.client_break()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(breakpoint as u32)
                     .put_uint(resource_id)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 9u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 9u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             async fn pointer_position(
                 &self,
@@ -3331,7 +3105,6 @@ pub mod weston_test {
     #[doc = "Unknown test name will raise \"unknown_test\" protocol error."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_test_runner {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3352,7 +3125,7 @@ pub mod weston_test {
             }
         }
         #[doc = "Trait to implement the weston_test_runner interface. See the module level documentation for more info"]
-        pub trait WestonTestRunner {
+        pub trait WestonTestRunner: crate::client::Object {
             const INTERFACE: &'static str = "weston_test_runner";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -3364,32 +3137,23 @@ pub mod weston_test {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_test_runner#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
-            async fn run(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                test_name: String,
-            ) -> crate::client::Result<()> {
+            async fn run(&self, test_name: String) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_test_runner#{}.run()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(test_name))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             async fn finished(&self) -> crate::client::Result<()>;
         }
@@ -3426,7 +3190,6 @@ pub mod weston_touch_calibration {
     #[doc = "may write it into persistent storage."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_touch_calibration {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3450,7 +3213,7 @@ pub mod weston_touch_calibration {
             }
         }
         #[doc = "Trait to implement the weston_touch_calibration interface. See the module level documentation for more info"]
-        pub trait WestonTouchCalibration {
+        pub trait WestonTouchCalibration: crate::client::Object {
             const INTERFACE: &'static str = "weston_touch_calibration";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -3464,17 +3227,13 @@ pub mod weston_touch_calibration {
             }
             #[doc = "Destroy the binding to the global interface, does not affect any"]
             #[doc = "objects already created through this interface."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_touch_calibration#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This gives the calibrator role to the surface and ties it with the"]
             #[doc = "given touch input device."]
@@ -3489,12 +3248,11 @@ pub mod weston_touch_calibration {
             #[doc = "compositor-wide and not specific to any particular client."]
             async fn create_calibrator(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 device: String,
                 cal: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!(
                     "-> weston_touch_calibration#{}.create_calibrator()",
                     object_id
@@ -3504,10 +3262,9 @@ pub mod weston_touch_calibration {
                     .put_string(Some(device))
                     .put_object(Some(cal))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This request asks the compositor to save the calibration data for the"]
             #[doc = "given touch input device. The compositor may ignore this request."]
@@ -3526,22 +3283,16 @@ pub mod weston_touch_calibration {
             #[doc = "the array must contain the values { a, b, c, d, e, f }. For the"]
             #[doc = "definition of the coordinate spaces, see"]
             #[doc = "libinput_device_config_calibration_set_matrix()."]
-            async fn save(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                device: String,
-                matrix: Vec<u8>,
-            ) -> crate::client::Result<()> {
+            async fn save(&self, device: String, matrix: Vec<u8>) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_touch_calibration#{}.save()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(device))
                     .put_array(matrix)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "When a client binds to weston_touch_calibration, one touch_device event"]
             #[doc = "is sent for each touchscreen that is available to be calibrated. This"]
@@ -3588,7 +3339,6 @@ pub mod weston_touch_calibration {
     #[doc = "fall into that range."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_touch_calibrator {
-        use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3612,7 +3362,7 @@ pub mod weston_touch_calibration {
             }
         }
         #[doc = "Trait to implement the weston_touch_calibrator interface. See the module level documentation for more info"]
-        pub trait WestonTouchCalibrator {
+        pub trait WestonTouchCalibrator: crate::client::Object {
             const INTERFACE: &'static str = "weston_touch_calibrator";
             const VERSION: u32 = 1u32;
             async fn handle_event(
@@ -3627,17 +3377,13 @@ pub mod weston_touch_calibration {
             #[doc = "This unmaps the surface if it was mapped. The input device grab"]
             #[doc = "is dropped, if it was present. The surface loses its role as a"]
             #[doc = "calibrator."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
+            async fn destroy(&self) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_touch_calibrator#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This request asks the compositor to convert the surface-local"]
             #[doc = "coordinates into the expected touch input coordinates appropriate for"]
@@ -3658,22 +3404,20 @@ pub mod weston_touch_calibration {
             #[doc = "bad_coordinates error is raised."]
             async fn convert(
                 &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
                 reply: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
+                let object_id = self.id();
                 tracing::debug!("-> weston_touch_calibrator#{}.convert()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
                     .put_int(y)
                     .put_object(Some(reply))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                self.connection()
+                    .send_message(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
-                    .map_err(crate::client::Error::IoError)
             }
             #[doc = "This event tells the client what size to make the surface. The client"]
             #[doc = "must obey the size exactly on the next commit with a wl_buffer."]
@@ -3738,7 +3482,7 @@ pub mod weston_touch_calibration {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_touch_coordinate {
         #[doc = "Trait to implement the weston_touch_coordinate interface. See the module level documentation for more info"]
-        pub trait WestonTouchCoordinate {
+        pub trait WestonTouchCoordinate: crate::client::Object {
             const INTERFACE: &'static str = "weston_touch_coordinate";
             const VERSION: u32 = 1u32;
             async fn handle_event(
