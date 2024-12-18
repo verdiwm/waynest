@@ -892,6 +892,39 @@ pub mod drm_lease_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The compositor will send this event when the wp_drm_lease_device_v1"]
+            #[doc = "global is bound, although there are no guarantees as to how long this"]
+            #[doc = "takes - the compositor might need to wait until regaining DRM master."]
+            #[doc = "The included fd is a non-master DRM file descriptor opened for this"]
+            #[doc = "device and the compositor must not authenticate it."]
+            #[doc = "The purpose of this event is to give the client the ability to"]
+            #[doc = "query DRM and discover information which may help them pick the"]
+            #[doc = "appropriate DRM device or select the appropriate connectors therein."]
+            async fn drm_fd(&self, fd: rustix::fd::OwnedFd) -> crate::client::Result<()>;
+            #[doc = "The compositor will use this event to advertise connectors available for"]
+            #[doc = "lease by clients. This object may be passed into a lease request to"]
+            #[doc = "indicate the client would like to lease that connector, see"]
+            #[doc = "wp_drm_lease_request_v1.request_connector for details. While the"]
+            #[doc = "compositor will make a best effort to not send disconnected connectors,"]
+            #[doc = "no guarantees can be made."]
+            #[doc = ""]
+            #[doc = "The compositor must send the drm_fd event before sending connectors."]
+            #[doc = "After the drm_fd event it will send all available connectors but may"]
+            #[doc = "send additional connectors at any time."]
+            async fn connector(&self, id: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "The compositor will send this event to indicate that it has sent all"]
+            #[doc = "currently available connectors after the client binds to the global or"]
+            #[doc = "when it updates the connector list, for example on hotplug, drm master"]
+            #[doc = "change or when a leased connector becomes available again. It will"]
+            #[doc = "similarly send this event to group wp_drm_lease_connector_v1.withdrawn"]
+            #[doc = "events of connectors of this device."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "This event is sent in response to the release request and indicates"]
+            #[doc = "that the compositor is done sending connector events."]
+            #[doc = "The compositor will destroy this object immediately after sending the"]
+            #[doc = "event and it will become invalid. The client should release any"]
+            #[doc = "resources associated with this device after receiving this event."]
+            async fn released(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "Represents a DRM connector which is available for lease. These objects are"]
@@ -934,6 +967,41 @@ pub mod drm_lease_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The compositor sends this event once the connector is created to"]
+            #[doc = "indicate the name of this connector. This will not change for the"]
+            #[doc = "duration of the Wayland session, but is not guaranteed to be consistent"]
+            #[doc = "between sessions."]
+            #[doc = ""]
+            #[doc = "If the compositor supports wl_output version 4 and this connector"]
+            #[doc = "corresponds to a wl_output, the compositor should use the same name as"]
+            #[doc = "for the wl_output."]
+            async fn name(&self, name: String) -> crate::client::Result<()>;
+            #[doc = "The compositor sends this event once the connector is created to provide"]
+            #[doc = "a human-readable description for this connector, which may be presented"]
+            #[doc = "to the user. The compositor may send this event multiple times over the"]
+            #[doc = "lifetime of this object to reflect changes in the description."]
+            async fn description(&self, description: String) -> crate::client::Result<()>;
+            #[doc = "The compositor sends this event once the connector is created to"]
+            #[doc = "indicate the DRM object ID which represents the underlying connector"]
+            #[doc = "that is being offered. Note that the final lease may include additional"]
+            #[doc = "object IDs, such as CRTCs and planes."]
+            async fn connector_id(&self, connector_id: u32) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all properties of a connector have been sent."]
+            #[doc = "This allows changes to the properties to be seen as atomic even if they"]
+            #[doc = "happen via multiple events."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "Sent to indicate that the compositor will no longer honor requests for"]
+            #[doc = "DRM leases which include this connector. The client may still issue a"]
+            #[doc = "lease request including this connector, but the compositor will send"]
+            #[doc = "wp_drm_lease_v1.finished without issuing a lease fd. Compositors are"]
+            #[doc = "encouraged to send this event when they lose access to connector, for"]
+            #[doc = "example when the connector is hot-unplugged, when the connector gets"]
+            #[doc = "leased to a client or when the compositor loses DRM master."]
+            #[doc = ""]
+            #[doc = "If a client holds a lease for the connector, the status of the lease"]
+            #[doc = "remains the same. The client should destroy the object after receiving"]
+            #[doc = "this event."]
+            async fn withdrawn(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "A client that wishes to lease DRM resources will attach the list of"]
@@ -1073,6 +1141,28 @@ pub mod drm_lease_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event returns a file descriptor suitable for use with DRM-related"]
+            #[doc = "ioctls. The client should use drmModeGetLease to enumerate the DRM"]
+            #[doc = "objects which have been leased to them. The compositor guarantees it"]
+            #[doc = "will not use the leased DRM objects itself until it sends the finished"]
+            #[doc = "event. If the compositor cannot or will not grant a lease for the"]
+            #[doc = "requested connectors, it will not send this event, instead sending the"]
+            #[doc = "finished event."]
+            #[doc = ""]
+            #[doc = "The compositor will send this event at most once during this objects"]
+            #[doc = "lifetime."]
+            async fn lease_fd(&self, leased_fd: rustix::fd::OwnedFd) -> crate::client::Result<()>;
+            #[doc = "The compositor uses this event to either reject a lease request, or if"]
+            #[doc = "it previously sent a lease_fd, to notify the client that the lease has"]
+            #[doc = "been revoked. If the client requires a new lease, they should destroy"]
+            #[doc = "this object and submit a new lease request. The compositor will send"]
+            #[doc = "no further events for this object after sending the finish event."]
+            #[doc = "Compositors should revoke the lease when any of the leased resources"]
+            #[doc = "become unavailable, namely when a hot-unplug occurs or when the"]
+            #[doc = "compositor loses DRM master. Compositors may advertise the connector"]
+            #[doc = "for leasing again, if the resource is available, by sending the"]
+            #[doc = "connector event through the wp_drm_lease_device_v1 interface."]
+            async fn finished(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -1168,6 +1258,21 @@ pub mod ext_foreign_toplevel_list_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is emitted whenever a new toplevel window is created. It is"]
+            #[doc = "emitted for all toplevels, regardless of the app that has created them."]
+            #[doc = ""]
+            #[doc = "All initial properties of the toplevel (identifier, title, app_id) will be sent"]
+            #[doc = "immediately after this event using the corresponding events for"]
+            #[doc = "ext_foreign_toplevel_handle_v1. The compositor will use the"]
+            #[doc = "ext_foreign_toplevel_handle_v1.done event to indicate when all data has"]
+            #[doc = "been sent."]
+            async fn toplevel(&self, toplevel: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the compositor is done sending events"]
+            #[doc = "to this object. The client should destroy the object."]
+            #[doc = "See ext_foreign_toplevel_list_v1.destroy for more information."]
+            #[doc = ""]
+            #[doc = "The compositor must not send any more toplevel events after this event."]
+            async fn finished(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "A ext_foreign_toplevel_handle_v1 object represents a mapped toplevel"]
@@ -1213,6 +1318,55 @@ pub mod ext_foreign_toplevel_list_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The server will emit no further events on the ext_foreign_toplevel_handle_v1"]
+            #[doc = "after this event. Any requests received aside from the destroy request must"]
+            #[doc = "be ignored. Upon receiving this event, the client should destroy the handle."]
+            #[doc = ""]
+            #[doc = "Other protocols which extend the ext_foreign_toplevel_handle_v1"]
+            #[doc = "interface must also ignore requests other than destructors."]
+            async fn closed(&self) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all changes in the toplevel state have"]
+            #[doc = "been sent."]
+            #[doc = ""]
+            #[doc = "This allows changes to the ext_foreign_toplevel_handle_v1 properties"]
+            #[doc = "to be atomically applied. Other protocols which extend the"]
+            #[doc = "ext_foreign_toplevel_handle_v1 interface may use this event to also"]
+            #[doc = "atomically apply any pending state."]
+            #[doc = ""]
+            #[doc = "This event must not be sent after the ext_foreign_toplevel_handle_v1.closed"]
+            #[doc = "event."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "The title of the toplevel has changed."]
+            #[doc = ""]
+            #[doc = "The configured state must not be applied immediately. See"]
+            #[doc = "ext_foreign_toplevel_handle_v1.done for details."]
+            async fn title(&self, title: String) -> crate::client::Result<()>;
+            #[doc = "The app id of the toplevel has changed."]
+            #[doc = ""]
+            #[doc = "The configured state must not be applied immediately. See"]
+            #[doc = "ext_foreign_toplevel_handle_v1.done for details."]
+            async fn app_id(&self, app_id: String) -> crate::client::Result<()>;
+            #[doc = "This identifier is used to check if two or more toplevel handles belong"]
+            #[doc = "to the same toplevel."]
+            #[doc = ""]
+            #[doc = "The identifier is useful for command line tools or privileged clients"]
+            #[doc = "which may need to reference an exact toplevel across processes or"]
+            #[doc = "instances of the ext_foreign_toplevel_list_v1 global."]
+            #[doc = ""]
+            #[doc = "The compositor must only send this event when the handle is created."]
+            #[doc = ""]
+            #[doc = "The identifier must be unique per toplevel and it's handles. Two different"]
+            #[doc = "toplevels must not have the same identifier. The identifier is only valid"]
+            #[doc = "as long as the toplevel is mapped. If the toplevel is unmapped the identifier"]
+            #[doc = "must not be reused. An identifier must not be reused by the compositor to"]
+            #[doc = "ensure there are no races when sharing identifiers between processes."]
+            #[doc = ""]
+            #[doc = "An identifier is a string that contains up to 32 printable ASCII bytes."]
+            #[doc = "An identifier must not be an empty string. It is recommended that a"]
+            #[doc = "compositor includes an opaque generation value in identifiers. How the"]
+            #[doc = "generation value is used when generating the identifier is implementation"]
+            #[doc = "dependent."]
+            async fn identifier(&self, identifier: String) -> crate::client::Result<()>;
         }
     }
 }
@@ -1327,6 +1481,17 @@ pub mod ext_idle_notify_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is sent when the notification object becomes idle."]
+            #[doc = ""]
+            #[doc = "It's a compositor protocol error to send this event twice without a"]
+            #[doc = "resumed event in-between."]
+            async fn idled(&self) -> crate::client::Result<()>;
+            #[doc = "This event is sent when the notification object stops being idle."]
+            #[doc = ""]
+            #[doc = "It's a compositor protocol error to send this event twice without an"]
+            #[doc = "idled event in-between. It's a compositor protocol error to send this"]
+            #[doc = "event prior to any idled event."]
+            async fn resumed(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -1720,6 +1885,52 @@ pub mod ext_image_copy_capture_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Provides the dimensions of the source image in buffer pixel coordinates."]
+            #[doc = ""]
+            #[doc = "The client must attach buffers that match this size."]
+            async fn buffer_size(&self, width: u32, height: u32) -> crate::client::Result<()>;
+            #[doc = "Provides the format that must be used for shared-memory buffers."]
+            #[doc = ""]
+            #[doc = "This event may be emitted multiple times, in which case the client may"]
+            #[doc = "choose any given format."]
+            async fn shm_format(
+                &self,
+                format: super::super::super::core::wayland::wl_shm::Format,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event advertises the device buffers must be allocated on for"]
+            #[doc = "dma-buf buffers."]
+            #[doc = ""]
+            #[doc = "In general the device is a DRM node. The DRM node type (primary vs."]
+            #[doc = "render) is unspecified. Clients must not rely on the compositor sending"]
+            #[doc = "a particular node type. Clients cannot check two devices for equality"]
+            #[doc = "by comparing the dev_t value."]
+            async fn dmabuf_device(&self, device: Vec<u8>) -> crate::client::Result<()>;
+            #[doc = "Provides the format that must be used for dma-buf buffers."]
+            #[doc = ""]
+            #[doc = "The client may choose any of the modifiers advertised in the array of"]
+            #[doc = "64-bit unsigned integers."]
+            #[doc = ""]
+            #[doc = "This event may be emitted multiple times, in which case the client may"]
+            #[doc = "choose any given format."]
+            async fn dmabuf_format(
+                &self,
+                format: u32,
+                modifiers: Vec<u8>,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent once when all buffer constraint events have been"]
+            #[doc = "sent."]
+            #[doc = ""]
+            #[doc = "The compositor must always end a batch of buffer constraint events with"]
+            #[doc = "this event, regardless of whether it sends the initial constraints or"]
+            #[doc = "an update."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the capture session has stopped and is no"]
+            #[doc = "longer available. This can happen in a number of cases, e.g. when the"]
+            #[doc = "underlying source is destroyed, if the user decides to end the image"]
+            #[doc = "capture, or if an unrecoverable runtime error has occurred."]
+            #[doc = ""]
+            #[doc = "The client should destroy the session after receiving this event."]
+            async fn stopped(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "This object represents an image capture frame."]
@@ -1895,6 +2106,53 @@ pub mod ext_image_copy_capture_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is sent before the ready event and holds the transform that"]
+            #[doc = "the compositor has applied to the buffer contents."]
+            async fn transform(
+                &self,
+                transform: super::super::super::core::wayland::wl_output::Transform,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent before the ready event. It may be generated multiple"]
+            #[doc = "times to describe a region."]
+            #[doc = ""]
+            #[doc = "The first captured frame in a session will always carry full damage."]
+            #[doc = "Subsequent frames' damaged regions describe which parts of the buffer"]
+            #[doc = "have changed since the last ready event."]
+            #[doc = ""]
+            #[doc = "These coordinates originate in the upper left corner of the buffer."]
+            async fn damage(
+                &self,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event indicates the time at which the frame is presented to the"]
+            #[doc = "output in system monotonic time. This event is sent before the ready"]
+            #[doc = "event."]
+            #[doc = ""]
+            #[doc = "The timestamp is expressed as tv_sec_hi, tv_sec_lo, tv_nsec triples,"]
+            #[doc = "each component being an unsigned 32-bit value. Whole seconds are in"]
+            #[doc = "tv_sec which is a 64-bit value combined from tv_sec_hi and tv_sec_lo,"]
+            #[doc = "and the additional fractional part in tv_nsec as nanoseconds. Hence,"]
+            #[doc = "for valid timestamps tv_nsec must be in [0, 999999999]."]
+            async fn presentation_time(
+                &self,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Called as soon as the frame is copied, indicating it is available"]
+            #[doc = "for reading."]
+            #[doc = ""]
+            #[doc = "The buffer may be re-used by the client after this event."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client must destroy the object."]
+            async fn ready(&self) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the attempted frame copy has failed."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client must destroy the object."]
+            async fn failed(&self, reason: FailureReason) -> crate::client::Result<()>;
         }
     }
     #[doc = "This object represents a cursor capture session. It extends the base"]
@@ -1976,6 +2234,37 @@ pub mod ext_image_copy_capture_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Sent when a cursor enters the captured area. It shall be generated"]
+            #[doc = "before the \"position\" and \"hotspot\" events when and only when a cursor"]
+            #[doc = "enters the area."]
+            #[doc = ""]
+            #[doc = "The cursor enters the captured area when the cursor image intersects"]
+            #[doc = "with the captured area. Note, this is different from e.g."]
+            #[doc = "wl_pointer.enter."]
+            async fn enter(&self) -> crate::client::Result<()>;
+            #[doc = "Sent when a cursor leaves the captured area. No \"position\" or \"hotspot\""]
+            #[doc = "event is generated for the cursor until the cursor enters the captured"]
+            #[doc = "area again."]
+            async fn leave(&self) -> crate::client::Result<()>;
+            #[doc = "Cursors outside the image capture source do not get captured and no"]
+            #[doc = "event will be generated for them."]
+            #[doc = ""]
+            #[doc = "The given position is the position of the cursor's hotspot and it is"]
+            #[doc = "relative to the main buffer's top left corner in transformed buffer"]
+            #[doc = "pixel coordinates. The coordinates may be negative or greater than the"]
+            #[doc = "main buffer size."]
+            async fn position(&self, x: i32, y: i32) -> crate::client::Result<()>;
+            #[doc = "The hotspot describes the offset between the cursor image and the"]
+            #[doc = "position of the input device."]
+            #[doc = ""]
+            #[doc = "The given coordinates are the hotspot's offset from the origin in"]
+            #[doc = "buffer coordinates."]
+            #[doc = ""]
+            #[doc = "Clients should not apply the hotspot immediately: the hotspot becomes"]
+            #[doc = "effective when the next ext_image_copy_capture_frame_v1.ready event is received."]
+            #[doc = ""]
+            #[doc = "Compositors may delay this event until the client captures a new frame."]
+            async fn hotspot(&self, x: i32, y: i32) -> crate::client::Result<()>;
         }
     }
 }
@@ -2232,6 +2521,39 @@ pub mod ext_session_lock_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This client is now responsible for displaying graphics while the"]
+            #[doc = "session is locked and deciding when to unlock the session."]
+            #[doc = ""]
+            #[doc = "The locked event must not be sent until a new \"locked\" frame has been"]
+            #[doc = "presented on all outputs and no security sensitive normal/unlocked"]
+            #[doc = "content is possibly visible."]
+            #[doc = ""]
+            #[doc = "If this event is sent, making the destroy request is a protocol error,"]
+            #[doc = "the lock object must be destroyed using the unlock_and_destroy request."]
+            async fn locked(&self) -> crate::client::Result<()>;
+            #[doc = "The compositor has decided that the session lock should be destroyed"]
+            #[doc = "as it will no longer be used by the compositor. Exactly when this"]
+            #[doc = "event is sent is compositor policy, but it must never be sent more"]
+            #[doc = "than once for a given session lock object."]
+            #[doc = ""]
+            #[doc = "This might be sent because there is already another ext_session_lock_v1"]
+            #[doc = "object held by a client, or the compositor has decided to deny the"]
+            #[doc = "request to lock the session for some other reason. This might also"]
+            #[doc = "be sent because the compositor implements some alternative, secure"]
+            #[doc = "way to authenticate and unlock the session."]
+            #[doc = ""]
+            #[doc = "The finished event should be sent immediately on creation of this"]
+            #[doc = "object if the compositor decides that the locked event will not"]
+            #[doc = "be sent."]
+            #[doc = ""]
+            #[doc = "If the locked event is sent on creation of this object the finished"]
+            #[doc = "event may still be sent at some later time in this object's"]
+            #[doc = "lifetime. This is compositor policy."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should make either the destroy"]
+            #[doc = "request or the unlock_and_destroy request, depending on whether or"]
+            #[doc = "not the locked event was received on this object."]
+            async fn finished(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "The client may use lock surfaces to display a screensaver, render a"]
@@ -2351,6 +2673,18 @@ pub mod ext_session_lock_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is sent once on binding the interface and may be sent again"]
+            #[doc = "at the compositor's discretion, for example if output geometry changes."]
+            #[doc = ""]
+            #[doc = "The width and height are in surface-local coordinates and are exact"]
+            #[doc = "requirements. Failing to match these surface dimensions in the next"]
+            #[doc = "commit after acking a configure is a protocol error."]
+            async fn configure(
+                &self,
+                serial: u32,
+                width: u32,
+                height: u32,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -2461,6 +2795,21 @@ pub mod ext_transient_seat_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event advertises the global name for the wl_seat to be used with"]
+            #[doc = "wl_registry_bind."]
+            #[doc = ""]
+            #[doc = "It is sent exactly once, immediately after the transient seat is created"]
+            #[doc = "and the new \"wl_seat\" global is advertised, if and only if the creation"]
+            #[doc = "of the transient seat was allowed."]
+            async fn ready(&self, global_name: u32) -> crate::client::Result<()>;
+            #[doc = "The event informs the client that the compositor denied its request to"]
+            #[doc = "create a transient seat."]
+            #[doc = ""]
+            #[doc = "It is sent exactly once, immediately after the transient seat object is"]
+            #[doc = "created, if and only if the creation of the transient seat was denied."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client should destroy the object."]
+            async fn denied(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -2793,6 +3142,11 @@ pub mod fractional_scale_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Notification of a new preferred scale for this surface that the"]
+            #[doc = "compositor suggests that the client should use."]
+            #[doc = ""]
+            #[doc = "The sent scale is the numerator of a fraction with a denominator of 120."]
+            async fn preferred_scale(&self, scale: u32) -> crate::client::Result<()>;
         }
     }
 }
@@ -3966,6 +4320,9 @@ pub mod xdg_activation_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The 'done' event contains the unique token of this activation request"]
+            #[doc = "and notifies that the provider is done."]
+            async fn done(&self, token: String) -> crate::client::Result<()>;
         }
     }
 }
@@ -4504,6 +4861,21 @@ pub mod xdg_toplevel_icon_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event indicates an icon size the compositor prefers to be"]
+            #[doc = "available if the client has scalable icons and can render to any size."]
+            #[doc = ""]
+            #[doc = "When the 'xdg_toplevel_icon_manager_v1' object is created, the"]
+            #[doc = "compositor may send one or more 'icon_size' events to describe the list"]
+            #[doc = "of preferred icon sizes. If the compositor has no size preference, it"]
+            #[doc = "may not send any 'icon_size' event, and it is up to the client to"]
+            #[doc = "decide a suitable icon size."]
+            #[doc = ""]
+            #[doc = "A sequence of 'icon_size' events must be finished with a 'done' event."]
+            #[doc = "If the compositor has no size preferences, it must still send the"]
+            #[doc = "'done' event, without any preceding 'icon_size' events."]
+            async fn icon_size(&self, size: i32) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all 'icon_size' events have been sent."]
+            async fn done(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "This interface defines a toplevel icon."]

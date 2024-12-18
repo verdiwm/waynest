@@ -44,7 +44,7 @@ impl Listener {
     pub fn new_with_path<P: AsRef<Path>>(path: P) -> Result<Self, Error> {
         if !path.as_ref().exists() {
             // FIXME: add a proper error
-            return Err(Error::Internal);
+            // return Err(Error::Internal);
         }
 
         // FIXME: actually implement this

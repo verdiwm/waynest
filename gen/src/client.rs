@@ -29,6 +29,7 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
             let enums = write_enums(&interface);
 
             let requests = write_requests(pairs, pair, interface);
+            let events = write_events(pairs, pair, interface);
 
             let imports = if requests.is_empty() {
                 quote! {}
@@ -61,7 +62,7 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                         }
 
                         #(#requests)*
-                        // #(#events)*
+                        #(#events)*
                     }
                 }
             })
@@ -175,6 +176,39 @@ fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Tok
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+        });
+    }
+
+    requests
+}
+
+fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<TokenStream> {
+    let mut requests = Vec::new();
+
+    for request in &interface.events {
+        let docs = description_to_docs(request.description.as_ref());
+        let name = make_ident(request.name.to_snek_case());
+        let mut args = vec![
+            quote! {&self },
+            // quote! {object: &crate::server::Object},
+            // quote! {client: &mut crate::server::Client},
+        ];
+
+        for arg in &request.args {
+            let mut ty = arg.to_rust_type_token(arg.find_protocol(pairs).as_ref().unwrap_or(pair));
+
+            if arg.allow_null {
+                ty = quote! {Option<#ty>};
+            }
+
+            let name = make_ident(arg.name.to_snek_case());
+
+            args.push(quote! {#name: #ty})
+        }
+
+        requests.push(quote! {
+            #(#docs)*
+            async fn #name(#(#args),*) -> crate::client::Result<()>;
         });
     }
 

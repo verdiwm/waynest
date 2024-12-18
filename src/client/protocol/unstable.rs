@@ -263,6 +263,15 @@ pub mod fullscreen_shell_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Advertises a single capability of the compositor."]
+            #[doc = ""]
+            #[doc = "When the wl_fullscreen_shell interface is bound, this event is emitted"]
+            #[doc = "once for each capability advertised.  Valid capabilities are given by"]
+            #[doc = "the wl_fullscreen_shell.capability enum.  If clients want to take"]
+            #[doc = "advantage of any of these capabilities, they should use a"]
+            #[doc = "wl_display.sync request immediately after binding to ensure that they"]
+            #[doc = "receive all the capability events."]
+            async fn capability(&self, capability: Capability) -> crate::client::Result<()>;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -280,6 +289,27 @@ pub mod fullscreen_shell_unstable_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = "This event indicates that the attempted mode switch operation was"]
+            #[doc = "successful.  A surface of the size requested in the mode switch"]
+            #[doc = "will fill the output without scaling."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy the"]
+            #[doc = "wl_fullscreen_shell_mode_feedback object."]
+            async fn mode_successful(&self) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the attempted mode switch operation"]
+            #[doc = "failed.  This may be because the requested output mode is not"]
+            #[doc = "possible or it may mean that the compositor does not want to allow it."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy the"]
+            #[doc = "wl_fullscreen_shell_mode_feedback object."]
+            async fn mode_failed(&self) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the attempted mode switch operation was"]
+            #[doc = "cancelled.  Most likely this is because the client requested a"]
+            #[doc = "second mode switch before the first one completed."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy the"]
+            #[doc = "wl_fullscreen_shell_mode_feedback object."]
+            async fn present_cancelled(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -764,6 +794,22 @@ pub mod input_method_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The plain surrounding text around the input position. Cursor is the"]
+            #[doc = "position in bytes within the surrounding text relative to the beginning"]
+            #[doc = "of the text. Anchor is the position in bytes of the selection anchor"]
+            #[doc = "within the surrounding text relative to the beginning of the text. If"]
+            #[doc = "there is no selected text then anchor is the same as cursor."]
+            async fn surrounding_text(
+                &self,
+                text: String,
+                cursor: u32,
+                anchor: u32,
+            ) -> crate::client::Result<()>;
+            async fn reset(&self) -> crate::client::Result<()>;
+            async fn content_type(&self, hint: u32, purpose: u32) -> crate::client::Result<()>;
+            async fn invoke_action(&self, button: u32, index: u32) -> crate::client::Result<()>;
+            async fn commit_state(&self, serial: u32) -> crate::client::Result<()>;
+            async fn preferred_language(&self, language: String) -> crate::client::Result<()>;
         }
     }
     #[doc = "An input method object is responsible for composing text in response to"]
@@ -785,6 +831,14 @@ pub mod input_method_unstable_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = "A text input was activated. Creates an input method context object"]
+            #[doc = "which allows communication with the text input."]
+            async fn activate(&self, id: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "The text input corresponding to the context argument was deactivated."]
+            #[doc = "The input method context should be destroyed after deactivation is"]
+            #[doc = "handled."]
+            async fn deactivate(&self, context: crate::wire::ObjectId)
+                -> crate::client::Result<()>;
         }
     }
     #[doc = "Only one client can bind this interface at a time."]
@@ -1065,6 +1119,26 @@ pub mod input_timestamps_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The timestamp event is associated with the first subsequent input event"]
+            #[doc = "carrying a timestamp which belongs to the set of input events this"]
+            #[doc = "object is subscribed to."]
+            #[doc = ""]
+            #[doc = "The timestamp provided by this event is a high-resolution version of"]
+            #[doc = "the timestamp argument of the associated input event. The provided"]
+            #[doc = "timestamp is in the same clock domain and is at least as accurate as"]
+            #[doc = "the associated input event timestamp."]
+            #[doc = ""]
+            #[doc = "The timestamp is expressed as tv_sec_hi, tv_sec_lo, tv_nsec triples,"]
+            #[doc = "each component being an unsigned 32-bit value. Whole seconds are in"]
+            #[doc = "tv_sec which is a 64-bit value combined from tv_sec_hi and tv_sec_lo,"]
+            #[doc = "and the additional fractional part in tv_nsec as nanoseconds. Hence,"]
+            #[doc = "for valid timestamps tv_nsec must be in [0, 999999999]."]
+            async fn timestamp(
+                &self,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -1227,6 +1301,21 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event indicates that the shortcut inhibitor is active."]
+            #[doc = ""]
+            #[doc = "The compositor sends this event every time compositor shortcuts"]
+            #[doc = "are inhibited on behalf of the surface. When active, the client"]
+            #[doc = "may receive input events normally reserved by the compositor"]
+            #[doc = "(see zwp_keyboard_shortcuts_inhibitor_v1)."]
+            #[doc = ""]
+            #[doc = "This occurs typically when the initial request \"inhibit_shortcuts\""]
+            #[doc = "first becomes active or when the user instructs the compositor to"]
+            #[doc = "re-enable and existing shortcuts inhibitor using any mechanism"]
+            #[doc = "offered by the compositor."]
+            async fn active(&self) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the shortcuts inhibitor is inactive,"]
+            #[doc = "normal shortcuts processing is restored by the compositor."]
+            async fn inactive(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -1397,6 +1486,47 @@ pub mod linux_dmabuf_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event advertises one buffer format that the server supports."]
+            #[doc = "All the supported formats are advertised once when the client"]
+            #[doc = "binds to this interface. A roundtrip after binding guarantees"]
+            #[doc = "that the client has received all supported formats."]
+            #[doc = ""]
+            #[doc = "For the definition of the format codes, see the"]
+            #[doc = "zwp_linux_buffer_params_v1::create request."]
+            #[doc = ""]
+            #[doc = "Starting version 4, the format event is deprecated and must not be"]
+            #[doc = "sent by compositors. Instead, use get_default_feedback or"]
+            #[doc = "get_surface_feedback."]
+            async fn format(&self, format: u32) -> crate::client::Result<()>;
+            #[doc = "This event advertises the formats that the server supports, along with"]
+            #[doc = "the modifiers supported for each format. All the supported modifiers"]
+            #[doc = "for all the supported formats are advertised once when the client"]
+            #[doc = "binds to this interface. A roundtrip after binding guarantees that"]
+            #[doc = "the client has received all supported format-modifier pairs."]
+            #[doc = ""]
+            #[doc = "For legacy support, DRM_FORMAT_MOD_INVALID (that is, modifier_hi =="]
+            #[doc = "0x00ffffff and modifier_lo == 0xffffffff) is allowed in this event."]
+            #[doc = "It indicates that the server can support the format with an implicit"]
+            #[doc = "modifier. When a plane has DRM_FORMAT_MOD_INVALID as its modifier, it"]
+            #[doc = "is as if no explicit modifier is specified. The effective modifier"]
+            #[doc = "will be derived from the dmabuf."]
+            #[doc = ""]
+            #[doc = "A compositor that sends valid modifiers and DRM_FORMAT_MOD_INVALID for"]
+            #[doc = "a given format supports both explicit modifiers and implicit modifiers."]
+            #[doc = ""]
+            #[doc = "For the definition of the format and modifier codes, see the"]
+            #[doc = "zwp_linux_buffer_params_v1::create and zwp_linux_buffer_params_v1::add"]
+            #[doc = "requests."]
+            #[doc = ""]
+            #[doc = "Starting version 4, the modifier event is deprecated and must not be"]
+            #[doc = "sent by compositors. Instead, use get_default_feedback or"]
+            #[doc = "get_surface_feedback."]
+            async fn modifier(
+                &self,
+                format: u32,
+                modifier_hi: u32,
+                modifier_lo: u32,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "This temporary object is a collection of dmabufs and other"]
@@ -1658,6 +1788,19 @@ pub mod linux_dmabuf_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event indicates that the attempted buffer creation was"]
+            #[doc = "successful. It provides the new wl_buffer referencing the dmabuf(s)."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy the"]
+            #[doc = "zwp_linux_buffer_params_v1 object."]
+            async fn created(&self, buffer: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the attempted buffer creation has"]
+            #[doc = "failed. It usually means that one of the dmabuf constraints"]
+            #[doc = "has not been fulfilled."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy the"]
+            #[doc = "zwp_linux_buffer_params_v1 object."]
+            async fn failed(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "This object advertises dmabuf parameters feedback. This includes the"]
@@ -1722,6 +1865,121 @@ pub mod linux_dmabuf_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is sent after all parameters of a wp_linux_dmabuf_feedback"]
+            #[doc = "object have been sent."]
+            #[doc = ""]
+            #[doc = "This allows changes to the wp_linux_dmabuf_feedback parameters to be"]
+            #[doc = "seen as atomic, even if they happen via multiple events."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "This event provides a file descriptor which can be memory-mapped to"]
+            #[doc = "access the format and modifier table."]
+            #[doc = ""]
+            #[doc = "The table contains a tightly packed array of consecutive format +"]
+            #[doc = "modifier pairs. Each pair is 16 bytes wide. It contains a format as a"]
+            #[doc = "32-bit unsigned integer, followed by 4 bytes of unused padding, and a"]
+            #[doc = "modifier as a 64-bit unsigned integer. The native endianness is used."]
+            #[doc = ""]
+            #[doc = "The client must map the file descriptor in read-only private mode."]
+            #[doc = ""]
+            #[doc = "Compositors are not allowed to mutate the table file contents once this"]
+            #[doc = "event has been sent. Instead, compositors must create a new, separate"]
+            #[doc = "table file and re-send feedback parameters. Compositors are allowed to"]
+            #[doc = "store duplicate format + modifier pairs in the table."]
+            async fn format_table(
+                &self,
+                fd: rustix::fd::OwnedFd,
+                size: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event advertises the main device that the server prefers to use"]
+            #[doc = "when direct scan-out to the target device isn't possible. The"]
+            #[doc = "advertised main device may be different for each"]
+            #[doc = "wp_linux_dmabuf_feedback object, and may change over time."]
+            #[doc = ""]
+            #[doc = "There is exactly one main device. The compositor must send at least"]
+            #[doc = "one preference tranche with tranche_target_device equal to main_device."]
+            #[doc = ""]
+            #[doc = "Clients need to create buffers that the main device can import and"]
+            #[doc = "read from, otherwise creating the dmabuf wl_buffer will fail (see the"]
+            #[doc = "wp_linux_buffer_params.create and create_immed requests for details)."]
+            #[doc = "The main device will also likely be kept active by the compositor,"]
+            #[doc = "so clients can use it instead of waking up another device for power"]
+            #[doc = "savings."]
+            #[doc = ""]
+            #[doc = "In general the device is a DRM node. The DRM node type (primary vs."]
+            #[doc = "render) is unspecified. Clients must not rely on the compositor sending"]
+            #[doc = "a particular node type. Clients cannot check two devices for equality"]
+            #[doc = "by comparing the dev_t value."]
+            #[doc = ""]
+            #[doc = "If explicit modifiers are not supported and the client performs buffer"]
+            #[doc = "allocations on a different device than the main device, then the client"]
+            #[doc = "must force the buffer to have a linear layout."]
+            async fn main_device(&self, device: Vec<u8>) -> crate::client::Result<()>;
+            #[doc = "This event splits tranche_target_device and tranche_formats events in"]
+            #[doc = "preference tranches. It is sent after a set of tranche_target_device"]
+            #[doc = "and tranche_formats events; it represents the end of a tranche. The"]
+            #[doc = "next tranche will have a lower preference."]
+            async fn tranche_done(&self) -> crate::client::Result<()>;
+            #[doc = "This event advertises the target device that the server prefers to use"]
+            #[doc = "for a buffer created given this tranche. The advertised target device"]
+            #[doc = "may be different for each preference tranche, and may change over time."]
+            #[doc = ""]
+            #[doc = "There is exactly one target device per tranche."]
+            #[doc = ""]
+            #[doc = "The target device may be a scan-out device, for example if the"]
+            #[doc = "compositor prefers to directly scan-out a buffer created given this"]
+            #[doc = "tranche. The target device may be a rendering device, for example if"]
+            #[doc = "the compositor prefers to texture from said buffer."]
+            #[doc = ""]
+            #[doc = "The client can use this hint to allocate the buffer in a way that makes"]
+            #[doc = "it accessible from the target device, ideally directly. The buffer must"]
+            #[doc = "still be accessible from the main device, either through direct import"]
+            #[doc = "or through a potentially more expensive fallback path. If the buffer"]
+            #[doc = "can't be directly imported from the main device then clients must be"]
+            #[doc = "prepared for the compositor changing the tranche priority or making"]
+            #[doc = "wl_buffer creation fail (see the wp_linux_buffer_params.create and"]
+            #[doc = "create_immed requests for details)."]
+            #[doc = ""]
+            #[doc = "If the device is a DRM node, the DRM node type (primary vs. render) is"]
+            #[doc = "unspecified. Clients must not rely on the compositor sending a"]
+            #[doc = "particular node type. Clients cannot check two devices for equality by"]
+            #[doc = "comparing the dev_t value."]
+            #[doc = ""]
+            #[doc = "This event is tied to a preference tranche, see the tranche_done event."]
+            async fn tranche_target_device(&self, device: Vec<u8>) -> crate::client::Result<()>;
+            #[doc = "This event advertises the format + modifier combinations that the"]
+            #[doc = "compositor supports."]
+            #[doc = ""]
+            #[doc = "It carries an array of indices, each referring to a format + modifier"]
+            #[doc = "pair in the last received format table (see the format_table event)."]
+            #[doc = "Each index is a 16-bit unsigned integer in native endianness."]
+            #[doc = ""]
+            #[doc = "For legacy support, DRM_FORMAT_MOD_INVALID is an allowed modifier."]
+            #[doc = "It indicates that the server can support the format with an implicit"]
+            #[doc = "modifier. When a buffer has DRM_FORMAT_MOD_INVALID as its modifier, it"]
+            #[doc = "is as if no explicit modifier is specified. The effective modifier"]
+            #[doc = "will be derived from the dmabuf."]
+            #[doc = ""]
+            #[doc = "A compositor that sends valid modifiers and DRM_FORMAT_MOD_INVALID for"]
+            #[doc = "a given format supports both explicit modifiers and implicit modifiers."]
+            #[doc = ""]
+            #[doc = "Compositors must not send duplicate format + modifier pairs within the"]
+            #[doc = "same tranche or across two different tranches with the same target"]
+            #[doc = "device and flags."]
+            #[doc = ""]
+            #[doc = "This event is tied to a preference tranche, see the tranche_done event."]
+            #[doc = ""]
+            #[doc = "For the definition of the format and modifier codes, see the"]
+            #[doc = "wp_linux_buffer_params.create request."]
+            async fn tranche_formats(&self, indices: Vec<u8>) -> crate::client::Result<()>;
+            #[doc = "This event sets tranche-specific flags."]
+            #[doc = ""]
+            #[doc = "The scanout flag is a hint that direct scan-out may be attempted by the"]
+            #[doc = "compositor on the target device if the client appropriately allocates a"]
+            #[doc = "buffer. How to allocate a buffer that can be scanned out on the target"]
+            #[doc = "device is implementation-defined."]
+            #[doc = ""]
+            #[doc = "This event is tied to a preference tranche, see the tranche_done event."]
+            async fn tranche_flags(&self, flags: TrancheFlags) -> crate::client::Result<()>;
         }
     }
 }
@@ -2036,6 +2294,31 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = "Sent when the compositor has finalised its usage of the associated"]
+            #[doc = "buffer for the relevant commit, providing a dma_fence which will be"]
+            #[doc = "signaled when all operations by the compositor on that buffer for that"]
+            #[doc = "commit have finished."]
+            #[doc = ""]
+            #[doc = "Once the fence has signaled, and assuming the associated buffer is not"]
+            #[doc = "pending release from other wl_surface.commit requests, no additional"]
+            #[doc = "explicit or implicit synchronization is required to safely reuse or"]
+            #[doc = "destroy the buffer."]
+            #[doc = ""]
+            #[doc = "This event destroys the zwp_linux_buffer_release_v1 object."]
+            async fn fenced_release(&self, fence: rustix::fd::OwnedFd)
+                -> crate::client::Result<()>;
+            #[doc = "Sent when the compositor has finalised its usage of the associated"]
+            #[doc = "buffer for the relevant commit, and either performed no operations"]
+            #[doc = "using it, or has a guarantee that all its operations on that buffer for"]
+            #[doc = "that commit have finished."]
+            #[doc = ""]
+            #[doc = "Once this event is received, and assuming the associated buffer is not"]
+            #[doc = "pending release from other wl_surface.commit requests, no additional"]
+            #[doc = "explicit or implicit synchronization is required to safely reuse or"]
+            #[doc = "destroy the buffer."]
+            #[doc = ""]
+            #[doc = "This event destroys the zwp_linux_buffer_release_v1 object."]
+            async fn immediate_release(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -2345,6 +2628,15 @@ pub mod pointer_constraints_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Notification that the pointer lock of the seat's pointer is activated."]
+            async fn locked(&self) -> crate::client::Result<()>;
+            #[doc = "Notification that the pointer lock of the seat's pointer is no longer"]
+            #[doc = "active. If this is a oneshot pointer lock (see"]
+            #[doc = "wp_pointer_constraints.lifetime) this object is now defunct and should"]
+            #[doc = "be destroyed. If this is a persistent pointer lock (see"]
+            #[doc = "wp_pointer_constraints.lifetime) this pointer lock may again"]
+            #[doc = "reactivate in the future."]
+            async fn unlocked(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "The wp_confined_pointer interface represents a confined pointer state."]
@@ -2422,6 +2714,16 @@ pub mod pointer_constraints_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Notification that the pointer confinement of the seat's pointer is"]
+            #[doc = "activated."]
+            async fn confined(&self) -> crate::client::Result<()>;
+            #[doc = "Notification that the pointer confinement of the seat's pointer is no"]
+            #[doc = "longer active. If this is a oneshot pointer confinement (see"]
+            #[doc = "wp_pointer_constraints.lifetime) this object is now defunct and should"]
+            #[doc = "be destroyed. If this is a persistent pointer confinement (see"]
+            #[doc = "wp_pointer_constraints.lifetime) this pointer confinement may again"]
+            #[doc = "reactivate in the future."]
+            async fn unconfined(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -2584,6 +2886,39 @@ pub mod pointer_gestures_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is sent when a multi-finger swipe gesture is detected"]
+            #[doc = "on the device."]
+            async fn begin(
+                &self,
+                serial: u32,
+                time: u32,
+                surface: crate::wire::ObjectId,
+                fingers: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent when a multi-finger swipe gesture changes the"]
+            #[doc = "position of the logical center."]
+            #[doc = ""]
+            #[doc = "The dx and dy coordinates are relative coordinates of the logical"]
+            #[doc = "center of the gesture compared to the previous event."]
+            async fn update(
+                &self,
+                time: u32,
+                dx: crate::wire::Fixed,
+                dy: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent when a multi-finger swipe gesture ceases to"]
+            #[doc = "be valid. This may happen when one or more fingers are lifted or"]
+            #[doc = "the gesture is cancelled."]
+            #[doc = ""]
+            #[doc = "When a gesture is cancelled, the client should undo state changes"]
+            #[doc = "caused by this gesture. What causes a gesture to be cancelled is"]
+            #[doc = "implementation-dependent."]
+            async fn end(
+                &self,
+                serial: u32,
+                time: u32,
+                cancelled: i32,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A pinch gesture object notifies a client about a multi-finger pinch"]
@@ -2629,6 +2964,48 @@ pub mod pointer_gestures_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is sent when a multi-finger pinch gesture is detected"]
+            #[doc = "on the device."]
+            async fn begin(
+                &self,
+                serial: u32,
+                time: u32,
+                surface: crate::wire::ObjectId,
+                fingers: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent when a multi-finger pinch gesture changes the"]
+            #[doc = "position of the logical center, the rotation or the relative scale."]
+            #[doc = ""]
+            #[doc = "The dx and dy coordinates are relative coordinates in the"]
+            #[doc = "surface coordinate space of the logical center of the gesture."]
+            #[doc = ""]
+            #[doc = "The scale factor is an absolute scale compared to the"]
+            #[doc = "pointer_gesture_pinch.begin event, e.g. a scale of 2 means the fingers"]
+            #[doc = "are now twice as far apart as on pointer_gesture_pinch.begin."]
+            #[doc = ""]
+            #[doc = "The rotation is the relative angle in degrees clockwise compared to the previous"]
+            #[doc = "pointer_gesture_pinch.begin or pointer_gesture_pinch.update event."]
+            async fn update(
+                &self,
+                time: u32,
+                dx: crate::wire::Fixed,
+                dy: crate::wire::Fixed,
+                scale: crate::wire::Fixed,
+                rotation: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent when a multi-finger pinch gesture ceases to"]
+            #[doc = "be valid. This may happen when one or more fingers are lifted or"]
+            #[doc = "the gesture is cancelled."]
+            #[doc = ""]
+            #[doc = "When a gesture is cancelled, the client should undo state changes"]
+            #[doc = "caused by this gesture. What causes a gesture to be cancelled is"]
+            #[doc = "implementation-dependent."]
+            async fn end(
+                &self,
+                serial: u32,
+                time: u32,
+                cancelled: i32,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A hold gesture object notifies a client about a single- or"]
@@ -2676,6 +3053,29 @@ pub mod pointer_gestures_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is sent when a hold gesture is detected on the device."]
+            async fn begin(
+                &self,
+                serial: u32,
+                time: u32,
+                surface: crate::wire::ObjectId,
+                fingers: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent when a hold gesture ceases to"]
+            #[doc = "be valid. This may happen when the holding fingers are lifted or"]
+            #[doc = "the gesture is cancelled, for example if the fingers move past an"]
+            #[doc = "implementation-defined threshold, the finger count changes or the hold"]
+            #[doc = "gesture changes into a different type of gesture."]
+            #[doc = ""]
+            #[doc = "When a gesture is cancelled, the client may need to undo state changes"]
+            #[doc = "caused by this gesture. What causes a gesture to be cancelled is"]
+            #[doc = "implementation-dependent."]
+            async fn end(
+                &self,
+                serial: u32,
+                time: u32,
+                cancelled: i32,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -2853,6 +3253,25 @@ pub mod wp_primary_selection_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Introduces a new wp_primary_selection_offer object that may be used"]
+            #[doc = "to receive the current primary selection. Immediately following this"]
+            #[doc = "event, the new wp_primary_selection_offer object will send"]
+            #[doc = "wp_primary_selection_offer.offer events to describe the offered mime"]
+            #[doc = "types."]
+            async fn data_offer(&self, offer: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "The wp_primary_selection_device.selection event is sent to notify the"]
+            #[doc = "client of a new primary selection. This event is sent after the"]
+            #[doc = "wp_primary_selection.data_offer event introducing this object, and after"]
+            #[doc = "the offer has announced its mimetypes through"]
+            #[doc = "wp_primary_selection_offer.offer."]
+            #[doc = ""]
+            #[doc = "The data_offer is valid until a new offer or NULL is received"]
+            #[doc = "or until the client loses keyboard focus. The client must destroy the"]
+            #[doc = "previous selection data_offer, if any, upon receiving this event."]
+            async fn selection(
+                &self,
+                id: Option<crate::wire::ObjectId>,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A wp_primary_selection_offer represents an offer to transfer the contents"]
@@ -2915,6 +3334,11 @@ pub mod wp_primary_selection_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Sent immediately after creating announcing the"]
+            #[doc = "wp_primary_selection_offer through"]
+            #[doc = "wp_primary_selection_device.data_offer. One event is sent per offered"]
+            #[doc = "mime type."]
+            async fn offer(&self, mime_type: String) -> crate::client::Result<()>;
         }
     }
     #[doc = "The source side of a wp_primary_selection_offer, it provides a way to"]
@@ -2966,6 +3390,17 @@ pub mod wp_primary_selection_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Request for the current primary selection contents from the client."]
+            #[doc = "Send the specified mime type over the passed file descriptor, then"]
+            #[doc = "close it."]
+            async fn send(
+                &self,
+                mime_type: String,
+                fd: rustix::fd::OwnedFd,
+            ) -> crate::client::Result<()>;
+            #[doc = "This primary selection source is no longer valid. The client should"]
+            #[doc = "clean up and destroy this primary selection source."]
+            async fn cancelled(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -3081,6 +3516,45 @@ pub mod relative_pointer_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Relative x/y pointer motion from the pointer of the seat associated with"]
+            #[doc = "this object."]
+            #[doc = ""]
+            #[doc = "A relative motion is in the same dimension as regular wl_pointer motion"]
+            #[doc = "events, except they do not represent an absolute position. For example,"]
+            #[doc = "moving a pointer from (x, y) to (x', y') would have the equivalent"]
+            #[doc = "relative motion (x' - x, y' - y). If a pointer motion caused the"]
+            #[doc = "absolute pointer position to be clipped by for example the edge of the"]
+            #[doc = "monitor, the relative motion is unaffected by the clipping and will"]
+            #[doc = "represent the unclipped motion."]
+            #[doc = ""]
+            #[doc = "This event also contains non-accelerated motion deltas. The"]
+            #[doc = "non-accelerated delta is, when applicable, the regular pointer motion"]
+            #[doc = "delta as it was before having applied motion acceleration and other"]
+            #[doc = "transformations such as normalization."]
+            #[doc = ""]
+            #[doc = "Note that the non-accelerated delta does not represent 'raw' events as"]
+            #[doc = "they were read from some device. Pointer motion acceleration is device-"]
+            #[doc = "and configuration-specific and non-accelerated deltas and accelerated"]
+            #[doc = "deltas may have the same value on some devices."]
+            #[doc = ""]
+            #[doc = "Relative motions are not coupled to wl_pointer.motion events, and can be"]
+            #[doc = "sent in combination with such events, but also independently. There may"]
+            #[doc = "also be scenarios where wl_pointer.motion is sent, but there is no"]
+            #[doc = "relative motion. The order of an absolute and relative motion event"]
+            #[doc = "originating from the same physical motion is not guaranteed."]
+            #[doc = ""]
+            #[doc = "If the client needs button events or focus state, it can receive them"]
+            #[doc = "from a wl_pointer object of the same seat that the wp_relative_pointer"]
+            #[doc = "object is associated with."]
+            async fn relative_motion(
+                &self,
+                utime_hi: u32,
+                utime_lo: u32,
+                dx: crate::wire::Fixed,
+                dy: crate::wire::Fixed,
+                dx_unaccel: crate::wire::Fixed,
+                dy_unaccel: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -3258,6 +3732,16 @@ pub mod tablet_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is sent whenever a new tablet becomes available on this"]
+            #[doc = "seat. This event only provides the object id of the tablet, any"]
+            #[doc = "static information about the tablet (device name, vid/pid, etc.) is"]
+            #[doc = "sent through the wp_tablet interface."]
+            async fn tablet_added(&self, id: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "This event is sent whenever a tool that has not previously been used"]
+            #[doc = "with a tablet comes into use. This event only provides the object id"]
+            #[doc = "of the tool; any static information about the tool (capabilities,"]
+            #[doc = "type, etc.) is sent through the wp_tablet_tool interface."]
+            async fn tool_added(&self, id: crate::wire::ObjectId) -> crate::client::Result<()>;
         }
     }
     #[doc = "An object that represents a physical tool that has been, or is"]
@@ -3479,6 +3963,195 @@ pub mod tablet_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The tool type is the high-level type of the tool and usually decides"]
+            #[doc = "the interaction expected from this tool."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_tool.done event."]
+            async fn r#type(&self, tool_type: Type) -> crate::client::Result<()>;
+            #[doc = "If the physical tool can be identified by a unique 64-bit serial"]
+            #[doc = "number, this event notifies the client of this serial number."]
+            #[doc = ""]
+            #[doc = "If multiple tablets are available in the same seat and the tool is"]
+            #[doc = "uniquely identifiable by the serial number, that tool may move"]
+            #[doc = "between tablets."]
+            #[doc = ""]
+            #[doc = "Otherwise, if the tool has no serial number and this event is"]
+            #[doc = "missing, the tool is tied to the tablet it first comes into"]
+            #[doc = "proximity with. Even if the physical tool is used on multiple"]
+            #[doc = "tablets, separate wp_tablet_tool objects will be created, one per"]
+            #[doc = "tablet."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_tool.done event."]
+            async fn hardware_serial(
+                &self,
+                hardware_serial_hi: u32,
+                hardware_serial_lo: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event notifies the client of a hardware id available on this tool."]
+            #[doc = ""]
+            #[doc = "The hardware id is a device-specific 64-bit id that provides extra"]
+            #[doc = "information about the tool in use, beyond the wl_tool.type"]
+            #[doc = "enumeration. The format of the id is specific to tablets made by"]
+            #[doc = "Wacom Inc. For example, the hardware id of a Wacom Grip"]
+            #[doc = "Pen (a stylus) is 0x802."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_tool.done event."]
+            async fn hardware_id_wacom(
+                &self,
+                hardware_id_hi: u32,
+                hardware_id_lo: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event notifies the client of any capabilities of this tool,"]
+            #[doc = "beyond the main set of x/y axes and tip up/down detection."]
+            #[doc = ""]
+            #[doc = "One event is sent for each extra capability available on this tool."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_tool.done event."]
+            async fn capability(&self, capability: Capability) -> crate::client::Result<()>;
+            #[doc = "This event signals the end of the initial burst of descriptive"]
+            #[doc = "events. A client may consider the static description of the tool to"]
+            #[doc = "be complete and finalize initialization of the tool."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "This event is sent when the tool is removed from the system and will"]
+            #[doc = "send no further events. Should the physical tool come back into"]
+            #[doc = "proximity later, a new wp_tablet_tool object will be created."]
+            #[doc = ""]
+            #[doc = "It is compositor-dependent when a tool is removed. A compositor may"]
+            #[doc = "remove a tool on proximity out, tablet removal or any other reason."]
+            #[doc = "A compositor may also keep a tool alive until shutdown."]
+            #[doc = ""]
+            #[doc = "If the tool is currently in proximity, a proximity_out event will be"]
+            #[doc = "sent before the removed event. See wp_tablet_tool.proximity_out for"]
+            #[doc = "the handling of any buttons logically down."]
+            #[doc = ""]
+            #[doc = "When this event is received, the client must wp_tablet_tool.destroy"]
+            #[doc = "the object."]
+            async fn removed(&self) -> crate::client::Result<()>;
+            #[doc = "Notification that this tool is focused on a certain surface."]
+            #[doc = ""]
+            #[doc = "This event can be received when the tool has moved from one surface to"]
+            #[doc = "another, or when the tool has come back into proximity above the"]
+            #[doc = "surface."]
+            #[doc = ""]
+            #[doc = "If any button is logically down when the tool comes into proximity,"]
+            #[doc = "the respective button event is sent after the proximity_in event but"]
+            #[doc = "within the same frame as the proximity_in event."]
+            async fn proximity_in(
+                &self,
+                serial: u32,
+                tablet: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notification that this tool has either left proximity, or is no"]
+            #[doc = "longer focused on a certain surface."]
+            #[doc = ""]
+            #[doc = "When the tablet tool leaves proximity of the tablet, button release"]
+            #[doc = "events are sent for each button that was held down at the time of"]
+            #[doc = "leaving proximity. These events are sent before the proximity_out"]
+            #[doc = "event but within the same wp_tablet.frame."]
+            #[doc = ""]
+            #[doc = "If the tool stays within proximity of the tablet, but the focus"]
+            #[doc = "changes from one surface to another, a button release event may not"]
+            #[doc = "be sent until the button is actually released or the tool leaves the"]
+            #[doc = "proximity of the tablet."]
+            async fn proximity_out(&self) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the tablet tool comes in contact with the surface of the"]
+            #[doc = "tablet."]
+            #[doc = ""]
+            #[doc = "If the tool is already in contact with the tablet when entering the"]
+            #[doc = "input region, the client owning said region will receive a"]
+            #[doc = "wp_tablet.proximity_in event, followed by a wp_tablet.down"]
+            #[doc = "event and a wp_tablet.frame event."]
+            #[doc = ""]
+            #[doc = "Note that this event describes logical contact, not physical"]
+            #[doc = "contact. On some devices, a compositor may not consider a tool in"]
+            #[doc = "logical contact until a minimum physical pressure threshold is"]
+            #[doc = "exceeded."]
+            async fn down(&self, serial: u32) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the tablet tool stops making contact with the surface of"]
+            #[doc = "the tablet, or when the tablet tool moves out of the input region"]
+            #[doc = "and the compositor grab (if any) is dismissed."]
+            #[doc = ""]
+            #[doc = "If the tablet tool moves out of the input region while in contact"]
+            #[doc = "with the surface of the tablet and the compositor does not have an"]
+            #[doc = "ongoing grab on the surface, the client owning said region will"]
+            #[doc = "receive a wp_tablet.up event, followed by a wp_tablet.proximity_out"]
+            #[doc = "event and a wp_tablet.frame event. If the compositor has an ongoing"]
+            #[doc = "grab on this device, this event sequence is sent whenever the grab"]
+            #[doc = "is dismissed in the future."]
+            #[doc = ""]
+            #[doc = "Note that this event describes logical contact, not physical"]
+            #[doc = "contact. On some devices, a compositor may not consider a tool out"]
+            #[doc = "of logical contact until physical pressure falls below a specific"]
+            #[doc = "threshold."]
+            async fn up(&self) -> crate::client::Result<()>;
+            #[doc = "Sent whenever a tablet tool moves."]
+            async fn motion(
+                &self,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the pressure axis on a tool changes. The value of this"]
+            #[doc = "event is normalized to a value between 0 and 65535."]
+            #[doc = ""]
+            #[doc = "Note that pressure may be nonzero even when a tool is not in logical"]
+            #[doc = "contact. See the down and up events for more details."]
+            async fn pressure(&self, pressure: u32) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the distance axis on a tool changes. The value of this"]
+            #[doc = "event is normalized to a value between 0 and 65535."]
+            #[doc = ""]
+            #[doc = "Note that distance may be nonzero even when a tool is not in logical"]
+            #[doc = "contact. See the down and up events for more details."]
+            async fn distance(&self, distance: u32) -> crate::client::Result<()>;
+            #[doc = "Sent whenever one or both of the tilt axes on a tool change. Each tilt"]
+            #[doc = "value is in 0.01 of a degree, relative to the z-axis of the tablet."]
+            #[doc = "The angle is positive when the top of a tool tilts along the"]
+            #[doc = "positive x or y axis."]
+            async fn tilt(&self, tilt_x: i32, tilt_y: i32) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the z-rotation axis on the tool changes. The"]
+            #[doc = "rotation value is in 0.01 of a degree clockwise from the tool's"]
+            #[doc = "logical neutral position."]
+            async fn rotation(&self, degrees: i32) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the slider position on the tool changes. The"]
+            #[doc = "value is normalized between -65535 and 65535, with 0 as the logical"]
+            #[doc = "neutral position of the slider."]
+            #[doc = ""]
+            #[doc = "The slider is available on e.g. the Wacom Airbrush tool."]
+            async fn slider(&self, position: i32) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the wheel on the tool emits an event. This event"]
+            #[doc = "contains two values for the same axis change. The degrees value is"]
+            #[doc = "in 0.01 of a degree in the same orientation as the"]
+            #[doc = "wl_pointer.vertical_scroll axis. The clicks value is in discrete"]
+            #[doc = "logical clicks of the mouse wheel. This value may be zero if the"]
+            #[doc = "movement of the wheel was less than one logical click."]
+            #[doc = ""]
+            #[doc = "Clients should choose either value and avoid mixing degrees and"]
+            #[doc = "clicks. The compositor may accumulate values smaller than a logical"]
+            #[doc = "click and emulate click events when a certain threshold is met."]
+            #[doc = "Thus, wl_tablet_tool.wheel events with non-zero clicks values may"]
+            #[doc = "have different degrees values."]
+            async fn wheel(&self, degrees: i32, clicks: i32) -> crate::client::Result<()>;
+            #[doc = "Sent whenever a button on the tool is pressed or released."]
+            #[doc = ""]
+            #[doc = "If a button is held down when the tool moves in or out of proximity,"]
+            #[doc = "button events are generated by the compositor. See"]
+            #[doc = "wp_tablet_tool.proximity_in and wp_tablet_tool.proximity_out for"]
+            #[doc = "details."]
+            async fn button(
+                &self,
+                serial: u32,
+                button: u32,
+                state: ButtonState,
+            ) -> crate::client::Result<()>;
+            #[doc = "Marks the end of a series of axis and/or button updates from the"]
+            #[doc = "tablet. The Wayland protocol requires axis updates to be sent"]
+            #[doc = "sequentially, however all events within a frame should be considered"]
+            #[doc = "one hardware event."]
+            async fn frame(&self, time: u32) -> crate::client::Result<()>;
         }
     }
     #[doc = "The wp_tablet interface represents one graphics tablet device. The"]
@@ -3518,6 +4191,38 @@ pub mod tablet_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet.done event."]
+            async fn name(&self, name: String) -> crate::client::Result<()>;
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet.done event."]
+            async fn id(&self, vid: u32, pid: u32) -> crate::client::Result<()>;
+            #[doc = "A system-specific device path that indicates which device is behind"]
+            #[doc = "this wp_tablet. This information may be used to gather additional"]
+            #[doc = "information about the device, e.g. through libwacom."]
+            #[doc = ""]
+            #[doc = "A device may have more than one device path. If so, multiple"]
+            #[doc = "wp_tablet.path events are sent. A device may be emulated and not"]
+            #[doc = "have a device path, and in that case this event will not be sent."]
+            #[doc = ""]
+            #[doc = "The format of the path is unspecified, it may be a device node, a"]
+            #[doc = "sysfs path, or some other identifier. It is up to the client to"]
+            #[doc = "identify the string provided."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet.done event."]
+            async fn path(&self, path: String) -> crate::client::Result<()>;
+            #[doc = "This event is sent immediately to signal the end of the initial"]
+            #[doc = "burst of descriptive events. A client may consider the static"]
+            #[doc = "description of the tablet to be complete and finalize initialization"]
+            #[doc = "of the tablet."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "Sent when the tablet has been removed from the system. When a tablet"]
+            #[doc = "is removed, some tools may be removed."]
+            #[doc = ""]
+            #[doc = "When this event is received, the client must wp_tablet.destroy"]
+            #[doc = "the object."]
+            async fn removed(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -3690,6 +4395,27 @@ pub mod tablet_unstable_v2 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is sent whenever a new tablet becomes available on this"]
+            #[doc = "seat. This event only provides the object id of the tablet, any"]
+            #[doc = "static information about the tablet (device name, vid/pid, etc.) is"]
+            #[doc = "sent through the wp_tablet interface."]
+            async fn tablet_added(&self, id: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "This event is sent whenever a tool that has not previously been used"]
+            #[doc = "with a tablet comes into use. This event only provides the object id"]
+            #[doc = "of the tool; any static information about the tool (capabilities,"]
+            #[doc = "type, etc.) is sent through the wp_tablet_tool interface."]
+            async fn tool_added(&self, id: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "This event is sent whenever a new pad is known to the system. Typically,"]
+            #[doc = "pads are physically attached to tablets and a pad_added event is"]
+            #[doc = "sent immediately after the wp_tablet_seat.tablet_added."]
+            #[doc = "However, some standalone pad devices logically attach to tablets at"]
+            #[doc = "runtime, and the client must wait for wp_tablet_pad.enter to know"]
+            #[doc = "the tablet a pad is attached to."]
+            #[doc = ""]
+            #[doc = "This event only provides the object id of the pad. All further"]
+            #[doc = "features (buttons, strips, rings) are sent through the wp_tablet_pad"]
+            #[doc = "interface."]
+            async fn pad_added(&self, id: crate::wire::ObjectId) -> crate::client::Result<()>;
         }
     }
     #[doc = "An object that represents a physical tool that has been, or is"]
@@ -3909,6 +4635,203 @@ pub mod tablet_unstable_v2 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The tool type is the high-level type of the tool and usually decides"]
+            #[doc = "the interaction expected from this tool."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_tool.done event."]
+            async fn r#type(&self, tool_type: Type) -> crate::client::Result<()>;
+            #[doc = "If the physical tool can be identified by a unique 64-bit serial"]
+            #[doc = "number, this event notifies the client of this serial number."]
+            #[doc = ""]
+            #[doc = "If multiple tablets are available in the same seat and the tool is"]
+            #[doc = "uniquely identifiable by the serial number, that tool may move"]
+            #[doc = "between tablets."]
+            #[doc = ""]
+            #[doc = "Otherwise, if the tool has no serial number and this event is"]
+            #[doc = "missing, the tool is tied to the tablet it first comes into"]
+            #[doc = "proximity with. Even if the physical tool is used on multiple"]
+            #[doc = "tablets, separate wp_tablet_tool objects will be created, one per"]
+            #[doc = "tablet."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_tool.done event."]
+            async fn hardware_serial(
+                &self,
+                hardware_serial_hi: u32,
+                hardware_serial_lo: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event notifies the client of a hardware id available on this tool."]
+            #[doc = ""]
+            #[doc = "The hardware id is a device-specific 64-bit id that provides extra"]
+            #[doc = "information about the tool in use, beyond the wl_tool.type"]
+            #[doc = "enumeration. The format of the id is specific to tablets made by"]
+            #[doc = "Wacom Inc. For example, the hardware id of a Wacom Grip"]
+            #[doc = "Pen (a stylus) is 0x802."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_tool.done event."]
+            async fn hardware_id_wacom(
+                &self,
+                hardware_id_hi: u32,
+                hardware_id_lo: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event notifies the client of any capabilities of this tool,"]
+            #[doc = "beyond the main set of x/y axes and tip up/down detection."]
+            #[doc = ""]
+            #[doc = "One event is sent for each extra capability available on this tool."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_tool.done event."]
+            async fn capability(&self, capability: Capability) -> crate::client::Result<()>;
+            #[doc = "This event signals the end of the initial burst of descriptive"]
+            #[doc = "events. A client may consider the static description of the tool to"]
+            #[doc = "be complete and finalize initialization of the tool."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "This event is sent when the tool is removed from the system and will"]
+            #[doc = "send no further events. Should the physical tool come back into"]
+            #[doc = "proximity later, a new wp_tablet_tool object will be created."]
+            #[doc = ""]
+            #[doc = "It is compositor-dependent when a tool is removed. A compositor may"]
+            #[doc = "remove a tool on proximity out, tablet removal or any other reason."]
+            #[doc = "A compositor may also keep a tool alive until shutdown."]
+            #[doc = ""]
+            #[doc = "If the tool is currently in proximity, a proximity_out event will be"]
+            #[doc = "sent before the removed event. See wp_tablet_tool.proximity_out for"]
+            #[doc = "the handling of any buttons logically down."]
+            #[doc = ""]
+            #[doc = "When this event is received, the client must wp_tablet_tool.destroy"]
+            #[doc = "the object."]
+            async fn removed(&self) -> crate::client::Result<()>;
+            #[doc = "Notification that this tool is focused on a certain surface."]
+            #[doc = ""]
+            #[doc = "This event can be received when the tool has moved from one surface to"]
+            #[doc = "another, or when the tool has come back into proximity above the"]
+            #[doc = "surface."]
+            #[doc = ""]
+            #[doc = "If any button is logically down when the tool comes into proximity,"]
+            #[doc = "the respective button event is sent after the proximity_in event but"]
+            #[doc = "within the same frame as the proximity_in event."]
+            async fn proximity_in(
+                &self,
+                serial: u32,
+                tablet: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notification that this tool has either left proximity, or is no"]
+            #[doc = "longer focused on a certain surface."]
+            #[doc = ""]
+            #[doc = "When the tablet tool leaves proximity of the tablet, button release"]
+            #[doc = "events are sent for each button that was held down at the time of"]
+            #[doc = "leaving proximity. These events are sent before the proximity_out"]
+            #[doc = "event but within the same wp_tablet.frame."]
+            #[doc = ""]
+            #[doc = "If the tool stays within proximity of the tablet, but the focus"]
+            #[doc = "changes from one surface to another, a button release event may not"]
+            #[doc = "be sent until the button is actually released or the tool leaves the"]
+            #[doc = "proximity of the tablet."]
+            async fn proximity_out(&self) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the tablet tool comes in contact with the surface of the"]
+            #[doc = "tablet."]
+            #[doc = ""]
+            #[doc = "If the tool is already in contact with the tablet when entering the"]
+            #[doc = "input region, the client owning said region will receive a"]
+            #[doc = "wp_tablet.proximity_in event, followed by a wp_tablet.down"]
+            #[doc = "event and a wp_tablet.frame event."]
+            #[doc = ""]
+            #[doc = "Note that this event describes logical contact, not physical"]
+            #[doc = "contact. On some devices, a compositor may not consider a tool in"]
+            #[doc = "logical contact until a minimum physical pressure threshold is"]
+            #[doc = "exceeded."]
+            async fn down(&self, serial: u32) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the tablet tool stops making contact with the surface of"]
+            #[doc = "the tablet, or when the tablet tool moves out of the input region"]
+            #[doc = "and the compositor grab (if any) is dismissed."]
+            #[doc = ""]
+            #[doc = "If the tablet tool moves out of the input region while in contact"]
+            #[doc = "with the surface of the tablet and the compositor does not have an"]
+            #[doc = "ongoing grab on the surface, the client owning said region will"]
+            #[doc = "receive a wp_tablet.up event, followed by a wp_tablet.proximity_out"]
+            #[doc = "event and a wp_tablet.frame event. If the compositor has an ongoing"]
+            #[doc = "grab on this device, this event sequence is sent whenever the grab"]
+            #[doc = "is dismissed in the future."]
+            #[doc = ""]
+            #[doc = "Note that this event describes logical contact, not physical"]
+            #[doc = "contact. On some devices, a compositor may not consider a tool out"]
+            #[doc = "of logical contact until physical pressure falls below a specific"]
+            #[doc = "threshold."]
+            async fn up(&self) -> crate::client::Result<()>;
+            #[doc = "Sent whenever a tablet tool moves."]
+            async fn motion(
+                &self,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the pressure axis on a tool changes. The value of this"]
+            #[doc = "event is normalized to a value between 0 and 65535."]
+            #[doc = ""]
+            #[doc = "Note that pressure may be nonzero even when a tool is not in logical"]
+            #[doc = "contact. See the down and up events for more details."]
+            async fn pressure(&self, pressure: u32) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the distance axis on a tool changes. The value of this"]
+            #[doc = "event is normalized to a value between 0 and 65535."]
+            #[doc = ""]
+            #[doc = "Note that distance may be nonzero even when a tool is not in logical"]
+            #[doc = "contact. See the down and up events for more details."]
+            async fn distance(&self, distance: u32) -> crate::client::Result<()>;
+            #[doc = "Sent whenever one or both of the tilt axes on a tool change. Each tilt"]
+            #[doc = "value is in degrees, relative to the z-axis of the tablet."]
+            #[doc = "The angle is positive when the top of a tool tilts along the"]
+            #[doc = "positive x or y axis."]
+            async fn tilt(
+                &self,
+                tilt_x: crate::wire::Fixed,
+                tilt_y: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the z-rotation axis on the tool changes. The"]
+            #[doc = "rotation value is in degrees clockwise from the tool's"]
+            #[doc = "logical neutral position."]
+            async fn rotation(&self, degrees: crate::wire::Fixed) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the slider position on the tool changes. The"]
+            #[doc = "value is normalized between -65535 and 65535, with 0 as the logical"]
+            #[doc = "neutral position of the slider."]
+            #[doc = ""]
+            #[doc = "The slider is available on e.g. the Wacom Airbrush tool."]
+            async fn slider(&self, position: i32) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the wheel on the tool emits an event. This event"]
+            #[doc = "contains two values for the same axis change. The degrees value is"]
+            #[doc = "in the same orientation as the wl_pointer.vertical_scroll axis. The"]
+            #[doc = "clicks value is in discrete logical clicks of the mouse wheel. This"]
+            #[doc = "value may be zero if the movement of the wheel was less"]
+            #[doc = "than one logical click."]
+            #[doc = ""]
+            #[doc = "Clients should choose either value and avoid mixing degrees and"]
+            #[doc = "clicks. The compositor may accumulate values smaller than a logical"]
+            #[doc = "click and emulate click events when a certain threshold is met."]
+            #[doc = "Thus, wl_tablet_tool.wheel events with non-zero clicks values may"]
+            #[doc = "have different degrees values."]
+            async fn wheel(
+                &self,
+                degrees: crate::wire::Fixed,
+                clicks: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Sent whenever a button on the tool is pressed or released."]
+            #[doc = ""]
+            #[doc = "If a button is held down when the tool moves in or out of proximity,"]
+            #[doc = "button events are generated by the compositor. See"]
+            #[doc = "wp_tablet_tool.proximity_in and wp_tablet_tool.proximity_out for"]
+            #[doc = "details."]
+            async fn button(
+                &self,
+                serial: u32,
+                button: u32,
+                state: ButtonState,
+            ) -> crate::client::Result<()>;
+            #[doc = "Marks the end of a series of axis and/or button updates from the"]
+            #[doc = "tablet. The Wayland protocol requires axis updates to be sent"]
+            #[doc = "sequentially, however all events within a frame should be considered"]
+            #[doc = "one hardware event."]
+            async fn frame(&self, time: u32) -> crate::client::Result<()>;
         }
     }
     #[doc = "The wp_tablet interface represents one graphics tablet device. The"]
@@ -3948,6 +4871,47 @@ pub mod tablet_unstable_v2 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "A descriptive name for the tablet device."]
+            #[doc = ""]
+            #[doc = "If the device has no descriptive name, this event is not sent."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet.done event."]
+            async fn name(&self, name: String) -> crate::client::Result<()>;
+            #[doc = "The USB vendor and product IDs for the tablet device."]
+            #[doc = ""]
+            #[doc = "If the device has no USB vendor/product ID, this event is not sent."]
+            #[doc = "This can happen for virtual devices or non-USB devices, for instance."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet.done event."]
+            async fn id(&self, vid: u32, pid: u32) -> crate::client::Result<()>;
+            #[doc = "A system-specific device path that indicates which device is behind"]
+            #[doc = "this wp_tablet. This information may be used to gather additional"]
+            #[doc = "information about the device, e.g. through libwacom."]
+            #[doc = ""]
+            #[doc = "A device may have more than one device path. If so, multiple"]
+            #[doc = "wp_tablet.path events are sent. A device may be emulated and not"]
+            #[doc = "have a device path, and in that case this event will not be sent."]
+            #[doc = ""]
+            #[doc = "The format of the path is unspecified, it may be a device node, a"]
+            #[doc = "sysfs path, or some other identifier. It is up to the client to"]
+            #[doc = "identify the string provided."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet.done event."]
+            async fn path(&self, path: String) -> crate::client::Result<()>;
+            #[doc = "This event is sent immediately to signal the end of the initial"]
+            #[doc = "burst of descriptive events. A client may consider the static"]
+            #[doc = "description of the tablet to be complete and finalize initialization"]
+            #[doc = "of the tablet."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "Sent when the tablet has been removed from the system. When a tablet"]
+            #[doc = "is removed, some tools may be removed."]
+            #[doc = ""]
+            #[doc = "When this event is received, the client must wp_tablet.destroy"]
+            #[doc = "the object."]
+            async fn removed(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "A circular interaction area, such as the touch ring on the Wacom Intuos"]
@@ -4040,6 +5004,49 @@ pub mod tablet_unstable_v2 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Source information for ring events."]
+            #[doc = ""]
+            #[doc = "This event does not occur on its own. It is sent before a"]
+            #[doc = "wp_tablet_pad_ring.frame event and carries the source information"]
+            #[doc = "for all events within that frame."]
+            #[doc = ""]
+            #[doc = "The source specifies how this event was generated. If the source is"]
+            #[doc = "wp_tablet_pad_ring.source.finger, a wp_tablet_pad_ring.stop event"]
+            #[doc = "will be sent when the user lifts the finger off the device."]
+            #[doc = ""]
+            #[doc = "This event is optional. If the source is unknown for an interaction,"]
+            #[doc = "no event is sent."]
+            async fn source(&self, source: Source) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the angle on a ring changes."]
+            #[doc = ""]
+            #[doc = "The angle is provided in degrees clockwise from the logical"]
+            #[doc = "north of the ring in the pad's current rotation."]
+            async fn angle(&self, degrees: crate::wire::Fixed) -> crate::client::Result<()>;
+            #[doc = "Stop notification for ring events."]
+            #[doc = ""]
+            #[doc = "For some wp_tablet_pad_ring.source types, a wp_tablet_pad_ring.stop"]
+            #[doc = "event is sent to notify a client that the interaction with the ring"]
+            #[doc = "has terminated. This enables the client to implement kinetic scrolling."]
+            #[doc = "See the wp_tablet_pad_ring.source documentation for information on"]
+            #[doc = "when this event may be generated."]
+            #[doc = ""]
+            #[doc = "Any wp_tablet_pad_ring.angle events with the same source after this"]
+            #[doc = "event should be considered as the start of a new interaction."]
+            async fn stop(&self) -> crate::client::Result<()>;
+            #[doc = "Indicates the end of a set of ring events that logically belong"]
+            #[doc = "together. A client is expected to accumulate the data in all events"]
+            #[doc = "within the frame before proceeding."]
+            #[doc = ""]
+            #[doc = "All wp_tablet_pad_ring events before a wp_tablet_pad_ring.frame event belong"]
+            #[doc = "logically together. For example, on termination of a finger interaction"]
+            #[doc = "on a ring the compositor will send a wp_tablet_pad_ring.source event,"]
+            #[doc = "a wp_tablet_pad_ring.stop event and a wp_tablet_pad_ring.frame event."]
+            #[doc = ""]
+            #[doc = "A wp_tablet_pad_ring.frame event is sent for every logical event"]
+            #[doc = "group, even if the group only contains a single wp_tablet_pad_ring"]
+            #[doc = "event. Specifically, a client may get a sequence: angle, frame,"]
+            #[doc = "angle, frame, etc."]
+            async fn frame(&self, time: u32) -> crate::client::Result<()>;
         }
     }
     #[doc = "A linear interaction area, such as the strips found in Wacom Cintiq"]
@@ -4132,6 +5139,51 @@ pub mod tablet_unstable_v2 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Source information for strip events."]
+            #[doc = ""]
+            #[doc = "This event does not occur on its own. It is sent before a"]
+            #[doc = "wp_tablet_pad_strip.frame event and carries the source information"]
+            #[doc = "for all events within that frame."]
+            #[doc = ""]
+            #[doc = "The source specifies how this event was generated. If the source is"]
+            #[doc = "wp_tablet_pad_strip.source.finger, a wp_tablet_pad_strip.stop event"]
+            #[doc = "will be sent when the user lifts their finger off the device."]
+            #[doc = ""]
+            #[doc = "This event is optional. If the source is unknown for an interaction,"]
+            #[doc = "no event is sent."]
+            async fn source(&self, source: Source) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the position on a strip changes."]
+            #[doc = ""]
+            #[doc = "The position is normalized to a range of [0, 65535], the 0-value"]
+            #[doc = "represents the top-most and/or left-most position of the strip in"]
+            #[doc = "the pad's current rotation."]
+            async fn position(&self, position: u32) -> crate::client::Result<()>;
+            #[doc = "Stop notification for strip events."]
+            #[doc = ""]
+            #[doc = "For some wp_tablet_pad_strip.source types, a wp_tablet_pad_strip.stop"]
+            #[doc = "event is sent to notify a client that the interaction with the strip"]
+            #[doc = "has terminated. This enables the client to implement kinetic"]
+            #[doc = "scrolling. See the wp_tablet_pad_strip.source documentation for"]
+            #[doc = "information on when this event may be generated."]
+            #[doc = ""]
+            #[doc = "Any wp_tablet_pad_strip.position events with the same source after this"]
+            #[doc = "event should be considered as the start of a new interaction."]
+            async fn stop(&self) -> crate::client::Result<()>;
+            #[doc = "Indicates the end of a set of events that represent one logical"]
+            #[doc = "hardware strip event. A client is expected to accumulate the data"]
+            #[doc = "in all events within the frame before proceeding."]
+            #[doc = ""]
+            #[doc = "All wp_tablet_pad_strip events before a wp_tablet_pad_strip.frame event belong"]
+            #[doc = "logically together. For example, on termination of a finger interaction"]
+            #[doc = "on a strip the compositor will send a wp_tablet_pad_strip.source event,"]
+            #[doc = "a wp_tablet_pad_strip.stop event and a wp_tablet_pad_strip.frame"]
+            #[doc = "event."]
+            #[doc = ""]
+            #[doc = "A wp_tablet_pad_strip.frame event is sent for every logical event"]
+            #[doc = "group, even if the group only contains a single wp_tablet_pad_strip"]
+            #[doc = "event. Specifically, a client may get a sequence: position, frame,"]
+            #[doc = "position, frame, etc."]
+            async fn frame(&self, time: u32) -> crate::client::Result<()>;
         }
     }
     #[doc = "A pad group describes a distinct (sub)set of buttons, rings and strips"]
@@ -4185,6 +5237,82 @@ pub mod tablet_unstable_v2 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Sent on wp_tablet_pad_group initialization to announce the available"]
+            #[doc = "buttons in the group. Button indices start at 0, a button may only be"]
+            #[doc = "in one group at a time."]
+            #[doc = ""]
+            #[doc = "This event is first sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_pad_group.done event."]
+            #[doc = ""]
+            #[doc = "Some buttons are reserved by the compositor. These buttons may not be"]
+            #[doc = "assigned to any wp_tablet_pad_group. Compositors may broadcast this"]
+            #[doc = "event in the case of changes to the mapping of these reserved buttons."]
+            #[doc = "If the compositor happens to reserve all buttons in a group, this event"]
+            #[doc = "will be sent with an empty array."]
+            async fn buttons(&self, buttons: Vec<u8>) -> crate::client::Result<()>;
+            #[doc = "Sent on wp_tablet_pad_group initialization to announce available rings."]
+            #[doc = "One event is sent for each ring available on this pad group."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_pad_group.done event."]
+            async fn ring(&self, ring: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "Sent on wp_tablet_pad initialization to announce available strips."]
+            #[doc = "One event is sent for each strip available on this pad group."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_pad_group.done event."]
+            async fn strip(&self, strip: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "Sent on wp_tablet_pad_group initialization to announce that the pad"]
+            #[doc = "group may switch between modes. A client may use a mode to store a"]
+            #[doc = "specific configuration for buttons, rings and strips and use the"]
+            #[doc = "wl_tablet_pad_group.mode_switch event to toggle between these"]
+            #[doc = "configurations. Mode indices start at 0."]
+            #[doc = ""]
+            #[doc = "Switching modes is compositor-dependent. See the"]
+            #[doc = "wp_tablet_pad_group.mode_switch event for more details."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_pad_group.done event. This event is only sent when more than"]
+            #[doc = "more than one mode is available."]
+            async fn modes(&self, modes: u32) -> crate::client::Result<()>;
+            #[doc = "This event is sent immediately to signal the end of the initial"]
+            #[doc = "burst of descriptive events. A client may consider the static"]
+            #[doc = "description of the tablet to be complete and finalize initialization"]
+            #[doc = "of the tablet group."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "Notification that the mode was switched."]
+            #[doc = ""]
+            #[doc = "A mode applies to all buttons, rings and strips in a group"]
+            #[doc = "simultaneously, but a client is not required to assign different actions"]
+            #[doc = "for each mode. For example, a client may have mode-specific button"]
+            #[doc = "mappings but map the ring to vertical scrolling in all modes. Mode"]
+            #[doc = "indices start at 0."]
+            #[doc = ""]
+            #[doc = "Switching modes is compositor-dependent. The compositor may provide"]
+            #[doc = "visual cues to the client about the mode, e.g. by toggling LEDs on"]
+            #[doc = "the tablet device. Mode-switching may be software-controlled or"]
+            #[doc = "controlled by one or more physical buttons. For example, on a Wacom"]
+            #[doc = "Intuos Pro, the button inside the ring may be assigned to switch"]
+            #[doc = "between modes."]
+            #[doc = ""]
+            #[doc = "The compositor will also send this event after wp_tablet_pad.enter on"]
+            #[doc = "each group in order to notify of the current mode. Groups that only"]
+            #[doc = "feature one mode will use mode=0 when emitting this event."]
+            #[doc = ""]
+            #[doc = "If a button action in the new mode differs from the action in the"]
+            #[doc = "previous mode, the client should immediately issue a"]
+            #[doc = "wp_tablet_pad.set_feedback request for each changed button."]
+            #[doc = ""]
+            #[doc = "If a ring or strip action in the new mode differs from the action"]
+            #[doc = "in the previous mode, the client should immediately issue a"]
+            #[doc = "wp_tablet_ring.set_feedback or wp_tablet_strip.set_feedback request"]
+            #[doc = "for each changed ring or strip."]
+            async fn mode_switch(
+                &self,
+                time: u32,
+                serial: u32,
+                mode: u32,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A pad device is a set of buttons, rings and strips"]
@@ -4303,6 +5431,62 @@ pub mod tablet_unstable_v2 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Sent on wp_tablet_pad initialization to announce available groups."]
+            #[doc = "One event is sent for each pad group available."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_pad.done event. At least one group will be announced."]
+            async fn group(&self, pad_group: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "A system-specific device path that indicates which device is behind"]
+            #[doc = "this wp_tablet_pad. This information may be used to gather additional"]
+            #[doc = "information about the device, e.g. through libwacom."]
+            #[doc = ""]
+            #[doc = "The format of the path is unspecified, it may be a device node, a"]
+            #[doc = "sysfs path, or some other identifier. It is up to the client to"]
+            #[doc = "identify the string provided."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_pad.done event."]
+            async fn path(&self, path: String) -> crate::client::Result<()>;
+            #[doc = "Sent on wp_tablet_pad initialization to announce the available"]
+            #[doc = "buttons."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_pad.done event. This event is only sent when at least one"]
+            #[doc = "button is available."]
+            async fn buttons(&self, buttons: u32) -> crate::client::Result<()>;
+            #[doc = "This event signals the end of the initial burst of descriptive"]
+            #[doc = "events. A client may consider the static description of the pad to"]
+            #[doc = "be complete and finalize initialization of the pad."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "Sent whenever the physical state of a button changes."]
+            async fn button(
+                &self,
+                time: u32,
+                button: u32,
+                state: ButtonState,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notification that this pad is focused on the specified surface."]
+            async fn enter(
+                &self,
+                serial: u32,
+                tablet: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notification that this pad is no longer focused on the specified"]
+            #[doc = "surface."]
+            async fn leave(
+                &self,
+                serial: u32,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "Sent when the pad has been removed from the system. When a tablet"]
+            #[doc = "is removed its pad(s) will be removed too."]
+            #[doc = ""]
+            #[doc = "When this event is received, the client must destroy all rings, strips"]
+            #[doc = "and groups that were offered by this pad, and issue wp_tablet_pad.destroy"]
+            #[doc = "the pad itself."]
+            async fn removed(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -4677,6 +5861,106 @@ pub mod text_input_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Notify the text_input object when it received focus. Typically in"]
+            #[doc = "response to an activate request."]
+            async fn enter(&self, surface: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "Notify the text_input object when it lost focus. Either in response"]
+            #[doc = "to a deactivate request or when the assigned surface lost focus or was"]
+            #[doc = "destroyed."]
+            async fn leave(&self) -> crate::client::Result<()>;
+            #[doc = "Transfer an array of 0-terminated modifier names. The position in"]
+            #[doc = "the array is the index of the modifier as used in the modifiers"]
+            #[doc = "bitmask in the keysym event."]
+            async fn modifiers_map(&self, map: Vec<u8>) -> crate::client::Result<()>;
+            #[doc = "Notify when the visibility state of the input panel changed."]
+            async fn input_panel_state(&self, state: u32) -> crate::client::Result<()>;
+            #[doc = "Notify when a new composing text (pre-edit) should be set around the"]
+            #[doc = "current cursor position. Any previously set composing text should"]
+            #[doc = "be removed."]
+            #[doc = ""]
+            #[doc = "The commit text can be used to replace the preedit text on reset"]
+            #[doc = "(for example on unfocus)."]
+            #[doc = ""]
+            #[doc = "The text input should also handle all preedit_style and preedit_cursor"]
+            #[doc = "events occurring directly before preedit_string."]
+            async fn preedit_string(
+                &self,
+                serial: u32,
+                text: String,
+                commit: String,
+            ) -> crate::client::Result<()>;
+            #[doc = "Sets styling information on composing text. The style is applied for"]
+            #[doc = "length bytes from index relative to the beginning of the composing"]
+            #[doc = "text (as byte offset). Multiple styles can"]
+            #[doc = "be applied to a composing text by sending multiple preedit_styling"]
+            #[doc = "events."]
+            #[doc = ""]
+            #[doc = "This event is handled as part of a following preedit_string event."]
+            async fn preedit_styling(
+                &self,
+                index: u32,
+                length: u32,
+                style: PreeditStyle,
+            ) -> crate::client::Result<()>;
+            #[doc = "Sets the cursor position inside the composing text (as byte"]
+            #[doc = "offset) relative to the start of the composing text. When index is a"]
+            #[doc = "negative number no cursor is shown."]
+            #[doc = ""]
+            #[doc = "This event is handled as part of a following preedit_string event."]
+            async fn preedit_cursor(&self, index: i32) -> crate::client::Result<()>;
+            #[doc = "Notify when text should be inserted into the editor widget. The text to"]
+            #[doc = "commit could be either just a single character after a key press or the"]
+            #[doc = "result of some composing (pre-edit). It could also be an empty text"]
+            #[doc = "when some text should be removed (see delete_surrounding_text) or when"]
+            #[doc = "the input cursor should be moved (see cursor_position)."]
+            #[doc = ""]
+            #[doc = "Any previously set composing text should be removed."]
+            async fn commit_string(&self, serial: u32, text: String) -> crate::client::Result<()>;
+            #[doc = "Notify when the cursor or anchor position should be modified."]
+            #[doc = ""]
+            #[doc = "This event should be handled as part of a following commit_string"]
+            #[doc = "event."]
+            async fn cursor_position(&self, index: i32, anchor: i32) -> crate::client::Result<()>;
+            #[doc = "Notify when the text around the current cursor position should be"]
+            #[doc = "deleted."]
+            #[doc = ""]
+            #[doc = "Index is relative to the current cursor (in bytes)."]
+            #[doc = "Length is the length of deleted text (in bytes)."]
+            #[doc = ""]
+            #[doc = "This event should be handled as part of a following commit_string"]
+            #[doc = "event."]
+            async fn delete_surrounding_text(
+                &self,
+                index: i32,
+                length: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notify when a key event was sent. Key events should not be used"]
+            #[doc = "for normal text input operations, which should be done with"]
+            #[doc = "commit_string, delete_surrounding_text, etc. The key event follows"]
+            #[doc = "the wl_keyboard key event convention. Sym is an XKB keysym, state a"]
+            #[doc = "wl_keyboard key_state. Modifiers are a mask for effective modifiers"]
+            #[doc = "(where the modifier indices are set by the modifiers_map event)"]
+            async fn keysym(
+                &self,
+                serial: u32,
+                time: u32,
+                sym: u32,
+                state: u32,
+                modifiers: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Sets the language of the input text. The \"language\" argument is an"]
+            #[doc = "RFC-3066 format language tag."]
+            async fn language(&self, serial: u32, language: String) -> crate::client::Result<()>;
+            #[doc = "Sets the text direction of input text."]
+            #[doc = ""]
+            #[doc = "It is mainly needed for showing an input cursor on the correct side of"]
+            #[doc = "the editor when there is no input done yet and making sure neutral"]
+            #[doc = "direction text is laid out properly."]
+            async fn text_direction(
+                &self,
+                serial: u32,
+                direction: TextDirection,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A factory for text_input objects. This object is a global singleton."]
@@ -5116,6 +6400,107 @@ pub mod text_input_unstable_v3 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Notification that this seat's text-input focus is on a certain surface."]
+            #[doc = ""]
+            #[doc = "If client has created multiple text input objects, compositor must send"]
+            #[doc = "this event to all of them."]
+            #[doc = ""]
+            #[doc = "When the seat has the keyboard capability the text-input focus follows"]
+            #[doc = "the keyboard focus. This event sets the current surface for the"]
+            #[doc = "text-input object."]
+            async fn enter(&self, surface: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "Notification that this seat's text-input focus is no longer on a"]
+            #[doc = "certain surface. The client should reset any preedit string previously"]
+            #[doc = "set."]
+            #[doc = ""]
+            #[doc = "The leave notification clears the current surface. It is sent before"]
+            #[doc = "the enter notification for the new focus. After leave event, compositor"]
+            #[doc = "must ignore requests from any text input instances until next enter"]
+            #[doc = "event."]
+            #[doc = ""]
+            #[doc = "When the seat has the keyboard capability the text-input focus follows"]
+            #[doc = "the keyboard focus."]
+            async fn leave(&self, surface: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "Notify when a new composing text (pre-edit) should be set at the"]
+            #[doc = "current cursor position. Any previously set composing text must be"]
+            #[doc = "removed. Any previously existing selected text must be removed."]
+            #[doc = ""]
+            #[doc = "The argument text contains the pre-edit string buffer."]
+            #[doc = ""]
+            #[doc = "The parameters cursor_begin and cursor_end are counted in bytes"]
+            #[doc = "relative to the beginning of the submitted text buffer. Cursor should"]
+            #[doc = "be hidden when both are equal to -1."]
+            #[doc = ""]
+            #[doc = "They could be represented by the client as a line if both values are"]
+            #[doc = "the same, or as a text highlight otherwise."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They must be applied"]
+            #[doc = "and reset to initial on the next zwp_text_input_v3.done event."]
+            #[doc = ""]
+            #[doc = "The initial value of text is an empty string, and cursor_begin,"]
+            #[doc = "cursor_end and cursor_hidden are all 0."]
+            async fn preedit_string(
+                &self,
+                text: Option<String>,
+                cursor_begin: i32,
+                cursor_end: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notify when text should be inserted into the editor widget. The text to"]
+            #[doc = "commit could be either just a single character after a key press or the"]
+            #[doc = "result of some composing (pre-edit)."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They must be applied"]
+            #[doc = "and reset to initial on the next zwp_text_input_v3.done event."]
+            #[doc = ""]
+            #[doc = "The initial value of text is an empty string."]
+            async fn commit_string(&self, text: Option<String>) -> crate::client::Result<()>;
+            #[doc = "Notify when the text around the current cursor position should be"]
+            #[doc = "deleted."]
+            #[doc = ""]
+            #[doc = "Before_length and after_length are the number of bytes before and after"]
+            #[doc = "the current cursor index (excluding the selection) to delete."]
+            #[doc = ""]
+            #[doc = "If a preedit text is present, in effect before_length is counted from"]
+            #[doc = "the beginning of it, and after_length from its end (see done event"]
+            #[doc = "sequence)."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They must be applied"]
+            #[doc = "and reset to initial on the next zwp_text_input_v3.done event."]
+            #[doc = ""]
+            #[doc = "The initial values of both before_length and after_length are 0."]
+            async fn delete_surrounding_text(
+                &self,
+                before_length: u32,
+                after_length: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Instruct the application to apply changes to state requested by the"]
+            #[doc = "preedit_string, commit_string and delete_surrounding_text events. The"]
+            #[doc = "state relating to these events is double-buffered, and each one"]
+            #[doc = "modifies the pending state. This event replaces the current state with"]
+            #[doc = "the pending state."]
+            #[doc = ""]
+            #[doc = "The application must proceed by evaluating the changes in the following"]
+            #[doc = "order:"]
+            #[doc = ""]
+            #[doc = "1. Replace existing preedit string with the cursor."]
+            #[doc = "2. Delete requested surrounding text."]
+            #[doc = "3. Insert commit string with the cursor at its end."]
+            #[doc = "4. Calculate surrounding text to send."]
+            #[doc = "5. Insert new preedit text in cursor position."]
+            #[doc = "6. Place cursor inside preedit text."]
+            #[doc = ""]
+            #[doc = "The serial number reflects the last state of the zwp_text_input_v3"]
+            #[doc = "object known to the compositor. The value of the serial argument must"]
+            #[doc = "be equal to the number of commit requests already issued on that object."]
+            #[doc = ""]
+            #[doc = "When the client receives a done event with a serial different than the"]
+            #[doc = "number of past commit requests, it must proceed with evaluating and"]
+            #[doc = "applying the changes as normal, except it should not change the current"]
+            #[doc = "state of the zwp_text_input_v3 object. All pending state requests"]
+            #[doc = "(set_surrounding_text, set_content_type and set_cursor_rectangle) on"]
+            #[doc = "the zwp_text_input_v3 object should be sent and committed after"]
+            #[doc = "receiving a zwp_text_input_v3.done event with a matching serial."]
+            async fn done(&self, serial: u32) -> crate::client::Result<()>;
         }
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
@@ -5388,6 +6773,14 @@ pub mod xdg_decoration_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The configure event configures the effective decoration mode. The"]
+            #[doc = "configured state should not be applied immediately. Clients must send an"]
+            #[doc = "ack_configure in response to this event. See xdg_surface.configure and"]
+            #[doc = "xdg_surface.ack_configure for details."]
+            #[doc = ""]
+            #[doc = "A configure event can be sent at any time. The specified mode must be"]
+            #[doc = "obeyed by the client."]
+            async fn configure(&self, mode: Mode) -> crate::client::Result<()>;
         }
     }
 }
@@ -5573,6 +6966,11 @@ pub mod xdg_foreign_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The handle event contains the unique handle of this exported surface"]
+            #[doc = "reference. It may be shared with any client, which then can use it to"]
+            #[doc = "import the surface by calling xdg_importer.import. A handle may be"]
+            #[doc = "used to import the surface multiple times."]
+            async fn handle(&self, handle: String) -> crate::client::Result<()>;
         }
     }
     #[doc = "An xdg_imported object represents an imported reference to surface exported"]
@@ -5628,6 +7026,11 @@ pub mod xdg_foreign_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The imported surface handle has been destroyed and any relationship set"]
+            #[doc = "up has been invalidated. This may happen for various reasons, for"]
+            #[doc = "example if the exported surface or the exported surface handle has been"]
+            #[doc = "destroyed, if the handle used for importing was invalid."]
+            async fn destroyed(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -5832,6 +7235,11 @@ pub mod xdg_foreign_unstable_v2 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The handle event contains the unique handle of this exported surface"]
+            #[doc = "reference. It may be shared with any client, which then can use it to"]
+            #[doc = "import the surface by calling xdg_importer.import_toplevel. A handle"]
+            #[doc = "may be used to import the surface multiple times."]
+            async fn handle(&self, handle: String) -> crate::client::Result<()>;
         }
     }
     #[doc = "An xdg_imported object represents an imported reference to surface exported"]
@@ -5906,6 +7314,11 @@ pub mod xdg_foreign_unstable_v2 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The imported surface handle has been destroyed and any relationship set"]
+            #[doc = "up has been invalidated. This may happen for various reasons, for"]
+            #[doc = "example if the exported surface or the exported surface handle has been"]
+            #[doc = "destroyed, if the handle used for importing was invalid."]
+            async fn destroyed(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -6030,6 +7443,95 @@ pub mod xdg_output_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The position event describes the location of the wl_output within"]
+            #[doc = "the global compositor space."]
+            #[doc = ""]
+            #[doc = "The logical_position event is sent after creating an xdg_output"]
+            #[doc = "(see xdg_output_manager.get_xdg_output) and whenever the location"]
+            #[doc = "of the output changes within the global compositor space."]
+            async fn logical_position(&self, x: i32, y: i32) -> crate::client::Result<()>;
+            #[doc = "The logical_size event describes the size of the output in the"]
+            #[doc = "global compositor space."]
+            #[doc = ""]
+            #[doc = "Most regular Wayland clients should not pay attention to the"]
+            #[doc = "logical size and would rather rely on xdg_shell interfaces."]
+            #[doc = ""]
+            #[doc = "Some clients such as Xwayland, however, need this to configure"]
+            #[doc = "their surfaces in the global compositor space as the compositor"]
+            #[doc = "may apply a different scale from what is advertised by the output"]
+            #[doc = "scaling property (to achieve fractional scaling, for example)."]
+            #[doc = ""]
+            #[doc = "For example, for a wl_output mode 3840×2160 and a scale factor 2:"]
+            #[doc = ""]
+            #[doc = "- A compositor not scaling the monitor viewport in its compositing space"]
+            #[doc = "will advertise a logical size of 3840×2160,"]
+            #[doc = ""]
+            #[doc = "- A compositor scaling the monitor viewport with scale factor 2 will"]
+            #[doc = "advertise a logical size of 1920×1080,"]
+            #[doc = ""]
+            #[doc = "- A compositor scaling the monitor viewport using a fractional scale of"]
+            #[doc = "1.5 will advertise a logical size of 2560×1440."]
+            #[doc = ""]
+            #[doc = "For example, for a wl_output mode 1920×1080 and a 90 degree rotation,"]
+            #[doc = "the compositor will advertise a logical size of 1080x1920."]
+            #[doc = ""]
+            #[doc = "The logical_size event is sent after creating an xdg_output"]
+            #[doc = "(see xdg_output_manager.get_xdg_output) and whenever the logical"]
+            #[doc = "size of the output changes, either as a result of a change in the"]
+            #[doc = "applied scale or because of a change in the corresponding output"]
+            #[doc = "mode(see wl_output.mode) or transform (see wl_output.transform)."]
+            async fn logical_size(&self, width: i32, height: i32) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all other properties of an xdg_output"]
+            #[doc = "have been sent."]
+            #[doc = ""]
+            #[doc = "This allows changes to the xdg_output properties to be seen as"]
+            #[doc = "atomic, even if they happen via multiple events."]
+            #[doc = ""]
+            #[doc = "For objects version 3 onwards, this event is deprecated. Compositors"]
+            #[doc = "are not required to send it anymore and must send wl_output.done"]
+            #[doc = "instead."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "Many compositors will assign names to their outputs, show them to the"]
+            #[doc = "user, allow them to be configured by name, etc. The client may wish to"]
+            #[doc = "know this name as well to offer the user similar behaviors."]
+            #[doc = ""]
+            #[doc = "The naming convention is compositor defined, but limited to"]
+            #[doc = "alphanumeric characters and dashes (-). Each name is unique among all"]
+            #[doc = "wl_output globals, but if a wl_output global is destroyed the same name"]
+            #[doc = "may be reused later. The names will also remain consistent across"]
+            #[doc = "sessions with the same hardware and software configuration."]
+            #[doc = ""]
+            #[doc = "Examples of names include 'HDMI-A-1', 'WL-1', 'X11-1', etc. However, do"]
+            #[doc = "not assume that the name is a reflection of an underlying DRM"]
+            #[doc = "connector, X11 connection, etc."]
+            #[doc = ""]
+            #[doc = "The name event is sent after creating an xdg_output (see"]
+            #[doc = "xdg_output_manager.get_xdg_output). This event is only sent once per"]
+            #[doc = "xdg_output, and the name does not change over the lifetime of the"]
+            #[doc = "wl_output global."]
+            #[doc = ""]
+            #[doc = "This event is deprecated, instead clients should use wl_output.name."]
+            #[doc = "Compositors must still support this event."]
+            async fn name(&self, name: String) -> crate::client::Result<()>;
+            #[doc = "Many compositors can produce human-readable descriptions of their"]
+            #[doc = "outputs.  The client may wish to know this description as well, to"]
+            #[doc = "communicate the user for various purposes."]
+            #[doc = ""]
+            #[doc = "The description is a UTF-8 string with no convention defined for its"]
+            #[doc = "contents. Examples might include 'Foocorp 11\" Display' or 'Virtual X11"]
+            #[doc = "output via :1'."]
+            #[doc = ""]
+            #[doc = "The description event is sent after creating an xdg_output (see"]
+            #[doc = "xdg_output_manager.get_xdg_output) and whenever the description"]
+            #[doc = "changes. The description is optional, and may not be sent at all."]
+            #[doc = ""]
+            #[doc = "For objects of version 2 and lower, this event is only sent once per"]
+            #[doc = "xdg_output, and the description does not change over the lifetime of"]
+            #[doc = "the wl_output global."]
+            #[doc = ""]
+            #[doc = "This event is deprecated, instead clients should use"]
+            #[doc = "wl_output.description. Compositors must still support this event."]
+            async fn description(&self, description: String) -> crate::client::Result<()>;
         }
     }
 }
@@ -6213,6 +7715,18 @@ pub mod xdg_shell_unstable_v5 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The ping event asks the client if it's still alive. Pass the"]
+            #[doc = "serial specified in the event back to the compositor by sending"]
+            #[doc = "a \"pong\" request back with the specified serial."]
+            #[doc = ""]
+            #[doc = "Compositors can use this to determine if the client is still"]
+            #[doc = "alive. It's unspecified what will happen if the client doesn't"]
+            #[doc = "respond to the ping request, or in what timeframe. Clients should"]
+            #[doc = "try to respond in a reasonable amount of time."]
+            #[doc = ""]
+            #[doc = "A compositor is free to ping in any way it wants, but a client must"]
+            #[doc = "always respond to any xdg_shell object it created."]
+            async fn ping(&self, serial: u32) -> crate::client::Result<()>;
         }
     }
     #[doc = "An interface that may be implemented by a wl_surface, for"]
@@ -6734,6 +8248,46 @@ pub mod xdg_shell_unstable_v5 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The configure event asks the client to resize its surface or to"]
+            #[doc = "change its state."]
+            #[doc = ""]
+            #[doc = "The width and height arguments specify a hint to the window"]
+            #[doc = "about how its surface should be resized in window geometry"]
+            #[doc = "coordinates. See set_window_geometry."]
+            #[doc = ""]
+            #[doc = "If the width or height arguments are zero, it means the client"]
+            #[doc = "should decide its own window dimension. This may happen when the"]
+            #[doc = "compositor need to configure the state of the surface but doesn't"]
+            #[doc = "have any information about any previous or expected dimension."]
+            #[doc = ""]
+            #[doc = "The states listed in the event specify how the width/height"]
+            #[doc = "arguments should be interpreted, and possibly how it should be"]
+            #[doc = "drawn."]
+            #[doc = ""]
+            #[doc = "Clients should arrange their surface for the new size and"]
+            #[doc = "states, and then send a ack_configure request with the serial"]
+            #[doc = "sent in this configure event at some point before committing"]
+            #[doc = "the new surface."]
+            #[doc = ""]
+            #[doc = "If the client receives multiple configure events before it"]
+            #[doc = "can respond to one, it is free to discard all but the last"]
+            #[doc = "event it received."]
+            async fn configure(
+                &self,
+                width: i32,
+                height: i32,
+                states: Vec<u8>,
+                serial: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "The close event is sent by the compositor when the user"]
+            #[doc = "wants the surface to be closed. This should be equivalent to"]
+            #[doc = "the user clicking the close button in client-side decorations,"]
+            #[doc = "if your application has any..."]
+            #[doc = ""]
+            #[doc = "This is only a request that the user intends to close your"]
+            #[doc = "window. The client may choose to ignore this request, or show"]
+            #[doc = "a dialog to ask the user to save their data..."]
+            async fn close(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "A popup surface is a short-lived, temporary surface that can be"]
@@ -6820,6 +8374,10 @@ pub mod xdg_shell_unstable_v5 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The popup_done event is sent out when a popup is dismissed by the"]
+            #[doc = "compositor. The client should destroy the xdg_popup object at this"]
+            #[doc = "point."]
+            async fn popup_done(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -6954,6 +8512,18 @@ pub mod xdg_shell_unstable_v6 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The ping event asks the client if it's still alive. Pass the"]
+            #[doc = "serial specified in the event back to the compositor by sending"]
+            #[doc = "a \"pong\" request back with the specified serial. See xdg_shell.ping."]
+            #[doc = ""]
+            #[doc = "Compositors can use this to determine if the client is still"]
+            #[doc = "alive. It's unspecified what will happen if the client doesn't"]
+            #[doc = "respond to the ping request, or in what timeframe. Clients should"]
+            #[doc = "try to respond in a reasonable amount of time."]
+            #[doc = ""]
+            #[doc = "A compositor is free to ping in any way it wants, but a client must"]
+            #[doc = "always respond to any xdg_shell object it created."]
+            async fn ping(&self, serial: u32) -> crate::client::Result<()>;
         }
     }
     #[doc = "The xdg_positioner provides a collection of rules for the placement of a"]
@@ -7410,6 +8980,23 @@ pub mod xdg_shell_unstable_v6 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The configure event marks the end of a configure sequence. A configure"]
+            #[doc = "sequence is a set of one or more events configuring the state of the"]
+            #[doc = "xdg_surface, including the final xdg_surface.configure event."]
+            #[doc = ""]
+            #[doc = "Where applicable, xdg_surface surface roles will during a configure"]
+            #[doc = "sequence extend this event as a latched state sent as events before the"]
+            #[doc = "xdg_surface.configure event. Such events should be considered to make up"]
+            #[doc = "a set of atomically applied configuration states, where the"]
+            #[doc = "xdg_surface.configure commits the accumulated state."]
+            #[doc = ""]
+            #[doc = "Clients should arrange their surface for the new states, and then send"]
+            #[doc = "an ack_configure request with the serial sent in this configure event at"]
+            #[doc = "some point before committing the new surface."]
+            #[doc = ""]
+            #[doc = "If the client receives multiple configure events before it can respond"]
+            #[doc = "to one, it is free to discard all but the last event it received."]
+            async fn configure(&self, serial: u32) -> crate::client::Result<()>;
         }
     }
     #[doc = "This interface defines an xdg_surface role which allows a surface to,"]
@@ -7928,6 +9515,40 @@ pub mod xdg_shell_unstable_v6 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This configure event asks the client to resize its toplevel surface or"]
+            #[doc = "to change its state. The configured state should not be applied"]
+            #[doc = "immediately. See xdg_surface.configure for details."]
+            #[doc = ""]
+            #[doc = "The width and height arguments specify a hint to the window"]
+            #[doc = "about how its surface should be resized in window geometry"]
+            #[doc = "coordinates. See set_window_geometry."]
+            #[doc = ""]
+            #[doc = "If the width or height arguments are zero, it means the client"]
+            #[doc = "should decide its own window dimension. This may happen when the"]
+            #[doc = "compositor needs to configure the state of the surface but doesn't"]
+            #[doc = "have any information about any previous or expected dimension."]
+            #[doc = ""]
+            #[doc = "The states listed in the event specify how the width/height"]
+            #[doc = "arguments should be interpreted, and possibly how it should be"]
+            #[doc = "drawn."]
+            #[doc = ""]
+            #[doc = "Clients must send an ack_configure in response to this event. See"]
+            #[doc = "xdg_surface.configure and xdg_surface.ack_configure for details."]
+            async fn configure(
+                &self,
+                width: i32,
+                height: i32,
+                states: Vec<u8>,
+            ) -> crate::client::Result<()>;
+            #[doc = "The close event is sent by the compositor when the user"]
+            #[doc = "wants the surface to be closed. This should be equivalent to"]
+            #[doc = "the user clicking the close button in client-side decorations,"]
+            #[doc = "if your application has any."]
+            #[doc = ""]
+            #[doc = "This is only a request that the user intends to close the"]
+            #[doc = "window. The client may choose to ignore this request, or show"]
+            #[doc = "a dialog to ask the user to save their data, etc."]
+            async fn close(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "A popup surface is a short-lived, temporary surface. It can be used to"]
@@ -8070,6 +9691,24 @@ pub mod xdg_shell_unstable_v6 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event asks the popup surface to configure itself given the"]
+            #[doc = "configuration. The configured state should not be applied immediately."]
+            #[doc = "See xdg_surface.configure for details."]
+            #[doc = ""]
+            #[doc = "The x and y arguments represent the position the popup was placed at"]
+            #[doc = "given the xdg_positioner rule, relative to the upper left corner of the"]
+            #[doc = "window geometry of the parent surface."]
+            async fn configure(
+                &self,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "The popup_done event is sent out when a popup is dismissed by the"]
+            #[doc = "compositor. The client should destroy the xdg_popup object at this"]
+            #[doc = "point."]
+            async fn popup_done(&self) -> crate::client::Result<()>;
         }
     }
 }

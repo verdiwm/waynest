@@ -96,6 +96,25 @@ pub mod wayland {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The error event is sent out when a fatal (non-recoverable)"]
+            #[doc = "error has occurred.  The object_id argument is the object"]
+            #[doc = "where the error occurred, most often in response to a request"]
+            #[doc = "to that object.  The code identifies the error and is defined"]
+            #[doc = "by the object interface.  As such, each interface defines its"]
+            #[doc = "own set of error codes.  The message is a brief description"]
+            #[doc = "of the error, for (debugging) convenience."]
+            async fn error(
+                &self,
+                object_id: crate::wire::ObjectId,
+                code: u32,
+                message: String,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is used internally by the object ID management"]
+            #[doc = "logic. When a client deletes an object that it had created,"]
+            #[doc = "the server will send this event to acknowledge that it has"]
+            #[doc = "seen the delete request. When the client receives this event,"]
+            #[doc = "it will know that it can safely reuse the object ID."]
+            async fn delete_id(&self, id: u32) -> crate::client::Result<()>;
         }
     }
     #[doc = "The singleton global registry object.  The server has a number of"]
@@ -153,6 +172,28 @@ pub mod wayland {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Notify the client of global objects."]
+            #[doc = ""]
+            #[doc = "The event notifies the client that a global object with"]
+            #[doc = "the given name is now available, and it implements the"]
+            #[doc = "given version of the given interface."]
+            async fn global(
+                &self,
+                name: u32,
+                interface: String,
+                version: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notify the client of removed global objects."]
+            #[doc = ""]
+            #[doc = "This event notifies the client that the global identified"]
+            #[doc = "by name is no longer available.  If the client bound to"]
+            #[doc = "the global using the bind request, the client should now"]
+            #[doc = "destroy that object."]
+            #[doc = ""]
+            #[doc = "The object remains valid and requests to the object will be"]
+            #[doc = "ignored until the client destroys it, to avoid races between"]
+            #[doc = "the global going away and a client sending a request to it."]
+            async fn global_remove(&self, name: u32) -> crate::client::Result<()>;
         }
     }
     #[doc = "Clients can handle the 'done' event to get notified when"]
@@ -175,6 +216,8 @@ pub mod wayland {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = "Notify the client when the related request is done."]
+            async fn done(&self, callback_data: u32) -> crate::client::Result<()>;
         }
     }
     #[doc = "A compositor.  This object is a singleton global.  The"]
@@ -801,6 +844,10 @@ pub mod wayland {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Informs the client about a valid pixel format that"]
+            #[doc = "can be used for buffers. Known formats include"]
+            #[doc = "argb8888 and xrgb8888."]
+            async fn format(&self, format: Format) -> crate::client::Result<()>;
         }
     }
     #[doc = "A buffer provides the content for a wl_surface. Buffers are"]
@@ -850,6 +897,19 @@ pub mod wayland {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Sent when this wl_buffer is no longer used by the compositor."]
+            #[doc = "The client is now free to reuse or destroy this buffer and its"]
+            #[doc = "backing storage."]
+            #[doc = ""]
+            #[doc = "If a client receives a release event before the frame callback"]
+            #[doc = "requested in the same wl_surface.commit that attaches this"]
+            #[doc = "wl_buffer to a surface, then the client is immediately free to"]
+            #[doc = "reuse the buffer and its backing storage, and does not need a"]
+            #[doc = "second buffer for the next surface content update. Typically"]
+            #[doc = "this is possible, when the compositor maintains a copy of the"]
+            #[doc = "wl_surface contents, e.g. as a GL texture. This is an important"]
+            #[doc = "optimization for GL(ES) compositors with wl_shm clients."]
+            async fn release(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "A wl_data_offer represents a piece of data offered for transfer"]
@@ -1049,6 +1109,56 @@ pub mod wayland {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Sent immediately after creating the wl_data_offer object.  One"]
+            #[doc = "event per offered mime type."]
+            async fn offer(&self, mime_type: String) -> crate::client::Result<()>;
+            #[doc = "This event indicates the actions offered by the data source. It"]
+            #[doc = "will be sent immediately after creating the wl_data_offer object,"]
+            #[doc = "or anytime the source side changes its offered actions through"]
+            #[doc = "wl_data_source.set_actions."]
+            async fn source_actions(
+                &self,
+                source_actions : super :: super :: super :: core :: wayland :: wl_data_device_manager :: DndAction,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event indicates the action selected by the compositor after"]
+            #[doc = "matching the source/destination side actions. Only one action (or"]
+            #[doc = "none) will be offered here."]
+            #[doc = ""]
+            #[doc = "This event can be emitted multiple times during the drag-and-drop"]
+            #[doc = "operation in response to destination side action changes through"]
+            #[doc = "wl_data_offer.set_actions."]
+            #[doc = ""]
+            #[doc = "This event will no longer be emitted after wl_data_device.drop"]
+            #[doc = "happened on the drag-and-drop destination, the client must"]
+            #[doc = "honor the last action received, or the last preferred one set"]
+            #[doc = "through wl_data_offer.set_actions when handling an \"ask\" action."]
+            #[doc = ""]
+            #[doc = "Compositors may also change the selected action on the fly, mainly"]
+            #[doc = "in response to keyboard modifier changes during the drag-and-drop"]
+            #[doc = "operation."]
+            #[doc = ""]
+            #[doc = "The most recent action received is always the valid one. Prior to"]
+            #[doc = "receiving wl_data_device.drop, the chosen action may change (e.g."]
+            #[doc = "due to keyboard modifiers being pressed). At the time of receiving"]
+            #[doc = "wl_data_device.drop the drag-and-drop destination must honor the"]
+            #[doc = "last action received."]
+            #[doc = ""]
+            #[doc = "Action changes may still happen after wl_data_device.drop,"]
+            #[doc = "especially on \"ask\" actions, where the drag-and-drop destination"]
+            #[doc = "may choose another action afterwards. Action changes happening"]
+            #[doc = "at this stage are always the result of inter-client negotiation, the"]
+            #[doc = "compositor shall no longer be able to induce a different action."]
+            #[doc = ""]
+            #[doc = "Upon \"ask\" actions, it is expected that the drag-and-drop destination"]
+            #[doc = "may potentially choose a different action and/or mime type,"]
+            #[doc = "based on wl_data_offer.source_actions and finally chosen by the"]
+            #[doc = "user (e.g. popping up a menu with the available options). The"]
+            #[doc = "final wl_data_offer.set_actions and wl_data_offer.accept requests"]
+            #[doc = "must happen before the call to wl_data_offer.finish."]
+            async fn action(
+                &self,
+                dnd_action: super::super::super::core::wayland::wl_data_device_manager::DndAction,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "The wl_data_source object is the source side of a wl_data_offer."]
@@ -1149,6 +1259,86 @@ pub mod wayland {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Sent when a target accepts pointer_focus or motion events.  If"]
+            #[doc = "a target does not accept any of the offered types, type is NULL."]
+            #[doc = ""]
+            #[doc = "Used for feedback during drag-and-drop."]
+            async fn target(&self, mime_type: Option<String>) -> crate::client::Result<()>;
+            #[doc = "Request for data from the client.  Send the data as the"]
+            #[doc = "specified mime type over the passed file descriptor, then"]
+            #[doc = "close it."]
+            async fn send(
+                &self,
+                mime_type: String,
+                fd: rustix::fd::OwnedFd,
+            ) -> crate::client::Result<()>;
+            #[doc = "This data source is no longer valid. There are several reasons why"]
+            #[doc = "this could happen:"]
+            #[doc = ""]
+            #[doc = "- The data source has been replaced by another data source."]
+            #[doc = "- The drag-and-drop operation was performed, but the drop destination"]
+            #[doc = "did not accept any of the mime types offered through"]
+            #[doc = "wl_data_source.target."]
+            #[doc = "- The drag-and-drop operation was performed, but the drop destination"]
+            #[doc = "did not select any of the actions present in the mask offered through"]
+            #[doc = "wl_data_source.action."]
+            #[doc = "- The drag-and-drop operation was performed but didn't happen over a"]
+            #[doc = "surface."]
+            #[doc = "- The compositor cancelled the drag-and-drop operation (e.g. compositor"]
+            #[doc = "dependent timeouts to avoid stale drag-and-drop transfers)."]
+            #[doc = ""]
+            #[doc = "The client should clean up and destroy this data source."]
+            #[doc = ""]
+            #[doc = "For objects of version 2 or older, wl_data_source.cancelled will"]
+            #[doc = "only be emitted if the data source was replaced by another data"]
+            #[doc = "source."]
+            async fn cancelled(&self) -> crate::client::Result<()>;
+            #[doc = "The user performed the drop action. This event does not indicate"]
+            #[doc = "acceptance, wl_data_source.cancelled may still be emitted afterwards"]
+            #[doc = "if the drop destination does not accept any mime type."]
+            #[doc = ""]
+            #[doc = "However, this event might however not be received if the compositor"]
+            #[doc = "cancelled the drag-and-drop operation before this event could happen."]
+            #[doc = ""]
+            #[doc = "Note that the data_source may still be used in the future and should"]
+            #[doc = "not be destroyed here."]
+            async fn dnd_drop_performed(&self) -> crate::client::Result<()>;
+            #[doc = "The drop destination finished interoperating with this data"]
+            #[doc = "source, so the client is now free to destroy this data source and"]
+            #[doc = "free all associated data."]
+            #[doc = ""]
+            #[doc = "If the action used to perform the operation was \"move\", the"]
+            #[doc = "source can now delete the transferred data."]
+            async fn dnd_finished(&self) -> crate::client::Result<()>;
+            #[doc = "This event indicates the action selected by the compositor after"]
+            #[doc = "matching the source/destination side actions. Only one action (or"]
+            #[doc = "none) will be offered here."]
+            #[doc = ""]
+            #[doc = "This event can be emitted multiple times during the drag-and-drop"]
+            #[doc = "operation, mainly in response to destination side changes through"]
+            #[doc = "wl_data_offer.set_actions, and as the data device enters/leaves"]
+            #[doc = "surfaces."]
+            #[doc = ""]
+            #[doc = "It is only possible to receive this event after"]
+            #[doc = "wl_data_source.dnd_drop_performed if the drag-and-drop operation"]
+            #[doc = "ended in an \"ask\" action, in which case the final wl_data_source.action"]
+            #[doc = "event will happen immediately before wl_data_source.dnd_finished."]
+            #[doc = ""]
+            #[doc = "Compositors may also change the selected action on the fly, mainly"]
+            #[doc = "in response to keyboard modifier changes during the drag-and-drop"]
+            #[doc = "operation."]
+            #[doc = ""]
+            #[doc = "The most recent action received is always the valid one. The chosen"]
+            #[doc = "action may change alongside negotiation (e.g. an \"ask\" action can turn"]
+            #[doc = "into a \"move\" operation), so the effects of the final action must"]
+            #[doc = "always be applied in wl_data_offer.dnd_finished."]
+            #[doc = ""]
+            #[doc = "Clients can trigger cursor surface changes from this point, so"]
+            #[doc = "they reflect the current action."]
+            async fn action(
+                &self,
+                dnd_action: super::super::super::core::wayland::wl_data_device_manager::DndAction,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "There is one wl_data_device per seat which can be obtained"]
@@ -1279,6 +1469,70 @@ pub mod wayland {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The data_offer event introduces a new wl_data_offer object,"]
+            #[doc = "which will subsequently be used in either the"]
+            #[doc = "data_device.enter event (for drag-and-drop) or the"]
+            #[doc = "data_device.selection event (for selections).  Immediately"]
+            #[doc = "following the data_device.data_offer event, the new data_offer"]
+            #[doc = "object will send out data_offer.offer events to describe the"]
+            #[doc = "mime types it offers."]
+            async fn data_offer(&self, id: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "This event is sent when an active drag-and-drop pointer enters"]
+            #[doc = "a surface owned by the client.  The position of the pointer at"]
+            #[doc = "enter time is provided by the x and y arguments, in surface-local"]
+            #[doc = "coordinates."]
+            async fn enter(
+                &self,
+                serial: u32,
+                surface: crate::wire::ObjectId,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
+                id: Option<crate::wire::ObjectId>,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent when the drag-and-drop pointer leaves the"]
+            #[doc = "surface and the session ends.  The client must destroy the"]
+            #[doc = "wl_data_offer introduced at enter time at this point."]
+            async fn leave(&self) -> crate::client::Result<()>;
+            #[doc = "This event is sent when the drag-and-drop pointer moves within"]
+            #[doc = "the currently focused surface. The new position of the pointer"]
+            #[doc = "is provided by the x and y arguments, in surface-local"]
+            #[doc = "coordinates."]
+            async fn motion(
+                &self,
+                time: u32,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
+            #[doc = "The event is sent when a drag-and-drop operation is ended"]
+            #[doc = "because the implicit grab is removed."]
+            #[doc = ""]
+            #[doc = "The drag-and-drop destination is expected to honor the last action"]
+            #[doc = "received through wl_data_offer.action, if the resulting action is"]
+            #[doc = "\"copy\" or \"move\", the destination can still perform"]
+            #[doc = "wl_data_offer.receive requests, and is expected to end all"]
+            #[doc = "transfers with a wl_data_offer.finish request."]
+            #[doc = ""]
+            #[doc = "If the resulting action is \"ask\", the action will not be considered"]
+            #[doc = "final. The drag-and-drop destination is expected to perform one last"]
+            #[doc = "wl_data_offer.set_actions request, or wl_data_offer.destroy in order"]
+            #[doc = "to cancel the operation."]
+            async fn drop(&self) -> crate::client::Result<()>;
+            #[doc = "The selection event is sent out to notify the client of a new"]
+            #[doc = "wl_data_offer for the selection for this device.  The"]
+            #[doc = "data_device.data_offer and the data_offer.offer events are"]
+            #[doc = "sent out immediately before this event to introduce the data"]
+            #[doc = "offer object.  The selection event is sent to a client"]
+            #[doc = "immediately before receiving keyboard focus and when a new"]
+            #[doc = "selection is set while the client has keyboard focus.  The"]
+            #[doc = "data_offer is valid until a new data_offer or NULL is received"]
+            #[doc = "or until the client loses keyboard focus.  Switching surface with"]
+            #[doc = "keyboard focus within the same client doesn't mean a new selection"]
+            #[doc = "will be sent.  The client must destroy the previous selection"]
+            #[doc = "data_offer, if any, upon receiving this event."]
+            async fn selection(
+                &self,
+                id: Option<crate::wire::ObjectId>,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "The wl_data_device_manager is a singleton global object that"]
@@ -1763,6 +2017,36 @@ pub mod wayland {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Ping a client to check if it is receiving events and sending"]
+            #[doc = "requests. A client is expected to reply with a pong request."]
+            async fn ping(&self, serial: u32) -> crate::client::Result<()>;
+            #[doc = "The configure event asks the client to resize its surface."]
+            #[doc = ""]
+            #[doc = "The size is a hint, in the sense that the client is free to"]
+            #[doc = "ignore it if it doesn't resize, pick a smaller size (to"]
+            #[doc = "satisfy aspect ratio or resize in steps of NxM pixels)."]
+            #[doc = ""]
+            #[doc = "The edges parameter provides a hint about how the surface"]
+            #[doc = "was resized. The client may use this information to decide"]
+            #[doc = "how to adjust its content to the new size (e.g. a scrolling"]
+            #[doc = "area might adjust its content position to leave the viewable"]
+            #[doc = "content unmoved)."]
+            #[doc = ""]
+            #[doc = "The client is free to dismiss all but the last configure"]
+            #[doc = "event it received."]
+            #[doc = ""]
+            #[doc = "The width and height arguments specify the size of the window"]
+            #[doc = "in surface-local coordinates."]
+            async fn configure(
+                &self,
+                edges: Resize,
+                width: i32,
+                height: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "The popup_done event is sent out when a popup grab is broken,"]
+            #[doc = "that is, when the user clicks a surface that doesn't belong"]
+            #[doc = "to the client owning the popup surface."]
+            async fn popup_done(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "A surface is a rectangular area that may be displayed on zero"]
@@ -2308,6 +2592,48 @@ pub mod wayland {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This is emitted whenever a surface's creation, movement, or resizing"]
+            #[doc = "results in some part of it being within the scanout region of an"]
+            #[doc = "output."]
+            #[doc = ""]
+            #[doc = "Note that a surface may be overlapping with zero or more outputs."]
+            async fn enter(&self, output: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "This is emitted whenever a surface's creation, movement, or resizing"]
+            #[doc = "results in it no longer having any part of it within the scanout region"]
+            #[doc = "of an output."]
+            #[doc = ""]
+            #[doc = "Clients should not use the number of outputs the surface is on for frame"]
+            #[doc = "throttling purposes. The surface might be hidden even if no leave event"]
+            #[doc = "has been sent, and the compositor might expect new surface content"]
+            #[doc = "updates even if no enter event has been sent. The frame event should be"]
+            #[doc = "used instead."]
+            async fn leave(&self, output: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "This event indicates the preferred buffer scale for this surface. It is"]
+            #[doc = "sent whenever the compositor's preference changes."]
+            #[doc = ""]
+            #[doc = "Before receiving this event the preferred buffer scale for this surface"]
+            #[doc = "is 1."]
+            #[doc = ""]
+            #[doc = "It is intended that scaling aware clients use this event to scale their"]
+            #[doc = "content and use wl_surface.set_buffer_scale to indicate the scale they"]
+            #[doc = "have rendered with. This allows clients to supply a higher detail"]
+            #[doc = "buffer."]
+            #[doc = ""]
+            #[doc = "The compositor shall emit a scale value greater than 0."]
+            async fn preferred_buffer_scale(&self, factor: i32) -> crate::client::Result<()>;
+            #[doc = "This event indicates the preferred buffer transform for this surface."]
+            #[doc = "It is sent whenever the compositor's preference changes."]
+            #[doc = ""]
+            #[doc = "Before receiving this event the preferred buffer transform for this"]
+            #[doc = "surface is normal."]
+            #[doc = ""]
+            #[doc = "Applying this transformation to the surface buffer contents and using"]
+            #[doc = "wl_surface.set_buffer_transform might allow the compositor to use the"]
+            #[doc = "surface buffer more efficiently."]
+            async fn preferred_buffer_transform(
+                &self,
+                transform: super::super::super::core::wayland::wl_output::Transform,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A seat is a group of keyboards, pointer and touch devices. This"]
@@ -2437,6 +2763,48 @@ pub mod wayland {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This is emitted whenever a seat gains or loses the pointer,"]
+            #[doc = "keyboard or touch capabilities.  The argument is a capability"]
+            #[doc = "enum containing the complete set of capabilities this seat has."]
+            #[doc = ""]
+            #[doc = "When the pointer capability is added, a client may create a"]
+            #[doc = "wl_pointer object using the wl_seat.get_pointer request. This object"]
+            #[doc = "will receive pointer events until the capability is removed in the"]
+            #[doc = "future."]
+            #[doc = ""]
+            #[doc = "When the pointer capability is removed, a client should destroy the"]
+            #[doc = "wl_pointer objects associated with the seat where the capability was"]
+            #[doc = "removed, using the wl_pointer.release request. No further pointer"]
+            #[doc = "events will be received on these objects."]
+            #[doc = ""]
+            #[doc = "In some compositors, if a seat regains the pointer capability and a"]
+            #[doc = "client has a previously obtained wl_pointer object of version 4 or"]
+            #[doc = "less, that object may start sending pointer events again. This"]
+            #[doc = "behavior is considered a misinterpretation of the intended behavior"]
+            #[doc = "and must not be relied upon by the client. wl_pointer objects of"]
+            #[doc = "version 5 or later must not send events if created before the most"]
+            #[doc = "recent event notifying the client of an added pointer capability."]
+            #[doc = ""]
+            #[doc = "The above behavior also applies to wl_keyboard and wl_touch with the"]
+            #[doc = "keyboard and touch capabilities, respectively."]
+            async fn capabilities(&self, capabilities: Capability) -> crate::client::Result<()>;
+            #[doc = "In a multi-seat configuration the seat name can be used by clients to"]
+            #[doc = "help identify which physical devices the seat represents."]
+            #[doc = ""]
+            #[doc = "The seat name is a UTF-8 string with no convention defined for its"]
+            #[doc = "contents. Each name is unique among all wl_seat globals. The name is"]
+            #[doc = "only guaranteed to be unique for the current compositor instance."]
+            #[doc = ""]
+            #[doc = "The same seat names are used for all clients. Thus, the name can be"]
+            #[doc = "shared across processes to refer to a specific wl_seat global."]
+            #[doc = ""]
+            #[doc = "The name event is sent after binding to the seat global. This event is"]
+            #[doc = "only sent once per seat object, and the name does not change over the"]
+            #[doc = "lifetime of the wl_seat global."]
+            #[doc = ""]
+            #[doc = "Compositors may re-use the same seat name if the wl_seat global is"]
+            #[doc = "destroyed and re-created later."]
+            async fn name(&self, name: String) -> crate::client::Result<()>;
         }
     }
     #[doc = "The wl_pointer interface represents one or more input devices,"]
@@ -2653,6 +3021,250 @@ pub mod wayland {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Notification that this seat's pointer is focused on a certain"]
+            #[doc = "surface."]
+            #[doc = ""]
+            #[doc = "When a seat's focus enters a surface, the pointer image"]
+            #[doc = "is undefined and a client should respond to this event by setting"]
+            #[doc = "an appropriate pointer image with the set_cursor request."]
+            async fn enter(
+                &self,
+                serial: u32,
+                surface: crate::wire::ObjectId,
+                surface_x: crate::wire::Fixed,
+                surface_y: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notification that this seat's pointer is no longer focused on"]
+            #[doc = "a certain surface."]
+            #[doc = ""]
+            #[doc = "The leave notification is sent before the enter notification"]
+            #[doc = "for the new focus."]
+            async fn leave(
+                &self,
+                serial: u32,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notification of pointer location change. The arguments"]
+            #[doc = "surface_x and surface_y are the location relative to the"]
+            #[doc = "focused surface."]
+            async fn motion(
+                &self,
+                time: u32,
+                surface_x: crate::wire::Fixed,
+                surface_y: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
+            #[doc = "Mouse button click and release notifications."]
+            #[doc = ""]
+            #[doc = "The location of the click is given by the last motion or"]
+            #[doc = "enter event."]
+            #[doc = "The time argument is a timestamp with millisecond"]
+            #[doc = "granularity, with an undefined base."]
+            #[doc = ""]
+            #[doc = "The button is a button code as defined in the Linux kernel's"]
+            #[doc = "linux/input-event-codes.h header file, e.g. BTN_LEFT."]
+            #[doc = ""]
+            #[doc = "Any 16-bit button code value is reserved for future additions to the"]
+            #[doc = "kernel's event code list. All other button codes above 0xFFFF are"]
+            #[doc = "currently undefined but may be used in future versions of this"]
+            #[doc = "protocol."]
+            async fn button(
+                &self,
+                serial: u32,
+                time: u32,
+                button: u32,
+                state: ButtonState,
+            ) -> crate::client::Result<()>;
+            #[doc = "Scroll and other axis notifications."]
+            #[doc = ""]
+            #[doc = "For scroll events (vertical and horizontal scroll axes), the"]
+            #[doc = "value parameter is the length of a vector along the specified"]
+            #[doc = "axis in a coordinate space identical to those of motion events,"]
+            #[doc = "representing a relative movement along the specified axis."]
+            #[doc = ""]
+            #[doc = "For devices that support movements non-parallel to axes multiple"]
+            #[doc = "axis events will be emitted."]
+            #[doc = ""]
+            #[doc = "When applicable, for example for touch pads, the server can"]
+            #[doc = "choose to emit scroll events where the motion vector is"]
+            #[doc = "equivalent to a motion event vector."]
+            #[doc = ""]
+            #[doc = "When applicable, a client can transform its content relative to the"]
+            #[doc = "scroll distance."]
+            async fn axis(
+                &self,
+                time: u32,
+                axis: Axis,
+                value: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
+            #[doc = "Indicates the end of a set of events that logically belong together."]
+            #[doc = "A client is expected to accumulate the data in all events within the"]
+            #[doc = "frame before proceeding."]
+            #[doc = ""]
+            #[doc = "All wl_pointer events before a wl_pointer.frame event belong"]
+            #[doc = "logically together. For example, in a diagonal scroll motion the"]
+            #[doc = "compositor will send an optional wl_pointer.axis_source event, two"]
+            #[doc = "wl_pointer.axis events (horizontal and vertical) and finally a"]
+            #[doc = "wl_pointer.frame event. The client may use this information to"]
+            #[doc = "calculate a diagonal vector for scrolling."]
+            #[doc = ""]
+            #[doc = "When multiple wl_pointer.axis events occur within the same frame,"]
+            #[doc = "the motion vector is the combined motion of all events."]
+            #[doc = "When a wl_pointer.axis and a wl_pointer.axis_stop event occur within"]
+            #[doc = "the same frame, this indicates that axis movement in one axis has"]
+            #[doc = "stopped but continues in the other axis."]
+            #[doc = "When multiple wl_pointer.axis_stop events occur within the same"]
+            #[doc = "frame, this indicates that these axes stopped in the same instance."]
+            #[doc = ""]
+            #[doc = "A wl_pointer.frame event is sent for every logical event group,"]
+            #[doc = "even if the group only contains a single wl_pointer event."]
+            #[doc = "Specifically, a client may get a sequence: motion, frame, button,"]
+            #[doc = "frame, axis, frame, axis_stop, frame."]
+            #[doc = ""]
+            #[doc = "The wl_pointer.enter and wl_pointer.leave events are logical events"]
+            #[doc = "generated by the compositor and not the hardware. These events are"]
+            #[doc = "also grouped by a wl_pointer.frame. When a pointer moves from one"]
+            #[doc = "surface to another, a compositor should group the"]
+            #[doc = "wl_pointer.leave event within the same wl_pointer.frame."]
+            #[doc = "However, a client must not rely on wl_pointer.leave and"]
+            #[doc = "wl_pointer.enter being in the same wl_pointer.frame."]
+            #[doc = "Compositor-specific policies may require the wl_pointer.leave and"]
+            #[doc = "wl_pointer.enter event being split across multiple wl_pointer.frame"]
+            #[doc = "groups."]
+            async fn frame(&self) -> crate::client::Result<()>;
+            #[doc = "Source information for scroll and other axes."]
+            #[doc = ""]
+            #[doc = "This event does not occur on its own. It is sent before a"]
+            #[doc = "wl_pointer.frame event and carries the source information for"]
+            #[doc = "all events within that frame."]
+            #[doc = ""]
+            #[doc = "The source specifies how this event was generated. If the source is"]
+            #[doc = "wl_pointer.axis_source.finger, a wl_pointer.axis_stop event will be"]
+            #[doc = "sent when the user lifts the finger off the device."]
+            #[doc = ""]
+            #[doc = "If the source is wl_pointer.axis_source.wheel,"]
+            #[doc = "wl_pointer.axis_source.wheel_tilt or"]
+            #[doc = "wl_pointer.axis_source.continuous, a wl_pointer.axis_stop event may"]
+            #[doc = "or may not be sent. Whether a compositor sends an axis_stop event"]
+            #[doc = "for these sources is hardware-specific and implementation-dependent;"]
+            #[doc = "clients must not rely on receiving an axis_stop event for these"]
+            #[doc = "scroll sources and should treat scroll sequences from these scroll"]
+            #[doc = "sources as unterminated by default."]
+            #[doc = ""]
+            #[doc = "This event is optional. If the source is unknown for a particular"]
+            #[doc = "axis event sequence, no event is sent."]
+            #[doc = "Only one wl_pointer.axis_source event is permitted per frame."]
+            #[doc = ""]
+            #[doc = "The order of wl_pointer.axis_discrete and wl_pointer.axis_source is"]
+            #[doc = "not guaranteed."]
+            async fn axis_source(&self, axis_source: AxisSource) -> crate::client::Result<()>;
+            #[doc = "Stop notification for scroll and other axes."]
+            #[doc = ""]
+            #[doc = "For some wl_pointer.axis_source types, a wl_pointer.axis_stop event"]
+            #[doc = "is sent to notify a client that the axis sequence has terminated."]
+            #[doc = "This enables the client to implement kinetic scrolling."]
+            #[doc = "See the wl_pointer.axis_source documentation for information on when"]
+            #[doc = "this event may be generated."]
+            #[doc = ""]
+            #[doc = "Any wl_pointer.axis events with the same axis_source after this"]
+            #[doc = "event should be considered as the start of a new axis motion."]
+            #[doc = ""]
+            #[doc = "The timestamp is to be interpreted identical to the timestamp in the"]
+            #[doc = "wl_pointer.axis event. The timestamp value may be the same as a"]
+            #[doc = "preceding wl_pointer.axis event."]
+            async fn axis_stop(&self, time: u32, axis: Axis) -> crate::client::Result<()>;
+            #[doc = "Discrete step information for scroll and other axes."]
+            #[doc = ""]
+            #[doc = "This event carries the axis value of the wl_pointer.axis event in"]
+            #[doc = "discrete steps (e.g. mouse wheel clicks)."]
+            #[doc = ""]
+            #[doc = "This event is deprecated with wl_pointer version 8 - this event is not"]
+            #[doc = "sent to clients supporting version 8 or later."]
+            #[doc = ""]
+            #[doc = "This event does not occur on its own, it is coupled with a"]
+            #[doc = "wl_pointer.axis event that represents this axis value on a"]
+            #[doc = "continuous scale. The protocol guarantees that each axis_discrete"]
+            #[doc = "event is always followed by exactly one axis event with the same"]
+            #[doc = "axis number within the same wl_pointer.frame. Note that the protocol"]
+            #[doc = "allows for other events to occur between the axis_discrete and"]
+            #[doc = "its coupled axis event, including other axis_discrete or axis"]
+            #[doc = "events. A wl_pointer.frame must not contain more than one axis_discrete"]
+            #[doc = "event per axis type."]
+            #[doc = ""]
+            #[doc = "This event is optional; continuous scrolling devices"]
+            #[doc = "like two-finger scrolling on touchpads do not have discrete"]
+            #[doc = "steps and do not generate this event."]
+            #[doc = ""]
+            #[doc = "The discrete value carries the directional information. e.g. a value"]
+            #[doc = "of -2 is two steps towards the negative direction of this axis."]
+            #[doc = ""]
+            #[doc = "The axis number is identical to the axis number in the associated"]
+            #[doc = "axis event."]
+            #[doc = ""]
+            #[doc = "The order of wl_pointer.axis_discrete and wl_pointer.axis_source is"]
+            #[doc = "not guaranteed."]
+            async fn axis_discrete(&self, axis: Axis, discrete: i32) -> crate::client::Result<()>;
+            #[doc = "Discrete high-resolution scroll information."]
+            #[doc = ""]
+            #[doc = "This event carries high-resolution wheel scroll information,"]
+            #[doc = "with each multiple of 120 representing one logical scroll step"]
+            #[doc = "(a wheel detent). For example, an axis_value120 of 30 is one quarter of"]
+            #[doc = "a logical scroll step in the positive direction, a value120 of"]
+            #[doc = "-240 are two logical scroll steps in the negative direction within the"]
+            #[doc = "same hardware event."]
+            #[doc = "Clients that rely on discrete scrolling should accumulate the"]
+            #[doc = "value120 to multiples of 120 before processing the event."]
+            #[doc = ""]
+            #[doc = "The value120 must not be zero."]
+            #[doc = ""]
+            #[doc = "This event replaces the wl_pointer.axis_discrete event in clients"]
+            #[doc = "supporting wl_pointer version 8 or later."]
+            #[doc = ""]
+            #[doc = "Where a wl_pointer.axis_source event occurs in the same"]
+            #[doc = "wl_pointer.frame, the axis source applies to this event."]
+            #[doc = ""]
+            #[doc = "The order of wl_pointer.axis_value120 and wl_pointer.axis_source is"]
+            #[doc = "not guaranteed."]
+            async fn axis_value120(&self, axis: Axis, value120: i32) -> crate::client::Result<()>;
+            #[doc = "Relative directional information of the entity causing the axis"]
+            #[doc = "motion."]
+            #[doc = ""]
+            #[doc = "For a wl_pointer.axis event, the wl_pointer.axis_relative_direction"]
+            #[doc = "event specifies the movement direction of the entity causing the"]
+            #[doc = "wl_pointer.axis event. For example:"]
+            #[doc = "- if a user's fingers on a touchpad move down and this"]
+            #[doc = "causes a wl_pointer.axis vertical_scroll down event, the physical"]
+            #[doc = "direction is 'identical'"]
+            #[doc = "- if a user's fingers on a touchpad move down and this causes a"]
+            #[doc = "wl_pointer.axis vertical_scroll up scroll up event ('natural"]
+            #[doc = "scrolling'), the physical direction is 'inverted'."]
+            #[doc = ""]
+            #[doc = "A client may use this information to adjust scroll motion of"]
+            #[doc = "components. Specifically, enabling natural scrolling causes the"]
+            #[doc = "content to change direction compared to traditional scrolling."]
+            #[doc = "Some widgets like volume control sliders should usually match the"]
+            #[doc = "physical direction regardless of whether natural scrolling is"]
+            #[doc = "active. This event enables clients to match the scroll direction of"]
+            #[doc = "a widget to the physical direction."]
+            #[doc = ""]
+            #[doc = "This event does not occur on its own, it is coupled with a"]
+            #[doc = "wl_pointer.axis event that represents this axis value."]
+            #[doc = "The protocol guarantees that each axis_relative_direction event is"]
+            #[doc = "always followed by exactly one axis event with the same"]
+            #[doc = "axis number within the same wl_pointer.frame. Note that the protocol"]
+            #[doc = "allows for other events to occur between the axis_relative_direction"]
+            #[doc = "and its coupled axis event."]
+            #[doc = ""]
+            #[doc = "The axis number is identical to the axis number in the associated"]
+            #[doc = "axis event."]
+            #[doc = ""]
+            #[doc = "The order of wl_pointer.axis_relative_direction,"]
+            #[doc = "wl_pointer.axis_discrete and wl_pointer.axis_source is not"]
+            #[doc = "guaranteed."]
+            async fn axis_relative_direction(
+                &self,
+                axis: Axis,
+                direction: AxisRelativeDirection,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "The wl_keyboard interface represents one or more keyboards"]
@@ -2736,6 +3348,108 @@ pub mod wayland {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event provides a file descriptor to the client which can be"]
+            #[doc = "memory-mapped in read-only mode to provide a keyboard mapping"]
+            #[doc = "description."]
+            #[doc = ""]
+            #[doc = "From version 7 onwards, the fd must be mapped with MAP_PRIVATE by"]
+            #[doc = "the recipient, as MAP_SHARED may fail."]
+            async fn keymap(
+                &self,
+                format: KeymapFormat,
+                fd: rustix::fd::OwnedFd,
+                size: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notification that this seat's keyboard focus is on a certain"]
+            #[doc = "surface."]
+            #[doc = ""]
+            #[doc = "The compositor must send the wl_keyboard.modifiers event after this"]
+            #[doc = "event."]
+            #[doc = ""]
+            #[doc = "In the wl_keyboard logical state, this event sets the active surface to"]
+            #[doc = "the surface argument and the keys currently logically down to the keys"]
+            #[doc = "in the keys argument. The compositor must not send this event if the"]
+            #[doc = "wl_keyboard already had an active surface immediately before this event."]
+            async fn enter(
+                &self,
+                serial: u32,
+                surface: crate::wire::ObjectId,
+                keys: Vec<u8>,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notification that this seat's keyboard focus is no longer on"]
+            #[doc = "a certain surface."]
+            #[doc = ""]
+            #[doc = "The leave notification is sent before the enter notification"]
+            #[doc = "for the new focus."]
+            #[doc = ""]
+            #[doc = "In the wl_keyboard logical state, this event resets all values to their"]
+            #[doc = "defaults. The compositor must not send this event if the active surface"]
+            #[doc = "of the wl_keyboard was not equal to the surface argument immediately"]
+            #[doc = "before this event."]
+            async fn leave(
+                &self,
+                serial: u32,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "A key was pressed or released."]
+            #[doc = "The time argument is a timestamp with millisecond"]
+            #[doc = "granularity, with an undefined base."]
+            #[doc = ""]
+            #[doc = "The key is a platform-specific key code that can be interpreted"]
+            #[doc = "by feeding it to the keyboard mapping (see the keymap event)."]
+            #[doc = ""]
+            #[doc = "If this event produces a change in modifiers, then the resulting"]
+            #[doc = "wl_keyboard.modifiers event must be sent after this event."]
+            #[doc = ""]
+            #[doc = "In the wl_keyboard logical state, this event adds the key to the keys"]
+            #[doc = "currently logically down (if the state argument is pressed) or removes"]
+            #[doc = "the key from the keys currently logically down (if the state argument is"]
+            #[doc = "released). The compositor must not send this event if the wl_keyboard"]
+            #[doc = "did not have an active surface immediately before this event. The"]
+            #[doc = "compositor must not send this event if state is pressed (resp. released)"]
+            #[doc = "and the key was already logically down (resp. was not logically down)"]
+            #[doc = "immediately before this event."]
+            async fn key(
+                &self,
+                serial: u32,
+                time: u32,
+                key: u32,
+                state: KeyState,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notifies clients that the modifier and/or group state has"]
+            #[doc = "changed, and it should update its local state."]
+            #[doc = ""]
+            #[doc = "The compositor may send this event without a surface of the client"]
+            #[doc = "having keyboard focus, for example to tie modifier information to"]
+            #[doc = "pointer focus instead. If a modifier event with pressed modifiers is sent"]
+            #[doc = "without a prior enter event, the client can assume the modifier state is"]
+            #[doc = "valid until it receives the next wl_keyboard.modifiers event. In order to"]
+            #[doc = "reset the modifier state again, the compositor can send a"]
+            #[doc = "wl_keyboard.modifiers event with no pressed modifiers."]
+            #[doc = ""]
+            #[doc = "In the wl_keyboard logical state, this event updates the modifiers and"]
+            #[doc = "group."]
+            async fn modifiers(
+                &self,
+                serial: u32,
+                mods_depressed: u32,
+                mods_latched: u32,
+                mods_locked: u32,
+                group: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Informs the client about the keyboard's repeat rate and delay."]
+            #[doc = ""]
+            #[doc = "This event is sent as soon as the wl_keyboard object has been created,"]
+            #[doc = "and is guaranteed to be received by the client before any key press"]
+            #[doc = "event."]
+            #[doc = ""]
+            #[doc = "Negative values for either rate or delay are illegal. A rate of zero"]
+            #[doc = "will disable any repeating (regardless of the value of delay)."]
+            #[doc = ""]
+            #[doc = "This event can be sent later on as well with a new value if necessary,"]
+            #[doc = "so clients should continue listening for the event past the creation"]
+            #[doc = "of wl_keyboard."]
+            async fn repeat_info(&self, rate: i32, delay: i32) -> crate::client::Result<()>;
         }
     }
     #[doc = "The wl_touch interface represents a touchscreen"]
@@ -2774,6 +3488,108 @@ pub mod wayland {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "A new touch point has appeared on the surface. This touch point is"]
+            #[doc = "assigned a unique ID. Future events from this touch point reference"]
+            #[doc = "this ID. The ID ceases to be valid after a touch up event and may be"]
+            #[doc = "reused in the future."]
+            async fn down(
+                &self,
+                serial: u32,
+                time: u32,
+                surface: crate::wire::ObjectId,
+                id: i32,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
+            #[doc = "The touch point has disappeared. No further events will be sent for"]
+            #[doc = "this touch point and the touch point's ID is released and may be"]
+            #[doc = "reused in a future touch down event."]
+            async fn up(&self, serial: u32, time: u32, id: i32) -> crate::client::Result<()>;
+            #[doc = "A touch point has changed coordinates."]
+            async fn motion(
+                &self,
+                time: u32,
+                id: i32,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
+            #[doc = "Indicates the end of a set of events that logically belong together."]
+            #[doc = "A client is expected to accumulate the data in all events within the"]
+            #[doc = "frame before proceeding."]
+            #[doc = ""]
+            #[doc = "A wl_touch.frame terminates at least one event but otherwise no"]
+            #[doc = "guarantee is provided about the set of events within a frame. A client"]
+            #[doc = "must assume that any state not updated in a frame is unchanged from the"]
+            #[doc = "previously known state."]
+            async fn frame(&self) -> crate::client::Result<()>;
+            #[doc = "Sent if the compositor decides the touch stream is a global"]
+            #[doc = "gesture. No further events are sent to the clients from that"]
+            #[doc = "particular gesture. Touch cancellation applies to all touch points"]
+            #[doc = "currently active on this client's surface. The client is"]
+            #[doc = "responsible for finalizing the touch points, future touch points on"]
+            #[doc = "this surface may reuse the touch point ID."]
+            #[doc = ""]
+            #[doc = "No frame event is required after the cancel event."]
+            async fn cancel(&self) -> crate::client::Result<()>;
+            #[doc = "Sent when a touchpoint has changed its shape."]
+            #[doc = ""]
+            #[doc = "This event does not occur on its own. It is sent before a"]
+            #[doc = "wl_touch.frame event and carries the new shape information for"]
+            #[doc = "any previously reported, or new touch points of that frame."]
+            #[doc = ""]
+            #[doc = "Other events describing the touch point such as wl_touch.down,"]
+            #[doc = "wl_touch.motion or wl_touch.orientation may be sent within the"]
+            #[doc = "same wl_touch.frame. A client should treat these events as a single"]
+            #[doc = "logical touch point update. The order of wl_touch.shape,"]
+            #[doc = "wl_touch.orientation and wl_touch.motion is not guaranteed."]
+            #[doc = "A wl_touch.down event is guaranteed to occur before the first"]
+            #[doc = "wl_touch.shape event for this touch ID but both events may occur within"]
+            #[doc = "the same wl_touch.frame."]
+            #[doc = ""]
+            #[doc = "A touchpoint shape is approximated by an ellipse through the major and"]
+            #[doc = "minor axis length. The major axis length describes the longer diameter"]
+            #[doc = "of the ellipse, while the minor axis length describes the shorter"]
+            #[doc = "diameter. Major and minor are orthogonal and both are specified in"]
+            #[doc = "surface-local coordinates. The center of the ellipse is always at the"]
+            #[doc = "touchpoint location as reported by wl_touch.down or wl_touch.move."]
+            #[doc = ""]
+            #[doc = "This event is only sent by the compositor if the touch device supports"]
+            #[doc = "shape reports. The client has to make reasonable assumptions about the"]
+            #[doc = "shape if it did not receive this event."]
+            async fn shape(
+                &self,
+                id: i32,
+                major: crate::wire::Fixed,
+                minor: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
+            #[doc = "Sent when a touchpoint has changed its orientation."]
+            #[doc = ""]
+            #[doc = "This event does not occur on its own. It is sent before a"]
+            #[doc = "wl_touch.frame event and carries the new shape information for"]
+            #[doc = "any previously reported, or new touch points of that frame."]
+            #[doc = ""]
+            #[doc = "Other events describing the touch point such as wl_touch.down,"]
+            #[doc = "wl_touch.motion or wl_touch.shape may be sent within the"]
+            #[doc = "same wl_touch.frame. A client should treat these events as a single"]
+            #[doc = "logical touch point update. The order of wl_touch.shape,"]
+            #[doc = "wl_touch.orientation and wl_touch.motion is not guaranteed."]
+            #[doc = "A wl_touch.down event is guaranteed to occur before the first"]
+            #[doc = "wl_touch.orientation event for this touch ID but both events may occur"]
+            #[doc = "within the same wl_touch.frame."]
+            #[doc = ""]
+            #[doc = "The orientation describes the clockwise angle of a touchpoint's major"]
+            #[doc = "axis to the positive surface y-axis and is normalized to the -180 to"]
+            #[doc = "+180 degree range. The granularity of orientation depends on the touch"]
+            #[doc = "device, some devices only support binary rotation values between 0 and"]
+            #[doc = "90 degrees."]
+            #[doc = ""]
+            #[doc = "This event is only sent by the compositor if the touch device supports"]
+            #[doc = "orientation reports."]
+            async fn orientation(
+                &self,
+                id: i32,
+                orientation: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "An output describes part of the compositor geometry.  The"]
@@ -2899,6 +3715,146 @@ pub mod wayland {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The geometry event describes geometric properties of the output."]
+            #[doc = "The event is sent when binding to the output object and whenever"]
+            #[doc = "any of the properties change."]
+            #[doc = ""]
+            #[doc = "The physical size can be set to zero if it doesn't make sense for this"]
+            #[doc = "output (e.g. for projectors or virtual outputs)."]
+            #[doc = ""]
+            #[doc = "The geometry event will be followed by a done event (starting from"]
+            #[doc = "version 2)."]
+            #[doc = ""]
+            #[doc = "Clients should use wl_surface.preferred_buffer_transform instead of the"]
+            #[doc = "transform advertised by this event to find the preferred buffer"]
+            #[doc = "transform to use for a surface."]
+            #[doc = ""]
+            #[doc = "Note: wl_output only advertises partial information about the output"]
+            #[doc = "position and identification. Some compositors, for instance those not"]
+            #[doc = "implementing a desktop-style output layout or those exposing virtual"]
+            #[doc = "outputs, might fake this information. Instead of using x and y, clients"]
+            #[doc = "should use xdg_output.logical_position. Instead of using make and model,"]
+            #[doc = "clients should use name and description."]
+            async fn geometry(
+                &self,
+                x: i32,
+                y: i32,
+                physical_width: i32,
+                physical_height: i32,
+                subpixel: Subpixel,
+                make: String,
+                model: String,
+                transform: Transform,
+            ) -> crate::client::Result<()>;
+            #[doc = "The mode event describes an available mode for the output."]
+            #[doc = ""]
+            #[doc = "The event is sent when binding to the output object and there"]
+            #[doc = "will always be one mode, the current mode.  The event is sent"]
+            #[doc = "again if an output changes mode, for the mode that is now"]
+            #[doc = "current.  In other words, the current mode is always the last"]
+            #[doc = "mode that was received with the current flag set."]
+            #[doc = ""]
+            #[doc = "Non-current modes are deprecated. A compositor can decide to only"]
+            #[doc = "advertise the current mode and never send other modes. Clients"]
+            #[doc = "should not rely on non-current modes."]
+            #[doc = ""]
+            #[doc = "The size of a mode is given in physical hardware units of"]
+            #[doc = "the output device. This is not necessarily the same as"]
+            #[doc = "the output size in the global compositor space. For instance,"]
+            #[doc = "the output may be scaled, as described in wl_output.scale,"]
+            #[doc = "or transformed, as described in wl_output.transform. Clients"]
+            #[doc = "willing to retrieve the output size in the global compositor"]
+            #[doc = "space should use xdg_output.logical_size instead."]
+            #[doc = ""]
+            #[doc = "The vertical refresh rate can be set to zero if it doesn't make"]
+            #[doc = "sense for this output (e.g. for virtual outputs)."]
+            #[doc = ""]
+            #[doc = "The mode event will be followed by a done event (starting from"]
+            #[doc = "version 2)."]
+            #[doc = ""]
+            #[doc = "Clients should not use the refresh rate to schedule frames. Instead,"]
+            #[doc = "they should use the wl_surface.frame event or the presentation-time"]
+            #[doc = "protocol."]
+            #[doc = ""]
+            #[doc = "Note: this information is not always meaningful for all outputs. Some"]
+            #[doc = "compositors, such as those exposing virtual outputs, might fake the"]
+            #[doc = "refresh rate or the size."]
+            async fn mode(
+                &self,
+                flags: Mode,
+                width: i32,
+                height: i32,
+                refresh: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all other properties have been"]
+            #[doc = "sent after binding to the output object and after any"]
+            #[doc = "other property changes done after that. This allows"]
+            #[doc = "changes to the output properties to be seen as"]
+            #[doc = "atomic, even if they happen via multiple events."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "This event contains scaling geometry information"]
+            #[doc = "that is not in the geometry event. It may be sent after"]
+            #[doc = "binding the output object or if the output scale changes"]
+            #[doc = "later. The compositor will emit a non-zero, positive"]
+            #[doc = "value for scale. If it is not sent, the client should"]
+            #[doc = "assume a scale of 1."]
+            #[doc = ""]
+            #[doc = "A scale larger than 1 means that the compositor will"]
+            #[doc = "automatically scale surface buffers by this amount"]
+            #[doc = "when rendering. This is used for very high resolution"]
+            #[doc = "displays where applications rendering at the native"]
+            #[doc = "resolution would be too small to be legible."]
+            #[doc = ""]
+            #[doc = "Clients should use wl_surface.preferred_buffer_scale"]
+            #[doc = "instead of this event to find the preferred buffer"]
+            #[doc = "scale to use for a surface."]
+            #[doc = ""]
+            #[doc = "The scale event will be followed by a done event."]
+            async fn scale(&self, factor: i32) -> crate::client::Result<()>;
+            #[doc = "Many compositors will assign user-friendly names to their outputs, show"]
+            #[doc = "them to the user, allow the user to refer to an output, etc. The client"]
+            #[doc = "may wish to know this name as well to offer the user similar behaviors."]
+            #[doc = ""]
+            #[doc = "The name is a UTF-8 string with no convention defined for its contents."]
+            #[doc = "Each name is unique among all wl_output globals. The name is only"]
+            #[doc = "guaranteed to be unique for the compositor instance."]
+            #[doc = ""]
+            #[doc = "The same output name is used for all clients for a given wl_output"]
+            #[doc = "global. Thus, the name can be shared across processes to refer to a"]
+            #[doc = "specific wl_output global."]
+            #[doc = ""]
+            #[doc = "The name is not guaranteed to be persistent across sessions, thus cannot"]
+            #[doc = "be used to reliably identify an output in e.g. configuration files."]
+            #[doc = ""]
+            #[doc = "Examples of names include 'HDMI-A-1', 'WL-1', 'X11-1', etc. However, do"]
+            #[doc = "not assume that the name is a reflection of an underlying DRM connector,"]
+            #[doc = "X11 connection, etc."]
+            #[doc = ""]
+            #[doc = "The name event is sent after binding the output object. This event is"]
+            #[doc = "only sent once per output object, and the name does not change over the"]
+            #[doc = "lifetime of the wl_output global."]
+            #[doc = ""]
+            #[doc = "Compositors may re-use the same output name if the wl_output global is"]
+            #[doc = "destroyed and re-created later. Compositors should avoid re-using the"]
+            #[doc = "same name if possible."]
+            #[doc = ""]
+            #[doc = "The name event will be followed by a done event."]
+            async fn name(&self, name: String) -> crate::client::Result<()>;
+            #[doc = "Many compositors can produce human-readable descriptions of their"]
+            #[doc = "outputs. The client may wish to know this description as well, e.g. for"]
+            #[doc = "output selection purposes."]
+            #[doc = ""]
+            #[doc = "The description is a UTF-8 string with no convention defined for its"]
+            #[doc = "contents. The description is not guaranteed to be unique among all"]
+            #[doc = "wl_output globals. Examples might include 'Foocorp 11\" Display' or"]
+            #[doc = "'Virtual X11 output via :1'."]
+            #[doc = ""]
+            #[doc = "The description event is sent after binding the output object and"]
+            #[doc = "whenever the description changes. The description is optional, and may"]
+            #[doc = "not be sent at all."]
+            #[doc = ""]
+            #[doc = "The description event will be followed by a done event."]
+            async fn description(&self, description: String) -> crate::client::Result<()>;
         }
     }
     #[doc = "A region object describes an area."]
