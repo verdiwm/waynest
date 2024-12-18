@@ -281,6 +281,9 @@ pub mod hyprland_focus_grab_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Sent when an active grab is cancelled by the compositor,"]
+            #[doc = "regardless of cause."]
+            async fn cleared(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -403,6 +406,24 @@ pub mod hyprland_global_shortcuts_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The keystroke was pressed."]
+            #[doc = ""]
+            #[doc = "tv_ values hold the timestamp of the occurrence."]
+            async fn pressed(
+                &self,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "The keystroke was released."]
+            #[doc = ""]
+            #[doc = "tv_ values hold the timestamp of the occurrence."]
+            async fn released(
+                &self,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -601,6 +622,72 @@ pub mod hyprland_toplevel_export_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Provides information about wl_shm buffer parameters that need to be"]
+            #[doc = "used for this frame. This event is sent once after the frame is created"]
+            #[doc = "if wl_shm buffers are supported."]
+            async fn buffer(
+                &self,
+                format: super::super::super::core::wayland::wl_shm::Format,
+                width: u32,
+                height: u32,
+                stride: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent right before the ready event when ignore_damage was"]
+            #[doc = "not set. It may be generated multiple times for each copy"]
+            #[doc = "request."]
+            #[doc = ""]
+            #[doc = "The arguments describe a box around an area that has changed since the"]
+            #[doc = "last copy request that was derived from the current screencopy manager"]
+            #[doc = "instance."]
+            #[doc = ""]
+            #[doc = "The union of all regions received between the call to copy"]
+            #[doc = "and a ready event is the total damage since the prior ready event."]
+            async fn damage(
+                &self,
+                x: u32,
+                y: u32,
+                width: u32,
+                height: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Provides flags about the frame. This event is sent once before the"]
+            #[doc = "\"ready\" event."]
+            async fn flags(&self, flags: Flags) -> crate::client::Result<()>;
+            #[doc = "Called as soon as the frame is copied, indicating it is available"]
+            #[doc = "for reading. This event includes the time at which presentation happened"]
+            #[doc = "at."]
+            #[doc = ""]
+            #[doc = "The timestamp is expressed as tv_sec_hi, tv_sec_lo, tv_nsec triples,"]
+            #[doc = "each component being an unsigned 32-bit value. Whole seconds are in"]
+            #[doc = "tv_sec which is a 64-bit value combined from tv_sec_hi and tv_sec_lo,"]
+            #[doc = "and the additional fractional part in tv_nsec as nanoseconds. Hence,"]
+            #[doc = "for valid timestamps tv_nsec must be in [0, 999999999]. The seconds part"]
+            #[doc = "may have an arbitrary offset at start."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client should destroy the object."]
+            async fn ready(
+                &self,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the attempted frame copy has failed."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client should destroy the object."]
+            async fn failed(&self) -> crate::client::Result<()>;
+            #[doc = "Provides information about linux-dmabuf buffer parameters that need to"]
+            #[doc = "be used for this frame. This event is sent once after the frame is"]
+            #[doc = "created if linux-dmabuf buffers are supported."]
+            async fn linux_dmabuf(
+                &self,
+                format: u32,
+                width: u32,
+                height: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent once after all buffer events have been sent."]
+            #[doc = ""]
+            #[doc = "The client should proceed to create a buffer of one of the supported"]
+            #[doc = "types, and send a \"copy\" request."]
+            async fn buffer_done(&self) -> crate::client::Result<()>;
         }
     }
 }

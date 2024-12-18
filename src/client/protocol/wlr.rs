@@ -190,6 +190,51 @@ pub mod wlr_data_control_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The data_offer event introduces a new wlr_data_control_offer object,"]
+            #[doc = "which will subsequently be used in either the"]
+            #[doc = "wlr_data_control_device.selection event (for the regular clipboard"]
+            #[doc = "selections) or the wlr_data_control_device.primary_selection event (for"]
+            #[doc = "the primary clipboard selections). Immediately following the"]
+            #[doc = "wlr_data_control_device.data_offer event, the new data_offer object"]
+            #[doc = "will send out wlr_data_control_offer.offer events to describe the MIME"]
+            #[doc = "types it offers."]
+            async fn data_offer(&self, id: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "The selection event is sent out to notify the client of a new"]
+            #[doc = "wlr_data_control_offer for the selection for this device. The"]
+            #[doc = "wlr_data_control_device.data_offer and the wlr_data_control_offer.offer"]
+            #[doc = "events are sent out immediately before this event to introduce the data"]
+            #[doc = "offer object. The selection event is sent to a client when a new"]
+            #[doc = "selection is set. The wlr_data_control_offer is valid until a new"]
+            #[doc = "wlr_data_control_offer or NULL is received. The client must destroy the"]
+            #[doc = "previous selection wlr_data_control_offer, if any, upon receiving this"]
+            #[doc = "event."]
+            #[doc = ""]
+            #[doc = "The first selection event is sent upon binding the"]
+            #[doc = "wlr_data_control_device object."]
+            async fn selection(
+                &self,
+                id: Option<crate::wire::ObjectId>,
+            ) -> crate::client::Result<()>;
+            #[doc = "This data control object is no longer valid and should be destroyed by"]
+            #[doc = "the client."]
+            async fn finished(&self) -> crate::client::Result<()>;
+            #[doc = "The primary_selection event is sent out to notify the client of a new"]
+            #[doc = "wlr_data_control_offer for the primary selection for this device. The"]
+            #[doc = "wlr_data_control_device.data_offer and the wlr_data_control_offer.offer"]
+            #[doc = "events are sent out immediately before this event to introduce the data"]
+            #[doc = "offer object. The primary_selection event is sent to a client when a"]
+            #[doc = "new primary selection is set. The wlr_data_control_offer is valid until"]
+            #[doc = "a new wlr_data_control_offer or NULL is received. The client must"]
+            #[doc = "destroy the previous primary selection wlr_data_control_offer, if any,"]
+            #[doc = "upon receiving this event."]
+            #[doc = ""]
+            #[doc = "If the compositor supports primary selection, the first"]
+            #[doc = "primary_selection event is sent upon binding the"]
+            #[doc = "wlr_data_control_device object."]
+            async fn primary_selection(
+                &self,
+                id: Option<crate::wire::ObjectId>,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "The wlr_data_control_source object is the source side of a"]
@@ -261,6 +306,18 @@ pub mod wlr_data_control_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Request for data from the client. Send the data as the specified MIME"]
+            #[doc = "type over the passed file descriptor, then close it."]
+            async fn send(
+                &self,
+                mime_type: String,
+                fd: rustix::fd::OwnedFd,
+            ) -> crate::client::Result<()>;
+            #[doc = "This data source is no longer valid. The data source has been replaced"]
+            #[doc = "by another data source."]
+            #[doc = ""]
+            #[doc = "The client should clean up and destroy this data source."]
+            async fn cancelled(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "A wlr_data_control_offer represents a piece of data offered for transfer"]
@@ -323,6 +380,9 @@ pub mod wlr_data_control_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Sent immediately after creating the wlr_data_control_offer object."]
+            #[doc = "One event per offered MIME type."]
+            async fn offer(&self, mime_type: String) -> crate::client::Result<()>;
         }
     }
 }
@@ -481,6 +541,67 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Main event supplying the client with information about the frame. If the"]
+            #[doc = "capture didn't fail, this event is always emitted first before any other"]
+            #[doc = "events."]
+            #[doc = ""]
+            #[doc = "This event is followed by a number of \"object\" as specified by the"]
+            #[doc = "\"num_objects\" argument."]
+            async fn frame(
+                &self,
+                width: u32,
+                height: u32,
+                offset_x: u32,
+                offset_y: u32,
+                buffer_flags: u32,
+                flags: Flags,
+                format: u32,
+                mod_high: u32,
+                mod_low: u32,
+                num_objects: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Event which serves to supply the client with the file descriptors"]
+            #[doc = "containing the data for each object."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client must always close the file"]
+            #[doc = "descriptor as soon as they're done with it and even if the frame fails."]
+            async fn object(
+                &self,
+                index: u32,
+                fd: rustix::fd::OwnedFd,
+                size: u32,
+                offset: u32,
+                stride: u32,
+                plane_index: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent as soon as the frame is presented, indicating it is"]
+            #[doc = "available for reading. This event includes the time at which"]
+            #[doc = "presentation happened at."]
+            #[doc = ""]
+            #[doc = "The timestamp is expressed as tv_sec_hi, tv_sec_lo, tv_nsec triples,"]
+            #[doc = "each component being an unsigned 32-bit value. Whole seconds are in"]
+            #[doc = "tv_sec which is a 64-bit value combined from tv_sec_hi and tv_sec_lo,"]
+            #[doc = "and the additional fractional part in tv_nsec as nanoseconds. Hence,"]
+            #[doc = "for valid timestamps tv_nsec must be in [0, 999999999]. The seconds part"]
+            #[doc = "may have an arbitrary offset at start."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client should destroy this object."]
+            async fn ready(
+                &self,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "If the capture failed or if the frame is no longer valid after the"]
+            #[doc = "\"frame\" event has been emitted, this event will be used to inform the"]
+            #[doc = "client to scrap the frame."]
+            #[doc = ""]
+            #[doc = "If the failure is temporary, the client may capture again the same"]
+            #[doc = "source. If the failure is permanent, any further attempts to capture the"]
+            #[doc = "same source will fail again."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client should destroy this object."]
+            async fn cancel(&self, reason: CancelReason) -> crate::client::Result<()>;
         }
     }
 }
@@ -525,6 +646,19 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is emitted whenever a new toplevel window is created. It"]
+            #[doc = "is emitted for all toplevels, regardless of the app that has created"]
+            #[doc = "them."]
+            #[doc = ""]
+            #[doc = "All initial details of the toplevel(title, app_id, states, etc.) will"]
+            #[doc = "be sent immediately after this event via the corresponding events in"]
+            #[doc = "zwlr_foreign_toplevel_handle_v1."]
+            async fn toplevel(&self, toplevel: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the compositor is done sending events to the"]
+            #[doc = "zwlr_foreign_toplevel_manager_v1. The server will destroy the object"]
+            #[doc = "immediately after sending this request, so it will become invalid and"]
+            #[doc = "the client should free any resources associated with it."]
+            async fn finished(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "A zwlr_foreign_toplevel_handle_v1 object represents an opened toplevel"]
@@ -794,6 +928,45 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is emitted whenever the title of the toplevel changes."]
+            async fn title(&self, title: String) -> crate::client::Result<()>;
+            #[doc = "This event is emitted whenever the app-id of the toplevel changes."]
+            async fn app_id(&self, app_id: String) -> crate::client::Result<()>;
+            #[doc = "This event is emitted whenever the toplevel becomes visible on"]
+            #[doc = "the given output. A toplevel may be visible on multiple outputs."]
+            async fn output_enter(
+                &self,
+                output: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is emitted whenever the toplevel stops being visible on"]
+            #[doc = "the given output. It is guaranteed that an entered-output event"]
+            #[doc = "with the same output has been emitted before this event."]
+            async fn output_leave(
+                &self,
+                output: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is emitted immediately after the zlw_foreign_toplevel_handle_v1"]
+            #[doc = "is created and each time the toplevel state changes, either because of a"]
+            #[doc = "compositor action or because of a request in this protocol."]
+            async fn state(&self, state: Vec<u8>) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all changes in the toplevel state have been"]
+            #[doc = "sent."]
+            #[doc = ""]
+            #[doc = "This allows changes to the zwlr_foreign_toplevel_handle_v1 properties"]
+            #[doc = "to be seen as atomic, even if they happen via multiple events."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "This event means the toplevel has been destroyed. It is guaranteed there"]
+            #[doc = "won't be any more events for this zwlr_foreign_toplevel_handle_v1. The"]
+            #[doc = "toplevel itself becomes inert so any requests will be ignored except the"]
+            #[doc = "destroy request."]
+            async fn closed(&self) -> crate::client::Result<()>;
+            #[doc = "This event is emitted whenever the parent of the toplevel changes."]
+            #[doc = ""]
+            #[doc = "No event is emitted when the parent handle is destroyed by the client."]
+            async fn parent(
+                &self,
+                parent: Option<crate::wire::ObjectId>,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -942,6 +1115,19 @@ pub mod wlr_gamma_control_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Advertise the size of each gamma ramp."]
+            #[doc = ""]
+            #[doc = "This event is sent immediately when the gamma control object is created."]
+            async fn gamma_size(&self, size: u32) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the gamma control is no longer valid. This"]
+            #[doc = "can happen for a number of reasons, including:"]
+            #[doc = "- The output doesn't support gamma tables"]
+            #[doc = "- Setting the gamma tables failed"]
+            #[doc = "- Another client already has exclusive gamma control for this output"]
+            #[doc = "- The compositor has transferred gamma control to another client"]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy this object."]
+            async fn failed(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -1536,6 +1722,38 @@ pub mod wlr_layer_shell_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The configure event asks the client to resize its surface."]
+            #[doc = ""]
+            #[doc = "Clients should arrange their surface for the new states, and then send"]
+            #[doc = "an ack_configure request with the serial sent in this configure event at"]
+            #[doc = "some point before committing the new surface."]
+            #[doc = ""]
+            #[doc = "The client is free to dismiss all but the last configure event it"]
+            #[doc = "received."]
+            #[doc = ""]
+            #[doc = "The width and height arguments specify the size of the window in"]
+            #[doc = "surface-local coordinates."]
+            #[doc = ""]
+            #[doc = "The size is a hint, in the sense that the client is free to ignore it if"]
+            #[doc = "it doesn't resize, pick a smaller size (to satisfy aspect ratio or"]
+            #[doc = "resize in steps of NxM pixels). If the client picks a smaller size and"]
+            #[doc = "is anchored to two opposite anchors (e.g. 'top' and 'bottom'), the"]
+            #[doc = "surface will be centered on this axis."]
+            #[doc = ""]
+            #[doc = "If the width or height arguments are zero, it means the client should"]
+            #[doc = "decide its own window dimension."]
+            async fn configure(
+                &self,
+                serial: u32,
+                width: u32,
+                height: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "The closed event is sent by the compositor when the surface will no"]
+            #[doc = "longer be shown. The output may have been destroyed or the user may"]
+            #[doc = "have asked for it to be removed. Further changes to the surface will be"]
+            #[doc = "ignored. The client should destroy the resource after receiving this"]
+            #[doc = "event, and create a new surface if they so choose."]
+            async fn closed(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -1634,6 +1852,27 @@ pub mod wlr_output_management_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event introduces a new head. This happens whenever a new head"]
+            #[doc = "appears (e.g. a monitor is plugged in) or after the output manager is"]
+            #[doc = "bound."]
+            async fn head(&self, head: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all information has been sent after binding to"]
+            #[doc = "the output manager object and after any subsequent changes. This applies"]
+            #[doc = "to child head and mode objects as well. In other words, this event is"]
+            #[doc = "sent whenever a head or mode is created or destroyed and whenever one of"]
+            #[doc = "their properties has been changed. Not all state is re-sent each time"]
+            #[doc = "the current configuration changes: only the actual changes are sent."]
+            #[doc = ""]
+            #[doc = "This allows changes to the output configuration to be seen as atomic,"]
+            #[doc = "even if they happen via multiple events."]
+            #[doc = ""]
+            #[doc = "A serial is sent to be used in a future create_configuration request."]
+            async fn done(&self, serial: u32) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the compositor is done sending manager events."]
+            #[doc = "The compositor will destroy the object immediately after sending this"]
+            #[doc = "event, so it will become invalid and the client should release any"]
+            #[doc = "resources associated with it."]
+            async fn finished(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "A head is an output device. The difference between a wl_output object and"]
@@ -1698,6 +1937,147 @@ pub mod wlr_output_management_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event describes the head name."]
+            #[doc = ""]
+            #[doc = "The naming convention is compositor defined, but limited to alphanumeric"]
+            #[doc = "characters and dashes (-). Each name is unique among all wlr_output_head"]
+            #[doc = "objects, but if a wlr_output_head object is destroyed the same name may"]
+            #[doc = "be reused later. The names will also remain consistent across sessions"]
+            #[doc = "with the same hardware and software configuration."]
+            #[doc = ""]
+            #[doc = "Examples of names include 'HDMI-A-1', 'WL-1', 'X11-1', etc. However, do"]
+            #[doc = "not assume that the name is a reflection of an underlying DRM"]
+            #[doc = "connector, X11 connection, etc."]
+            #[doc = ""]
+            #[doc = "If the compositor implements the xdg-output protocol and this head is"]
+            #[doc = "enabled, the xdg_output.name event must report the same name."]
+            #[doc = ""]
+            #[doc = "The name event is sent after a wlr_output_head object is created. This"]
+            #[doc = "event is only sent once per object, and the name does not change over"]
+            #[doc = "the lifetime of the wlr_output_head object."]
+            async fn name(&self, name: String) -> crate::client::Result<()>;
+            #[doc = "This event describes a human-readable description of the head."]
+            #[doc = ""]
+            #[doc = "The description is a UTF-8 string with no convention defined for its"]
+            #[doc = "contents. Examples might include 'Foocorp 11\" Display' or 'Virtual X11"]
+            #[doc = "output via :1'. However, do not assume that the name is a reflection of"]
+            #[doc = "the make, model, serial of the underlying DRM connector or the display"]
+            #[doc = "name of the underlying X11 connection, etc."]
+            #[doc = ""]
+            #[doc = "If the compositor implements xdg-output and this head is enabled,"]
+            #[doc = "the xdg_output.description must report the same description."]
+            #[doc = ""]
+            #[doc = "The description event is sent after a wlr_output_head object is created."]
+            #[doc = "This event is only sent once per object, and the description does not"]
+            #[doc = "change over the lifetime of the wlr_output_head object."]
+            async fn description(&self, description: String) -> crate::client::Result<()>;
+            #[doc = "This event describes the physical size of the head. This event is only"]
+            #[doc = "sent if the head has a physical size (e.g. is not a projector or a"]
+            #[doc = "virtual device)."]
+            #[doc = ""]
+            #[doc = "The physical size event is sent after a wlr_output_head object is created. This"]
+            #[doc = "event is only sent once per object, and the physical size does not change over"]
+            #[doc = "the lifetime of the wlr_output_head object."]
+            async fn physical_size(&self, width: i32, height: i32) -> crate::client::Result<()>;
+            #[doc = "This event introduces a mode for this head. It is sent once per"]
+            #[doc = "supported mode."]
+            async fn mode(&self, mode: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "This event describes whether the head is enabled. A disabled head is not"]
+            #[doc = "mapped to a region of the global compositor space."]
+            #[doc = ""]
+            #[doc = "When a head is disabled, some properties (current_mode, position,"]
+            #[doc = "transform and scale) are irrelevant."]
+            async fn enabled(&self, enabled: i32) -> crate::client::Result<()>;
+            #[doc = "This event describes the mode currently in use for this head. It is only"]
+            #[doc = "sent if the output is enabled."]
+            async fn current_mode(&self, mode: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "This events describes the position of the head in the global compositor"]
+            #[doc = "space. It is only sent if the output is enabled."]
+            async fn position(&self, x: i32, y: i32) -> crate::client::Result<()>;
+            #[doc = "This event describes the transformation currently applied to the head."]
+            #[doc = "It is only sent if the output is enabled."]
+            async fn transform(
+                &self,
+                transform: super::super::super::core::wayland::wl_output::Transform,
+            ) -> crate::client::Result<()>;
+            #[doc = "This events describes the scale of the head in the global compositor"]
+            #[doc = "space. It is only sent if the output is enabled."]
+            async fn scale(&self, scale: crate::wire::Fixed) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the head is no longer available. The head"]
+            #[doc = "object becomes inert. Clients should send a destroy request and release"]
+            #[doc = "any resources associated with it."]
+            async fn finished(&self) -> crate::client::Result<()>;
+            #[doc = "This event describes the manufacturer of the head."]
+            #[doc = ""]
+            #[doc = "This must report the same make as the wl_output interface does in its"]
+            #[doc = "geometry event."]
+            #[doc = ""]
+            #[doc = "Together with the model and serial_number events the purpose is to"]
+            #[doc = "allow clients to recognize heads from previous sessions and for example"]
+            #[doc = "load head-specific configurations back."]
+            #[doc = ""]
+            #[doc = "It is not guaranteed this event will be ever sent. A reason for that"]
+            #[doc = "can be that the compositor does not have information about the make of"]
+            #[doc = "the head or the definition of a make is not sensible in the current"]
+            #[doc = "setup, for example in a virtual session. Clients can still try to"]
+            #[doc = "identify the head by available information from other events but should"]
+            #[doc = "be aware that there is an increased risk of false positives."]
+            #[doc = ""]
+            #[doc = "If sent, the make event is sent after a wlr_output_head object is"]
+            #[doc = "created and only sent once per object. The make does not change over"]
+            #[doc = "the lifetime of the wlr_output_head object."]
+            #[doc = ""]
+            #[doc = "It is not recommended to display the make string in UI to users. For"]
+            #[doc = "that the string provided by the description event should be preferred."]
+            async fn make(&self, make: String) -> crate::client::Result<()>;
+            #[doc = "This event describes the model of the head."]
+            #[doc = ""]
+            #[doc = "This must report the same model as the wl_output interface does in its"]
+            #[doc = "geometry event."]
+            #[doc = ""]
+            #[doc = "Together with the make and serial_number events the purpose is to"]
+            #[doc = "allow clients to recognize heads from previous sessions and for example"]
+            #[doc = "load head-specific configurations back."]
+            #[doc = ""]
+            #[doc = "It is not guaranteed this event will be ever sent. A reason for that"]
+            #[doc = "can be that the compositor does not have information about the model of"]
+            #[doc = "the head or the definition of a model is not sensible in the current"]
+            #[doc = "setup, for example in a virtual session. Clients can still try to"]
+            #[doc = "identify the head by available information from other events but should"]
+            #[doc = "be aware that there is an increased risk of false positives."]
+            #[doc = ""]
+            #[doc = "If sent, the model event is sent after a wlr_output_head object is"]
+            #[doc = "created and only sent once per object. The model does not change over"]
+            #[doc = "the lifetime of the wlr_output_head object."]
+            #[doc = ""]
+            #[doc = "It is not recommended to display the model string in UI to users. For"]
+            #[doc = "that the string provided by the description event should be preferred."]
+            async fn model(&self, model: String) -> crate::client::Result<()>;
+            #[doc = "This event describes the serial number of the head."]
+            #[doc = ""]
+            #[doc = "Together with the make and model events the purpose is to allow clients"]
+            #[doc = "to recognize heads from previous sessions and for example load head-"]
+            #[doc = "specific configurations back."]
+            #[doc = ""]
+            #[doc = "It is not guaranteed this event will be ever sent. A reason for that"]
+            #[doc = "can be that the compositor does not have information about the serial"]
+            #[doc = "number of the head or the definition of a serial number is not sensible"]
+            #[doc = "in the current setup. Clients can still try to identify the head by"]
+            #[doc = "available information from other events but should be aware that there"]
+            #[doc = "is an increased risk of false positives."]
+            #[doc = ""]
+            #[doc = "If sent, the serial number event is sent after a wlr_output_head object"]
+            #[doc = "is created and only sent once per object. The serial number does not"]
+            #[doc = "change over the lifetime of the wlr_output_head object."]
+            #[doc = ""]
+            #[doc = "It is not recommended to display the serial_number string in UI to"]
+            #[doc = "users. For that the string provided by the description event should be"]
+            #[doc = "preferred."]
+            async fn serial_number(&self, serial_number: String) -> crate::client::Result<()>;
+            #[doc = "This event describes whether adaptive sync is currently enabled for"]
+            #[doc = "the head or not. Adaptive sync is also known as Variable Refresh"]
+            #[doc = "Rate or VRR."]
+            async fn adaptive_sync(&self, state: AdaptiveSyncState) -> crate::client::Result<()>;
         }
     }
     #[doc = "This object describes an output mode."]
@@ -1738,6 +2118,20 @@ pub mod wlr_output_management_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event describes the mode size. The size is given in physical"]
+            #[doc = "hardware units of the output device. This is not necessarily the same as"]
+            #[doc = "the output size in the global compositor space. For instance, the output"]
+            #[doc = "may be scaled or transformed."]
+            async fn size(&self, width: i32, height: i32) -> crate::client::Result<()>;
+            #[doc = "This event describes the mode's fixed vertical refresh rate. It is only"]
+            #[doc = "sent if the mode has a fixed refresh rate."]
+            async fn refresh(&self, refresh: i32) -> crate::client::Result<()>;
+            #[doc = "This event advertises this mode as preferred."]
+            async fn preferred(&self) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the mode is no longer available. The mode"]
+            #[doc = "object becomes inert. Clients should send a destroy request and release"]
+            #[doc = "any resources associated with it."]
+            async fn finished(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "This object is used by the client to describe a full output configuration."]
@@ -1890,6 +2284,29 @@ pub mod wlr_output_management_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Sent after the compositor has successfully applied the changes or"]
+            #[doc = "tested them."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy this object."]
+            #[doc = ""]
+            #[doc = "If the current configuration has changed, events to describe the changes"]
+            #[doc = "will be sent followed by a wlr_output_manager.done event."]
+            async fn succeeded(&self) -> crate::client::Result<()>;
+            #[doc = "Sent if the compositor rejects the changes or failed to apply them. The"]
+            #[doc = "compositor should revert any changes made by the apply request that"]
+            #[doc = "triggered this event."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy this object."]
+            async fn failed(&self) -> crate::client::Result<()>;
+            #[doc = "Sent if the compositor cancels the configuration because the state of an"]
+            #[doc = "output changed and the client has outdated information (e.g. after an"]
+            #[doc = "output has been hotplugged)."]
+            #[doc = ""]
+            #[doc = "The client can create a new configuration with a newer serial and try"]
+            #[doc = "again."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy this object."]
+            async fn cancelled(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "This object is used by the client to update a single head's configuration."]
@@ -2226,6 +2643,24 @@ pub mod wlr_output_power_management_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Report the power management mode change of an output."]
+            #[doc = ""]
+            #[doc = "The mode event is sent after an output changed its power"]
+            #[doc = "management mode. The reason can be a client using set_mode or the"]
+            #[doc = "compositor deciding to change an output's mode."]
+            #[doc = "This event is also sent immediately when the object is created"]
+            #[doc = "so the client is informed about the current power management mode."]
+            async fn mode(&self, mode: Mode) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the output power management mode control"]
+            #[doc = "is no longer valid. This can happen for a number of reasons,"]
+            #[doc = "including:"]
+            #[doc = "- The output doesn't support power management"]
+            #[doc = "- Another client already has exclusive power management mode control"]
+            #[doc = "for this output"]
+            #[doc = "- The output disappeared"]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy this object."]
+            async fn failed(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -2446,6 +2881,72 @@ pub mod wlr_screencopy_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Provides information about wl_shm buffer parameters that need to be"]
+            #[doc = "used for this frame. This event is sent once after the frame is created"]
+            #[doc = "if wl_shm buffers are supported."]
+            async fn buffer(
+                &self,
+                format: super::super::super::core::wayland::wl_shm::Format,
+                width: u32,
+                height: u32,
+                stride: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Provides flags about the frame. This event is sent once before the"]
+            #[doc = "\"ready\" event."]
+            async fn flags(&self, flags: Flags) -> crate::client::Result<()>;
+            #[doc = "Called as soon as the frame is copied, indicating it is available"]
+            #[doc = "for reading. This event includes the time at which presentation happened"]
+            #[doc = "at."]
+            #[doc = ""]
+            #[doc = "The timestamp is expressed as tv_sec_hi, tv_sec_lo, tv_nsec triples,"]
+            #[doc = "each component being an unsigned 32-bit value. Whole seconds are in"]
+            #[doc = "tv_sec which is a 64-bit value combined from tv_sec_hi and tv_sec_lo,"]
+            #[doc = "and the additional fractional part in tv_nsec as nanoseconds. Hence,"]
+            #[doc = "for valid timestamps tv_nsec must be in [0, 999999999]. The seconds part"]
+            #[doc = "may have an arbitrary offset at start."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client should destroy the object."]
+            async fn ready(
+                &self,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the attempted frame copy has failed."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client should destroy the object."]
+            async fn failed(&self) -> crate::client::Result<()>;
+            #[doc = "This event is sent right before the ready event when copy_with_damage is"]
+            #[doc = "requested. It may be generated multiple times for each copy_with_damage"]
+            #[doc = "request."]
+            #[doc = ""]
+            #[doc = "The arguments describe a box around an area that has changed since the"]
+            #[doc = "last copy request that was derived from the current screencopy manager"]
+            #[doc = "instance."]
+            #[doc = ""]
+            #[doc = "The union of all regions received between the call to copy_with_damage"]
+            #[doc = "and a ready event is the total damage since the prior ready event."]
+            async fn damage(
+                &self,
+                x: u32,
+                y: u32,
+                width: u32,
+                height: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Provides information about linux-dmabuf buffer parameters that need to"]
+            #[doc = "be used for this frame. This event is sent once after the frame is"]
+            #[doc = "created if linux-dmabuf buffers are supported."]
+            async fn linux_dmabuf(
+                &self,
+                format: u32,
+                width: u32,
+                height: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent once after all buffer events have been sent."]
+            #[doc = ""]
+            #[doc = "The client should proceed to create a buffer of one of the supported"]
+            #[doc = "types, and send a \"copy\" request."]
+            async fn buffer_done(&self) -> crate::client::Result<()>;
         }
     }
 }

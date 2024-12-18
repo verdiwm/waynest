@@ -641,6 +641,15 @@ pub mod fullscreen_shell {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Advertises a single capability of the compositor."]
+            #[doc = ""]
+            #[doc = "When the wl_fullscreen_shell interface is bound, this event is emitted"]
+            #[doc = "once for each capability advertised.  Valid capabilities are given by"]
+            #[doc = "the wl_fullscreen_shell.capability enum.  If clients want to take"]
+            #[doc = "advantage of any of these capabilities, they should use a"]
+            #[doc = "wl_display.sync request immediately after binding to ensure that they"]
+            #[doc = "receive all the capability events."]
+            async fn capability(&self, capability: u32) -> crate::client::Result<()>;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -658,6 +667,27 @@ pub mod fullscreen_shell {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = "This event indicates that the attempted mode switch operation was"]
+            #[doc = "successful.  A surface of the size requested in the mode switch"]
+            #[doc = "will fill the output without scaling."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy the"]
+            #[doc = "wl_fullscreen_shell_mode_feedback object."]
+            async fn mode_successful(&self) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the attempted mode switch operation"]
+            #[doc = "failed. This may be because the requested output mode is not"]
+            #[doc = "possible or it may mean that the compositor does not want to allow it."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy the"]
+            #[doc = "wl_fullscreen_shell_mode_feedback object."]
+            async fn mode_failed(&self) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the attempted mode switch operation was"]
+            #[doc = "cancelled.  Most likely this is because the client requested a"]
+            #[doc = "second mode switch before the first one completed."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy the"]
+            #[doc = "wl_fullscreen_shell_mode_feedback object."]
+            async fn present_cancelled(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -750,6 +780,8 @@ pub mod idle {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            async fn idle(&self) -> crate::client::Result<()>;
+            async fn resumed(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -834,6 +866,7 @@ pub mod keystate {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            async fn state_changed(&self, key: u32, state: u32) -> crate::client::Result<()>;
         }
     }
 }
@@ -1187,6 +1220,11 @@ pub mod outputmanagement {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Sent after the server has successfully applied the changes."]
+            #[doc = "."]
+            async fn applied(&self) -> crate::client::Result<()>;
+            #[doc = "Sent if the server rejects the changes or failed to apply them."]
+            async fn failed(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -1357,6 +1395,139 @@ pub mod org_kde_kwin_outputdevice {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = "The geometry event describes geometric properties of the output."]
+            #[doc = "The event is sent when binding to the output object and whenever"]
+            #[doc = "any of the properties change."]
+            async fn geometry(
+                &self,
+                x: i32,
+                y: i32,
+                physical_width: i32,
+                physical_height: i32,
+                subpixel: i32,
+                make: String,
+                model: String,
+                transform: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "The mode event describes an available mode for the output."]
+            #[doc = ""]
+            #[doc = "When the client binds to the outputdevice object, the server sends this"]
+            #[doc = "event once for every available mode the outputdevice can be operated by."]
+            #[doc = ""]
+            #[doc = "There will always be at least one event sent out on initial binding,"]
+            #[doc = "which represents the current mode."]
+            #[doc = ""]
+            #[doc = "Later on if an output changes its mode the event is sent again, whereby"]
+            #[doc = "this event represents the mode that has now become current. In other"]
+            #[doc = "words, the current mode is always represented by the latest event sent"]
+            #[doc = "with the current flag set."]
+            #[doc = ""]
+            #[doc = "The size of a mode is given in physical hardware units of the output device."]
+            #[doc = "This is not necessarily the same as the output size in the global compositor"]
+            #[doc = "space. For instance, the output may be scaled, as described in"]
+            #[doc = "org_kde_kwin_outputdevice.scale, or transformed, as described in"]
+            #[doc = "org_kde_kwin_outputdevice.transform."]
+            #[doc = ""]
+            #[doc = "The id can be used to refer to a mode when calling set_mode on an"]
+            #[doc = "org_kde_kwin_outputconfiguration object."]
+            async fn mode(
+                &self,
+                flags: u32,
+                width: i32,
+                height: i32,
+                refresh: i32,
+                mode_id: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all other properties have been"]
+            #[doc = "sent on binding to the output object as well as after any"]
+            #[doc = "other output property change have been applied later on."]
+            #[doc = "This allows to see changes to the output properties as atomic,"]
+            #[doc = "even if multiple events successively announce them."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "This event contains scaling geometry information"]
+            #[doc = "that is not in the geometry event. It may be sent after"]
+            #[doc = "binding the output object or if the output scale changes"]
+            #[doc = "later. If it is not sent, the client should assume a"]
+            #[doc = "scale of 1."]
+            #[doc = ""]
+            #[doc = "A scale larger than 1 means that the compositor will"]
+            #[doc = "automatically scale surface buffers by this amount"]
+            #[doc = "when rendering. This is used for high resolution"]
+            #[doc = "displays where applications rendering at the native"]
+            #[doc = "resolution would be too small to be legible."]
+            #[doc = ""]
+            #[doc = "It is intended that scaling aware clients track the"]
+            #[doc = "current output of a surface, and if it is on a scaled"]
+            #[doc = "output it should use wl_surface.set_buffer_scale with"]
+            #[doc = "the scale of the output. That way the compositor can"]
+            #[doc = "avoid scaling the surface, and the client can supply"]
+            #[doc = "a higher detail image."]
+            async fn scale(&self, factor: i32) -> crate::client::Result<()>;
+            #[doc = "The edid event encapsulates the EDID data for the outputdevice."]
+            #[doc = ""]
+            #[doc = "The event is sent when binding to the output object. The EDID"]
+            #[doc = "data may be empty, in which case this event is sent anyway."]
+            #[doc = "If the EDID information is empty, you can fall back to the name"]
+            #[doc = "et al. properties of the outputdevice."]
+            async fn edid(&self, raw: String) -> crate::client::Result<()>;
+            #[doc = "The enabled event notifies whether this output is currently"]
+            #[doc = "enabled and used for displaying content by the server."]
+            #[doc = "The event is sent when binding to the output object and"]
+            #[doc = "whenever later on an output changes its state by becoming"]
+            #[doc = "enabled or disabled."]
+            async fn enabled(&self, enabled: i32) -> crate::client::Result<()>;
+            #[doc = "The uuid can be used to identify the output. It's controlled by"]
+            #[doc = "the server entirely. The server should make sure the uuid is"]
+            #[doc = "persistent across restarts. An empty uuid is considered invalid."]
+            async fn uuid(&self, uuid: String) -> crate::client::Result<()>;
+            #[doc = "This event contains scaling geometry information"]
+            #[doc = "that is not in the geometry event. It may be sent after"]
+            #[doc = "binding the output object or if the output scale changes"]
+            #[doc = "later. If it is not sent, the client should assume a"]
+            #[doc = "scale of 1."]
+            #[doc = ""]
+            #[doc = "A scale larger than 1 means that the compositor will"]
+            #[doc = "automatically scale surface buffers by this amount"]
+            #[doc = "when rendering. This is used for high resolution"]
+            #[doc = "displays where applications rendering at the native"]
+            #[doc = "resolution would be too small to be legible."]
+            #[doc = ""]
+            #[doc = "It is intended that scaling aware clients track the"]
+            #[doc = "current output of a surface, and if it is on a scaled"]
+            #[doc = "output it should use wl_surface.set_buffer_scale with"]
+            #[doc = "the scale of the output. That way the compositor can"]
+            #[doc = "avoid scaling the surface, and the client can supply"]
+            #[doc = "a higher detail image."]
+            #[doc = ""]
+            #[doc = "wl_output will keep the output scale as an integer. In every situation except"]
+            #[doc = "configuring the window manager you want to use that."]
+            async fn scalef(&self, factor: crate::wire::Fixed) -> crate::client::Result<()>;
+            #[doc = "Describes the color intensity profile of the output."]
+            #[doc = "Commonly used for gamma/color correction."]
+            #[doc = ""]
+            #[doc = "The array contains all color ramp values of the output."]
+            #[doc = "For example on 8bit screens there are 256 of them."]
+            #[doc = ""]
+            #[doc = "The array elements are unsigned 16bit integers."]
+            async fn colorcurves(
+                &self,
+                red: Vec<u8>,
+                green: Vec<u8>,
+                blue: Vec<u8>,
+            ) -> crate::client::Result<()>;
+            #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
+            async fn serial_number(&self, serial_number: String) -> crate::client::Result<()>;
+            #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
+            async fn eisa_id(&self, eisa_id: String) -> crate::client::Result<()>;
+            #[doc = "What capabilities this device has, sent on startup before the first"]
+            #[doc = "done event."]
+            async fn capabilities(&self, flags: Capability) -> crate::client::Result<()>;
+            #[doc = "Overscan value of the monitor in percent, sent on startup before the"]
+            #[doc = "first done event."]
+            async fn overscan(&self, overscan: u32) -> crate::client::Result<()>;
+            #[doc = "What policy the compositor will employ regarding its use of variable"]
+            #[doc = "refresh rate."]
+            async fn vrr_policy(&self, vrr_policy: VrrPolicy) -> crate::client::Result<()>;
         }
     }
 }
@@ -1413,6 +1584,11 @@ pub mod remote_access {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            async fn buffer_ready(
+                &self,
+                id: i32,
+                output: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -1443,6 +1619,14 @@ pub mod remote_access {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            async fn gbm_handle(
+                &self,
+                fd: rustix::fd::OwnedFd,
+                width: u32,
+                height: u32,
+                stride: u32,
+                format: u32,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -1620,6 +1804,13 @@ pub mod server_decoration {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is emitted directly after binding the interface. It contains"]
+            #[doc = "the default mode for the decoration. When a new server decoration object"]
+            #[doc = "is created this new object will be in the default mode until the first"]
+            #[doc = "request_mode is requested."]
+            #[doc = ""]
+            #[doc = "The server may change the default mode at any time."]
+            async fn default_mode(&self, mode: u32) -> crate::client::Result<()>;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -1688,6 +1879,20 @@ pub mod server_decoration {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is emitted directly after the decoration is created and"]
+            #[doc = "represents the base decoration policy by the server. E.g. a server"]
+            #[doc = "which wants all surfaces to be client-side decorated will send Client,"]
+            #[doc = "a server which wants server-side decoration will send Server."]
+            #[doc = ""]
+            #[doc = "The client can request a different mode through the decoration request."]
+            #[doc = "The server will acknowledge this by another event with the same mode. So"]
+            #[doc = "even if a server prefers server-side decoration it's possible to force a"]
+            #[doc = "client-side decoration."]
+            #[doc = ""]
+            #[doc = "The server may emit this event at any time. In this case the client can"]
+            #[doc = "again request a different mode. It's the responsibility of the server to"]
+            #[doc = "prevent a feedback loop."]
+            async fn mode(&self, mode: u32) -> crate::client::Result<()>;
         }
     }
 }
@@ -2297,6 +2502,13 @@ pub mod surface_extension {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            async fn onscreen_visibility(&self, visible: i32) -> crate::client::Result<()>;
+            async fn set_generic_property(
+                &self,
+                name: String,
+                value: Vec<u8>,
+            ) -> crate::client::Result<()>;
+            async fn close(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -2736,6 +2948,150 @@ pub mod text_input_unstable_v2 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Notification that this seat's text-input focus is on a certain surface."]
+            #[doc = ""]
+            #[doc = "When the seat has the keyboard capability the text-input focus follows"]
+            #[doc = "the keyboard focus."]
+            async fn enter(
+                &self,
+                serial: u32,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notification that this seat's text-input focus is no longer on"]
+            #[doc = "a certain surface."]
+            #[doc = ""]
+            #[doc = "The leave notification is sent before the enter notification"]
+            #[doc = "for the new focus."]
+            #[doc = ""]
+            #[doc = "When the seat has the keyboard capability the text-input focus follows"]
+            #[doc = "the keyboard focus."]
+            async fn leave(
+                &self,
+                serial: u32,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notification that the visibility of the input panel (virtual keyboard)"]
+            #[doc = "changed."]
+            #[doc = ""]
+            #[doc = "The rectangle x, y, width, height defines the area overlapped by the"]
+            #[doc = "input panel (virtual keyboard) on the surface having the text"]
+            #[doc = "focus in surface local coordinates."]
+            #[doc = ""]
+            #[doc = "That can be used to make sure widgets are visible and not covered by"]
+            #[doc = "a virtual keyboard."]
+            async fn input_panel_state(
+                &self,
+                state: InputPanelVisibility,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notify when a new composing text (pre-edit) should be set around the"]
+            #[doc = "current cursor position. Any previously set composing text should"]
+            #[doc = "be removed."]
+            #[doc = ""]
+            #[doc = "The commit text can be used to replace the composing text in some cases"]
+            #[doc = "(for example when losing focus)."]
+            #[doc = ""]
+            #[doc = "The text input should also handle all preedit_style and preedit_cursor"]
+            #[doc = "events occurring directly before preedit_string."]
+            async fn preedit_string(
+                &self,
+                text: String,
+                commit: String,
+            ) -> crate::client::Result<()>;
+            #[doc = "Sets styling information on composing text. The style is applied for"]
+            #[doc = "length bytes from index relative to the beginning of the composing"]
+            #[doc = "text (as byte offset). Multiple styles can be applied to a composing"]
+            #[doc = "text by sending multiple preedit_styling events."]
+            #[doc = ""]
+            #[doc = "This event is handled as part of a following preedit_string event."]
+            async fn preedit_styling(
+                &self,
+                index: u32,
+                length: u32,
+                style: PreeditStyle,
+            ) -> crate::client::Result<()>;
+            #[doc = "Sets the cursor position inside the composing text (as byte"]
+            #[doc = "offset) relative to the start of the composing text. When index is a"]
+            #[doc = "negative number no cursor is shown."]
+            #[doc = ""]
+            #[doc = "When no preedit_cursor event is sent the cursor will be at the end of"]
+            #[doc = "the composing text by default."]
+            #[doc = ""]
+            #[doc = "This event is handled as part of a following preedit_string event."]
+            async fn preedit_cursor(&self, index: i32) -> crate::client::Result<()>;
+            #[doc = "Notify when text should be inserted into the editor widget. The text to"]
+            #[doc = "commit could be either just a single character after a key press or the"]
+            #[doc = "result of some composing (pre-edit). It could be also an empty text"]
+            #[doc = "when some text should be removed (see delete_surrounding_text) or when"]
+            #[doc = "the input cursor should be moved (see cursor_position)."]
+            #[doc = ""]
+            #[doc = "Any previously set composing text should be removed."]
+            async fn commit_string(&self, text: String) -> crate::client::Result<()>;
+            #[doc = "Notify when the cursor or anchor position should be modified."]
+            #[doc = ""]
+            #[doc = "This event should be handled as part of a following commit_string"]
+            #[doc = "event."]
+            #[doc = ""]
+            #[doc = "The text between anchor and index should be selected."]
+            async fn cursor_position(&self, index: i32, anchor: i32) -> crate::client::Result<()>;
+            #[doc = "Notify when the text around the current cursor position should be"]
+            #[doc = "deleted. BeforeLength and afterLength is the length (in bytes) of text"]
+            #[doc = "before and after the current cursor position (excluding the selection)"]
+            #[doc = "to delete."]
+            #[doc = ""]
+            #[doc = "This event should be handled as part of a following commit_string"]
+            #[doc = "or preedit_string event."]
+            async fn delete_surrounding_text(
+                &self,
+                before_length: u32,
+                after_length: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Transfer an array of 0-terminated modifiers names. The position in"]
+            #[doc = "the array is the index of the modifier as used in the modifiers"]
+            #[doc = "bitmask in the keysym event."]
+            async fn modifiers_map(&self, map: Vec<u8>) -> crate::client::Result<()>;
+            #[doc = "Notify when a key event was sent. Key events should not be used"]
+            #[doc = "for normal text input operations, which should be done with"]
+            #[doc = "commit_string, delete_surrounding_text, etc. The key event follows"]
+            #[doc = "the wl_keyboard key event convention. Sym is a XKB keysym, state a"]
+            #[doc = "wl_keyboard key_state. Modifiers are a mask for effective modifiers"]
+            #[doc = "(where the modifier indices are set by the modifiers_map event)"]
+            async fn keysym(
+                &self,
+                time: u32,
+                sym: u32,
+                state: u32,
+                modifiers: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Sets the language of the input text. The \"language\" argument is a RFC-3066"]
+            #[doc = "format language tag."]
+            async fn language(&self, language: String) -> crate::client::Result<()>;
+            #[doc = "Sets the text direction of input text."]
+            #[doc = ""]
+            #[doc = "It is mainly needed for showing input cursor on correct side of the"]
+            #[doc = "editor when there is no input yet done and making sure neutral"]
+            #[doc = "direction text is laid out properly."]
+            async fn text_direction(&self, direction: TextDirection) -> crate::client::Result<()>;
+            #[doc = "Configure what amount of surrounding text is expected by the"]
+            #[doc = "input method. The surrounding text will be sent in the"]
+            #[doc = "set_surrounding_text request on the following state information updates."]
+            async fn configure_surrounding_text(
+                &self,
+                before_cursor: i32,
+                after_cursor: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "The input method changed on compositor side, which invalidates all"]
+            #[doc = "current state information. New state information should be sent from"]
+            #[doc = "the client via state requests (set_surrounding_text,"]
+            #[doc = "set_content_hint, ...) and update_state."]
+            async fn input_method_changed(
+                &self,
+                serial: u32,
+                flags: u32,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
@@ -3196,6 +3552,106 @@ pub mod text {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Notify the text-input object when it received focus. Typically in"]
+            #[doc = "response to an activate request."]
+            async fn enter(&self, surface: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "Notify the text-input object when it lost focus. Either in response"]
+            #[doc = "to a deactivate request or when the assigned surface lost focus or was"]
+            #[doc = "destroyed."]
+            async fn leave(&self) -> crate::client::Result<()>;
+            #[doc = "Transfer an array of 0-terminated modifiers names. The position in"]
+            #[doc = "the array is the index of the modifier as used in the modifiers"]
+            #[doc = "bitmask in the keysym event."]
+            async fn modifiers_map(&self, map: Vec<u8>) -> crate::client::Result<()>;
+            #[doc = "Notify when the visibility state of the input panel changed."]
+            async fn input_panel_state(&self, state: u32) -> crate::client::Result<()>;
+            #[doc = "Notify when a new composing text (pre-edit) should be set around the"]
+            #[doc = "current cursor position. Any previously set composing text should"]
+            #[doc = "be removed."]
+            #[doc = ""]
+            #[doc = "The commit text can be used to replace the preedit text on reset"]
+            #[doc = "(for example on unfocus)."]
+            #[doc = ""]
+            #[doc = "The text input should also handle all preedit_style and preedit_cursor"]
+            #[doc = "events occurring directly before preedit_string."]
+            async fn preedit_string(
+                &self,
+                serial: u32,
+                text: String,
+                commit: String,
+            ) -> crate::client::Result<()>;
+            #[doc = "Sets styling information on composing text. The style is applied for"]
+            #[doc = "length bytes from index relative to the beginning of the composing"]
+            #[doc = "text (as byte offset). Multiple styles can"]
+            #[doc = "be applied to a composing text by sending multiple preedit_styling"]
+            #[doc = "events."]
+            #[doc = ""]
+            #[doc = "This event is handled as part of a following preedit_string event."]
+            async fn preedit_styling(
+                &self,
+                index: u32,
+                length: u32,
+                style: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Sets the cursor position inside the composing text (as byte"]
+            #[doc = "offset) relative to the start of the composing text. When index is a"]
+            #[doc = "negative number no cursor is shown."]
+            #[doc = ""]
+            #[doc = "This event is handled as part of a following preedit_string event."]
+            async fn preedit_cursor(&self, index: i32) -> crate::client::Result<()>;
+            #[doc = "Notify when text should be inserted into the editor widget. The text to"]
+            #[doc = "commit could be either just a single character after a key press or the"]
+            #[doc = "result of some composing (pre-edit). It could be also an empty text"]
+            #[doc = "when some text should be removed (see delete_surrounding_text) or when"]
+            #[doc = "the input cursor should be moved (see cursor_position)."]
+            #[doc = ""]
+            #[doc = "Any previously set composing text should be removed."]
+            async fn commit_string(&self, serial: u32, text: String) -> crate::client::Result<()>;
+            #[doc = "Notify when the cursor or anchor position should be modified."]
+            #[doc = ""]
+            #[doc = "This event should be handled as part of a following commit_string"]
+            #[doc = "event."]
+            async fn cursor_position(&self, index: i32, anchor: i32) -> crate::client::Result<()>;
+            #[doc = "Notify when the text around the current cursor position should be"]
+            #[doc = "deleted."]
+            #[doc = ""]
+            #[doc = "Index is relative to the current cursor (in bytes)."]
+            #[doc = "Length is the length of deleted text (in bytes)."]
+            #[doc = ""]
+            #[doc = "This event should be handled as part of a following commit_string"]
+            #[doc = "event."]
+            async fn delete_surrounding_text(
+                &self,
+                index: i32,
+                length: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Notify when a key event was sent. Key events should not be used"]
+            #[doc = "for normal text input operations, which should be done with"]
+            #[doc = "commit_string, delete_surrounding_text, etc. The key event follows"]
+            #[doc = "the wl_keyboard key event convention. Sym is a XKB keysym, state a"]
+            #[doc = "wl_keyboard key_state. Modifiers are a mask for effective modifiers"]
+            #[doc = "(where the modifier indices are set by the modifiers_map event)"]
+            async fn keysym(
+                &self,
+                serial: u32,
+                time: u32,
+                sym: u32,
+                state: u32,
+                modifiers: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Sets the language of the input text. The \"language\" argument is a RFC-3066"]
+            #[doc = "format language tag."]
+            async fn language(&self, serial: u32, language: String) -> crate::client::Result<()>;
+            #[doc = "Sets the text direction of input text."]
+            #[doc = ""]
+            #[doc = "It is mainly needed for showing input cursor on correct side of the"]
+            #[doc = "editor when there is no input yet done and making sure neutral"]
+            #[doc = "direction text is laid out properly."]
+            async fn text_direction(
+                &self,
+                serial: u32,
+                direction: u32,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
@@ -3478,6 +3934,21 @@ pub mod dpms {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event gets pushed on binding the resource and indicates whether the wl_output"]
+            #[doc = "supports DPMS. There are operation modes of a Wayland server where DPMS might not"]
+            #[doc = "make sense (e.g. nested compositors)."]
+            async fn supported(&self, supported: u32) -> crate::client::Result<()>;
+            #[doc = "This mode gets pushed on binding the resource and provides the currently used"]
+            #[doc = "DPMS mode. It also gets pushed if DPMS is not supported for the wl_output, in that"]
+            #[doc = "case the value will be On."]
+            #[doc = ""]
+            #[doc = "The event is also pushed whenever the state changes."]
+            async fn mode(&self, mode: u32) -> crate::client::Result<()>;
+            #[doc = "This event gets pushed on binding the resource once all other states are pushed."]
+            #[doc = ""]
+            #[doc = "In addition it gets pushed whenever a state changes to tell the client that all"]
+            #[doc = "state changes have been pushed."]
+            async fn done(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -3981,6 +4452,140 @@ pub mod kde_output_device_v2 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = "The geometry event describes geometric properties of the output."]
+            #[doc = "The event is sent when binding to the output object and whenever"]
+            #[doc = "any of the properties change."]
+            async fn geometry(
+                &self,
+                x: i32,
+                y: i32,
+                physical_width: i32,
+                physical_height: i32,
+                subpixel: i32,
+                make: String,
+                model: String,
+                transform: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event describes the mode currently in use for this head. It is only"]
+            #[doc = "sent if the output is enabled."]
+            async fn current_mode(&self, mode: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "The mode event describes an available mode for the output."]
+            #[doc = ""]
+            #[doc = "When the client binds to the output_device object, the server sends this"]
+            #[doc = "event once for every available mode the output_device can be operated by."]
+            #[doc = ""]
+            #[doc = "There will always be at least one event sent out on initial binding,"]
+            #[doc = "which represents the current mode."]
+            #[doc = ""]
+            #[doc = "Later if an output changes, its mode event is sent again for the"]
+            #[doc = "eventual added modes and lastly the current mode. In other words, the"]
+            #[doc = "current mode is always represented by the latest event sent with the current"]
+            #[doc = "flag set."]
+            #[doc = ""]
+            #[doc = "The size of a mode is given in physical hardware units of the output device."]
+            #[doc = "This is not necessarily the same as the output size in the global compositor"]
+            #[doc = "space. For instance, the output may be scaled, as described in"]
+            #[doc = "kde_output_device_v2.scale, or transformed, as described in"]
+            #[doc = "kde_output_device_v2.transform."]
+            async fn mode(&self, mode: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all other properties have been"]
+            #[doc = "sent on binding to the output object as well as after any"]
+            #[doc = "other output property change have been applied later on."]
+            #[doc = "This allows to see changes to the output properties as atomic,"]
+            #[doc = "even if multiple events successively announce them."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "This event contains scaling geometry information"]
+            #[doc = "that is not in the geometry event. It may be sent after"]
+            #[doc = "binding the output object or if the output scale changes"]
+            #[doc = "later. If it is not sent, the client should assume a"]
+            #[doc = "scale of 1."]
+            #[doc = ""]
+            #[doc = "A scale larger than 1 means that the compositor will"]
+            #[doc = "automatically scale surface buffers by this amount"]
+            #[doc = "when rendering. This is used for high resolution"]
+            #[doc = "displays where applications rendering at the native"]
+            #[doc = "resolution would be too small to be legible."]
+            #[doc = ""]
+            #[doc = "It is intended that scaling aware clients track the"]
+            #[doc = "current output of a surface, and if it is on a scaled"]
+            #[doc = "output it should use wl_surface.set_buffer_scale with"]
+            #[doc = "the scale of the output. That way the compositor can"]
+            #[doc = "avoid scaling the surface, and the client can supply"]
+            #[doc = "a higher detail image."]
+            async fn scale(&self, factor: crate::wire::Fixed) -> crate::client::Result<()>;
+            #[doc = "The edid event encapsulates the EDID data for the outputdevice."]
+            #[doc = ""]
+            #[doc = "The event is sent when binding to the output object. The EDID"]
+            #[doc = "data may be empty, in which case this event is sent anyway."]
+            #[doc = "If the EDID information is empty, you can fall back to the name"]
+            #[doc = "et al. properties of the outputdevice."]
+            async fn edid(&self, raw: String) -> crate::client::Result<()>;
+            #[doc = "The enabled event notifies whether this output is currently"]
+            #[doc = "enabled and used for displaying content by the server."]
+            #[doc = "The event is sent when binding to the output object and"]
+            #[doc = "whenever later on an output changes its state by becoming"]
+            #[doc = "enabled or disabled."]
+            async fn enabled(&self, enabled: i32) -> crate::client::Result<()>;
+            #[doc = "The uuid can be used to identify the output. It's controlled by"]
+            #[doc = "the server entirely. The server should make sure the uuid is"]
+            #[doc = "persistent across restarts. An empty uuid is considered invalid."]
+            async fn uuid(&self, uuid: String) -> crate::client::Result<()>;
+            #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
+            async fn serial_number(&self, serial_number: String) -> crate::client::Result<()>;
+            #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
+            async fn eisa_id(&self, eisa_id: String) -> crate::client::Result<()>;
+            #[doc = "What capabilities this device has, sent on startup before the first"]
+            #[doc = "done event."]
+            async fn capabilities(&self, flags: Capability) -> crate::client::Result<()>;
+            #[doc = "Overscan value of the monitor in percent, sent on startup before the"]
+            #[doc = "first done event."]
+            async fn overscan(&self, overscan: u32) -> crate::client::Result<()>;
+            #[doc = "What policy the compositor will employ regarding its use of variable"]
+            #[doc = "refresh rate."]
+            async fn vrr_policy(&self, vrr_policy: VrrPolicy) -> crate::client::Result<()>;
+            #[doc = "What rgb range the compositor is using for this output"]
+            async fn rgb_range(&self, rgb_range: RgbRange) -> crate::client::Result<()>;
+            #[doc = "Name of the output, it's useful to cross-reference to an zxdg_output_v1 and ultimately QScreen"]
+            async fn name(&self, name: String) -> crate::client::Result<()>;
+            #[doc = "Whether or not high dynamic range is enabled for this output"]
+            async fn high_dynamic_range(&self, hdr_enabled: u32) -> crate::client::Result<()>;
+            #[doc = "If high dynamic range is used, this value defines the brightness in nits for content"]
+            #[doc = "that's in standard dynamic range format. Note that while the value is in nits, that"]
+            #[doc = "doesn't necessarily translate to the same brightness on the screen."]
+            async fn sdr_brightness(&self, sdr_brightness: u32) -> crate::client::Result<()>;
+            #[doc = "Whether or not the use of a wide color gamut is enabled for this output"]
+            async fn wide_color_gamut(&self, wcg_enabled: u32) -> crate::client::Result<()>;
+            async fn auto_rotate_policy(
+                &self,
+                policy: AutoRotatePolicy,
+            ) -> crate::client::Result<()>;
+            async fn icc_profile_path(&self, profile_path: String) -> crate::client::Result<()>;
+            async fn brightness_metadata(
+                &self,
+                max_peak_brightness: u32,
+                max_frame_average_brightness: u32,
+                min_brightness: u32,
+            ) -> crate::client::Result<()>;
+            async fn brightness_overrides(
+                &self,
+                max_peak_brightness: i32,
+                max_average_brightness: i32,
+                min_brightness: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
+            #[doc = "default experience on many modern sRGB screens."]
+            async fn sdr_gamut_wideness(&self, gamut_wideness: u32) -> crate::client::Result<()>;
+            async fn color_profile_source(
+                &self,
+                source: ColorProfileSource,
+            ) -> crate::client::Result<()>;
+            #[doc = "This is the brightness modifier of the output. It doesn't specify"]
+            #[doc = "any absolute values, but is merely a multiplier on top of other"]
+            #[doc = "brightness values, like sdr_brightness and brightness_metadata."]
+            #[doc = "0 is the minimum brightness (not completely dark) and 10000 is"]
+            #[doc = "the maximum brightness."]
+            #[doc = "This is currently only supported / meaningful while HDR is active."]
+            async fn brightness(&self, brightness: u32) -> crate::client::Result<()>;
         }
     }
     #[doc = "This object describes an output mode."]
@@ -4006,6 +4611,20 @@ pub mod kde_output_device_v2 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = "This event describes the mode size. The size is given in physical"]
+            #[doc = "hardware units of the output device. This is not necessarily the same as"]
+            #[doc = "the output size in the global compositor space. For instance, the output"]
+            #[doc = "may be scaled or transformed."]
+            async fn size(&self, width: i32, height: i32) -> crate::client::Result<()>;
+            #[doc = "This event describes the mode's fixed vertical refresh rate. It is only"]
+            #[doc = "sent if the mode has a fixed refresh rate."]
+            async fn refresh(&self, refresh: i32) -> crate::client::Result<()>;
+            #[doc = "This event advertises this mode as preferred."]
+            async fn preferred(&self) -> crate::client::Result<()>;
+            #[doc = "The compositor will destroy the object immediately after sending this"]
+            #[doc = "event, so it will become invalid and the client should release any"]
+            #[doc = "resources associated with it."]
+            async fn removed(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -4641,6 +5260,11 @@ pub mod kde_output_management_v2 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Sent after the server has successfully applied the changes."]
+            #[doc = "."]
+            async fn applied(&self) -> crate::client::Result<()>;
+            #[doc = "Sent if the server rejects the changes or failed to apply them."]
+            async fn failed(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -4681,6 +5305,10 @@ pub mod kde_output_order_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Specifies the output identified by their wl_output.name."]
+            async fn output(&self, output_name: String) -> crate::client::Result<()>;
+            #[doc = "Specifies that the output list is complete. On the next output event, a new list begins."]
+            async fn done(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -4721,6 +5349,8 @@ pub mod kde_primary_output_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Specifies which output is the primary one identified by their uuid. See kde_output_device_v2 uuid event for more information about it."]
+            async fn primary_output(&self, output_name: String) -> crate::client::Result<()>;
         }
     }
 }
@@ -5004,6 +5634,19 @@ pub mod org_kde_plasma_virtual_desktop {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            async fn desktop_created(
+                &self,
+                desktop_id: String,
+                position: u32,
+            ) -> crate::client::Result<()>;
+            async fn desktop_removed(&self, desktop_id: String) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all other properties has been"]
+            #[doc = "sent after binding to the desktop manager object and after any"]
+            #[doc = "other property changes done after that. This allows"]
+            #[doc = "changes to the org_kde_plasma_virtual_desktop_management properties to be seen as"]
+            #[doc = "atomic, even if they happen via multiple events."]
+            async fn done(&self) -> crate::client::Result<()>;
+            async fn rows(&self, rows: u32) -> crate::client::Result<()>;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -5038,6 +5681,23 @@ pub mod org_kde_plasma_virtual_desktop {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The format of the id is decided by the compositor implementation. A desktop id univocally identifies a virtual desktop and must be guaranteed to never exist two desktops with the same id. The format of the string id is up to the server implementation."]
+            async fn desktop_id(&self, desktop_id: String) -> crate::client::Result<()>;
+            async fn name(&self, name: String) -> crate::client::Result<()>;
+            #[doc = "The desktop will be the new \"current\" desktop of the system. The server may support either one virtual desktop active at a time, or other combinations such as one virtual desktop active per screen."]
+            #[doc = "Windows associated to this virtual desktop will be shown."]
+            async fn activated(&self) -> crate::client::Result<()>;
+            #[doc = "Windows that were associated only to this desktop will be hidden."]
+            async fn deactivated(&self) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all other properties has been"]
+            #[doc = "sent after binding to the desktop object and after any"]
+            #[doc = "other property changes done after that. This allows"]
+            #[doc = "changes to the org_kde_plasma_virtual_desktop properties to be seen as"]
+            #[doc = "atomic, even if they happen via multiple events."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "This virtual desktop has just been removed by the server:"]
+            #[doc = "All windows will lose the association to this desktop."]
+            async fn removed(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -5478,6 +6138,10 @@ pub mod plasma_shell {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "An auto-hiding panel got hidden by the compositor."]
+            async fn auto_hidden_panel_hidden(&self) -> crate::client::Result<()>;
+            #[doc = "An auto-hiding panel got shown by the compositor."]
+            async fn auto_hidden_panel_shown(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -5654,6 +6318,26 @@ pub mod plasma_window_management {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event will be sent whenever the show desktop mode changes. E.g. when it is entered"]
+            #[doc = "or left."]
+            #[doc = ""]
+            #[doc = "On binding the interface the current state is sent."]
+            async fn show_desktop_changed(&self, state: u32) -> crate::client::Result<()>;
+            #[doc = "This event will be sent immediately after a window is mapped."]
+            async fn window(&self, id: u32) -> crate::client::Result<()>;
+            #[doc = "This event will be sent when stacking order changed and on bind."]
+            #[doc = ""]
+            #[doc = "With version 17 this event is deprecated and will no longer be sent."]
+            async fn stacking_order_changed(&self, ids: Vec<u8>) -> crate::client::Result<()>;
+            #[doc = "This event will be sent when stacking order changed and on bind."]
+            #[doc = ""]
+            #[doc = "With version 17 this event is deprecated and will no longer be sent."]
+            async fn stacking_order_uuid_changed(&self, uuids: String)
+                -> crate::client::Result<()>;
+            #[doc = "This event will be sent immediately after a window is mapped."]
+            async fn window_with_uuid(&self, id: u32, uuid: String) -> crate::client::Result<()>;
+            #[doc = "This event will be sent when stacking order changed."]
+            async fn stacking_order_changed_2(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "Manages and control an application window."]
@@ -5944,6 +6628,87 @@ pub mod plasma_window_management {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event will be sent as soon as the window title is changed."]
+            async fn title_changed(&self, title: String) -> crate::client::Result<()>;
+            #[doc = "This event will be sent as soon as the application"]
+            #[doc = "identifier is changed."]
+            async fn app_id_changed(&self, app_id: String) -> crate::client::Result<()>;
+            #[doc = "This event will be sent as soon as the window state changes."]
+            #[doc = ""]
+            #[doc = "Values for state argument are described by org_kde_plasma_window_management.state."]
+            async fn state_changed(&self, flags: u32) -> crate::client::Result<()>;
+            #[doc = "DEPRECATED: use virtual_desktop_entered and virtual_desktop_left instead"]
+            #[doc = "This event will be sent when a window is moved to another"]
+            #[doc = "virtual desktop."]
+            #[doc = ""]
+            #[doc = "It is not sent if it becomes visible on all virtual desktops though."]
+            async fn virtual_desktop_changed(&self, number: i32) -> crate::client::Result<()>;
+            #[doc = "This event will be sent whenever the themed icon name changes. May be null."]
+            async fn themed_icon_name_changed(&self, name: String) -> crate::client::Result<()>;
+            #[doc = "This event will be sent immediately after the window is closed"]
+            #[doc = "and its surface is unmapped."]
+            async fn unmapped(&self) -> crate::client::Result<()>;
+            #[doc = "This event will be sent immediately after all initial state been sent to the client."]
+            #[doc = "If the Plasma window is already unmapped, the unmapped event will be sent before the"]
+            #[doc = "initial_state event."]
+            async fn initial_state(&self) -> crate::client::Result<()>;
+            #[doc = "This event will be sent whenever the parent window of this org_kde_plasma_window changes."]
+            #[doc = "The passed parent is another org_kde_plasma_window and this org_kde_plasma_window is a"]
+            #[doc = "transient window to the parent window. If the parent argument is null, this"]
+            #[doc = "org_kde_plasma_window does not have a parent window."]
+            async fn parent_window(
+                &self,
+                parent: Option<crate::wire::ObjectId>,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
+            #[doc = "The coordinates are in absolute coordinates of the windowing system."]
+            async fn geometry(
+                &self,
+                x: i32,
+                y: i32,
+                width: u32,
+                height: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event will be sent whenever the icon of the window changes, but there is no themed"]
+            #[doc = "icon name. Common examples are Xwayland windows which have a pixmap based icon."]
+            #[doc = ""]
+            #[doc = "The client can request the icon using get_icon."]
+            async fn icon_changed(&self) -> crate::client::Result<()>;
+            #[doc = "This event will be sent when the compositor has set the process id this window belongs to."]
+            #[doc = "This should be set once before the initial_state is sent."]
+            async fn pid_changed(&self, pid: u32) -> crate::client::Result<()>;
+            #[doc = "This event will be sent when the window has entered a new virtual desktop. The window can be on more than one desktop, or none: then is considered on all of them."]
+            async fn virtual_desktop_entered(&self, id: String) -> crate::client::Result<()>;
+            #[doc = "This event will be sent when the window left a virtual desktop. If the window leaves all desktops, it can be considered on all."]
+            #[doc = "If the window gets manually added on all desktops, the server has to send virtual_desktop_left for every previous desktop it was in for the window to be really considered on all desktops."]
+            async fn virtual_desktop_left(&self, is: String) -> crate::client::Result<()>;
+            #[doc = "This event will be sent after the application menu"]
+            #[doc = "for the window has changed."]
+            async fn application_menu(
+                &self,
+                service_name: String,
+                object_path: String,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event will be sent when the window has entered an activity. The window can be on more than one activity, or none: then is considered on all of them."]
+            async fn activity_entered(&self, id: String) -> crate::client::Result<()>;
+            #[doc = "This event will be sent when the window left an activity. If the window leaves all activities, it will be considered on all."]
+            #[doc = "If the window gets manually added on all activities, the server has to send activity_left for every previous activity it was in for the window to be really considered on all activities."]
+            async fn activity_left(&self, id: String) -> crate::client::Result<()>;
+            #[doc = "This event will be sent when the X11 resource name of the window has changed."]
+            #[doc = "This is only set for XWayland windows."]
+            async fn resource_name_changed(
+                &self,
+                resource_name: String,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
+            #[doc = "The coordinates are in absolute coordinates of the windowing system."]
+            async fn client_geometry(
+                &self,
+                x: i32,
+                y: i32,
+                width: u32,
+                height: u32,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "The activation manager interface provides a way to get notified"]
@@ -5981,6 +6746,10 @@ pub mod plasma_window_management {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Will be issued when an app is set to be activated. It offers"]
+            #[doc = "an instance of org_kde_plasma_activation that will tell us the app_id"]
+            #[doc = "and the extent of the activation."]
+            async fn activation(&self, id: crate::wire::ObjectId) -> crate::client::Result<()>;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -6013,6 +6782,8 @@ pub mod plasma_window_management {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            async fn app_id(&self, app_id: String) -> crate::client::Result<()>;
+            async fn finished(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "When this object is created, the compositor sends a window event for"]
@@ -6033,6 +6804,8 @@ pub mod plasma_window_management {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            async fn window(&self, uuid: String) -> crate::client::Result<()>;
+            async fn done(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -6228,6 +7001,9 @@ pub mod zkde_screencast_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            async fn closed(&self) -> crate::client::Result<()>;
+            async fn created(&self, node: u32) -> crate::client::Result<()>;
+            async fn failed(&self, error: String) -> crate::client::Result<()>;
         }
     }
 }

@@ -56,7 +56,20 @@ impl Dispatcher for Display {
     }
 }
 
-impl WlDisplay for Display {}
+impl WlDisplay for Display {
+    async fn error(
+        &self,
+        object_id: waynest::wire::ObjectId,
+        code: u32,
+        message: String,
+    ) -> waynest::client::Result<()> {
+        todo!()
+    }
+
+    async fn delete_id(&self, id: u32) -> waynest::client::Result<()> {
+        todo!()
+    }
+}
 
 #[tokio::main]
 async fn main() -> Result<()> {

@@ -276,6 +276,27 @@ pub mod frog_color_management_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Current preferred metadata for a surface."]
+            #[doc = "The application should use this information to tone-map its buffers"]
+            #[doc = "to this target before committing."]
+            #[doc = ""]
+            #[doc = "This metadata does not necessarily correspond to any physical output, but"]
+            #[doc = "rather what the compositor thinks would be best for a given surface."]
+            async fn preferred_metadata(
+                &self,
+                transfer_function: TransferFunction,
+                output_display_primary_red_x: u32,
+                output_display_primary_red_y: u32,
+                output_display_primary_green_x: u32,
+                output_display_primary_green_y: u32,
+                output_display_primary_blue_x: u32,
+                output_display_primary_blue_y: u32,
+                output_white_point_x: u32,
+                output_white_point_y: u32,
+                max_luminance: u32,
+                min_luminance: u32,
+                max_full_frame_luminance: u32,
+            ) -> crate::client::Result<()>;
         }
     }
 }

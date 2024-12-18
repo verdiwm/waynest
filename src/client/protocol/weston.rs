@@ -362,6 +362,26 @@ pub mod color_management_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "When this object is created, it shall immediately send this event once"]
+            #[doc = "for each rendering intent the compositor supports."]
+            async fn supported_intent(
+                &self,
+                render_intent: RenderIntent,
+            ) -> crate::client::Result<()>;
+            #[doc = "When this object is created, it shall immediately send this event once"]
+            #[doc = "for each compositor supported feature listed in the enumeration."]
+            async fn supported_feature(&self, feature: Feature) -> crate::client::Result<()>;
+            #[doc = "When this object is created, it shall immediately send this event once"]
+            #[doc = "for each named transfer function the compositor supports with the"]
+            #[doc = "parametric image description creator."]
+            async fn supported_tf_named(&self, tf: TransferFunction) -> crate::client::Result<()>;
+            #[doc = "When this object is created, it shall immediately send this event once"]
+            #[doc = "for each named set of primaries the compositor supports with the"]
+            #[doc = "parametric image description creator."]
+            async fn supported_primaries_named(
+                &self,
+                primaries: Primaries,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A xx_color_management_output_v4 describes the color properties of an"]
@@ -450,6 +470,14 @@ pub mod color_management_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is sent whenever the image description of the output changed,"]
+            #[doc = "followed by one wl_output.done event common to output events across all"]
+            #[doc = "extensions."]
+            #[doc = ""]
+            #[doc = "If the client wants to use the updated image description, it needs to do"]
+            #[doc = "get_image_description again, because image description objects are"]
+            #[doc = "immutable."]
+            async fn image_description_changed(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "A xx_color_management_surface_v4 allows the client to set the color"]
@@ -673,6 +701,22 @@ pub mod color_management_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The preferred image description is the one which likely has the most"]
+            #[doc = "performance and/or quality benefits for the compositor if used by the"]
+            #[doc = "client for its wl_surface contents. This event is sent whenever the"]
+            #[doc = "compositor changes the wl_surface's preferred image description."]
+            #[doc = ""]
+            #[doc = "This event is merely a notification. When the client wants to know"]
+            #[doc = "what the preferred image description is, it shall use the get_preferred"]
+            #[doc = "request."]
+            #[doc = ""]
+            #[doc = "The preferred image description is not automatically used for anything."]
+            #[doc = "It is only a hint, and clients may set any valid image description with"]
+            #[doc = "set_image_description but there might be performance and color accuracy"]
+            #[doc = "improvements by providing the wl_surface contents in the preferred"]
+            #[doc = "image description. Therefore clients that can, should render according"]
+            #[doc = "to the preferred image description"]
+            async fn preferred_changed(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "This type of object is used for collecting all the information required"]
@@ -1426,6 +1470,44 @@ pub mod color_management_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "If creating a xx_image_description_v4 object fails for a reason that is"]
+            #[doc = "not defined as a protocol error, this event is sent."]
+            #[doc = ""]
+            #[doc = "The requests that create image description objects define whether and"]
+            #[doc = "when this can occur. Only such creation requests can trigger this event."]
+            #[doc = "This event cannot be triggered after the image description was"]
+            #[doc = "successfully formed."]
+            #[doc = ""]
+            #[doc = "Once this event has been sent, the xx_image_description_v4 object will"]
+            #[doc = "never become ready and it can only be destroyed."]
+            async fn failed(&self, cause: Cause, msg: String) -> crate::client::Result<()>;
+            #[doc = "Once this event has been sent, the xx_image_description_v4 object is"]
+            #[doc = "deemed \"ready\". Ready objects can be used to send requests and can be"]
+            #[doc = "used through other interfaces."]
+            #[doc = ""]
+            #[doc = "Every ready xx_image_description_v4 protocol object refers to an"]
+            #[doc = "underlying image description record in the compositor. Multiple protocol"]
+            #[doc = "objects may end up referring to the same record. Clients may identify"]
+            #[doc = "these \"copies\" by comparing their id numbers: if the numbers from two"]
+            #[doc = "protocol objects are identical, the protocol objects refer to the same"]
+            #[doc = "image description record. Two different image description records"]
+            #[doc = "cannot have the same id number simultaneously. The id number does not"]
+            #[doc = "change during the lifetime of the image description record."]
+            #[doc = ""]
+            #[doc = "The id number is valid only as long as the protocol object is alive. If"]
+            #[doc = "all protocol objects referring to the same image description record are"]
+            #[doc = "destroyed, the id number may be recycled for a different image"]
+            #[doc = "description record."]
+            #[doc = ""]
+            #[doc = "Image description id number is not a protocol object id. Zero is"]
+            #[doc = "reserved as an invalid id number. It shall not be possible for a client"]
+            #[doc = "to refer to an image description by its id number in protocol. The id"]
+            #[doc = "numbers might not be portable between Wayland connections."]
+            #[doc = ""]
+            #[doc = "This identity allows clients to de-duplicate image description records"]
+            #[doc = "and avoid get_information request if they already have the image"]
+            #[doc = "description information."]
+            async fn ready(&self, identity: u32) -> crate::client::Result<()>;
         }
     }
     #[doc = "Sends all matching events describing an image description object exactly"]
@@ -1451,6 +1533,117 @@ pub mod color_management_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = "Signals the end of information events and destroys the object."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "The icc argument provides a file descriptor to the client which may be"]
+            #[doc = "memory-mapped to provide the ICC profile matching the image description."]
+            #[doc = "The fd is read-only, and if mapped then it must be mapped with"]
+            #[doc = "MAP_PRIVATE by the client."]
+            #[doc = ""]
+            #[doc = "The ICC profile version and other details are determined by the"]
+            #[doc = "compositor. There is no provision for a client to ask for a specific"]
+            #[doc = "kind of a profile."]
+            async fn icc_file(
+                &self,
+                icc: rustix::fd::OwnedFd,
+                icc_size: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Delivers the primary color volume primaries and white point using CIE"]
+            #[doc = "1931 xy chromaticity coordinates."]
+            #[doc = ""]
+            #[doc = "Each coordinate value is multiplied by 10000 to get the argument value"]
+            #[doc = "to carry precision of 4 decimals."]
+            async fn primaries(
+                &self,
+                r_x: i32,
+                r_y: i32,
+                g_x: i32,
+                g_y: i32,
+                b_x: i32,
+                b_y: i32,
+                w_x: i32,
+                w_y: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Delivers the primary color volume primaries and white point using an"]
+            #[doc = "explicitly enumerated named set."]
+            async fn primaries_named(
+                &self,
+                primaries : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: Primaries,
+            ) -> crate::client::Result<()>;
+            #[doc = "The color component transfer characteristic of this image description is"]
+            #[doc = "a pure power curve. This event provides the exponent of the power"]
+            #[doc = "function. This curve represents the conversion from electrical to"]
+            #[doc = "optical pixel or color values."]
+            #[doc = ""]
+            #[doc = "The curve exponent has been multiplied by 10000 to get the argument eexp"]
+            #[doc = "value to carry the precision of 4 decimals."]
+            async fn tf_power(&self, eexp: u32) -> crate::client::Result<()>;
+            #[doc = "Delivers the transfer characteristic using an explicitly enumerated"]
+            #[doc = "named function."]
+            async fn tf_named(
+                &self,
+                tf : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: TransferFunction,
+            ) -> crate::client::Result<()>;
+            #[doc = "Delivers the primary color volume luminance range and the reference"]
+            #[doc = "white luminance level."]
+            #[doc = ""]
+            #[doc = "The minimum luminance is multiplied by 10000 to get the argument"]
+            #[doc = "'min_lum' value and carries precision of 4 decimals. The maximum"]
+            #[doc = "luminance and reference white luminance values are unscaled."]
+            async fn luminances(
+                &self,
+                min_lum: u32,
+                max_lum: u32,
+                reference_lum: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Provides the color primaries and white point of the target color volume"]
+            #[doc = "using CIE 1931 xy chromaticity coordinates. This is compatible with the"]
+            #[doc = "SMPTE ST 2086 definition of HDR static metadata for mastering displays."]
+            #[doc = ""]
+            #[doc = "While primary color volume is about how color is encoded, the target"]
+            #[doc = "color volume is the actually displayable color volume. If target color"]
+            #[doc = "volume is equal to the primary color volume, then this event is not"]
+            #[doc = "sent."]
+            #[doc = ""]
+            #[doc = "Each coordinate value is multiplied by 10000 to get the argument value"]
+            #[doc = "to carry precision of 4 decimals."]
+            async fn target_primaries(
+                &self,
+                r_x: i32,
+                r_y: i32,
+                g_x: i32,
+                g_y: i32,
+                b_x: i32,
+                b_y: i32,
+                w_x: i32,
+                w_y: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Provides the luminance range that the image description is targeting as"]
+            #[doc = "the minimum and maximum absolute luminance L. This is compatible with"]
+            #[doc = "the SMPTE ST 2086 definition of HDR static metadata."]
+            #[doc = ""]
+            #[doc = "This luminance range is only theoretical and may not correspond to the"]
+            #[doc = "luminance of light emitted on an actual display."]
+            #[doc = ""]
+            #[doc = "Min L value is multiplied by 10000 to get the argument min_lum value and"]
+            #[doc = "carry precision of 4 decimals. Max L value is unscaled for max_lum."]
+            async fn target_luminance(
+                &self,
+                min_lum: u32,
+                max_lum: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Provides the targeted max_cll of the image description. max_cll is"]
+            #[doc = "defined by CTA-861-H."]
+            #[doc = ""]
+            #[doc = "This luminance is only theoretical and may not correspond to the"]
+            #[doc = "luminance of light emitted on an actual display."]
+            async fn target_max_cll(&self, max_cll: u32) -> crate::client::Result<()>;
+            #[doc = "Provides the targeted max_fall of the image description. max_fall is"]
+            #[doc = "defined by CTA-861-H."]
+            #[doc = ""]
+            #[doc = "This luminance is only theoretical and may not correspond to the"]
+            #[doc = "luminance of light emitted on an actual display."]
+            async fn target_max_fall(&self, max_fall: u32) -> crate::client::Result<()>;
         }
     }
 }
@@ -1486,6 +1679,18 @@ pub mod ivi_application {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The configure event asks the client to resize its surface."]
+            #[doc = ""]
+            #[doc = "The size is a hint, in the sense that the client is free to"]
+            #[doc = "ignore it if it doesn't resize, pick a smaller size (to"]
+            #[doc = "satisfy aspect ratio or resize in steps of NxM pixels)."]
+            #[doc = ""]
+            #[doc = "The client is free to dismiss all but the last configure"]
+            #[doc = "event it received."]
+            #[doc = ""]
+            #[doc = "The width and height arguments specify the size of the window"]
+            #[doc = "in surface-local coordinates."]
+            async fn configure(&self, width: i32, height: i32) -> crate::client::Result<()>;
         }
     }
     #[doc = "This interface is exposed as a global singleton."]
@@ -1707,6 +1912,7 @@ pub mod ivi_hmi_controller {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            async fn workspace_end_control(&self, is_controlled: i32) -> crate::client::Result<()>;
         }
     }
 }
@@ -2046,6 +2252,31 @@ pub mod weston_content_protection {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is sent to the client to inform about the actual protection"]
+            #[doc = "level for its surface in the relax mode."]
+            #[doc = ""]
+            #[doc = "The 'type' argument indicates what that current level of content"]
+            #[doc = "protection that the server has currently established."]
+            #[doc = ""]
+            #[doc = "The 'status' event is first sent, when a weston_protected_surface is"]
+            #[doc = "created."]
+            #[doc = ""]
+            #[doc = "Until this event is sent for the first time, the client should assume"]
+            #[doc = "that its contents are not secure, and the type is 'unprotected'."]
+            #[doc = ""]
+            #[doc = "Possible reasons the content protection status can change is due to"]
+            #[doc = "change in censored-visibility mode from enforced to relaxed, a new"]
+            #[doc = "connector being added, movement of window to another output, or,"]
+            #[doc = "the client attaching a buffer too large for what the server may secure."]
+            #[doc = "However, it is not limited to these reasons."]
+            #[doc = ""]
+            #[doc = "A client may want to listen to this event and lower the resolution of"]
+            #[doc = "their content until it can successfully be shown securely."]
+            #[doc = ""]
+            #[doc = "In case of \"enforce\" mode, the client will not get any status event."]
+            #[doc = "If the mode is then changed to \"relax\", the client will receive the"]
+            #[doc = "status event."]
+            async fn status(&self, r#type: Type) -> crate::client::Result<()>;
         }
     }
 }
@@ -2128,6 +2359,15 @@ pub mod weston_debug {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Advertises an available debug scope which the client may be able to"]
+            #[doc = "bind to. No information is provided by the server about the content"]
+            #[doc = "contained within the debug streams provided by the scope, once a"]
+            #[doc = "client has subscribed."]
+            async fn available(
+                &self,
+                name: String,
+                description: Option<String>,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "Represents one subscribed debug stream, created with"]
@@ -2169,6 +2409,21 @@ pub mod weston_debug {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The server has successfully finished writing to and has closed the"]
+            #[doc = "associated file descriptor."]
+            #[doc = ""]
+            #[doc = "This event is delivered only for one-shot debug streams where the"]
+            #[doc = "server dumps some data and stop. This is never delivered for"]
+            #[doc = "continuous debbug streams because they by definition never complete."]
+            async fn complete(&self) -> crate::client::Result<()>;
+            #[doc = "The server has stopped writing to and has closed the"]
+            #[doc = "associated file descriptor. The data already written to the file"]
+            #[doc = "descriptor is correct, but it may be truncated."]
+            #[doc = ""]
+            #[doc = "This event may be delivered at any time and for any kind of debug"]
+            #[doc = "stream. It may be due to a failure in or shutdown of the server."]
+            #[doc = "The message argument may provide a hint of the reason."]
+            async fn failure(&self, message: Option<String>) -> crate::client::Result<()>;
         }
     }
 }
@@ -2383,6 +2638,22 @@ pub mod weston_desktop {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            async fn configure(
+                &self,
+                edges: u32,
+                surface: crate::wire::ObjectId,
+                width: i32,
+                height: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Tell the client we want it to create and set the lock surface, which is"]
+            #[doc = "a GUI asking the user to unlock the screen. The lock surface is"]
+            #[doc = "announced with 'set_lock_surface'. Whether or not the client actually"]
+            #[doc = "implements locking, it MUST send 'unlock' request to let the normal"]
+            #[doc = "desktop resume."]
+            async fn prepare_lock_surface(&self) -> crate::client::Result<()>;
+            #[doc = "This event will be sent immediately before a fake enter event on the"]
+            #[doc = "grab surface."]
+            async fn grab_cursor(&self, cursor: u32) -> crate::client::Result<()>;
         }
     }
     #[doc = "Only one client can bind this interface at a time."]
@@ -2732,6 +3003,45 @@ pub mod weston_output_capture {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event delivers the pixel format that should be used for the"]
+            #[doc = "image buffer. Any buffer is incompatible if it does not have"]
+            #[doc = "this pixel format."]
+            #[doc = ""]
+            #[doc = "The format modifier is linear (DRM_FORMAT_MOD_LINEAR)."]
+            #[doc = ""]
+            #[doc = "This is an initial event, and sent whenever the required format"]
+            #[doc = "changes."]
+            async fn format(&self, drm_format: u32) -> crate::client::Result<()>;
+            #[doc = "This event delivers the size that should be used for the"]
+            #[doc = "image buffer. Any buffer is incompatible if it does not have"]
+            #[doc = "this size."]
+            #[doc = ""]
+            #[doc = "Row alignment of the buffer must be 4 bytes, and it must not contain"]
+            #[doc = "further row padding. Otherwise the buffer is unsupported."]
+            #[doc = ""]
+            #[doc = "This is an initial event, and sent whenever the required size"]
+            #[doc = "changes."]
+            async fn size(&self, width: i32, height: i32) -> crate::client::Result<()>;
+            #[doc = "This event is emitted as a response to 'capture' request when it"]
+            #[doc = "has successfully completed."]
+            #[doc = ""]
+            #[doc = "If the buffer used in the shot is a dmabuf, the client also needs to"]
+            #[doc = "wait for any implicit fences on it before accessing the contents."]
+            async fn complete(&self) -> crate::client::Result<()>;
+            #[doc = "This event is emitted as a response to 'capture' request when it"]
+            #[doc = "cannot succeed due to an incompatible buffer. The client has already"]
+            #[doc = "received the events delivering the new buffer parameters. The client"]
+            #[doc = "should retry the capture with the new buffer parameters."]
+            async fn retry(&self) -> crate::client::Result<()>;
+            #[doc = "This event is emitted as a response to 'capture' request when it"]
+            #[doc = "has failed for reasons other than an incompatible buffer. The reasons"]
+            #[doc = "may include: unsupported buffer type, unsupported buffer stride,"]
+            #[doc = "unsupported image source, the image source (output) was removed, or"]
+            #[doc = "compositor policy denied the capture."]
+            #[doc = ""]
+            #[doc = "The string 'msg' may contain a human-readable explanation of the"]
+            #[doc = "failure to aid debugging."]
+            async fn failed(&self, msg: Option<String>) -> crate::client::Result<()>;
         }
     }
 }
@@ -2995,6 +3305,11 @@ pub mod weston_test {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            async fn pointer_position(
+                &self,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "This is a global singleton interface for Weston internal tests."]
@@ -3076,6 +3391,7 @@ pub mod weston_test {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            async fn finished(&self) -> crate::client::Result<()>;
         }
     }
 }
@@ -3227,6 +3543,19 @@ pub mod weston_touch_calibration {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "When a client binds to weston_touch_calibration, one touch_device event"]
+            #[doc = "is sent for each touchscreen that is available to be calibrated. This"]
+            #[doc = "is the only time the event is sent. Touch devices added in the"]
+            #[doc = "compositor will not generate events for existing"]
+            #[doc = "weston_touch_calibration objects."]
+            #[doc = ""]
+            #[doc = "An event carries the touch device identification and the associated"]
+            #[doc = "output or head (display connector) name."]
+            #[doc = ""]
+            #[doc = "On platforms using udev, the device identification is the udev sys"]
+            #[doc = "path. It is an absolute path and starts with the sys mount point."]
+            async fn touch_device(&self, device: String, head: String)
+                -> crate::client::Result<()>;
         }
     }
     #[doc = "On creation, this object is tied to a specific touch device. The"]
@@ -3346,6 +3675,64 @@ pub mod weston_touch_calibration {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event tells the client what size to make the surface. The client"]
+            #[doc = "must obey the size exactly on the next commit with a wl_buffer."]
+            #[doc = ""]
+            #[doc = "This event shall be sent once as a response to creating a"]
+            #[doc = "weston_touch_calibrator object."]
+            async fn configure(&self, width: i32, height: i32) -> crate::client::Result<()>;
+            #[doc = "This is sent when the compositor wants to cancel the calibration and"]
+            #[doc = "drop the touch device grab. The compositor unmaps the surface, if it"]
+            #[doc = "was mapped."]
+            #[doc = ""]
+            #[doc = "The weston_touch_calibrator object will not send any more events. The"]
+            #[doc = "client should destroy it."]
+            async fn cancel_calibration(&self) -> crate::client::Result<()>;
+            #[doc = "For whatever reason, a touch event resulting from a user action cannot"]
+            #[doc = "be used for calibration. The client should show feedback to the user"]
+            #[doc = "that the touch was rejected."]
+            #[doc = ""]
+            #[doc = "Possible causes for this event include the user touching a wrong"]
+            #[doc = "touchscreen when there are multiple ones present. This is particularly"]
+            #[doc = "useful when the touchscreens are cloned and there is no other way to"]
+            #[doc = "identify which screen the user should be touching."]
+            #[doc = ""]
+            #[doc = "Another cause could be a touch device that sends coordinates beyond its"]
+            #[doc = "declared range. If motion takes a touch point outside the range, the"]
+            #[doc = "compositor should also send 'cancel' event to undo the touch-down."]
+            async fn invalid_touch(&self) -> crate::client::Result<()>;
+            #[doc = "A new touch point has appeared on the surface. This touch point is"]
+            #[doc = "assigned a unique ID. Future events from this touch point reference"]
+            #[doc = "this ID. The ID ceases to be valid after a touch up event and may be"]
+            #[doc = "reused in the future."]
+            #[doc = ""]
+            #[doc = "For the coordinate units, see weston_touch_calibrator."]
+            async fn down(&self, time: u32, id: i32, x: u32, y: u32) -> crate::client::Result<()>;
+            #[doc = "The touch point has disappeared. No further events will be sent for"]
+            #[doc = "this touch point and the touch point's ID is released and may be"]
+            #[doc = "reused in a future touch down event."]
+            async fn up(&self, time: u32, id: i32) -> crate::client::Result<()>;
+            #[doc = "A touch point has changed coordinates."]
+            #[doc = ""]
+            #[doc = "For the coordinate units, see weston_touch_calibrator."]
+            async fn motion(&self, time: u32, id: i32, x: u32, y: u32)
+                -> crate::client::Result<()>;
+            #[doc = "Indicates the end of a set of events that logically belong together."]
+            #[doc = "A client is expected to accumulate the data in all events within the"]
+            #[doc = "frame before proceeding."]
+            #[doc = ""]
+            #[doc = "A wl_touch.frame terminates at least one event but otherwise no"]
+            #[doc = "guarantee is provided about the set of events within a frame. A client"]
+            #[doc = "must assume that any state not updated in a frame is unchanged from the"]
+            #[doc = "previously known state."]
+            async fn frame(&self) -> crate::client::Result<()>;
+            #[doc = "Sent if the compositor decides the touch stream is a global"]
+            #[doc = "gesture. No further events are sent to the clients from that"]
+            #[doc = "particular gesture. Touch cancellation applies to all touch points"]
+            #[doc = "currently active on this client's surface. The client is"]
+            #[doc = "responsible for finalizing the touch points, future touch points on"]
+            #[doc = "this surface may reuse the touch point ID."]
+            async fn cancel(&self) -> crate::client::Result<()>;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -3363,6 +3750,14 @@ pub mod weston_touch_calibration {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = "This event returns the conversion result from surface coordinates to"]
+            #[doc = "the expected touch device coordinates."]
+            #[doc = ""]
+            #[doc = "For details, see weston_touch_calibrator.convert. For the coordinate"]
+            #[doc = "units, see weston_touch_calibrator."]
+            #[doc = ""]
+            #[doc = "This event destroys the weston_touch_coordinate object."]
+            async fn result(&self, x: u32, y: u32) -> crate::client::Result<()>;
         }
     }
 }

@@ -31,6 +31,18 @@ pub mod ivi_application {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The configure event asks the client to resize its surface."]
+            #[doc = ""]
+            #[doc = "The size is a hint, in the sense that the client is free to"]
+            #[doc = "ignore it if it doesn't resize, pick a smaller size (to"]
+            #[doc = "satisfy aspect ratio or resize in steps of NxM pixels)."]
+            #[doc = ""]
+            #[doc = "The client is free to dismiss all but the last configure"]
+            #[doc = "event it received."]
+            #[doc = ""]
+            #[doc = "The width and height arguments specify the size of the window"]
+            #[doc = "in surface local coordinates."]
+            async fn configure(&self, width: i32, height: i32) -> crate::client::Result<()>;
         }
     }
     #[doc = "This interface is exposed as a global singleton."]
@@ -184,6 +196,38 @@ pub mod ivi_input {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            async fn seat_created(
+                &self,
+                name: String,
+                capabilities: u32,
+                is_default: i32,
+            ) -> crate::client::Result<()>;
+            async fn seat_capabilities(
+                &self,
+                name: String,
+                capabilities: u32,
+            ) -> crate::client::Result<()>;
+            async fn seat_destroyed(&self, name: String) -> crate::client::Result<()>;
+            #[doc = "The new input focus state is provided in argument enabled:"]
+            #[doc = "If enabled is ILM_TRUE, this surface now has input focus enabled."]
+            #[doc = "If enabled is not ILM_TRUE, this surface no longer has input focus."]
+            async fn input_focus(
+                &self,
+                surface: u32,
+                device: u32,
+                enabled: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "A surface has changed its input acceptance for a specific seat."]
+            #[doc = "If argument 'accepted' is ILM_TRUE, the surface now accepts"]
+            #[doc = "the seat."]
+            #[doc = "If argument 'accepted' is not ILM_TRUE, the surface no longer"]
+            #[doc = "accepts the seat."]
+            async fn input_acceptance(
+                &self,
+                surface: u32,
+                seat: String,
+                accepted: i32,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -324,6 +368,14 @@ pub mod ivi_wm {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Sent immediately after creating the ivi_wm_screen object."]
+            async fn screen_id(&self, id: u32) -> crate::client::Result<()>;
+            #[doc = "A layer is added to the render order lisf of the screen"]
+            async fn layer_added(&self, layer_id: u32) -> crate::client::Result<()>;
+            #[doc = "Sent immediately after creating the ivi_wm_screen object."]
+            async fn connector_name(&self, process_name: String) -> crate::client::Result<()>;
+            #[doc = "The error event is sent out when an error has occurred."]
+            async fn error(&self, error: u32, message: String) -> crate::client::Result<()>;
         }
     }
     #[doc = "An ivi_screenshot object receives a single \"done\" or \"error\" event."]
@@ -378,6 +430,11 @@ pub mod ivi_wm {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = "This event notifies the filling data to buffer is done. The client"]
+            #[doc = "can handle the buffer. This also provide the time of dumping data."]
+            async fn done(&self, timestamp: u32) -> crate::client::Result<()>;
+            #[doc = "The error event is sent when the screenshot could not be created."]
+            async fn error(&self, error: Error, message: String) -> crate::client::Result<()>;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -942,6 +999,130 @@ pub mod ivi_wm {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The new visibility state is provided in argument visibility."]
+            #[doc = "If visibility is 0, the surface has become invisible."]
+            #[doc = "If visibility is not 0, the surface has become visible."]
+            async fn surface_visibility(
+                &self,
+                surface_id: u32,
+                visibility: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "The new visibility state is provided in argument visibility."]
+            #[doc = "If visibility is 0, the layer has become invisible."]
+            #[doc = "If visibility is not 0, the layer has become visible."]
+            async fn layer_visibility(
+                &self,
+                layer_id: u32,
+                visibility: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "The new opacity state is provided in argument opacity."]
+            #[doc = "The valid range for opactiy is 0.0 (fully transparent) to 1.0 (fully opaque)."]
+            async fn surface_opacity(
+                &self,
+                surface_id: u32,
+                opacity: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
+            #[doc = "The new opacity state is provided in argument opacity."]
+            #[doc = "The valid range for opactiy is 0.0 (fully transparent) to 1.0 (fully opaque)."]
+            async fn layer_opacity(
+                &self,
+                layer_id: u32,
+                opacity: crate::wire::Fixed,
+            ) -> crate::client::Result<()>;
+            #[doc = "The scanout region of the surface content has changed."]
+            #[doc = "The new values for source rectangle are provided by"]
+            #[doc = "x:      new horizontal start position of scanout area within the surface"]
+            #[doc = "y:      new vertical start position of scanout area within the surface"]
+            #[doc = "width:  new width of scanout area within the surface"]
+            #[doc = "height: new height of scanout area within the surface"]
+            async fn surface_source_rectangle(
+                &self,
+                surface_id: u32,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "The scanout region of the layer content has changed."]
+            #[doc = "The new values for source rectangle are provided by"]
+            #[doc = "x:      new horizontal start position of scanout area within the layer"]
+            #[doc = "y:      new vertical start position of scanout area within the layer"]
+            #[doc = "width:  new width of scanout area within the layer"]
+            #[doc = "height: new height of scanout area within the layer"]
+            async fn layer_source_rectangle(
+                &self,
+                layer_id: u32,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "The new values for source rectangle are provided by"]
+            #[doc = "x:      new horizontal start position of surface within the layer"]
+            #[doc = "y:      new vertical start position of surface within the layer"]
+            #[doc = "width : new width of surface within the layer"]
+            #[doc = "height: new height of surface within the layer"]
+            async fn surface_destination_rectangle(
+                &self,
+                surface_id: u32,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "The new values for source rectangle are provided by"]
+            #[doc = "x:      new horizontal start position of layer within the screen"]
+            #[doc = "y:      new vertical start position of layer within the screen"]
+            #[doc = "width : new width of layer within the screen"]
+            #[doc = "height: new height of layer within the screen"]
+            async fn layer_destination_rectangle(
+                &self,
+                layer_id: u32,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::client::Result<()>;
+            async fn surface_created(&self, surface_id: u32) -> crate::client::Result<()>;
+            async fn layer_created(&self, layer_id: u32) -> crate::client::Result<()>;
+            async fn surface_destroyed(&self, surface_id: u32) -> crate::client::Result<()>;
+            async fn layer_destroyed(&self, layer_id: u32) -> crate::client::Result<()>;
+            #[doc = "The error event is sent out when an error has occurred."]
+            async fn surface_error(
+                &self,
+                object_id: u32,
+                error: u32,
+                message: String,
+            ) -> crate::client::Result<()>;
+            #[doc = "The error event is sent out when an error has occurred."]
+            async fn layer_error(
+                &self,
+                object_id: u32,
+                error: u32,
+                message: String,
+            ) -> crate::client::Result<()>;
+            #[doc = "The client providing content for this surface modified size of the surface."]
+            #[doc = "The modified surface size is provided by arguments width and height."]
+            async fn surface_size(
+                &self,
+                surface_id: u32,
+                width: i32,
+                height: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "The information contained in this event is essential for monitoring, debugging,"]
+            #[doc = "logging and tracing support in IVI systems."]
+            async fn surface_stats(
+                &self,
+                surface_id: u32,
+                frame_count: u32,
+                pid: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "A surface is added to the render order of the layer"]
+            async fn layer_surface_added(
+                &self,
+                layer_id: u32,
+                surface_id: u32,
+            ) -> crate::client::Result<()>;
         }
     }
 }

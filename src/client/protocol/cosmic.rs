@@ -103,6 +103,8 @@ pub mod cosmic_atspi_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Produces an fd that can be used with libei to monitor keyboard input."]
+            async fn key_events_eis(&self, fd: rustix::fd::OwnedFd) -> crate::client::Result<()>;
         }
     }
 }
@@ -554,6 +556,33 @@ pub mod cosmic_output_management_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This events describes the scale of the head in the global compositor"]
+            #[doc = "space multiplied by 1000 for additional precision."]
+            #[doc = ""]
+            #[doc = "It is only sent if the output is enabled."]
+            async fn scale_1000(&self, scale_1000: i32) -> crate::client::Result<()>;
+            #[doc = "This events describes that the head is mirroring another."]
+            #[doc = "In these cases `name` contains the unique name of the matching `zwlr_output_head_v1`."]
+            #[doc = "If the name is null, no head is being mirrored onto this one."]
+            #[doc = ""]
+            #[doc = "For mirrored heads the `position`-event is meaningless."]
+            #[doc = ""]
+            #[doc = "It is only sent if the output is enabled."]
+            async fn mirroring(&self, name: Option<String>) -> crate::client::Result<()>;
+            #[doc = "This events describes if adaptive_sync is available for this head."]
+            #[doc = ""]
+            #[doc = "It is only sent if the output is enabled."]
+            async fn adaptive_sync_available(
+                &self,
+                available: AdaptiveSyncAvailability,
+            ) -> crate::client::Result<()>;
+            #[doc = "This events describes the adaptive_sync state of this head."]
+            #[doc = ""]
+            #[doc = "It is only sent if the output is enabled."]
+            async fn adaptive_sync_ext(
+                &self,
+                state: AdaptiveSyncStateExt,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "Extension to zwlr_output_configuration_v1."]
@@ -645,6 +674,14 @@ pub mod cosmic_output_management_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event indicates that the configuration is no longer available."]
+            #[doc = ""]
+            #[doc = "This usually happens when the original configuration was `cancelled`, `suceeded` or `failed`."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy this object."]
+            #[doc = ""]
+            #[doc = "The configration object becomes inert and any requests other than `destroy` will be ignored."]
+            async fn finished(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "Extension to zwlr_output_configuration_head_v1."]
@@ -823,6 +860,50 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "A ext_foreign_toplevel_handle_v1 has entered the surface area."]
+            #[doc = ""]
+            #[doc = "This event will be emitted once for every ext_foreign_toplevel_handle_v1"]
+            #[doc = "representing this toplevel."]
+            #[doc = ""]
+            #[doc = "Compositors are free to update the overlapping area by sending additional"]
+            #[doc = "`toplevel_enter` events for the same toplevel without sending `toplevel_leave`"]
+            #[doc = "in between."]
+            async fn toplevel_enter(
+                &self,
+                toplevel: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "A ext_foreign_toplevel_handle_v1 has left the surface area."]
+            #[doc = ""]
+            #[doc = "This event will be emitted once for every ext_foreign_toplevel_handle_v1"]
+            #[doc = "representing this toplevel."]
+            async fn toplevel_leave(
+                &self,
+                toplevel: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "A zwlr_layer_surface_v1 has entered the surface area."]
+            #[doc = ""]
+            #[doc = "Compositors are free to update the overlapping area by sending additional"]
+            #[doc = "`layer_enter` events for the same surface without sending `layer_leave`"]
+            #[doc = "in between."]
+            #[doc = ""]
+            #[doc = "The overlapping region is given surface-relative to the zwlr_layer_surface_v1"]
+            #[doc = "used to create this notification object."]
+            async fn layer_enter(
+                &self,
+                identifier: String,
+                exclusive: u32,
+                layer : super :: super :: super :: wlr :: wlr_layer_shell_unstable_v1 :: zwlr_layer_shell_v1 :: Layer,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "A zwlr_layer_surface_v1 has left the surface area."]
+            async fn layer_leave(&self, identifier: String) -> crate::client::Result<()>;
         }
     }
 }
@@ -1016,6 +1097,49 @@ pub mod cosmic_screencopy_unstable_v2 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Provides the dimensions of the source image in buffer pixel coordinates."]
+            #[doc = ""]
+            #[doc = "The client must attach buffers that match this size."]
+            async fn buffer_size(&self, width: u32, height: u32) -> crate::client::Result<()>;
+            #[doc = "Provides the format that must be used for shared-memory buffers."]
+            #[doc = ""]
+            #[doc = "This event may be emitted multiple times, in which case the client may"]
+            #[doc = "choose any given format."]
+            async fn shm_format(&self, format: u32) -> crate::client::Result<()>;
+            #[doc = "This event advertises the device buffers must be allocated on for"]
+            #[doc = "dma-buf buffers."]
+            #[doc = ""]
+            #[doc = "In general the device is a DRM node. The DRM node type (primary vs."]
+            #[doc = "render) is unspecified. Clients must not rely on the compositor sending"]
+            #[doc = "a particular node type. Clients cannot check two devices for equality"]
+            #[doc = "by comparing the dev_t value."]
+            async fn dmabuf_device(&self, device: Vec<u8>) -> crate::client::Result<()>;
+            #[doc = "Provides the format that must be used for dma-buf buffers."]
+            #[doc = ""]
+            #[doc = "The client may choose any of the modifiers advertised in the array of"]
+            #[doc = "64-bit unsigned integers."]
+            #[doc = ""]
+            #[doc = "This event may be emitted multiple times, in which case the client may"]
+            #[doc = "choose any given format."]
+            async fn dmabuf_format(
+                &self,
+                format: u32,
+                modifiers: Vec<u8>,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent once when all buffer constraint events have been"]
+            #[doc = "sent."]
+            #[doc = ""]
+            #[doc = "The compositor must always end a batch of buffer constraint events with"]
+            #[doc = "this event, regardless of whether it sends the initial constraints or"]
+            #[doc = "an update."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the capture session has stopped and is no"]
+            #[doc = "longer available. This can happen in a number of cases, e.g. when the"]
+            #[doc = "underlying source is destroyed, if the user decides to end the screen"]
+            #[doc = "capture, or if an unrecoverable runtime error has occurred."]
+            #[doc = ""]
+            #[doc = "The client should destroy the session after receiving this event."]
+            async fn stopped(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "This object represents a screen capture frame."]
@@ -1189,6 +1313,53 @@ pub mod cosmic_screencopy_unstable_v2 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is sent before the ready event and holds the transform of"]
+            #[doc = "the source buffer."]
+            async fn transform(
+                &self,
+                transform: super::super::super::core::wayland::wl_output::Transform,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent before the ready event. It may be generated multiple"]
+            #[doc = "times to describe a region."]
+            #[doc = ""]
+            #[doc = "The first captured frame in a session will always carry full damage."]
+            #[doc = "Subsequent frames' damaged regions describe which parts of the buffer"]
+            #[doc = "have changed since the last ready event."]
+            #[doc = ""]
+            #[doc = "These coordinates originate in the upper left corner of the buffer."]
+            async fn damage(
+                &self,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event indicates the time at which the frame is presented to the"]
+            #[doc = "output in system monotonic time. This event is sent before the ready"]
+            #[doc = "event."]
+            #[doc = ""]
+            #[doc = "The timestamp is expressed as tv_sec_hi, tv_sec_lo, tv_nsec triples,"]
+            #[doc = "each component being an unsigned 32-bit value. Whole seconds are in"]
+            #[doc = "tv_sec which is a 64-bit value combined from tv_sec_hi and tv_sec_lo,"]
+            #[doc = "and the additional fractional part in tv_nsec as nanoseconds. Hence,"]
+            #[doc = "for valid timestamps tv_nsec must be in [0, 999999999]."]
+            async fn presentation_time(
+                &self,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Called as soon as the frame is copied, indicating it is available"]
+            #[doc = "for reading."]
+            #[doc = ""]
+            #[doc = "The buffer may be re-used by the client after this event."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client must destroy the object."]
+            async fn ready(&self) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the attempted frame copy has failed."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client must destroy the object."]
+            async fn failed(&self, reason: FailureReason) -> crate::client::Result<()>;
         }
     }
     #[doc = "This object represents a cursor capture session. It extends the base"]
@@ -1270,6 +1441,38 @@ pub mod cosmic_screencopy_unstable_v2 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Sent when a cursor enters the captured area. It shall be generated"]
+            #[doc = "before the \"position\" and \"hotspot\" events when and only when a cursor"]
+            #[doc = "enters the area."]
+            #[doc = ""]
+            #[doc = "The cursor enters the captured area when the cursor image intersects"]
+            #[doc = "with the captured area. Note, this is different from e.g."]
+            #[doc = "wl_pointer.enter."]
+            async fn enter(&self) -> crate::client::Result<()>;
+            #[doc = "Sent when a cursor leaves the captured area. No \"position\" or \"hotspot\""]
+            #[doc = "event is generated for the cursor until the cursor enters the captured"]
+            #[doc = "area again."]
+            async fn leave(&self) -> crate::client::Result<()>;
+            #[doc = "Cursors outside the image source do not get captured and no event will"]
+            #[doc = "be generated for them."]
+            #[doc = ""]
+            #[doc = "The given position is the position of the cursor's hotspot and it is"]
+            #[doc = "relative to the main buffer's top left corner in transformed buffer"]
+            #[doc = "pixel coordinates."]
+            #[doc = ""]
+            #[doc = "The position coordinates are relative to the main buffer's upper left"]
+            #[doc = "corner. The coordinates may be negative or greater than the main buffer"]
+            #[doc = "size."]
+            async fn position(&self, x: i32, y: i32) -> crate::client::Result<()>;
+            #[doc = "The hotspot describes the offset between the cursor image and the"]
+            #[doc = "position of the input device."]
+            #[doc = ""]
+            #[doc = "The given coordinates are the hotspot's offset from the origin in"]
+            #[doc = "buffer coordinates."]
+            #[doc = ""]
+            #[doc = "Clients should not apply the hotspot immediately: the hotspot becomes"]
+            #[doc = "effective when the next zcosmic_screencopy_frame_v2.ready event is received."]
+            async fn hotspot(&self, x: i32, y: i32) -> crate::client::Result<()>;
         }
     }
 }
@@ -1343,6 +1546,32 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event is never emitted for clients binding version 2"]
+            #[doc = "of this protocol, they should use `get_cosmic_toplevel` instead."]
+            #[doc = ""]
+            #[doc = "This event is emitted for clients binding version 1 whenever a"]
+            #[doc = "new toplevel window is created. It is emitted for all toplevels,"]
+            #[doc = "regardless of the app that has created them."]
+            #[doc = ""]
+            #[doc = "All initial properties of the toplevel (title, app_id, states, etc.)"]
+            #[doc = "will be sent immediately after this event via the corresponding"]
+            #[doc = "events in zcosmic_toplevel_handle_v1."]
+            async fn toplevel(&self, toplevel: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the compositor is done sending events"]
+            #[doc = "to the zcosmic_toplevel_info_v1. The server will destroy the"]
+            #[doc = "object immediately after sending this request, so it will become"]
+            #[doc = "invalid and the client should free any resources associated with it."]
+            #[doc = ""]
+            #[doc = "Note: This event is emitted immediately after calling `stop` for"]
+            #[doc = "clients binding version 2 of this protocol for backwards compatibility."]
+            async fn finished(&self) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all changes for currently active"]
+            #[doc = "zcosmic_toplevel_handle_v1 have been sent."]
+            #[doc = ""]
+            #[doc = "This allows changes to multiple zcosmic_toplevel_handle_v1 handles"]
+            #[doc = "and their properties to be seen as atomic, even if they happen via"]
+            #[doc = "multiple events."]
+            async fn done(&self) -> crate::client::Result<()>;
         }
     }
     #[doc = "A zcosmic_toplevel_handle_v1 object represents an open toplevel"]
@@ -1410,6 +1639,84 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The server will emit no further events on the"]
+            #[doc = "zcosmic_toplevel_handle_v1 after this event. Any requests received"]
+            #[doc = "aside from the destroy request will be ignored. Upon receiving this"]
+            #[doc = "event, the client should make the destroy request to allow freeing"]
+            #[doc = "of resources."]
+            #[doc = ""]
+            #[doc = "Note: This event will not be emitted for clients binding version 2"]
+            #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.closed` is"]
+            #[doc = "equivalent."]
+            async fn closed(&self) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all changes in the toplevel state have"]
+            #[doc = "been sent."]
+            #[doc = ""]
+            #[doc = "This allows changes to the zcosmic_toplevel_handle_v1 properties"]
+            #[doc = "to be seen as atomic, even if they happen via multiple events."]
+            #[doc = ""]
+            #[doc = "Note: this is is not sent after the closed event."]
+            #[doc = ""]
+            #[doc = "Note: This event will not be emitted for clients binding version 2"]
+            #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.done` is"]
+            #[doc = "equivalent."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "This event is emitted whenever the title of the toplevel changes."]
+            #[doc = ""]
+            #[doc = "Note: This event will not be emitted for clients binding version 2"]
+            #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.title` is"]
+            #[doc = "equivalent."]
+            async fn title(&self, title: String) -> crate::client::Result<()>;
+            #[doc = "This event is emitted whenever the app_id of the toplevel changes."]
+            #[doc = ""]
+            #[doc = "Note: This event will not be emitted for clients binding version 2"]
+            #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.app_id` is"]
+            #[doc = "equivalent."]
+            async fn app_id(&self, app_id: String) -> crate::client::Result<()>;
+            #[doc = "This event is emitted whenever the toplevel becomes visible on the"]
+            #[doc = "given output. A toplevel may be visible on multiple outputs."]
+            async fn output_enter(
+                &self,
+                output: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is emitted whenever the toplevel is no longer visible"]
+            #[doc = "on a given output. It is guaranteed that an output_enter event with"]
+            #[doc = "the same output has been emitted before this event."]
+            async fn output_leave(
+                &self,
+                output: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is emitted whenever the toplevel becomes visible on the"]
+            #[doc = "given workspace. A toplevel may be visible on multiple workspaces."]
+            async fn workspace_enter(
+                &self,
+                workspace: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is emitted whenever the toplevel is no longer visible"]
+            #[doc = "on a given workspace. It is guaranteed that an workspace_enter event with"]
+            #[doc = "the same workspace has been emitted before this event."]
+            async fn workspace_leave(
+                &self,
+                workspace: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is emitted once on creation of the"]
+            #[doc = "zcosmic_toplevel_handle_v1 and again whenever the state of the"]
+            #[doc = "toplevel changes."]
+            async fn state(&self, state: Vec<u8>) -> crate::client::Result<()>;
+            #[doc = "Emitted when the geometry of a toplevel (it's position and/or size)"]
+            #[doc = "relative to the provided output has changed."]
+            #[doc = ""]
+            #[doc = "This event is emitted once on creation of the"]
+            #[doc = "zcosmic_toplevel_handle_v1 for every entered output and again"]
+            #[doc = "whenever the geometry of the toplevel changes relative to any output."]
+            async fn geometry(
+                &self,
+                output: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -1762,6 +2069,23 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This event advertises the capabilities supported by the compositor. If"]
+            #[doc = "a capability isn't supported, clients should hide or disable the UI"]
+            #[doc = "elements that expose this functionality. For instance, if the"]
+            #[doc = "compositor doesn't advertise support for closing toplevels, a button"]
+            #[doc = "triggering the close request should not be displayed."]
+            #[doc = ""]
+            #[doc = "The compositor will ignore requests it doesn't support. For instance,"]
+            #[doc = "a compositor which doesn't advertise support for closing toplevels will ignore"]
+            #[doc = "close requests."]
+            #[doc = ""]
+            #[doc = "Compositors must send this event once after creation of an"]
+            #[doc = "zcosmic_toplevel_manager_v1 . When the capabilities change, compositors"]
+            #[doc = "must send this event again."]
+            #[doc = ""]
+            #[doc = "The capabilities are sent as an array of 32-bit unsigned integers in"]
+            #[doc = "native endianness."]
+            async fn capabilities(&self, capabilities: Vec<u8>) -> crate::client::Result<()>;
         }
     }
 }
