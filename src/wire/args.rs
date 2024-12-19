@@ -61,6 +61,6 @@ pub struct NewId {
 
 impl std::fmt::Display for NewId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("NewId").finish()
+        write!(f, "new id {}#{}", self.interface, self.object_id)
     }
 }

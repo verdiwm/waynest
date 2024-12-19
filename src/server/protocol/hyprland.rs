@@ -381,7 +381,7 @@ pub mod hyprland_global_shortcuts_v1 {
                         let trigger_description = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing :: debug ! ("hyprland_global_shortcuts_manager_v1#{}.register_shortcut({}, {}, {}, {}, {})" , object . id , shortcut , id , app_id , description , trigger_description);
+                        tracing :: debug ! ("hyprland_global_shortcuts_manager_v1#{}.register_shortcut({}, \"{}\", \"{}\", \"{}\", \"{}\")" , object . id , shortcut , id , app_id , description , trigger_description);
                         self.register_shortcut(
                             object,
                             client,

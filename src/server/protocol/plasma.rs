@@ -85,7 +85,7 @@ pub mod appmenu {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_kwin_appmenu#{}.set_address({}, {})",
+                            "org_kde_kwin_appmenu#{}.set_address(\"{}\", \"{}\")",
                             object.id,
                             service_name,
                             object_path
@@ -1358,14 +1358,7 @@ pub mod outputmanagement {
                         let red = message.array()?;
                         let green = message.array()?;
                         let blue = message.array()?;
-                        tracing::debug!(
-                            "org_kde_kwin_outputconfiguration#{}.colorcurves({}, {}, {}, {})",
-                            object.id,
-                            outputdevice,
-                            red,
-                            green,
-                            blue
-                        );
+                        tracing :: debug ! ("org_kde_kwin_outputconfiguration#{}.colorcurves({}, array[{}], array[{}], array[{}])" , object . id , outputdevice , red . len () , green . len () , blue . len ());
                         self.colorcurves(object, client, outputdevice, red, green, blue)
                             .await
                     }
@@ -1758,18 +1751,7 @@ pub mod org_kde_kwin_outputdevice {
                 model: String,
                 transform: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_kwin_outputdevice#{}.geometry({}, {}, {}, {}, {}, {}, {}, {})",
-                    object.id,
-                    x,
-                    y,
-                    physical_width,
-                    physical_height,
-                    subpixel,
-                    make,
-                    model,
-                    transform
-                );
+                tracing :: debug ! ("-> org_kde_kwin_outputdevice#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})" , object . id , x , y , physical_width , physical_height , subpixel , make , model , transform);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
                     .put_int(y)
@@ -1901,7 +1883,11 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 raw: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.edid({})", object.id, raw);
+                tracing::debug!(
+                    "-> org_kde_kwin_outputdevice#{}.edid(\"{}\")",
+                    object.id,
+                    raw
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(raw))
                     .build();
@@ -1941,7 +1927,11 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 uuid: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.uuid({})", object.id, uuid);
+                tracing::debug!(
+                    "-> org_kde_kwin_outputdevice#{}.uuid(\"{}\")",
+                    object.id,
+                    uuid
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(uuid))
                     .build();
@@ -2028,7 +2018,7 @@ pub mod org_kde_kwin_outputdevice {
                 serial_number: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_kwin_outputdevice#{}.serial_number({})",
+                    "-> org_kde_kwin_outputdevice#{}.serial_number(\"{}\")",
                     object.id,
                     serial_number
                 );
@@ -2048,7 +2038,7 @@ pub mod org_kde_kwin_outputdevice {
                 eisa_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_kwin_outputdevice#{}.eisa_id({})",
+                    "-> org_kde_kwin_outputdevice#{}.eisa_id(\"{}\")",
                     object.id,
                     eisa_id
                 );
@@ -2358,7 +2348,7 @@ pub mod server_decoration_palette {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_kwin_server_decoration_palette#{}.set_palette({})",
+                            "org_kde_kwin_server_decoration_palette#{}.set_palette(\"{}\")",
                             object.id,
                             palette
                         );
@@ -3240,10 +3230,10 @@ pub mod surface_extension {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let value = message.array()?;
                         tracing::debug!(
-                            "qt_extended_surface#{}.update_generic_property({}, {})",
+                            "qt_extended_surface#{}.update_generic_property(\"{}\", array[{}])",
                             object.id,
                             name,
-                            value
+                            value.len()
                         );
                         self.update_generic_property(object, client, name, value)
                             .await
@@ -3332,7 +3322,7 @@ pub mod surface_extension {
                 value: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> qt_extended_surface#{}.set_generic_property({}, array[{}])",
+                    "-> qt_extended_surface#{}.set_generic_property(\"{}\", array[{}])",
                     object.id,
                     name,
                     value.len()
@@ -3638,7 +3628,7 @@ pub mod text_input_unstable_v2 {
                         let cursor = message.int()?;
                         let anchor = message.int()?;
                         tracing::debug!(
-                            "zwp_text_input_v2#{}.set_surrounding_text({}, {}, {})",
+                            "zwp_text_input_v2#{}.set_surrounding_text(\"{}\", {}, {})",
                             object.id,
                             text,
                             cursor,
@@ -3680,7 +3670,7 @@ pub mod text_input_unstable_v2 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwp_text_input_v2#{}.set_preferred_language({})",
+                            "zwp_text_input_v2#{}.set_preferred_language(\"{}\")",
                             object.id,
                             language
                         );
@@ -3948,7 +3938,7 @@ pub mod text_input_unstable_v2 {
                 commit: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_text_input_v2#{}.preedit_string({}, {})",
+                    "-> zwp_text_input_v2#{}.preedit_string(\"{}\", \"{}\")",
                     object.id,
                     text,
                     commit
@@ -4031,7 +4021,11 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 text: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.commit_string({})", object.id, text);
+                tracing::debug!(
+                    "-> zwp_text_input_v2#{}.commit_string(\"{}\")",
+                    object.id,
+                    text
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(text))
                     .build();
@@ -4159,7 +4153,11 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 language: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.language({})", object.id, language);
+                tracing::debug!(
+                    "-> zwp_text_input_v2#{}.language(\"{}\")",
+                    object.id,
+                    language
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(language))
                     .build();
@@ -4575,7 +4573,7 @@ pub mod text {
                         let cursor = message.uint()?;
                         let anchor = message.uint()?;
                         tracing::debug!(
-                            "wl_text_input#{}.set_surrounding_text({}, {}, {})",
+                            "wl_text_input#{}.set_surrounding_text(\"{}\", {}, {})",
                             object.id,
                             text,
                             cursor,
@@ -4616,7 +4614,7 @@ pub mod text {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "wl_text_input#{}.set_preferred_language({})",
+                            "wl_text_input#{}.set_preferred_language(\"{}\")",
                             object.id,
                             language
                         );
@@ -4833,7 +4831,7 @@ pub mod text {
                 commit: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> wl_text_input#{}.preedit_string({}, {}, {})",
+                    "-> wl_text_input#{}.preedit_string({}, \"{}\", \"{}\")",
                     object.id,
                     serial,
                     text,
@@ -4914,7 +4912,7 @@ pub mod text {
                 text: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> wl_text_input#{}.commit_string({}, {})",
+                    "-> wl_text_input#{}.commit_string({}, \"{}\")",
                     object.id,
                     serial,
                     text
@@ -5031,7 +5029,7 @@ pub mod text {
                 language: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> wl_text_input#{}.language({}, {})",
+                    "-> wl_text_input#{}.language({}, \"{}\")",
                     object.id,
                     serial,
                     language
@@ -5233,7 +5231,7 @@ pub mod wl_eglstream_controller {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let attribs = message.array()?;
-                        tracing :: debug ! ("wl_eglstream_controller#{}.attach_eglstream_consumer_attribs({}, {}, {})" , object . id , wl_surface , wl_resource , attribs);
+                        tracing :: debug ! ("wl_eglstream_controller#{}.attach_eglstream_consumer_attribs({}, {}, array[{}])" , object . id , wl_surface , wl_resource , attribs . len ());
                         self.attach_eglstream_consumer_attribs(
                             object,
                             client,
@@ -5517,7 +5515,7 @@ pub mod fake_input {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_kwin_fake_input#{}.authenticate({}, {})",
+                            "org_kde_kwin_fake_input#{}.authenticate(\"{}\", \"{}\")",
                             object.id,
                             application,
                             reason
@@ -6057,7 +6055,7 @@ pub mod kde_output_device_v2 {
                 transform: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> kde_output_device_v2#{}.geometry({}, {}, {}, {}, {}, {}, {}, {})",
+                    "-> kde_output_device_v2#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
                     object.id,
                     x,
                     y,
@@ -6197,7 +6195,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 raw: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.edid({})", object.id, raw);
+                tracing::debug!("-> kde_output_device_v2#{}.edid(\"{}\")", object.id, raw);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(raw))
                     .build();
@@ -6233,7 +6231,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 uuid: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.uuid({})", object.id, uuid);
+                tracing::debug!("-> kde_output_device_v2#{}.uuid(\"{}\")", object.id, uuid);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(uuid))
                     .build();
@@ -6250,7 +6248,7 @@ pub mod kde_output_device_v2 {
                 serial_number: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> kde_output_device_v2#{}.serial_number({})",
+                    "-> kde_output_device_v2#{}.serial_number(\"{}\")",
                     object.id,
                     serial_number
                 );
@@ -6269,7 +6267,11 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 eisa_id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.eisa_id({})", object.id, eisa_id);
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.eisa_id(\"{}\")",
+                    object.id,
+                    eisa_id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(eisa_id))
                     .build();
@@ -6368,7 +6370,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.name({})", object.id, name);
+                tracing::debug!("-> kde_output_device_v2#{}.name(\"{}\")", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -6465,7 +6467,7 @@ pub mod kde_output_device_v2 {
                 profile_path: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> kde_output_device_v2#{}.icc_profile_path({})",
+                    "-> kde_output_device_v2#{}.icc_profile_path(\"{}\")",
                     object.id,
                     profile_path
                 );
@@ -7160,7 +7162,7 @@ pub mod kde_output_management_v2 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_icc_profile_path({}, {})",
+                            "kde_output_configuration_v2#{}.set_icc_profile_path({}, \"{}\")",
                             object.id,
                             outputdevice,
                             profile_path
@@ -7499,7 +7501,7 @@ pub mod kde_output_order_v1 {
                 output_name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> kde_output_order_v1#{}.output({})",
+                    "-> kde_output_order_v1#{}.output(\"{}\")",
                     object.id,
                     output_name
                 );
@@ -7578,7 +7580,7 @@ pub mod kde_primary_output_v1 {
                 output_name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> kde_primary_output_v1#{}.primary_output({})",
+                    "-> kde_primary_output_v1#{}.primary_output(\"{}\")",
                     object.id,
                     output_name
                 );
@@ -7852,7 +7854,7 @@ pub mod org_kde_plasma_virtual_desktop {
                         let desktop_id = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.get_virtual_desktop({}, {})" , object . id , id , desktop_id);
+                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.get_virtual_desktop({}, \"{}\")" , object . id , id , desktop_id);
                         self.get_virtual_desktop(object, client, id, desktop_id)
                             .await
                     }
@@ -7861,7 +7863,7 @@ pub mod org_kde_plasma_virtual_desktop {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let position = message.uint()?;
-                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.request_create_virtual_desktop({}, {})" , object . id , name , position);
+                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.request_create_virtual_desktop(\"{}\", {})" , object . id , name , position);
                         self.request_create_virtual_desktop(object, client, name, position)
                             .await
                     }
@@ -7869,7 +7871,7 @@ pub mod org_kde_plasma_virtual_desktop {
                         let desktop_id = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.request_remove_virtual_desktop({})" , object . id , desktop_id);
+                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.request_remove_virtual_desktop(\"{}\")" , object . id , desktop_id);
                         self.request_remove_virtual_desktop(object, client, desktop_id)
                             .await
                     }
@@ -7912,7 +7914,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 position: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_created({}, {})",
+                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_created(\"{}\", {})",
                     object.id,
                     desktop_id,
                     position
@@ -7933,7 +7935,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 desktop_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_removed({})",
+                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_removed(\"{}\")",
                     object.id,
                     desktop_id
                 );
@@ -8030,7 +8032,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 desktop_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop#{}.desktop_id({})",
+                    "-> org_kde_plasma_virtual_desktop#{}.desktop_id(\"{}\")",
                     object.id,
                     desktop_id
                 );
@@ -8049,7 +8051,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop#{}.name({})",
+                    "-> org_kde_plasma_virtual_desktop#{}.name(\"{}\")",
                     object.id,
                     name
                 );
@@ -8766,7 +8768,7 @@ pub mod plasma_window_management {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_plasma_window_management#{}.get_window_by_uuid({}, {})",
+                            "org_kde_plasma_window_management#{}.get_window_by_uuid({}, \"{}\")",
                             object.id,
                             id,
                             internal_window_uuid
@@ -8886,7 +8888,7 @@ pub mod plasma_window_management {
                 uuids: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.stacking_order_uuid_changed({})",
+                    "-> org_kde_plasma_window_management#{}.stacking_order_uuid_changed(\"{}\")",
                     object.id,
                     uuids
                 );
@@ -8907,7 +8909,7 @@ pub mod plasma_window_management {
                 uuid: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.window_with_uuid({}, {})",
+                    "-> org_kde_plasma_window_management#{}.window_with_uuid({}, \"{}\")",
                     object.id,
                     id,
                     uuid
@@ -9045,7 +9047,7 @@ pub mod plasma_window_management {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_plasma_window#{}.request_enter_virtual_desktop({})",
+                            "org_kde_plasma_window#{}.request_enter_virtual_desktop(\"{}\")",
                             object.id,
                             id
                         );
@@ -9063,7 +9065,7 @@ pub mod plasma_window_management {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_plasma_window#{}.request_leave_virtual_desktop({})",
+                            "org_kde_plasma_window#{}.request_leave_virtual_desktop(\"{}\")",
                             object.id,
                             id
                         );
@@ -9074,7 +9076,7 @@ pub mod plasma_window_management {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_plasma_window#{}.request_enter_activity({})",
+                            "org_kde_plasma_window#{}.request_enter_activity(\"{}\")",
                             object.id,
                             id
                         );
@@ -9085,7 +9087,7 @@ pub mod plasma_window_management {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_plasma_window#{}.request_leave_activity({})",
+                            "org_kde_plasma_window#{}.request_leave_activity(\"{}\")",
                             object.id,
                             id
                         );
@@ -9232,7 +9234,7 @@ pub mod plasma_window_management {
                 title: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.title_changed({})",
+                    "-> org_kde_plasma_window#{}.title_changed(\"{}\")",
                     object.id,
                     title
                 );
@@ -9253,7 +9255,7 @@ pub mod plasma_window_management {
                 app_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.app_id_changed({})",
+                    "-> org_kde_plasma_window#{}.app_id_changed(\"{}\")",
                     object.id,
                     app_id
                 );
@@ -9315,7 +9317,7 @@ pub mod plasma_window_management {
                 name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.themed_icon_name_changed({})",
+                    "-> org_kde_plasma_window#{}.themed_icon_name_changed(\"{}\")",
                     object.id,
                     name
                 );
@@ -9454,7 +9456,7 @@ pub mod plasma_window_management {
                 id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.virtual_desktop_entered({})",
+                    "-> org_kde_plasma_window#{}.virtual_desktop_entered(\"{}\")",
                     object.id,
                     id
                 );
@@ -9475,7 +9477,7 @@ pub mod plasma_window_management {
                 is: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.virtual_desktop_left({})",
+                    "-> org_kde_plasma_window#{}.virtual_desktop_left(\"{}\")",
                     object.id,
                     is
                 );
@@ -9497,7 +9499,7 @@ pub mod plasma_window_management {
                 object_path: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.application_menu({}, {})",
+                    "-> org_kde_plasma_window#{}.application_menu(\"{}\", \"{}\")",
                     object.id,
                     service_name,
                     object_path
@@ -9519,7 +9521,7 @@ pub mod plasma_window_management {
                 id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.activity_entered({})",
+                    "-> org_kde_plasma_window#{}.activity_entered(\"{}\")",
                     object.id,
                     id
                 );
@@ -9540,7 +9542,7 @@ pub mod plasma_window_management {
                 id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.activity_left({})",
+                    "-> org_kde_plasma_window#{}.activity_left(\"{}\")",
                     object.id,
                     id
                 );
@@ -9561,7 +9563,7 @@ pub mod plasma_window_management {
                 resource_name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.resource_name_changed({})",
+                    "-> org_kde_plasma_window#{}.resource_name_changed(\"{}\")",
                     object.id,
                     resource_name
                 );
@@ -9713,7 +9715,7 @@ pub mod plasma_window_management {
                 app_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_activation#{}.app_id({})",
+                    "-> org_kde_plasma_activation#{}.app_id(\"{}\")",
                     object.id,
                     app_id
                 );
@@ -9774,7 +9776,7 @@ pub mod plasma_window_management {
                 uuid: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_stacking_order#{}.window({})",
+                    "-> org_kde_plasma_stacking_order#{}.window(\"{}\")",
                     object.id,
                     uuid
                 );
@@ -9883,7 +9885,7 @@ pub mod zkde_screencast_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let pointer = message.uint()?;
                         tracing::debug!(
-                            "zkde_screencast_unstable_v1#{}.stream_window({}, {}, {})",
+                            "zkde_screencast_unstable_v1#{}.stream_window({}, \"{}\", {})",
                             object.id,
                             stream,
                             window_uuid,
@@ -9907,7 +9909,7 @@ pub mod zkde_screencast_unstable_v1 {
                         let height = message.int()?;
                         let scale = message.fixed()?;
                         let pointer = message.uint()?;
-                        tracing :: debug ! ("zkde_screencast_unstable_v1#{}.stream_virtual_output({}, {}, {}, {}, {}, {})" , object . id , stream , name , width , height , scale , pointer);
+                        tracing :: debug ! ("zkde_screencast_unstable_v1#{}.stream_virtual_output({}, \"{}\", {}, {}, {}, {})" , object . id , stream , name , width , height , scale , pointer);
                         self.stream_virtual_output(
                             object, client, stream, name, width, height, scale, pointer,
                         )
@@ -10052,7 +10054,7 @@ pub mod zkde_screencast_unstable_v1 {
                 error: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zkde_screencast_stream_unstable_v1#{}.failed({})",
+                    "-> zkde_screencast_stream_unstable_v1#{}.failed(\"{}\")",
                     object.id,
                     error
                 );

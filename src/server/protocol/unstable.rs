@@ -601,7 +601,7 @@ pub mod input_method_unstable_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwp_input_method_context_v1#{}.commit_string({}, {})",
+                            "zwp_input_method_context_v1#{}.commit_string({}, \"{}\")",
                             object.id,
                             serial,
                             text
@@ -617,7 +617,7 @@ pub mod input_method_unstable_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwp_input_method_context_v1#{}.preedit_string({}, {}, {})",
+                            "zwp_input_method_context_v1#{}.preedit_string({}, \"{}\", \"{}\")",
                             object.id,
                             serial,
                             text,
@@ -675,9 +675,9 @@ pub mod input_method_unstable_v1 {
                     7u16 => {
                         let map = message.array()?;
                         tracing::debug!(
-                            "zwp_input_method_context_v1#{}.modifiers_map({})",
+                            "zwp_input_method_context_v1#{}.modifiers_map(array[{}])",
                             object.id,
-                            map
+                            map.len()
                         );
                         self.modifiers_map(object, client, map).await
                     }
@@ -757,7 +757,7 @@ pub mod input_method_unstable_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwp_input_method_context_v1#{}.language({}, {})",
+                            "zwp_input_method_context_v1#{}.language({}, \"{}\")",
                             object.id,
                             serial,
                             language
@@ -955,7 +955,7 @@ pub mod input_method_unstable_v1 {
                 anchor: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_input_method_context_v1#{}.surrounding_text({}, {}, {})",
+                    "-> zwp_input_method_context_v1#{}.surrounding_text(\"{}\", {}, {})",
                     object.id,
                     text,
                     cursor,
@@ -1051,7 +1051,7 @@ pub mod input_method_unstable_v1 {
                 language: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_input_method_context_v1#{}.preferred_language({})",
+                    "-> zwp_input_method_context_v1#{}.preferred_language(\"{}\")",
                     object.id,
                     language
                 );
@@ -4362,7 +4362,7 @@ pub mod wp_primary_selection_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let fd = message.fd()?;
                         tracing::debug!(
-                            "zwp_primary_selection_offer_v1#{}.receive({}, {})",
+                            "zwp_primary_selection_offer_v1#{}.receive(\"{}\", {})",
                             object.id,
                             mime_type,
                             fd.as_raw_fd()
@@ -4409,7 +4409,7 @@ pub mod wp_primary_selection_unstable_v1 {
                 mime_type: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_primary_selection_offer_v1#{}.offer({})",
+                    "-> zwp_primary_selection_offer_v1#{}.offer(\"{}\")",
                     object.id,
                     mime_type
                 );
@@ -4453,7 +4453,7 @@ pub mod wp_primary_selection_unstable_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwp_primary_selection_source_v1#{}.offer({})",
+                            "zwp_primary_selection_source_v1#{}.offer(\"{}\")",
                             object.id,
                             mime_type
                         );
@@ -4491,7 +4491,7 @@ pub mod wp_primary_selection_unstable_v1 {
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_primary_selection_source_v1#{}.send({}, {})",
+                    "-> zwp_primary_selection_source_v1#{}.send(\"{}\", {})",
                     object.id,
                     mime_type,
                     fd.as_raw_fd()
@@ -5721,7 +5721,7 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v1#{}.name({})", object.id, name);
+                tracing::debug!("-> zwp_tablet_v1#{}.name(\"{}\")", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -5769,7 +5769,7 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 path: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v1#{}.path({})", object.id, path);
+                tracing::debug!("-> zwp_tablet_v1#{}.path(\"{}\")", object.id, path);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(path))
                     .build();
@@ -6841,7 +6841,7 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.name({})", object.id, name);
+                tracing::debug!("-> zwp_tablet_v2#{}.name(\"{}\")", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -6894,7 +6894,7 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 path: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.path({})", object.id, path);
+                tracing::debug!("-> zwp_tablet_v2#{}.path(\"{}\")", object.id, path);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(path))
                     .build();
@@ -6996,7 +6996,7 @@ pub mod tablet_unstable_v2 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let serial = message.uint()?;
                         tracing::debug!(
-                            "zwp_tablet_pad_ring_v2#{}.set_feedback({}, {})",
+                            "zwp_tablet_pad_ring_v2#{}.set_feedback(\"{}\", {})",
                             object.id,
                             description,
                             serial
@@ -7196,7 +7196,7 @@ pub mod tablet_unstable_v2 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let serial = message.uint()?;
                         tracing::debug!(
-                            "zwp_tablet_pad_strip_v2#{}.set_feedback({}, {})",
+                            "zwp_tablet_pad_strip_v2#{}.set_feedback(\"{}\", {})",
                             object.id,
                             description,
                             serial
@@ -7648,7 +7648,7 @@ pub mod tablet_unstable_v2 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let serial = message.uint()?;
                         tracing::debug!(
-                            "zwp_tablet_pad_v2#{}.set_feedback({}, {}, {})",
+                            "zwp_tablet_pad_v2#{}.set_feedback({}, \"{}\", {})",
                             object.id,
                             button,
                             description,
@@ -7739,7 +7739,7 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 path: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.path({})", object.id, path);
+                tracing::debug!("-> zwp_tablet_pad_v2#{}.path(\"{}\")", object.id, path);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(path))
                     .build();
@@ -8110,7 +8110,7 @@ pub mod text_input_unstable_v1 {
                         let cursor = message.uint()?;
                         let anchor = message.uint()?;
                         tracing::debug!(
-                            "zwp_text_input_v1#{}.set_surrounding_text({}, {}, {})",
+                            "zwp_text_input_v1#{}.set_surrounding_text(\"{}\", {}, {})",
                             object.id,
                             text,
                             cursor,
@@ -8152,7 +8152,7 @@ pub mod text_input_unstable_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwp_text_input_v1#{}.set_preferred_language({})",
+                            "zwp_text_input_v1#{}.set_preferred_language(\"{}\")",
                             object.id,
                             language
                         );
@@ -8370,7 +8370,7 @@ pub mod text_input_unstable_v1 {
                 commit: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_text_input_v1#{}.preedit_string({}, {}, {})",
+                    "-> zwp_text_input_v1#{}.preedit_string({}, \"{}\", \"{}\")",
                     object.id,
                     serial,
                     text,
@@ -8455,7 +8455,7 @@ pub mod text_input_unstable_v1 {
                 text: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_text_input_v1#{}.commit_string({}, {})",
+                    "-> zwp_text_input_v1#{}.commit_string({}, \"{}\")",
                     object.id,
                     serial,
                     text
@@ -8572,7 +8572,7 @@ pub mod text_input_unstable_v1 {
                 language: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_text_input_v1#{}.language({}, {})",
+                    "-> zwp_text_input_v1#{}.language({}, \"{}\")",
                     object.id,
                     serial,
                     language
@@ -8848,7 +8848,7 @@ pub mod text_input_unstable_v3 {
                         let cursor = message.int()?;
                         let anchor = message.int()?;
                         tracing::debug!(
-                            "zwp_text_input_v3#{}.set_surrounding_text({}, {}, {})",
+                            "zwp_text_input_v3#{}.set_surrounding_text(\"{}\", {}, {})",
                             object.id,
                             text,
                             cursor,
@@ -9160,7 +9160,7 @@ pub mod text_input_unstable_v3 {
                 cursor_end: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_text_input_v3#{}.preedit_string({}, {}, {})",
+                    "-> zwp_text_input_v3#{}.preedit_string(\"{}\", {}, {})",
                     object.id,
                     text.as_ref().map_or("null".to_string(), |v| v.to_string()),
                     cursor_begin,
@@ -9191,7 +9191,7 @@ pub mod text_input_unstable_v3 {
                 text: Option<String>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_text_input_v3#{}.commit_string({})",
+                    "-> zwp_text_input_v3#{}.commit_string(\"{}\")",
                     object.id,
                     text.as_ref().map_or("null".to_string(), |v| v.to_string())
                 );
@@ -9746,7 +9746,7 @@ pub mod xdg_foreign_unstable_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zxdg_importer_v1#{}.import({}, {})",
+                            "zxdg_importer_v1#{}.import({}, \"{}\")",
                             object.id,
                             id,
                             handle
@@ -9828,7 +9828,7 @@ pub mod xdg_foreign_unstable_v1 {
                 client: &mut crate::server::Client,
                 handle: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_exported_v1#{}.handle({})", object.id, handle);
+                tracing::debug!("-> zxdg_exported_v1#{}.handle(\"{}\")", object.id, handle);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(handle))
                     .build();
@@ -10081,7 +10081,7 @@ pub mod xdg_foreign_unstable_v2 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zxdg_importer_v2#{}.import_toplevel({}, {})",
+                            "zxdg_importer_v2#{}.import_toplevel({}, \"{}\")",
                             object.id,
                             id,
                             handle
@@ -10163,7 +10163,7 @@ pub mod xdg_foreign_unstable_v2 {
                 client: &mut crate::server::Client,
                 handle: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_exported_v2#{}.handle({})", object.id, handle);
+                tracing::debug!("-> zxdg_exported_v2#{}.handle(\"{}\")", object.id, handle);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(handle))
                     .build();
@@ -10544,7 +10544,7 @@ pub mod xdg_output_unstable_v1 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zxdg_output_v1#{}.name({})", object.id, name);
+                tracing::debug!("-> zxdg_output_v1#{}.name(\"{}\")", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -10578,7 +10578,7 @@ pub mod xdg_output_unstable_v1 {
                 description: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zxdg_output_v1#{}.description({})",
+                    "-> zxdg_output_v1#{}.description(\"{}\")",
                     object.id,
                     description
                 );
@@ -10981,14 +10981,14 @@ pub mod xdg_shell_unstable_v5 {
                         let title = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("xdg_surface#{}.set_title({})", object.id, title);
+                        tracing::debug!("xdg_surface#{}.set_title(\"{}\")", object.id, title);
                         self.set_title(object, client, title).await
                     }
                     3u16 => {
                         let app_id = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("xdg_surface#{}.set_app_id({})", object.id, app_id);
+                        tracing::debug!("xdg_surface#{}.set_app_id(\"{}\")", object.id, app_id);
                         self.set_app_id(object, client, app_id).await
                     }
                     4u16 => {
@@ -12369,14 +12369,18 @@ pub mod xdg_shell_unstable_v6 {
                         let title = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("zxdg_toplevel_v6#{}.set_title({})", object.id, title);
+                        tracing::debug!("zxdg_toplevel_v6#{}.set_title(\"{}\")", object.id, title);
                         self.set_title(object, client, title).await
                     }
                     3u16 => {
                         let app_id = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("zxdg_toplevel_v6#{}.set_app_id({})", object.id, app_id);
+                        tracing::debug!(
+                            "zxdg_toplevel_v6#{}.set_app_id(\"{}\")",
+                            object.id,
+                            app_id
+                        );
                         self.set_app_id(object, client, app_id).await
                     }
                     4u16 => {

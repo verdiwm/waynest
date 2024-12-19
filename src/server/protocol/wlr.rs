@@ -360,7 +360,7 @@ pub mod wlr_data_control_unstable_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwlr_data_control_source_v1#{}.offer({})",
+                            "zwlr_data_control_source_v1#{}.offer(\"{}\")",
                             object.id,
                             mime_type
                         );
@@ -400,7 +400,7 @@ pub mod wlr_data_control_unstable_v1 {
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_data_control_source_v1#{}.send({}, {})",
+                    "-> zwlr_data_control_source_v1#{}.send(\"{}\", {})",
                     object.id,
                     mime_type,
                     fd.as_raw_fd()
@@ -464,7 +464,7 @@ pub mod wlr_data_control_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let fd = message.fd()?;
                         tracing::debug!(
-                            "zwlr_data_control_offer_v1#{}.receive({}, {})",
+                            "zwlr_data_control_offer_v1#{}.receive(\"{}\", {})",
                             object.id,
                             mime_type,
                             fd.as_raw_fd()
@@ -510,7 +510,7 @@ pub mod wlr_data_control_unstable_v1 {
                 mime_type: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_data_control_offer_v1#{}.offer({})",
+                    "-> zwlr_data_control_offer_v1#{}.offer(\"{}\")",
                     object.id,
                     mime_type
                 );
@@ -1221,7 +1221,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 title: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_foreign_toplevel_handle_v1#{}.title({})",
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.title(\"{}\")",
                     object.id,
                     title
                 );
@@ -1241,7 +1241,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 app_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_foreign_toplevel_handle_v1#{}.app_id({})",
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.app_id(\"{}\")",
                     object.id,
                     app_id
                 );
@@ -1811,7 +1811,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwlr_layer_shell_v1#{}.get_layer_surface({}, {}, {}, {}, {})",
+                            "zwlr_layer_shell_v1#{}.get_layer_surface({}, {}, {}, {}, \"{}\")",
                             object.id,
                             id,
                             surface,
@@ -2576,7 +2576,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.name({})", object.id, name);
+                tracing::debug!("-> zwlr_output_head_v1#{}.name(\"{}\")", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -2606,7 +2606,7 @@ pub mod wlr_output_management_unstable_v1 {
                 description: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_output_head_v1#{}.description({})",
+                    "-> zwlr_output_head_v1#{}.description(\"{}\")",
                     object.id,
                     description
                 );
@@ -2806,7 +2806,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 make: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.make({})", object.id, make);
+                tracing::debug!("-> zwlr_output_head_v1#{}.make(\"{}\")", object.id, make);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(make))
                     .build();
@@ -2843,7 +2843,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 model: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.model({})", object.id, model);
+                tracing::debug!("-> zwlr_output_head_v1#{}.model(\"{}\")", object.id, model);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(model))
                     .build();
@@ -2879,7 +2879,7 @@ pub mod wlr_output_management_unstable_v1 {
                 serial_number: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_output_head_v1#{}.serial_number({})",
+                    "-> zwlr_output_head_v1#{}.serial_number(\"{}\")",
                     object.id,
                     serial_number
                 );

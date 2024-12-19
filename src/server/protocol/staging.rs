@@ -1159,7 +1159,11 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.name({})", object.id, name);
+                tracing::debug!(
+                    "-> wp_drm_lease_connector_v1#{}.name(\"{}\")",
+                    object.id,
+                    name
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -1179,7 +1183,7 @@ pub mod drm_lease_v1 {
                 description: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> wp_drm_lease_connector_v1#{}.description({})",
+                    "-> wp_drm_lease_connector_v1#{}.description(\"{}\")",
                     object.id,
                     description
                 );
@@ -1701,7 +1705,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 title: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_foreign_toplevel_handle_v1#{}.title({})",
+                    "-> ext_foreign_toplevel_handle_v1#{}.title(\"{}\")",
                     object.id,
                     title
                 );
@@ -1724,7 +1728,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 app_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_foreign_toplevel_handle_v1#{}.app_id({})",
+                    "-> ext_foreign_toplevel_handle_v1#{}.app_id(\"{}\")",
                     object.id,
                     app_id
                 );
@@ -1763,7 +1767,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 identifier: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_foreign_toplevel_handle_v1#{}.identifier({})",
+                    "-> ext_foreign_toplevel_handle_v1#{}.identifier(\"{}\")",
                     object.id,
                     identifier
                 );
@@ -4683,7 +4687,7 @@ pub mod security_context_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "wp_security_context_v1#{}.set_sandbox_engine({})",
+                            "wp_security_context_v1#{}.set_sandbox_engine(\"{}\")",
                             object.id,
                             name
                         );
@@ -4694,7 +4698,7 @@ pub mod security_context_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "wp_security_context_v1#{}.set_app_id({})",
+                            "wp_security_context_v1#{}.set_app_id(\"{}\")",
                             object.id,
                             app_id
                         );
@@ -4705,7 +4709,7 @@ pub mod security_context_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "wp_security_context_v1#{}.set_instance_id({})",
+                            "wp_security_context_v1#{}.set_instance_id(\"{}\")",
                             object.id,
                             instance_id
                         );
@@ -5162,7 +5166,7 @@ pub mod xdg_activation_v1 {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "xdg_activation_v1#{}.activate({}, {})",
+                            "xdg_activation_v1#{}.activate(\"{}\", {})",
                             object.id,
                             token,
                             surface
@@ -5279,7 +5283,7 @@ pub mod xdg_activation_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "xdg_activation_token_v1#{}.set_app_id({})",
+                            "xdg_activation_token_v1#{}.set_app_id(\"{}\")",
                             object.id,
                             app_id
                         );
@@ -5371,7 +5375,11 @@ pub mod xdg_activation_v1 {
                 client: &mut crate::server::Client,
                 token: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_activation_token_v1#{}.done({})", object.id, token);
+                tracing::debug!(
+                    "-> xdg_activation_token_v1#{}.done(\"{}\")",
+                    object.id,
+                    token
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(token))
                     .build();
@@ -6090,7 +6098,7 @@ pub mod xdg_toplevel_icon_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "xdg_toplevel_icon_v1#{}.set_name({})",
+                            "xdg_toplevel_icon_v1#{}.set_name(\"{}\")",
                             object.id,
                             icon_name
                         );

@@ -4,7 +4,7 @@ use quote::{format_ident, quote};
 use tracing::debug;
 
 use crate::{
-    parser::{Interface, Pair},
+    parser::{ArgType, Interface, Pair},
     utils::{description_to_docs, find_enum, make_ident, write_enums},
 };
 
@@ -116,16 +116,11 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
         for arg in &request.args {
             let mut optional = quote! {};
             let mut map_display = quote! {};
-            let mut fd_print = quote! {};
 
             if !arg.allow_null && arg.is_return_option() {
                 optional = quote! {.ok_or(crate::wire::DecodeError::MalformedPayload)?};
             } else if arg.allow_null {
                 map_display = quote! {.as_ref().map_or("null".to_string(), |v| v.to_string())}
-            }
-
-            if arg.ty.is_fd() {
-                fd_print = quote! { .as_raw_fd() }
             }
 
             let mut tryinto = quote! {};
@@ -146,8 +141,24 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
                 #name #tryinto
             });
 
-            tracing_fmt.push("{}");
-            tracing_args.push(quote! { #name #fd_print #map_display });
+            match arg.ty {
+                ArgType::Array => {
+                    tracing_fmt.push("array[{}]");
+                    tracing_args.push(quote! { #name .len() });
+                }
+                ArgType::String => {
+                    tracing_fmt.push("\"{}\"");
+                    tracing_args.push(quote! { #name #map_display });
+                }
+                ArgType::Fd => {
+                    tracing_fmt.push("{}");
+                    tracing_args.push(quote! { #name .as_raw_fd() #map_display });
+                }
+                _ => {
+                    tracing_fmt.push("{}");
+                    tracing_args.push(quote! { #name #map_display });
+                }
+            }
         }
 
         let tracing_fmt = tracing_fmt.join(", ");
@@ -225,27 +236,33 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
             let mut ty = arg.to_rust_type_token(arg.find_protocol(&pairs).as_ref().unwrap_or(pair));
 
             let mut map_display = quote! {};
-            let mut fd_print = quote! {};
 
             if arg.allow_null {
                 ty = quote! {Option<#ty>};
                 map_display = quote! {.as_ref().map_or("null".to_string(), |v| v.to_string())}
             }
 
-            if arg.ty.is_fd() {
-                fd_print = quote! { .as_raw_fd() }
-            }
-
             let name = make_ident(arg.name.to_snek_case());
 
             args.push(quote! {#name: #ty});
 
-            if !arg.ty.is_array() {
-                tracing_fmt.push("{}");
-                tracing_args.push(quote! { #name #fd_print #map_display });
-            } else {
-                tracing_fmt.push("array[{}]");
-                tracing_args.push(quote! { #name .len() });
+            match arg.ty {
+                ArgType::Array => {
+                    tracing_fmt.push("array[{}]");
+                    tracing_args.push(quote! { #name .len() });
+                }
+                ArgType::String => {
+                    tracing_fmt.push("\"{}\"");
+                    tracing_args.push(quote! { #name #map_display });
+                }
+                ArgType::Fd => {
+                    tracing_fmt.push("{}");
+                    tracing_args.push(quote! { #name .as_raw_fd() #map_display });
+                }
+                _ => {
+                    tracing_fmt.push("{}");
+                    tracing_args.push(quote! { #name #map_display });
+                }
             }
         }
 
