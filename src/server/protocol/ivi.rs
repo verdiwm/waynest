@@ -3,6 +3,8 @@
 pub mod ivi_application {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_surface {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
         pub trait IviSurface: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ivi_surface";
@@ -22,7 +24,7 @@ pub mod ivi_application {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ivi_surface#{}.destroy()", object.id);
+                        tracing::debug!("ivi_surface#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -53,7 +55,7 @@ pub mod ivi_application {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_surface#{}.configure()", object.id);
+                tracing::debug!("-> ivi_surface#{}.configure(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -70,6 +72,8 @@ pub mod ivi_application {
     #[doc = "It allows clients to associate an ivi_surface with wl_surface."]
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_application {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -108,19 +112,22 @@ pub mod ivi_application {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ivi_application#{}.surface_create()", object.id);
-                        self.surface_create(
-                            object,
-                            client,
-                            message.uint()?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let ivi_id = message.uint()?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ivi_application#{}.surface_create({}, {}, {})",
+                            object.id,
+                            ivi_id,
+                            surface,
+                            id
+                        );
+                        self.surface_create(object, client, ivi_id, surface, id)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -163,6 +170,8 @@ pub mod ivi_input {
     #[doc = "seat acceptance and input focus."]
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_input {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ivi_input interface. See the module level documentation for more info"]
         pub trait IviInput: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ivi_input";
@@ -182,28 +191,34 @@ pub mod ivi_input {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ivi_input#{}.set_input_focus()", object.id);
-                        self.set_input_focus(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.uint()?,
-                            message.int()?,
-                        )
-                        .await
+                        let surface = message.uint()?;
+                        let device = message.uint()?;
+                        let enabled = message.int()?;
+                        tracing::debug!(
+                            "ivi_input#{}.set_input_focus({}, {}, {})",
+                            object.id,
+                            surface,
+                            device,
+                            enabled
+                        );
+                        self.set_input_focus(object, client, surface, device, enabled)
+                            .await
                     }
                     1u16 => {
-                        tracing::debug!("ivi_input#{}.set_input_acceptance()", object.id);
-                        self.set_input_acceptance(
-                            object,
-                            client,
-                            message.uint()?,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                        )
-                        .await
+                        let surface = message.uint()?;
+                        let seat = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let accepted = message.int()?;
+                        tracing::debug!(
+                            "ivi_input#{}.set_input_acceptance({}, {}, {})",
+                            object.id,
+                            surface,
+                            seat,
+                            accepted
+                        );
+                        self.set_input_acceptance(object, client, surface, seat, accepted)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -244,7 +259,7 @@ pub mod ivi_input {
                 capabilities: u32,
                 is_default: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_input#{}.seat_created()", object.id);
+                tracing::debug!("-> ivi_input#{}.seat_created(rq, rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .put_uint(capabilities)
@@ -262,7 +277,7 @@ pub mod ivi_input {
                 name: String,
                 capabilities: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_input#{}.seat_capabilities()", object.id);
+                tracing::debug!("-> ivi_input#{}.seat_capabilities(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .put_uint(capabilities)
@@ -278,7 +293,7 @@ pub mod ivi_input {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_input#{}.seat_destroyed()", object.id);
+                tracing::debug!("-> ivi_input#{}.seat_destroyed(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -298,7 +313,7 @@ pub mod ivi_input {
                 device: u32,
                 enabled: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_input#{}.input_focus()", object.id);
+                tracing::debug!("-> ivi_input#{}.input_focus(rq, rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface)
                     .put_uint(device)
@@ -322,7 +337,7 @@ pub mod ivi_input {
                 seat: String,
                 accepted: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_input#{}.input_acceptance()", object.id);
+                tracing::debug!("-> ivi_input#{}.input_acceptance(rq, rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface)
                     .put_string(Some(seat))
@@ -340,6 +355,8 @@ pub mod ivi_input {
 pub mod ivi_wm {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_wm_screen {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -381,38 +398,42 @@ pub mod ivi_wm {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ivi_wm_screen#{}.destroy()", object.id);
+                        tracing::debug!("ivi_wm_screen#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("ivi_wm_screen#{}.clear()", object.id);
+                        tracing::debug!("ivi_wm_screen#{}.clear()", object.id,);
                         self.clear(object, client).await
                     }
                     2u16 => {
-                        tracing::debug!("ivi_wm_screen#{}.add_layer()", object.id);
-                        self.add_layer(object, client, message.uint()?).await
+                        let layer_id = message.uint()?;
+                        tracing::debug!("ivi_wm_screen#{}.add_layer({})", object.id, layer_id);
+                        self.add_layer(object, client, layer_id).await
                     }
                     3u16 => {
-                        tracing::debug!("ivi_wm_screen#{}.remove_layer()", object.id);
-                        self.remove_layer(object, client, message.uint()?).await
+                        let layer_id = message.uint()?;
+                        tracing::debug!("ivi_wm_screen#{}.remove_layer({})", object.id, layer_id);
+                        self.remove_layer(object, client, layer_id).await
                     }
                     4u16 => {
-                        tracing::debug!("ivi_wm_screen#{}.screenshot()", object.id);
-                        self.screenshot(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let screenshot = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ivi_wm_screen#{}.screenshot({}, {})",
+                            object.id,
+                            buffer,
+                            screenshot
+                        );
+                        self.screenshot(object, client, buffer, screenshot).await
                     }
                     5u16 => {
-                        tracing::debug!("ivi_wm_screen#{}.get()", object.id);
-                        self.get(object, client, message.int()?).await
+                        let param = message.int()?;
+                        tracing::debug!("ivi_wm_screen#{}.get({})", object.id, param);
+                        self.get(object, client, param).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -472,7 +493,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm_screen#{}.screen_id()", object.id);
+                tracing::debug!("-> ivi_wm_screen#{}.screen_id(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -486,7 +507,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 layer_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm_screen#{}.layer_added()", object.id);
+                tracing::debug!("-> ivi_wm_screen#{}.layer_added(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
                     .build();
@@ -502,7 +523,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 process_name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm_screen#{}.connector_name()", object.id);
+                tracing::debug!("-> ivi_wm_screen#{}.connector_name(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(process_name))
                     .build();
@@ -519,7 +540,7 @@ pub mod ivi_wm {
                 error: u32,
                 message: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm_screen#{}.error()", object.id);
+                tracing::debug!("-> ivi_wm_screen#{}.error(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(error)
                     .put_string(Some(message))
@@ -536,6 +557,8 @@ pub mod ivi_wm {
     #[doc = "so the client shall then destroy its proxy too."]
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_screenshot {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -599,7 +622,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 timestamp: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_screenshot#{}.done()", object.id);
+                tracing::debug!("-> ivi_screenshot#{}.done(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(timestamp)
                     .build();
@@ -616,7 +639,7 @@ pub mod ivi_wm {
                 error: Error,
                 message: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_screenshot#{}.error()", object.id);
+                tracing::debug!("-> ivi_screenshot#{}.error(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(error as u32)
                     .put_string(Some(message))
@@ -630,6 +653,8 @@ pub mod ivi_wm {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_wm {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -749,169 +774,264 @@ pub mod ivi_wm {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ivi_wm#{}.commit_changes()", object.id);
+                        tracing::debug!("ivi_wm#{}.commit_changes()", object.id,);
                         self.commit_changes(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("ivi_wm#{}.create_screen()", object.id);
-                        self.create_screen(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("ivi_wm#{}.create_screen({}, {})", object.id, output, id);
+                        self.create_screen(object, client, output, id).await
                     }
                     2u16 => {
-                        tracing::debug!("ivi_wm#{}.set_surface_visibility()", object.id);
-                        self.set_surface_visibility(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.uint()?,
-                        )
-                        .await
+                        let surface_id = message.uint()?;
+                        let visibility = message.uint()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.set_surface_visibility({}, {})",
+                            object.id,
+                            surface_id,
+                            visibility
+                        );
+                        self.set_surface_visibility(object, client, surface_id, visibility)
+                            .await
                     }
                     3u16 => {
-                        tracing::debug!("ivi_wm#{}.set_layer_visibility()", object.id);
-                        self.set_layer_visibility(object, client, message.uint()?, message.uint()?)
+                        let layer_id = message.uint()?;
+                        let visibility = message.uint()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.set_layer_visibility({}, {})",
+                            object.id,
+                            layer_id,
+                            visibility
+                        );
+                        self.set_layer_visibility(object, client, layer_id, visibility)
                             .await
                     }
                     4u16 => {
-                        tracing::debug!("ivi_wm#{}.set_surface_opacity()", object.id);
-                        self.set_surface_opacity(object, client, message.uint()?, message.fixed()?)
+                        let surface_id = message.uint()?;
+                        let opacity = message.fixed()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.set_surface_opacity({}, {})",
+                            object.id,
+                            surface_id,
+                            opacity
+                        );
+                        self.set_surface_opacity(object, client, surface_id, opacity)
                             .await
                     }
                     5u16 => {
-                        tracing::debug!("ivi_wm#{}.set_layer_opacity()", object.id);
-                        self.set_layer_opacity(object, client, message.uint()?, message.fixed()?)
+                        let layer_id = message.uint()?;
+                        let opacity = message.fixed()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.set_layer_opacity({}, {})",
+                            object.id,
+                            layer_id,
+                            opacity
+                        );
+                        self.set_layer_opacity(object, client, layer_id, opacity)
                             .await
                     }
                     6u16 => {
-                        tracing::debug!("ivi_wm#{}.set_surface_source_rectangle()", object.id);
+                        let surface_id = message.uint()?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.set_surface_source_rectangle({}, {}, {}, {}, {})",
+                            object.id,
+                            surface_id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
                         self.set_surface_source_rectangle(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
+                            object, client, surface_id, x, y, width, height,
                         )
                         .await
                     }
                     7u16 => {
-                        tracing::debug!("ivi_wm#{}.set_layer_source_rectangle()", object.id);
+                        let layer_id = message.uint()?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.set_layer_source_rectangle({}, {}, {}, {}, {})",
+                            object.id,
+                            layer_id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
                         self.set_layer_source_rectangle(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
+                            object, client, layer_id, x, y, width, height,
                         )
                         .await
                     }
                     8u16 => {
-                        tracing::debug!("ivi_wm#{}.set_surface_destination_rectangle()", object.id);
+                        let surface_id = message.uint()?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.set_surface_destination_rectangle({}, {}, {}, {}, {})",
+                            object.id,
+                            surface_id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
                         self.set_surface_destination_rectangle(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
+                            object, client, surface_id, x, y, width, height,
                         )
                         .await
                     }
                     9u16 => {
-                        tracing::debug!("ivi_wm#{}.set_layer_destination_rectangle()", object.id);
+                        let layer_id = message.uint()?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.set_layer_destination_rectangle({}, {}, {}, {}, {})",
+                            object.id,
+                            layer_id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
                         self.set_layer_destination_rectangle(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
+                            object, client, layer_id, x, y, width, height,
                         )
                         .await
                     }
                     10u16 => {
-                        tracing::debug!("ivi_wm#{}.surface_sync()", object.id);
-                        self.surface_sync(object, client, message.uint()?, message.int()?)
+                        let surface_id = message.uint()?;
+                        let sync_state = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.surface_sync({}, {})",
+                            object.id,
+                            surface_id,
+                            sync_state
+                        );
+                        self.surface_sync(object, client, surface_id, sync_state)
                             .await
                     }
                     11u16 => {
-                        tracing::debug!("ivi_wm#{}.layer_sync()", object.id);
-                        self.layer_sync(object, client, message.uint()?, message.int()?)
-                            .await
+                        let layer_id = message.uint()?;
+                        let sync_state = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.layer_sync({}, {})",
+                            object.id,
+                            layer_id,
+                            sync_state
+                        );
+                        self.layer_sync(object, client, layer_id, sync_state).await
                     }
                     12u16 => {
-                        tracing::debug!("ivi_wm#{}.surface_get()", object.id);
-                        self.surface_get(object, client, message.uint()?, message.int()?)
-                            .await
+                        let surface_id = message.uint()?;
+                        let param = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.surface_get({}, {})",
+                            object.id,
+                            surface_id,
+                            param
+                        );
+                        self.surface_get(object, client, surface_id, param).await
                     }
                     13u16 => {
-                        tracing::debug!("ivi_wm#{}.layer_get()", object.id);
-                        self.layer_get(object, client, message.uint()?, message.int()?)
-                            .await
+                        let layer_id = message.uint()?;
+                        let param = message.int()?;
+                        tracing::debug!("ivi_wm#{}.layer_get({}, {})", object.id, layer_id, param);
+                        self.layer_get(object, client, layer_id, param).await
                     }
                     14u16 => {
-                        tracing::debug!("ivi_wm#{}.surface_screenshot()", object.id);
-                        self.surface_screenshot(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let screenshot = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface_id = message.uint()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.surface_screenshot({}, {}, {})",
+                            object.id,
+                            buffer,
+                            screenshot,
+                            surface_id
+                        );
+                        self.surface_screenshot(object, client, buffer, screenshot, surface_id)
+                            .await
                     }
                     15u16 => {
-                        tracing::debug!("ivi_wm#{}.set_surface_type()", object.id);
-                        self.set_surface_type(object, client, message.uint()?, message.int()?)
+                        let surface_id = message.uint()?;
+                        let r#type = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.set_surface_type({}, {})",
+                            object.id,
+                            surface_id,
+                            r#type
+                        );
+                        self.set_surface_type(object, client, surface_id, r#type)
                             .await
                     }
                     16u16 => {
-                        tracing::debug!("ivi_wm#{}.layer_clear()", object.id);
-                        self.layer_clear(object, client, message.uint()?).await
+                        let layer_id = message.uint()?;
+                        tracing::debug!("ivi_wm#{}.layer_clear({})", object.id, layer_id);
+                        self.layer_clear(object, client, layer_id).await
                     }
                     17u16 => {
-                        tracing::debug!("ivi_wm#{}.layer_add_surface()", object.id);
-                        self.layer_add_surface(object, client, message.uint()?, message.uint()?)
+                        let layer_id = message.uint()?;
+                        let surface_id = message.uint()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.layer_add_surface({}, {})",
+                            object.id,
+                            layer_id,
+                            surface_id
+                        );
+                        self.layer_add_surface(object, client, layer_id, surface_id)
                             .await
                     }
                     18u16 => {
-                        tracing::debug!("ivi_wm#{}.layer_remove_surface()", object.id);
-                        self.layer_remove_surface(object, client, message.uint()?, message.uint()?)
+                        let layer_id = message.uint()?;
+                        let surface_id = message.uint()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.layer_remove_surface({}, {})",
+                            object.id,
+                            layer_id,
+                            surface_id
+                        );
+                        self.layer_remove_surface(object, client, layer_id, surface_id)
                             .await
                     }
                     19u16 => {
-                        tracing::debug!("ivi_wm#{}.create_layout_layer()", object.id);
-                        self.create_layout_layer(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.int()?,
-                            message.int()?,
-                        )
-                        .await
+                        let layer_id = message.uint()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.create_layout_layer({}, {}, {})",
+                            object.id,
+                            layer_id,
+                            width,
+                            height
+                        );
+                        self.create_layout_layer(object, client, layer_id, width, height)
+                            .await
                     }
                     20u16 => {
-                        tracing::debug!("ivi_wm#{}.destroy_layout_layer()", object.id);
-                        self.destroy_layout_layer(object, client, message.uint()?)
-                            .await
+                        let layer_id = message.uint()?;
+                        tracing::debug!("ivi_wm#{}.destroy_layout_layer({})", object.id, layer_id);
+                        self.destroy_layout_layer(object, client, layer_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1150,7 +1270,7 @@ pub mod ivi_wm {
                 surface_id: u32,
                 visibility: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_visibility()", object.id);
+                tracing::debug!("-> ivi_wm#{}.surface_visibility(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
                     .put_int(visibility)
@@ -1170,7 +1290,7 @@ pub mod ivi_wm {
                 layer_id: u32,
                 visibility: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.layer_visibility()", object.id);
+                tracing::debug!("-> ivi_wm#{}.layer_visibility(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
                     .put_int(visibility)
@@ -1189,7 +1309,7 @@ pub mod ivi_wm {
                 surface_id: u32,
                 opacity: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_opacity()", object.id);
+                tracing::debug!("-> ivi_wm#{}.surface_opacity(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
                     .put_fixed(opacity)
@@ -1208,7 +1328,7 @@ pub mod ivi_wm {
                 layer_id: u32,
                 opacity: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.layer_opacity()", object.id);
+                tracing::debug!("-> ivi_wm#{}.layer_opacity(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
                     .put_fixed(opacity)
@@ -1234,7 +1354,10 @@ pub mod ivi_wm {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_source_rectangle()", object.id);
+                tracing::debug!(
+                    "-> ivi_wm#{}.surface_source_rectangle(rq, rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
                     .put_int(x)
@@ -1263,7 +1386,10 @@ pub mod ivi_wm {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.layer_source_rectangle()", object.id);
+                tracing::debug!(
+                    "-> ivi_wm#{}.layer_source_rectangle(rq, rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
                     .put_int(x)
@@ -1291,7 +1417,10 @@ pub mod ivi_wm {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_destination_rectangle()", object.id);
+                tracing::debug!(
+                    "-> ivi_wm#{}.surface_destination_rectangle(rq, rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
                     .put_int(x)
@@ -1319,7 +1448,10 @@ pub mod ivi_wm {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.layer_destination_rectangle()", object.id);
+                tracing::debug!(
+                    "-> ivi_wm#{}.layer_destination_rectangle(rq, rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
                     .put_int(x)
@@ -1338,7 +1470,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 surface_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_created()", object.id);
+                tracing::debug!("-> ivi_wm#{}.surface_created(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
                     .build();
@@ -1353,7 +1485,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 layer_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.layer_created()", object.id);
+                tracing::debug!("-> ivi_wm#{}.layer_created(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
                     .build();
@@ -1368,7 +1500,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 surface_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_destroyed()", object.id);
+                tracing::debug!("-> ivi_wm#{}.surface_destroyed(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
                     .build();
@@ -1383,7 +1515,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 layer_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.layer_destroyed()", object.id);
+                tracing::debug!("-> ivi_wm#{}.layer_destroyed(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
                     .build();
@@ -1401,7 +1533,7 @@ pub mod ivi_wm {
                 error: u32,
                 message: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_error()", object.id);
+                tracing::debug!("-> ivi_wm#{}.surface_error(rq, rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(object_id)
                     .put_uint(error)
@@ -1421,7 +1553,7 @@ pub mod ivi_wm {
                 error: u32,
                 message: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.layer_error()", object.id);
+                tracing::debug!("-> ivi_wm#{}.layer_error(rq, rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(object_id)
                     .put_uint(error)
@@ -1442,7 +1574,7 @@ pub mod ivi_wm {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_size()", object.id);
+                tracing::debug!("-> ivi_wm#{}.surface_size(rq, rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
                     .put_int(width)
@@ -1463,7 +1595,7 @@ pub mod ivi_wm {
                 frame_count: u32,
                 pid: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_stats()", object.id);
+                tracing::debug!("-> ivi_wm#{}.surface_stats(rq, rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
                     .put_uint(frame_count)
@@ -1482,7 +1614,7 @@ pub mod ivi_wm {
                 layer_id: u32,
                 surface_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.layer_surface_added()", object.id);
+                tracing::debug!("-> ivi_wm#{}.layer_surface_added(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
                     .put_uint(surface_id)

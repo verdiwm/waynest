@@ -10,6 +10,8 @@ pub mod hyprland_ctm_control_v1 {
     #[doc = "an identity matrix."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_ctm_control_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -45,34 +47,31 @@ pub mod hyprland_ctm_control_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!(
-                            "hyprland_ctm_control_manager_v1#{}.set_ctm_for_output()",
-                            object.id
-                        );
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let mat0 = message.fixed()?;
+                        let mat1 = message.fixed()?;
+                        let mat2 = message.fixed()?;
+                        let mat3 = message.fixed()?;
+                        let mat4 = message.fixed()?;
+                        let mat5 = message.fixed()?;
+                        let mat6 = message.fixed()?;
+                        let mat7 = message.fixed()?;
+                        let mat8 = message.fixed()?;
+                        tracing :: debug ! ("hyprland_ctm_control_manager_v1#{}.set_ctm_for_output({}, {}, {}, {}, {}, {}, {}, {}, {}, {})" , object . id , output , mat0 , mat1 , mat2 , mat3 , mat4 , mat5 , mat6 , mat7 , mat8);
                         self.set_ctm_for_output(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.fixed()?,
-                            message.fixed()?,
-                            message.fixed()?,
-                            message.fixed()?,
-                            message.fixed()?,
-                            message.fixed()?,
-                            message.fixed()?,
-                            message.fixed()?,
-                            message.fixed()?,
+                            object, client, output, mat0, mat1, mat2, mat3, mat4, mat5, mat6, mat7,
+                            mat8,
                         )
                         .await
                     }
                     1u16 => {
-                        tracing::debug!("hyprland_ctm_control_manager_v1#{}.commit()", object.id);
+                        tracing::debug!("hyprland_ctm_control_manager_v1#{}.commit()", object.id,);
                         self.commit(object, client).await
                     }
                     2u16 => {
-                        tracing::debug!("hyprland_ctm_control_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("hyprland_ctm_control_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -132,6 +131,8 @@ pub mod hyprland_focus_grab_v1 {
     #[doc = "This interface allows a client to create surface grab objects."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_focus_grab_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_focus_grab_manager_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandFocusGrabManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "hyprland_focus_grab_manager_v1";
@@ -151,21 +152,18 @@ pub mod hyprland_focus_grab_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let grab = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "hyprland_focus_grab_manager_v1#{}.create_grab()",
-                            object.id
+                            "hyprland_focus_grab_manager_v1#{}.create_grab({})",
+                            object.id,
+                            grab
                         );
-                        self.create_grab(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.create_grab(object, client, grab).await
                     }
                     1u16 => {
-                        tracing::debug!("hyprland_focus_grab_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("hyprland_focus_grab_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -204,6 +202,8 @@ pub mod hyprland_focus_grab_v1 {
     #[doc = "is started at the compositor's discretion."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_focus_grab_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_focus_grab_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandFocusGrabV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "hyprland_focus_grab_v1";
@@ -223,33 +223,33 @@ pub mod hyprland_focus_grab_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("hyprland_focus_grab_v1#{}.add_surface()", object.id);
-                        self.add_surface(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "hyprland_focus_grab_v1#{}.add_surface({})",
+                            object.id,
+                            surface
+                        );
+                        self.add_surface(object, client, surface).await
                     }
                     1u16 => {
-                        tracing::debug!("hyprland_focus_grab_v1#{}.remove_surface()", object.id);
-                        self.remove_surface(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "hyprland_focus_grab_v1#{}.remove_surface({})",
+                            object.id,
+                            surface
+                        );
+                        self.remove_surface(object, client, surface).await
                     }
                     2u16 => {
-                        tracing::debug!("hyprland_focus_grab_v1#{}.commit()", object.id);
+                        tracing::debug!("hyprland_focus_grab_v1#{}.commit()", object.id,);
                         self.commit(object, client).await
                     }
                     3u16 => {
-                        tracing::debug!("hyprland_focus_grab_v1#{}.destroy()", object.id);
+                        tracing::debug!("hyprland_focus_grab_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -319,6 +319,8 @@ pub mod hyprland_global_shortcuts_v1 {
     #[doc = "This object is a manager which offers requests to create global shortcuts."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_global_shortcuts_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -354,35 +356,37 @@ pub mod hyprland_global_shortcuts_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!(
-                            "hyprland_global_shortcuts_manager_v1#{}.register_shortcut()",
-                            object.id
-                        );
+                        let shortcut = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let app_id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let description = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let trigger_description = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing :: debug ! ("hyprland_global_shortcuts_manager_v1#{}.register_shortcut({}, {}, {}, {}, {})" , object . id , shortcut , id , app_id , description , trigger_description);
                         self.register_shortcut(
                             object,
                             client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            shortcut,
+                            id,
+                            app_id,
+                            description,
+                            trigger_description,
                         )
                         .await
                     }
                     1u16 => {
                         tracing::debug!(
                             "hyprland_global_shortcuts_manager_v1#{}.destroy()",
-                            object.id
+                            object.id,
                         );
                         self.destroy(object, client).await
                     }
@@ -418,6 +422,8 @@ pub mod hyprland_global_shortcuts_v1 {
     #[doc = "This object represents a single shortcut."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_global_shortcut_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_global_shortcut_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandGlobalShortcutV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "hyprland_global_shortcut_v1";
@@ -437,7 +443,7 @@ pub mod hyprland_global_shortcuts_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("hyprland_global_shortcut_v1#{}.destroy()", object.id);
+                        tracing::debug!("hyprland_global_shortcut_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -460,7 +466,10 @@ pub mod hyprland_global_shortcuts_v1 {
                 tv_sec_lo: u32,
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> hyprland_global_shortcut_v1#{}.pressed()", object.id);
+                tracing::debug!(
+                    "-> hyprland_global_shortcut_v1#{}.pressed(rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
                     .put_uint(tv_sec_lo)
@@ -482,7 +491,10 @@ pub mod hyprland_global_shortcuts_v1 {
                 tv_sec_lo: u32,
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> hyprland_global_shortcut_v1#{}.released()", object.id);
+                tracing::debug!(
+                    "-> hyprland_global_shortcut_v1#{}.released(rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
                     .put_uint(tv_sec_lo)
@@ -506,6 +518,8 @@ pub mod hyprland_toplevel_export_v1 {
     #[doc = "source."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_export_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_toplevel_export_manager_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandToplevelExportManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "hyprland_toplevel_export_manager_v1";
@@ -525,40 +539,43 @@ pub mod hyprland_toplevel_export_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let frame = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let overlay_cursor = message.int()?;
+                        let handle = message.uint()?;
                         tracing::debug!(
-                            "hyprland_toplevel_export_manager_v1#{}.capture_toplevel()",
-                            object.id
+                            "hyprland_toplevel_export_manager_v1#{}.capture_toplevel({}, {}, {})",
+                            object.id,
+                            frame,
+                            overlay_cursor,
+                            handle
                         );
-                        self.capture_toplevel(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.capture_toplevel(object, client, frame, overlay_cursor, handle)
+                            .await
                     }
                     1u16 => {
                         tracing::debug!(
                             "hyprland_toplevel_export_manager_v1#{}.destroy()",
-                            object.id
+                            object.id,
                         );
                         self.destroy(object, client).await
                     }
                     2u16 => {
-                        tracing :: debug ! ("hyprland_toplevel_export_manager_v1#{}.capture_toplevel_with_wlr_toplevel_handle()" , object . id);
+                        let frame = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let overlay_cursor = message.int()?;
+                        let handle = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing :: debug ! ("hyprland_toplevel_export_manager_v1#{}.capture_toplevel_with_wlr_toplevel_handle({}, {}, {})" , object . id , frame , overlay_cursor , handle);
                         self.capture_toplevel_with_wlr_toplevel_handle(
                             object,
                             client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            frame,
+                            overlay_cursor,
+                            handle,
                         )
                         .await
                     }
@@ -618,6 +635,8 @@ pub mod hyprland_toplevel_export_v1 {
     #[doc = "destroy the frame."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_export_frame_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -663,21 +682,22 @@ pub mod hyprland_toplevel_export_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("hyprland_toplevel_export_frame_v1#{}.copy()", object.id);
-                        self.copy(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                        )
-                        .await
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let ignore_damage = message.int()?;
+                        tracing::debug!(
+                            "hyprland_toplevel_export_frame_v1#{}.copy({}, {})",
+                            object.id,
+                            buffer,
+                            ignore_damage
+                        );
+                        self.copy(object, client, buffer, ignore_damage).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "hyprland_toplevel_export_frame_v1#{}.destroy()",
-                            object.id
+                            object.id,
                         );
                         self.destroy(object, client).await
                     }
@@ -720,7 +740,7 @@ pub mod hyprland_toplevel_export_v1 {
                 stride: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> hyprland_toplevel_export_frame_v1#{}.buffer()",
+                    "-> hyprland_toplevel_export_frame_v1#{}.buffer(rq, rq, rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -754,7 +774,7 @@ pub mod hyprland_toplevel_export_v1 {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> hyprland_toplevel_export_frame_v1#{}.damage()",
+                    "-> hyprland_toplevel_export_frame_v1#{}.damage(rq, rq, rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -776,7 +796,10 @@ pub mod hyprland_toplevel_export_v1 {
                 client: &mut crate::server::Client,
                 flags: Flags,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> hyprland_toplevel_export_frame_v1#{}.flags()", object.id);
+                tracing::debug!(
+                    "-> hyprland_toplevel_export_frame_v1#{}.flags(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(flags.bits())
                     .build();
@@ -805,7 +828,10 @@ pub mod hyprland_toplevel_export_v1 {
                 tv_sec_lo: u32,
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> hyprland_toplevel_export_frame_v1#{}.ready()", object.id);
+                tracing::debug!(
+                    "-> hyprland_toplevel_export_frame_v1#{}.ready(rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
                     .put_uint(tv_sec_lo)
@@ -846,7 +872,7 @@ pub mod hyprland_toplevel_export_v1 {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> hyprland_toplevel_export_frame_v1#{}.linux_dmabuf()",
+                    "-> hyprland_toplevel_export_frame_v1#{}.linux_dmabuf(rq, rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()

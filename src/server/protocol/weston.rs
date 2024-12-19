@@ -43,6 +43,8 @@ pub mod color_management_v1 {
     #[doc = "description of surfaces."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_color_manager_v4 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -234,75 +236,75 @@ pub mod color_management_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("xx_color_manager_v4#{}.destroy()", object.id);
+                        tracing::debug!("xx_color_manager_v4#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("xx_color_manager_v4#{}.get_output()", object.id);
-                        self.get_output(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "xx_color_manager_v4#{}.get_output({}, {})",
+                            object.id,
+                            id,
+                            output
+                        );
+                        self.get_output(object, client, id, output).await
                     }
                     2u16 => {
-                        tracing::debug!("xx_color_manager_v4#{}.get_surface()", object.id);
-                        self.get_surface(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "xx_color_manager_v4#{}.get_surface({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.get_surface(object, client, id, surface).await
                     }
                     3u16 => {
-                        tracing::debug!("xx_color_manager_v4#{}.get_feedback_surface()", object.id);
-                        self.get_feedback_surface(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "xx_color_manager_v4#{}.get_feedback_surface({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.get_feedback_surface(object, client, id, surface).await
                     }
                     4u16 => {
-                        tracing::debug!("xx_color_manager_v4#{}.new_icc_creator()", object.id);
-                        self.new_icc_creator(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let obj = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "xx_color_manager_v4#{}.new_icc_creator({})",
+                            object.id,
+                            obj
+                        );
+                        self.new_icc_creator(object, client, obj).await
                     }
                     5u16 => {
+                        let obj = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "xx_color_manager_v4#{}.new_parametric_creator()",
-                            object.id
+                            "xx_color_manager_v4#{}.new_parametric_creator({})",
+                            object.id,
+                            obj
                         );
-                        self.new_parametric_creator(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.new_parametric_creator(object, client, obj).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -387,7 +389,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 render_intent: RenderIntent,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_color_manager_v4#{}.supported_intent()", object.id);
+                tracing::debug!("-> xx_color_manager_v4#{}.supported_intent(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(render_intent as u32)
                     .build();
@@ -404,7 +406,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 feature: Feature,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_color_manager_v4#{}.supported_feature()", object.id);
+                tracing::debug!("-> xx_color_manager_v4#{}.supported_feature(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(feature as u32)
                     .build();
@@ -422,7 +424,10 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 tf: TransferFunction,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_color_manager_v4#{}.supported_tf_named()", object.id);
+                tracing::debug!(
+                    "-> xx_color_manager_v4#{}.supported_tf_named(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tf as u32)
                     .build();
@@ -441,7 +446,7 @@ pub mod color_management_v1 {
                 primaries: Primaries,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xx_color_manager_v4#{}.supported_primaries_named()",
+                    "-> xx_color_manager_v4#{}.supported_primaries_named(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -463,6 +468,8 @@ pub mod color_management_v1 {
     #[doc = "global makes the xx_color_management_output_v4 object inert."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_color_management_output_v4 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the xx_color_management_output_v4 interface. See the module level documentation for more info"]
         pub trait XxColorManagementOutputV4: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xx_color_management_output_v4";
@@ -482,22 +489,20 @@ pub mod color_management_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("xx_color_management_output_v4#{}.destroy()", object.id);
+                        tracing::debug!("xx_color_management_output_v4#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let image_description = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "xx_color_management_output_v4#{}.get_image_description()",
-                            object.id
+                            "xx_color_management_output_v4#{}.get_image_description({})",
+                            object.id,
+                            image_description
                         );
-                        self.get_image_description(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_image_description(object, client, image_description)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -577,6 +582,8 @@ pub mod color_management_v1 {
     #[doc = "destroyed, the xx_color_management_surface_v4 object becomes inert."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_color_management_surface_v4 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -615,28 +622,32 @@ pub mod color_management_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("xx_color_management_surface_v4#{}.destroy()", object.id);
+                        tracing::debug!("xx_color_management_surface_v4#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let image_description = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let render_intent = message.uint()?;
                         tracing::debug!(
-                            "xx_color_management_surface_v4#{}.set_image_description()",
-                            object.id
+                            "xx_color_management_surface_v4#{}.set_image_description({}, {})",
+                            object.id,
+                            image_description,
+                            render_intent
                         );
                         self.set_image_description(
                             object,
                             client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?.try_into()?,
+                            image_description,
+                            render_intent.try_into()?,
                         )
                         .await
                     }
                     2u16 => {
                         tracing::debug!(
                             "xx_color_management_surface_v4#{}.unset_image_description()",
-                            object.id
+                            object.id,
                         );
                         self.unset_image_description(object, client).await
                     }
@@ -703,6 +714,8 @@ pub mod color_management_v1 {
     #[doc = "xx_color_management_feedback_surface_v4 object becomes inert."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_color_management_feedback_surface_v4 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -740,23 +753,20 @@ pub mod color_management_v1 {
                     0u16 => {
                         tracing::debug!(
                             "xx_color_management_feedback_surface_v4#{}.destroy()",
-                            object.id
+                            object.id,
                         );
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let image_description = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "xx_color_management_feedback_surface_v4#{}.get_preferred()",
-                            object.id
+                            "xx_color_management_feedback_surface_v4#{}.get_preferred({})",
+                            object.id,
+                            image_description
                         );
-                        self.get_preferred(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_preferred(object, client, image_description).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -848,6 +858,8 @@ pub mod color_management_v1 {
     #[doc = "process."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_creator_icc_v4 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -895,32 +907,29 @@ pub mod color_management_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let image_description = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "xx_image_description_creator_icc_v4#{}.create()",
-                            object.id
+                            "xx_image_description_creator_icc_v4#{}.create({})",
+                            object.id,
+                            image_description
                         );
-                        self.create(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.create(object, client, image_description).await
                     }
                     1u16 => {
+                        let icc_profile = message.fd()?;
+                        let offset = message.uint()?;
+                        let length = message.uint()?;
                         tracing::debug!(
-                            "xx_image_description_creator_icc_v4#{}.set_icc_file()",
-                            object.id
+                            "xx_image_description_creator_icc_v4#{}.set_icc_file({}, {}, {})",
+                            object.id,
+                            icc_profile.as_raw_fd(),
+                            offset,
+                            length
                         );
-                        self.set_icc_file(
-                            object,
-                            client,
-                            message.fd()?,
-                            message.uint()?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.set_icc_file(object, client, icc_profile, offset, length)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1025,6 +1034,8 @@ pub mod color_management_v1 {
     #[doc = "process."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_creator_params_v4 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1081,117 +1092,110 @@ pub mod color_management_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let image_description = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "xx_image_description_creator_params_v4#{}.create()",
-                            object.id
+                            "xx_image_description_creator_params_v4#{}.create({})",
+                            object.id,
+                            image_description
                         );
-                        self.create(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.create(object, client, image_description).await
                     }
                     1u16 => {
+                        let tf = message.uint()?;
                         tracing::debug!(
-                            "xx_image_description_creator_params_v4#{}.set_tf_named()",
-                            object.id
+                            "xx_image_description_creator_params_v4#{}.set_tf_named({})",
+                            object.id,
+                            tf
                         );
-                        self.set_tf_named(object, client, message.uint()?.try_into()?)
-                            .await
+                        self.set_tf_named(object, client, tf.try_into()?).await
                     }
                     2u16 => {
+                        let eexp = message.uint()?;
                         tracing::debug!(
-                            "xx_image_description_creator_params_v4#{}.set_tf_power()",
-                            object.id
+                            "xx_image_description_creator_params_v4#{}.set_tf_power({})",
+                            object.id,
+                            eexp
                         );
-                        self.set_tf_power(object, client, message.uint()?).await
+                        self.set_tf_power(object, client, eexp).await
                     }
                     3u16 => {
+                        let primaries = message.uint()?;
                         tracing::debug!(
-                            "xx_image_description_creator_params_v4#{}.set_primaries_named()",
-                            object.id
+                            "xx_image_description_creator_params_v4#{}.set_primaries_named({})",
+                            object.id,
+                            primaries
                         );
-                        self.set_primaries_named(object, client, message.uint()?.try_into()?)
+                        self.set_primaries_named(object, client, primaries.try_into()?)
                             .await
                     }
                     4u16 => {
-                        tracing::debug!(
-                            "xx_image_description_creator_params_v4#{}.set_primaries()",
-                            object.id
-                        );
-                        self.set_primaries(
-                            object,
-                            client,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                        )
-                        .await
+                        let r_x = message.int()?;
+                        let r_y = message.int()?;
+                        let g_x = message.int()?;
+                        let g_y = message.int()?;
+                        let b_x = message.int()?;
+                        let b_y = message.int()?;
+                        let w_x = message.int()?;
+                        let w_y = message.int()?;
+                        tracing :: debug ! ("xx_image_description_creator_params_v4#{}.set_primaries({}, {}, {}, {}, {}, {}, {}, {})" , object . id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
+                        self.set_primaries(object, client, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y)
+                            .await
                     }
                     5u16 => {
+                        let min_lum = message.uint()?;
+                        let max_lum = message.uint()?;
+                        let reference_lum = message.uint()?;
                         tracing::debug!(
-                            "xx_image_description_creator_params_v4#{}.set_luminances()",
-                            object.id
+                            "xx_image_description_creator_params_v4#{}.set_luminances({}, {}, {})",
+                            object.id,
+                            min_lum,
+                            max_lum,
+                            reference_lum
                         );
-                        self.set_luminances(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.set_luminances(object, client, min_lum, max_lum, reference_lum)
+                            .await
                     }
                     6u16 => {
-                        tracing :: debug ! ("xx_image_description_creator_params_v4#{}.set_mastering_display_primaries()" , object . id);
+                        let r_x = message.int()?;
+                        let r_y = message.int()?;
+                        let g_x = message.int()?;
+                        let g_y = message.int()?;
+                        let b_x = message.int()?;
+                        let b_y = message.int()?;
+                        let w_x = message.int()?;
+                        let w_y = message.int()?;
+                        tracing :: debug ! ("xx_image_description_creator_params_v4#{}.set_mastering_display_primaries({}, {}, {}, {}, {}, {}, {}, {})" , object . id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
                         self.set_mastering_display_primaries(
-                            object,
-                            client,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
+                            object, client, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
                         )
                         .await
                     }
                     7u16 => {
-                        tracing::debug!(
-                            "xx_image_description_creator_params_v4#{}.set_mastering_luminance()",
-                            object.id
-                        );
-                        self.set_mastering_luminance(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.uint()?,
-                        )
-                        .await
+                        let min_lum = message.uint()?;
+                        let max_lum = message.uint()?;
+                        tracing :: debug ! ("xx_image_description_creator_params_v4#{}.set_mastering_luminance({}, {})" , object . id , min_lum , max_lum);
+                        self.set_mastering_luminance(object, client, min_lum, max_lum)
+                            .await
                     }
                     8u16 => {
+                        let max_cll = message.uint()?;
                         tracing::debug!(
-                            "xx_image_description_creator_params_v4#{}.set_max_cll()",
-                            object.id
+                            "xx_image_description_creator_params_v4#{}.set_max_cll({})",
+                            object.id,
+                            max_cll
                         );
-                        self.set_max_cll(object, client, message.uint()?).await
+                        self.set_max_cll(object, client, max_cll).await
                     }
                     9u16 => {
+                        let max_fall = message.uint()?;
                         tracing::debug!(
-                            "xx_image_description_creator_params_v4#{}.set_max_fall()",
-                            object.id
+                            "xx_image_description_creator_params_v4#{}.set_max_fall({})",
+                            object.id,
+                            max_fall
                         );
-                        self.set_max_fall(object, client, message.uint()?).await
+                        self.set_max_fall(object, client, max_fall).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1485,6 +1489,8 @@ pub mod color_management_v1 {
     #[doc = "description. It cannot change after creation."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_v4 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1548,19 +1554,19 @@ pub mod color_management_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("xx_image_description_v4#{}.destroy()", object.id);
+                        tracing::debug!("xx_image_description_v4#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("xx_image_description_v4#{}.get_information()", object.id);
-                        self.get_information(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let information = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "xx_image_description_v4#{}.get_information({})",
+                            object.id,
+                            information
+                        );
+                        self.get_information(object, client, information).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1605,7 +1611,7 @@ pub mod color_management_v1 {
                 cause: Cause,
                 msg: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_image_description_v4#{}.failed()", object.id);
+                tracing::debug!("-> xx_image_description_v4#{}.failed(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(cause as u32)
                     .put_string(Some(msg))
@@ -1647,7 +1653,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 identity: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_image_description_v4#{}.ready()", object.id);
+                tracing::debug!("-> xx_image_description_v4#{}.ready(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(identity)
                     .build();
@@ -1668,6 +1674,8 @@ pub mod color_management_v1 {
     #[doc = "xx_image_description_v4 shall always return the exact same data."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_info_v4 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the xx_image_description_info_v4 interface. See the module level documentation for more info"]
         pub trait XxImageDescriptionInfoV4: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xx_image_description_info_v4";
@@ -1717,7 +1725,10 @@ pub mod color_management_v1 {
                 icc: rustix::fd::OwnedFd,
                 icc_size: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_image_description_info_v4#{}.icc_file()", object.id);
+                tracing::debug!(
+                    "-> xx_image_description_info_v4#{}.icc_file(rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_fd(icc)
                     .put_uint(icc_size)
@@ -1745,7 +1756,10 @@ pub mod color_management_v1 {
                 w_x: i32,
                 w_y: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_image_description_info_v4#{}.primaries()", object.id);
+                tracing::debug!(
+                    "-> xx_image_description_info_v4#{}.primaries(rq, rq, rq, rq, rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(r_x)
                     .put_int(r_y)
@@ -1770,7 +1784,7 @@ pub mod color_management_v1 {
                 primaries : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: Primaries,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xx_image_description_info_v4#{}.primaries_named()",
+                    "-> xx_image_description_info_v4#{}.primaries_named(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1794,7 +1808,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 eexp: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_image_description_info_v4#{}.tf_power()", object.id);
+                tracing::debug!("-> xx_image_description_info_v4#{}.tf_power(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(eexp).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -1809,7 +1823,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 tf : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: TransferFunction,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_image_description_info_v4#{}.tf_named()", object.id);
+                tracing::debug!("-> xx_image_description_info_v4#{}.tf_named(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tf as u32)
                     .build();
@@ -1832,7 +1846,10 @@ pub mod color_management_v1 {
                 max_lum: u32,
                 reference_lum: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_image_description_info_v4#{}.luminances()", object.id);
+                tracing::debug!(
+                    "-> xx_image_description_info_v4#{}.luminances(rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(min_lum)
                     .put_uint(max_lum)
@@ -1867,10 +1884,7 @@ pub mod color_management_v1 {
                 w_x: i32,
                 w_y: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> xx_image_description_info_v4#{}.target_primaries()",
-                    object.id
-                );
+                tracing :: debug ! ("-> xx_image_description_info_v4#{}.target_primaries(rq, rq, rq, rq, rq, rq, rq, rq)" , object . id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(r_x)
                     .put_int(r_y)
@@ -1903,7 +1917,7 @@ pub mod color_management_v1 {
                 max_lum: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xx_image_description_info_v4#{}.target_luminance()",
+                    "-> xx_image_description_info_v4#{}.target_luminance(rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1927,7 +1941,7 @@ pub mod color_management_v1 {
                 max_cll: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xx_image_description_info_v4#{}.target_max_cll()",
+                    "-> xx_image_description_info_v4#{}.target_max_cll(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(max_cll).build();
@@ -1948,7 +1962,7 @@ pub mod color_management_v1 {
                 max_fall: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xx_image_description_info_v4#{}.target_max_fall()",
+                    "-> xx_image_description_info_v4#{}.target_max_fall(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1966,6 +1980,8 @@ pub mod color_management_v1 {
 pub mod ivi_application {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_surface {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
         pub trait IviSurface: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ivi_surface";
@@ -1985,7 +2001,7 @@ pub mod ivi_application {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ivi_surface#{}.destroy()", object.id);
+                        tracing::debug!("ivi_surface#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -2016,7 +2032,7 @@ pub mod ivi_application {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_surface#{}.configure()", object.id);
+                tracing::debug!("-> ivi_surface#{}.configure(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -2033,6 +2049,8 @@ pub mod ivi_application {
     #[doc = "It allows clients to associate an ivi_surface with wl_surface."]
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_application {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2071,19 +2089,22 @@ pub mod ivi_application {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ivi_application#{}.surface_create()", object.id);
-                        self.surface_create(
-                            object,
-                            client,
-                            message.uint()?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let ivi_id = message.uint()?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ivi_application#{}.surface_create({}, {}, {})",
+                            object.id,
+                            ivi_id,
+                            surface,
+                            id
+                        );
+                        self.surface_create(object, client, ivi_id, surface, id)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2124,6 +2145,8 @@ pub mod ivi_application {
 pub mod ivi_hmi_controller {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_hmi_controller {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2181,28 +2204,35 @@ pub mod ivi_hmi_controller {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ivi_hmi_controller#{}.ui_ready()", object.id);
+                        tracing::debug!("ivi_hmi_controller#{}.ui_ready()", object.id,);
                         self.ui_ready(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("ivi_hmi_controller#{}.workspace_control()", object.id);
-                        self.workspace_control(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        let seat = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let serial = message.uint()?;
+                        tracing::debug!(
+                            "ivi_hmi_controller#{}.workspace_control({}, {})",
+                            object.id,
+                            seat,
+                            serial
+                        );
+                        self.workspace_control(object, client, seat, serial).await
                     }
                     2u16 => {
-                        tracing::debug!("ivi_hmi_controller#{}.switch_mode()", object.id);
-                        self.switch_mode(object, client, message.uint()?).await
+                        let layout_mode = message.uint()?;
+                        tracing::debug!(
+                            "ivi_hmi_controller#{}.switch_mode({})",
+                            object.id,
+                            layout_mode
+                        );
+                        self.switch_mode(object, client, layout_mode).await
                     }
                     3u16 => {
-                        tracing::debug!("ivi_hmi_controller#{}.home()", object.id);
-                        self.home(object, client, message.uint()?).await
+                        let home = message.uint()?;
+                        tracing::debug!("ivi_hmi_controller#{}.home({})", object.id, home);
+                        self.home(object, client, home).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2263,7 +2293,7 @@ pub mod ivi_hmi_controller {
                 is_controlled: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ivi_hmi_controller#{}.workspace_end_control()",
+                    "-> ivi_hmi_controller#{}.workspace_end_control(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2281,6 +2311,8 @@ pub mod ivi_hmi_controller {
 pub mod text_cursor_position {
     #[allow(clippy::too_many_arguments)]
     pub mod text_cursor_position {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the text_cursor_position interface. See the module level documentation for more info"]
         pub trait TextCursorPosition: crate::server::Dispatcher {
             const INTERFACE: &'static str = "text_cursor_position";
@@ -2300,17 +2332,19 @@ pub mod text_cursor_position {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("text_cursor_position#{}.notify()", object.id);
-                        self.notify(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.fixed()?,
-                            message.fixed()?,
-                        )
-                        .await
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let x = message.fixed()?;
+                        let y = message.fixed()?;
+                        tracing::debug!(
+                            "text_cursor_position#{}.notify({}, {}, {})",
+                            object.id,
+                            surface,
+                            x,
+                            y
+                        );
+                        self.notify(object, client, surface, x, y).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2378,6 +2412,8 @@ pub mod weston_content_protection {
     #[doc = "set the censored-visibility on the non-secured-outputs."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_content_protection {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2413,22 +2449,23 @@ pub mod weston_content_protection {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("weston_content_protection#{}.destroy()", object.id);
+                        tracing::debug!("weston_content_protection#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("weston_content_protection#{}.get_protection()", object.id);
-                        self.get_protection(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "weston_content_protection#{}.get_protection({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.get_protection(object, client, id, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2492,6 +2529,8 @@ pub mod weston_content_protection {
     #[doc = "the protected_surface becomes inert."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_protected_surface {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2556,20 +2595,24 @@ pub mod weston_content_protection {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("weston_protected_surface#{}.destroy()", object.id);
+                        tracing::debug!("weston_protected_surface#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("weston_protected_surface#{}.set_type()", object.id);
-                        self.set_type(object, client, message.uint()?.try_into()?)
-                            .await
+                        let r#type = message.uint()?;
+                        tracing::debug!(
+                            "weston_protected_surface#{}.set_type({})",
+                            object.id,
+                            r#type
+                        );
+                        self.set_type(object, client, r#type.try_into()?).await
                     }
                     2u16 => {
-                        tracing::debug!("weston_protected_surface#{}.enforce()", object.id);
+                        tracing::debug!("weston_protected_surface#{}.enforce()", object.id,);
                         self.enforce(object, client).await
                     }
                     3u16 => {
-                        tracing::debug!("weston_protected_surface#{}.relax()", object.id);
+                        tracing::debug!("weston_protected_surface#{}.relax()", object.id,);
                         self.relax(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -2651,7 +2694,7 @@ pub mod weston_content_protection {
                 client: &mut crate::server::Client,
                 r#type: Type,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_protected_surface#{}.status()", object.id);
+                tracing::debug!("-> weston_protected_surface#{}.status(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(r#type as u32)
                     .build();
@@ -2686,6 +2729,8 @@ pub mod weston_debug {
     #[doc = "printing until the client stops it. Or anything in between."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_debug_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the weston_debug_v1 interface. See the module level documentation for more info"]
         pub trait WestonDebugV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "weston_debug_v1";
@@ -2705,23 +2750,25 @@ pub mod weston_debug {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("weston_debug_v1#{}.destroy()", object.id);
+                        tracing::debug!("weston_debug_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("weston_debug_v1#{}.subscribe()", object.id);
-                        self.subscribe(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.fd()?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let streamfd = message.fd()?;
+                        let stream = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "weston_debug_v1#{}.subscribe({}, {}, {})",
+                            object.id,
+                            name,
+                            streamfd.as_raw_fd(),
+                            stream
+                        );
+                        self.subscribe(object, client, name, streamfd, stream).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2761,7 +2808,7 @@ pub mod weston_debug {
                 name: String,
                 description: Option<String>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_debug_v1#{}.available()", object.id);
+                tracing::debug!("-> weston_debug_v1#{}.available(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .put_string(description)
@@ -2780,6 +2827,8 @@ pub mod weston_debug {
     #[doc = "event through the object."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_debug_stream_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the weston_debug_stream_v1 interface. See the module level documentation for more info"]
         pub trait WestonDebugStreamV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "weston_debug_stream_v1";
@@ -2799,7 +2848,7 @@ pub mod weston_debug {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("weston_debug_stream_v1#{}.destroy()", object.id);
+                        tracing::debug!("weston_debug_stream_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -2847,7 +2896,7 @@ pub mod weston_debug {
                 client: &mut crate::server::Client,
                 message: Option<String>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_debug_stream_v1#{}.failure()", object.id);
+                tracing::debug!("-> weston_debug_stream_v1#{}.failure(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(message)
                     .build();
@@ -2866,6 +2915,8 @@ pub mod weston_desktop {
     #[doc = "background, panels and locking surfaces."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_desktop_shell {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2959,67 +3010,73 @@ pub mod weston_desktop {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("weston_desktop_shell#{}.set_background()", object.id);
-                        self.set_background(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "weston_desktop_shell#{}.set_background({}, {})",
+                            object.id,
+                            output,
+                            surface
+                        );
+                        self.set_background(object, client, output, surface).await
                     }
                     1u16 => {
-                        tracing::debug!("weston_desktop_shell#{}.set_panel()", object.id);
-                        self.set_panel(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "weston_desktop_shell#{}.set_panel({}, {})",
+                            object.id,
+                            output,
+                            surface
+                        );
+                        self.set_panel(object, client, output, surface).await
                     }
                     2u16 => {
-                        tracing::debug!("weston_desktop_shell#{}.set_lock_surface()", object.id);
-                        self.set_lock_surface(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "weston_desktop_shell#{}.set_lock_surface({})",
+                            object.id,
+                            surface
+                        );
+                        self.set_lock_surface(object, client, surface).await
                     }
                     3u16 => {
-                        tracing::debug!("weston_desktop_shell#{}.unlock()", object.id);
+                        tracing::debug!("weston_desktop_shell#{}.unlock()", object.id,);
                         self.unlock(object, client).await
                     }
                     4u16 => {
-                        tracing::debug!("weston_desktop_shell#{}.set_grab_surface()", object.id);
-                        self.set_grab_surface(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "weston_desktop_shell#{}.set_grab_surface({})",
+                            object.id,
+                            surface
+                        );
+                        self.set_grab_surface(object, client, surface).await
                     }
                     5u16 => {
-                        tracing::debug!("weston_desktop_shell#{}.desktop_ready()", object.id);
+                        tracing::debug!("weston_desktop_shell#{}.desktop_ready()", object.id,);
                         self.desktop_ready(object, client).await
                     }
                     6u16 => {
-                        tracing::debug!("weston_desktop_shell#{}.set_panel_position()", object.id);
-                        self.set_panel_position(object, client, message.uint()?)
-                            .await
+                        let position = message.uint()?;
+                        tracing::debug!(
+                            "weston_desktop_shell#{}.set_panel_position({})",
+                            object.id,
+                            position
+                        );
+                        self.set_panel_position(object, client, position).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3088,7 +3145,10 @@ pub mod weston_desktop {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_desktop_shell#{}.configure()", object.id);
+                tracing::debug!(
+                    "-> weston_desktop_shell#{}.configure(rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(edges)
                     .put_object(Some(surface))
@@ -3128,7 +3188,7 @@ pub mod weston_desktop {
                 client: &mut crate::server::Client,
                 cursor: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_desktop_shell#{}.grab_cursor()", object.id);
+                tracing::debug!("-> weston_desktop_shell#{}.grab_cursor(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(cursor).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -3140,6 +3200,8 @@ pub mod weston_desktop {
     #[doc = "Only one client can bind this interface at a time."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_screensaver {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the weston_screensaver interface. See the module level documentation for more info"]
         pub trait WestonScreensaver: crate::server::Dispatcher {
             const INTERFACE: &'static str = "weston_screensaver";
@@ -3159,18 +3221,19 @@ pub mod weston_desktop {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("weston_screensaver#{}.set_surface()", object.id);
-                        self.set_surface(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "weston_screensaver#{}.set_surface({}, {})",
+                            object.id,
+                            surface,
+                            output
+                        );
+                        self.set_surface(object, client, surface, output).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3218,6 +3281,8 @@ pub mod weston_direct_display {
     #[doc = "'zwp_linux_buffer_params_v1' be already created by 'zwp_linux_buffer_v1'."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_direct_display_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the weston_direct_display_v1 interface. See the module level documentation for more info"]
         pub trait WestonDirectDisplayV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "weston_direct_display_v1";
@@ -3237,18 +3302,18 @@ pub mod weston_direct_display {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("weston_direct_display_v1#{}.enable()", object.id);
-                        self.enable(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let dmabuf = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "weston_direct_display_v1#{}.enable({})",
+                            object.id,
+                            dmabuf
+                        );
+                        self.enable(object, client, dmabuf).await
                     }
                     1u16 => {
-                        tracing::debug!("weston_direct_display_v1#{}.destroy()", object.id);
+                        tracing::debug!("weston_direct_display_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -3287,6 +3352,8 @@ pub mod weston_output_capture {
     #[doc = "This is a privileged inteface."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_capture_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3347,21 +3414,30 @@ pub mod weston_output_capture {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("weston_capture_v1#{}.destroy()", object.id);
+                        tracing::debug!("weston_capture_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("weston_capture_v1#{}.create()", object.id);
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let source = message.uint()?;
+                        let capture_source_new_id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "weston_capture_v1#{}.create({}, {}, {})",
+                            object.id,
+                            output,
+                            source,
+                            capture_source_new_id
+                        );
                         self.create(
                             object,
                             client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?.try_into()?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            output,
+                            source.try_into()?,
+                            capture_source_new_id,
                         )
                         .await
                     }
@@ -3418,6 +3494,8 @@ pub mod weston_output_capture {
     #[doc = "the output."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_capture_source_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3456,19 +3534,19 @@ pub mod weston_output_capture {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("weston_capture_source_v1#{}.destroy()", object.id);
+                        tracing::debug!("weston_capture_source_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("weston_capture_source_v1#{}.capture()", object.id);
-                        self.capture(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "weston_capture_source_v1#{}.capture({})",
+                            object.id,
+                            buffer
+                        );
+                        self.capture(object, client, buffer).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3529,7 +3607,7 @@ pub mod weston_output_capture {
                 client: &mut crate::server::Client,
                 drm_format: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_capture_source_v1#{}.format()", object.id);
+                tracing::debug!("-> weston_capture_source_v1#{}.format(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(drm_format)
                     .build();
@@ -3554,7 +3632,7 @@ pub mod weston_output_capture {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_capture_source_v1#{}.size()", object.id);
+                tracing::debug!("-> weston_capture_source_v1#{}.size(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -3611,7 +3689,7 @@ pub mod weston_output_capture {
                 client: &mut crate::server::Client,
                 msg: Option<String>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_capture_source_v1#{}.failed()", object.id);
+                tracing::debug!("-> weston_capture_source_v1#{}.failed(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_string(msg).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -3632,6 +3710,8 @@ pub mod weston_test {
     #[doc = "These requests may allow clients to do very bad things."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_test {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3683,121 +3763,155 @@ pub mod weston_test {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("weston_test#{}.move_surface()", object.id);
-                        self.move_surface(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message.int()?,
-                        )
-                        .await
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        tracing::debug!(
+                            "weston_test#{}.move_surface({}, {}, {})",
+                            object.id,
+                            surface,
+                            x,
+                            y
+                        );
+                        self.move_surface(object, client, surface, x, y).await
                     }
                     1u16 => {
-                        tracing::debug!("weston_test#{}.move_pointer()", object.id);
-                        self.move_pointer(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.int()?,
-                            message.int()?,
-                        )
-                        .await
+                        let tv_sec_hi = message.uint()?;
+                        let tv_sec_lo = message.uint()?;
+                        let tv_nsec = message.uint()?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        tracing::debug!(
+                            "weston_test#{}.move_pointer({}, {}, {}, {}, {})",
+                            object.id,
+                            tv_sec_hi,
+                            tv_sec_lo,
+                            tv_nsec,
+                            x,
+                            y
+                        );
+                        self.move_pointer(object, client, tv_sec_hi, tv_sec_lo, tv_nsec, x, y)
+                            .await
                     }
                     2u16 => {
-                        tracing::debug!("weston_test#{}.send_button()", object.id);
+                        let tv_sec_hi = message.uint()?;
+                        let tv_sec_lo = message.uint()?;
+                        let tv_nsec = message.uint()?;
+                        let button = message.int()?;
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "weston_test#{}.send_button({}, {}, {}, {}, {})",
+                            object.id,
+                            tv_sec_hi,
+                            tv_sec_lo,
+                            tv_nsec,
+                            button,
+                            state
+                        );
                         self.send_button(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.int()?,
-                            message.uint()?,
+                            object, client, tv_sec_hi, tv_sec_lo, tv_nsec, button, state,
                         )
                         .await
                     }
                     3u16 => {
-                        tracing::debug!("weston_test#{}.send_axis()", object.id);
-                        self.send_axis(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.fixed()?,
-                        )
-                        .await
-                    }
-                    4u16 => {
-                        tracing::debug!("weston_test#{}.activate_surface()", object.id);
-                        self.activate_surface(object, client, message.object()?)
+                        let tv_sec_hi = message.uint()?;
+                        let tv_sec_lo = message.uint()?;
+                        let tv_nsec = message.uint()?;
+                        let axis = message.uint()?;
+                        let value = message.fixed()?;
+                        tracing::debug!(
+                            "weston_test#{}.send_axis({}, {}, {}, {}, {})",
+                            object.id,
+                            tv_sec_hi,
+                            tv_sec_lo,
+                            tv_nsec,
+                            axis,
+                            value
+                        );
+                        self.send_axis(object, client, tv_sec_hi, tv_sec_lo, tv_nsec, axis, value)
                             .await
                     }
+                    4u16 => {
+                        let surface = message.object()?;
+                        tracing::debug!(
+                            "weston_test#{}.activate_surface({})",
+                            object.id,
+                            surface
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.activate_surface(object, client, surface).await
+                    }
                     5u16 => {
-                        tracing::debug!("weston_test#{}.send_key()", object.id);
-                        self.send_key(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                        )
-                        .await
+                        let tv_sec_hi = message.uint()?;
+                        let tv_sec_lo = message.uint()?;
+                        let tv_nsec = message.uint()?;
+                        let key = message.uint()?;
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "weston_test#{}.send_key({}, {}, {}, {}, {})",
+                            object.id,
+                            tv_sec_hi,
+                            tv_sec_lo,
+                            tv_nsec,
+                            key,
+                            state
+                        );
+                        self.send_key(object, client, tv_sec_hi, tv_sec_lo, tv_nsec, key, state)
+                            .await
                     }
                     6u16 => {
-                        tracing::debug!("weston_test#{}.device_release()", object.id);
-                        self.device_release(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let device = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("weston_test#{}.device_release({})", object.id, device);
+                        self.device_release(object, client, device).await
                     }
                     7u16 => {
-                        tracing::debug!("weston_test#{}.device_add()", object.id);
-                        self.device_add(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let device = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("weston_test#{}.device_add({})", object.id, device);
+                        self.device_add(object, client, device).await
                     }
                     8u16 => {
-                        tracing::debug!("weston_test#{}.send_touch()", object.id);
+                        let tv_sec_hi = message.uint()?;
+                        let tv_sec_lo = message.uint()?;
+                        let tv_nsec = message.uint()?;
+                        let touch_id = message.int()?;
+                        let x = message.fixed()?;
+                        let y = message.fixed()?;
+                        let touch_type = message.uint()?;
+                        tracing::debug!(
+                            "weston_test#{}.send_touch({}, {}, {}, {}, {}, {}, {})",
+                            object.id,
+                            tv_sec_hi,
+                            tv_sec_lo,
+                            tv_nsec,
+                            touch_id,
+                            x,
+                            y,
+                            touch_type
+                        );
                         self.send_touch(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.int()?,
-                            message.fixed()?,
-                            message.fixed()?,
-                            message.uint()?,
+                            object, client, tv_sec_hi, tv_sec_lo, tv_nsec, touch_id, x, y,
+                            touch_type,
                         )
                         .await
                     }
                     9u16 => {
-                        tracing::debug!("weston_test#{}.client_break()", object.id);
-                        self.client_break(
-                            object,
-                            client,
-                            message.uint()?.try_into()?,
-                            message.uint()?,
-                        )
-                        .await
+                        let breakpoint = message.uint()?;
+                        let resource_id = message.uint()?;
+                        tracing::debug!(
+                            "weston_test#{}.client_break({}, {})",
+                            object.id,
+                            breakpoint,
+                            resource_id
+                        );
+                        self.client_break(object, client, breakpoint.try_into()?, resource_id)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3897,7 +4011,7 @@ pub mod weston_test {
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_test#{}.pointer_position()", object.id);
+                tracing::debug!("-> weston_test#{}.pointer_position(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_fixed(x)
                     .put_fixed(y)
@@ -3928,6 +4042,8 @@ pub mod weston_test {
     #[doc = "Unknown test name will raise \"unknown_test\" protocol error."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_test_runner {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3966,19 +4082,15 @@ pub mod weston_test {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("weston_test_runner#{}.destroy()", object.id);
+                        tracing::debug!("weston_test_runner#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("weston_test_runner#{}.run()", object.id);
-                        self.run(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let test_name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("weston_test_runner#{}.run({})", object.id, test_name);
+                        self.run(object, client, test_name).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4040,6 +4152,8 @@ pub mod weston_touch_calibration {
     #[doc = "may write it into persistent storage."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_touch_calibration {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4081,40 +4195,41 @@ pub mod weston_touch_calibration {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("weston_touch_calibration#{}.destroy()", object.id);
+                        tracing::debug!("weston_touch_calibration#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let device = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let cal = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "weston_touch_calibration#{}.create_calibrator()",
-                            object.id
+                            "weston_touch_calibration#{}.create_calibrator({}, {}, {})",
+                            object.id,
+                            surface,
+                            device,
+                            cal
                         );
-                        self.create_calibrator(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.create_calibrator(object, client, surface, device, cal)
+                            .await
                     }
                     2u16 => {
-                        tracing::debug!("weston_touch_calibration#{}.save()", object.id);
-                        self.save(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.array()?,
-                        )
-                        .await
+                        let device = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let matrix = message.array()?;
+                        tracing::debug!(
+                            "weston_touch_calibration#{}.save({}, {})",
+                            object.id,
+                            device,
+                            matrix
+                        );
+                        self.save(object, client, device, matrix).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4187,7 +4302,10 @@ pub mod weston_touch_calibration {
                 device: String,
                 head: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_touch_calibration#{}.touch_device()", object.id);
+                tracing::debug!(
+                    "-> weston_touch_calibration#{}.touch_device(rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(device))
                     .put_string(Some(head))
@@ -4229,6 +4347,8 @@ pub mod weston_touch_calibration {
     #[doc = "fall into that range."]
     #[allow(clippy::too_many_arguments)]
     pub mod weston_touch_calibrator {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4270,21 +4390,23 @@ pub mod weston_touch_calibration {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("weston_touch_calibrator#{}.destroy()", object.id);
+                        tracing::debug!("weston_touch_calibrator#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("weston_touch_calibrator#{}.convert()", object.id);
-                        self.convert(
-                            object,
-                            client,
-                            message.int()?,
-                            message.int()?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let reply = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "weston_touch_calibrator#{}.convert({}, {}, {})",
+                            object.id,
+                            x,
+                            y,
+                            reply
+                        );
+                        self.convert(object, client, x, y, reply).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4334,7 +4456,7 @@ pub mod weston_touch_calibration {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_touch_calibrator#{}.configure()", object.id);
+                tracing::debug!("-> weston_touch_calibrator#{}.configure(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -4404,7 +4526,10 @@ pub mod weston_touch_calibration {
                 x: u32,
                 y: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_touch_calibrator#{}.down()", object.id);
+                tracing::debug!(
+                    "-> weston_touch_calibrator#{}.down(rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_int(id)
@@ -4426,7 +4551,7 @@ pub mod weston_touch_calibration {
                 time: u32,
                 id: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_touch_calibrator#{}.up()", object.id);
+                tracing::debug!("-> weston_touch_calibrator#{}.up(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_int(id)
@@ -4448,7 +4573,10 @@ pub mod weston_touch_calibration {
                 x: u32,
                 y: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_touch_calibrator#{}.motion()", object.id);
+                tracing::debug!(
+                    "-> weston_touch_calibrator#{}.motion(rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_int(id)
@@ -4502,6 +4630,8 @@ pub mod weston_touch_calibration {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod weston_touch_coordinate {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the weston_touch_coordinate interface. See the module level documentation for more info"]
         pub trait WestonTouchCoordinate: crate::server::Dispatcher {
             const INTERFACE: &'static str = "weston_touch_coordinate";
@@ -4537,7 +4667,7 @@ pub mod weston_touch_calibration {
                 x: u32,
                 y: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_touch_coordinate#{}.result()", object.id);
+                tracing::debug!("-> weston_touch_coordinate#{}.result(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(x)
                     .put_uint(y)

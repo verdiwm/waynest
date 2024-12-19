@@ -111,6 +111,12 @@ pub enum ArgType {
     Fd,
 }
 
+impl ArgType {
+    pub const fn is_fd(&self) -> bool {
+        matches!(self, Self::Fd)
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Enum {

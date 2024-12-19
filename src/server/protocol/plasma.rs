@@ -5,6 +5,8 @@ pub mod appmenu {
     #[doc = "interface registered on DBus."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_appmenu_manager {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_appmenu_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinAppmenuManager: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_appmenu_manager";
@@ -24,18 +26,19 @@ pub mod appmenu {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_appmenu_manager#{}.create()", object.id);
-                        self.create(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_appmenu_manager#{}.create({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.create(object, client, id, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -54,6 +57,8 @@ pub mod appmenu {
     #[doc = "If not applicable, clients should remove this object."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_appmenu {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_appmenu interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinAppmenu: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_appmenu";
@@ -73,21 +78,23 @@ pub mod appmenu {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_appmenu#{}.set_address()", object.id);
-                        self.set_address(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let service_name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let object_path = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_appmenu#{}.set_address({}, {})",
+                            object.id,
+                            service_name,
+                            object_path
+                        );
+                        self.set_address(object, client, service_name, object_path)
+                            .await
                     }
                     1u16 => {
-                        tracing::debug!("org_kde_kwin_appmenu#{}.release()", object.id);
+                        tracing::debug!("org_kde_kwin_appmenu#{}.release()", object.id,);
                         self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -114,6 +121,8 @@ pub mod appmenu {
 pub mod blur {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_blur_manager {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_blur_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinBlurManager: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_blur_manager";
@@ -133,29 +142,30 @@ pub mod blur {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_blur_manager#{}.create()", object.id);
-                        self.create(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_blur_manager#{}.create({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.create(object, client, id, surface).await
                     }
                     1u16 => {
-                        tracing::debug!("org_kde_kwin_blur_manager#{}.unset()", object.id);
-                        self.unset(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_blur_manager#{}.unset({})",
+                            object.id,
+                            surface
+                        );
+                        self.unset(object, client, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -177,6 +187,8 @@ pub mod blur {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_blur {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_blur interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinBlur: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_blur";
@@ -196,15 +208,22 @@ pub mod blur {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_blur#{}.commit()", object.id);
+                        tracing::debug!("org_kde_kwin_blur#{}.commit()", object.id,);
                         self.commit(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("org_kde_kwin_blur#{}.set_region()", object.id);
-                        self.set_region(object, client, message.object()?).await
+                        let region = message.object()?;
+                        tracing::debug!(
+                            "org_kde_kwin_blur#{}.set_region({})",
+                            object.id,
+                            region
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.set_region(object, client, region).await
                     }
                     2u16 => {
-                        tracing::debug!("org_kde_kwin_blur#{}.release()", object.id);
+                        tracing::debug!("org_kde_kwin_blur#{}.release()", object.id,);
                         self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -233,6 +252,8 @@ pub mod blur {
 pub mod contrast {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_contrast_manager {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_contrast_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinContrastManager: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_contrast_manager";
@@ -252,29 +273,30 @@ pub mod contrast {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_contrast_manager#{}.create()", object.id);
-                        self.create(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_contrast_manager#{}.create({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.create(object, client, id, surface).await
                     }
                     1u16 => {
-                        tracing::debug!("org_kde_kwin_contrast_manager#{}.unset()", object.id);
-                        self.unset(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_contrast_manager#{}.unset({})",
+                            object.id,
+                            surface
+                        );
+                        self.unset(object, client, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -296,6 +318,8 @@ pub mod contrast {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_contrast {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_contrast interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinContrast: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_contrast";
@@ -315,43 +339,69 @@ pub mod contrast {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_contrast#{}.commit()", object.id);
+                        tracing::debug!("org_kde_kwin_contrast#{}.commit()", object.id,);
                         self.commit(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("org_kde_kwin_contrast#{}.set_region()", object.id);
-                        self.set_region(object, client, message.object()?).await
+                        let region = message.object()?;
+                        tracing::debug!(
+                            "org_kde_kwin_contrast#{}.set_region({})",
+                            object.id,
+                            region
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.set_region(object, client, region).await
                     }
                     2u16 => {
-                        tracing::debug!("org_kde_kwin_contrast#{}.set_contrast()", object.id);
-                        self.set_contrast(object, client, message.fixed()?).await
+                        let contrast = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_contrast#{}.set_contrast({})",
+                            object.id,
+                            contrast
+                        );
+                        self.set_contrast(object, client, contrast).await
                     }
                     3u16 => {
-                        tracing::debug!("org_kde_kwin_contrast#{}.set_intensity()", object.id);
-                        self.set_intensity(object, client, message.fixed()?).await
+                        let intensity = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_contrast#{}.set_intensity({})",
+                            object.id,
+                            intensity
+                        );
+                        self.set_intensity(object, client, intensity).await
                     }
                     4u16 => {
-                        tracing::debug!("org_kde_kwin_contrast#{}.set_saturation()", object.id);
-                        self.set_saturation(object, client, message.fixed()?).await
+                        let saturation = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_contrast#{}.set_saturation({})",
+                            object.id,
+                            saturation
+                        );
+                        self.set_saturation(object, client, saturation).await
                     }
                     5u16 => {
-                        tracing::debug!("org_kde_kwin_contrast#{}.release()", object.id);
+                        tracing::debug!("org_kde_kwin_contrast#{}.release()", object.id,);
                         self.release(object, client).await
                     }
                     6u16 => {
-                        tracing::debug!("org_kde_kwin_contrast#{}.set_frost()", object.id);
-                        self.set_frost(
-                            object,
-                            client,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                        )
-                        .await
+                        let red = message.int()?;
+                        let green = message.int()?;
+                        let blue = message.int()?;
+                        let alpha = message.int()?;
+                        tracing::debug!(
+                            "org_kde_kwin_contrast#{}.set_frost({}, {}, {}, {})",
+                            object.id,
+                            red,
+                            green,
+                            blue,
+                            alpha
+                        );
+                        self.set_frost(object, client, red, green, blue, alpha)
+                            .await
                     }
                     7u16 => {
-                        tracing::debug!("org_kde_kwin_contrast#{}.unset_frost()", object.id);
+                        tracing::debug!("org_kde_kwin_contrast#{}.unset_frost()", object.id,);
                         self.unset_frost(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -444,6 +494,8 @@ pub mod fullscreen_shell {
     #[doc = "simply attaching a new buffer."]
     #[allow(clippy::too_many_arguments)]
     pub mod _wl_fullscreen_shell {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Various capabilities that can be advertised by the compositor.  They"]
         #[doc = "are advertised one-at-a-time when the wl_fullscreen_shell interface is"]
         #[doc = "bound.  See the wl_fullscreen_shell.capability event for more details."]
@@ -551,38 +603,48 @@ pub mod fullscreen_shell {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("_wl_fullscreen_shell#{}.release()", object.id);
+                        tracing::debug!("_wl_fullscreen_shell#{}.release()", object.id,);
                         self.release(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("_wl_fullscreen_shell#{}.present_surface()", object.id);
-                        self.present_surface(
-                            object,
-                            client,
-                            message.object()?,
-                            message.uint()?,
-                            message.object()?,
-                        )
-                        .await
+                        let surface = message.object()?;
+                        let method = message.uint()?;
+                        let output = message.object()?;
+                        tracing::debug!(
+                            "_wl_fullscreen_shell#{}.present_surface({}, {}, {})",
+                            object.id,
+                            surface
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string()),
+                            method,
+                            output
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.present_surface(object, client, surface, method, output)
+                            .await
                     }
                     2u16 => {
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let framerate = message.int()?;
+                        let feedback = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "_wl_fullscreen_shell#{}.present_surface_for_mode()",
-                            object.id
+                            "_wl_fullscreen_shell#{}.present_surface_for_mode({}, {}, {}, {})",
+                            object.id,
+                            surface,
+                            output,
+                            framerate,
+                            feedback
                         );
                         self.present_surface_for_mode(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            object, client, surface, output, framerate, feedback,
                         )
                         .await
                     }
@@ -684,7 +746,7 @@ pub mod fullscreen_shell {
                 client: &mut crate::server::Client,
                 capability: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> _wl_fullscreen_shell#{}.capability()", object.id);
+                tracing::debug!("-> _wl_fullscreen_shell#{}.capability(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(capability)
                     .build();
@@ -697,6 +759,8 @@ pub mod fullscreen_shell {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod _wl_fullscreen_shell_mode_feedback {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the _wl_fullscreen_shell_mode_feedback interface. See the module level documentation for more info"]
         pub trait WlFullscreenShellModeFeedback: crate::server::Dispatcher {
             const INTERFACE: &'static str = "_wl_fullscreen_shell_mode_feedback";
@@ -795,6 +859,8 @@ pub mod idle {
     #[doc = "management features to dim screen, etc.."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_idle {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_idle interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinIdle: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_idle";
@@ -814,19 +880,22 @@ pub mod idle {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_idle#{}.get_idle_timeout()", object.id);
-                        self.get_idle_timeout(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let seat = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let timeout = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_kwin_idle#{}.get_idle_timeout({}, {}, {})",
+                            object.id,
+                            id,
+                            seat,
+                            timeout
+                        );
+                        self.get_idle_timeout(object, client, id, seat, timeout)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -843,6 +912,8 @@ pub mod idle {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_idle_timeout {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_idle_timeout interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinIdleTimeout: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_idle_timeout";
@@ -862,13 +933,13 @@ pub mod idle {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_idle_timeout#{}.release()", object.id);
+                        tracing::debug!("org_kde_kwin_idle_timeout#{}.release()", object.id,);
                         self.release(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "org_kde_kwin_idle_timeout#{}.simulate_user_activity()",
-                            object.id
+                            object.id,
                         );
                         self.simulate_user_activity(object, client).await
                     }
@@ -917,6 +988,8 @@ pub mod keystate {
     #[doc = "Keeps track of the states of the different keys that have a state attached to it."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_keystate {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -974,11 +1047,11 @@ pub mod keystate {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_keystate#{}.fetch_states()", object.id);
+                        tracing::debug!("org_kde_kwin_keystate#{}.fetch_states()", object.id,);
                         self.fetch_states(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("org_kde_kwin_keystate#{}.destroy()", object.id);
+                        tracing::debug!("org_kde_kwin_keystate#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -1001,7 +1074,10 @@ pub mod keystate {
                 key: u32,
                 state: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_keystate#{}.state_changed()", object.id);
+                tracing::debug!(
+                    "-> org_kde_kwin_keystate#{}.state_changed(rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(key)
                     .put_uint(state)
@@ -1056,6 +1132,8 @@ pub mod outputmanagement {
     #[doc = "internally supported by the server."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_outputmanagement {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_outputmanagement interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinOutputmanagement: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_outputmanagement";
@@ -1075,18 +1153,15 @@ pub mod outputmanagement {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_kwin_outputmanagement#{}.create_configuration()",
-                            object.id
+                            "org_kde_kwin_outputmanagement#{}.create_configuration({})",
+                            object.id,
+                            id
                         );
-                        self.create_configuration(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.create_configuration(object, client, id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1115,6 +1190,8 @@ pub mod outputmanagement {
     #[doc = "applied to the hardware and before the server side sends the applied event."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_outputconfiguration {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Describes when the compositor may employ variable refresh rate"]
         #[repr(u32)]
         #[non_exhaustive]
@@ -1154,138 +1231,138 @@ pub mod outputmanagement {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_outputconfiguration#{}.enable()", object.id);
-                        self.enable(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                        )
-                        .await
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let enable = message.int()?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputconfiguration#{}.enable({}, {})",
+                            object.id,
+                            outputdevice,
+                            enable
+                        );
+                        self.enable(object, client, outputdevice, enable).await
                     }
                     1u16 => {
-                        tracing::debug!("org_kde_kwin_outputconfiguration#{}.mode()", object.id);
-                        self.mode(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                        )
-                        .await
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let mode_id = message.int()?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputconfiguration#{}.mode({}, {})",
+                            object.id,
+                            outputdevice,
+                            mode_id
+                        );
+                        self.mode(object, client, outputdevice, mode_id).await
                     }
                     2u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let transform = message.int()?;
                         tracing::debug!(
-                            "org_kde_kwin_outputconfiguration#{}.transform()",
-                            object.id
+                            "org_kde_kwin_outputconfiguration#{}.transform({}, {})",
+                            object.id,
+                            outputdevice,
+                            transform
                         );
-                        self.transform(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                        )
-                        .await
+                        self.transform(object, client, outputdevice, transform)
+                            .await
                     }
                     3u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let x = message.int()?;
+                        let y = message.int()?;
                         tracing::debug!(
-                            "org_kde_kwin_outputconfiguration#{}.position()",
-                            object.id
+                            "org_kde_kwin_outputconfiguration#{}.position({}, {}, {})",
+                            object.id,
+                            outputdevice,
+                            x,
+                            y
                         );
-                        self.position(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message.int()?,
-                        )
-                        .await
+                        self.position(object, client, outputdevice, x, y).await
                     }
                     4u16 => {
-                        tracing::debug!("org_kde_kwin_outputconfiguration#{}.scale()", object.id);
-                        self.scale(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                        )
-                        .await
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let scale = message.int()?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputconfiguration#{}.scale({}, {})",
+                            object.id,
+                            outputdevice,
+                            scale
+                        );
+                        self.scale(object, client, outputdevice, scale).await
                     }
                     5u16 => {
-                        tracing::debug!("org_kde_kwin_outputconfiguration#{}.apply()", object.id);
+                        tracing::debug!("org_kde_kwin_outputconfiguration#{}.apply()", object.id,);
                         self.apply(object, client).await
                     }
                     6u16 => {
-                        tracing::debug!("org_kde_kwin_outputconfiguration#{}.scalef()", object.id);
-                        self.scalef(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.fixed()?,
-                        )
-                        .await
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let scale = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputconfiguration#{}.scalef({}, {})",
+                            object.id,
+                            outputdevice,
+                            scale
+                        );
+                        self.scalef(object, client, outputdevice, scale).await
                     }
                     7u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let red = message.array()?;
+                        let green = message.array()?;
+                        let blue = message.array()?;
                         tracing::debug!(
-                            "org_kde_kwin_outputconfiguration#{}.colorcurves()",
-                            object.id
+                            "org_kde_kwin_outputconfiguration#{}.colorcurves({}, {}, {}, {})",
+                            object.id,
+                            outputdevice,
+                            red,
+                            green,
+                            blue
                         );
-                        self.colorcurves(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.array()?,
-                            message.array()?,
-                            message.array()?,
-                        )
-                        .await
+                        self.colorcurves(object, client, outputdevice, red, green, blue)
+                            .await
                     }
                     8u16 => {
-                        tracing::debug!("org_kde_kwin_outputconfiguration#{}.destroy()", object.id);
+                        tracing::debug!("org_kde_kwin_outputconfiguration#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     9u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let overscan = message.uint()?;
                         tracing::debug!(
-                            "org_kde_kwin_outputconfiguration#{}.overscan()",
-                            object.id
+                            "org_kde_kwin_outputconfiguration#{}.overscan({}, {})",
+                            object.id,
+                            outputdevice,
+                            overscan
                         );
-                        self.overscan(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.overscan(object, client, outputdevice, overscan).await
                     }
                     10u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let policy = message.uint()?;
                         tracing::debug!(
-                            "org_kde_kwin_outputconfiguration#{}.set_vrr_policy()",
-                            object.id
+                            "org_kde_kwin_outputconfiguration#{}.set_vrr_policy({}, {})",
+                            object.id,
+                            outputdevice,
+                            policy
                         );
-                        self.set_vrr_policy(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?.try_into()?,
-                        )
-                        .await
+                        self.set_vrr_policy(object, client, outputdevice, policy.try_into()?)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1442,6 +1519,8 @@ pub mod org_kde_kwin_outputdevice {
     #[doc = "being hotplugged via a physical connector."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_outputdevice {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
         #[repr(u32)]
@@ -1613,7 +1692,10 @@ pub mod org_kde_kwin_outputdevice {
                 model: String,
                 transform: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.geometry()", object.id);
+                tracing::debug!(
+                    "-> org_kde_kwin_outputdevice#{}.geometry(rq, rq, rq, rq, rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
                     .put_int(y)
@@ -1660,7 +1742,10 @@ pub mod org_kde_kwin_outputdevice {
                 refresh: i32,
                 mode_id: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.mode()", object.id);
+                tracing::debug!(
+                    "-> org_kde_kwin_outputdevice#{}.mode(rq, rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(flags)
                     .put_int(width)
@@ -1714,7 +1799,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 factor: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.scale()", object.id);
+                tracing::debug!("-> org_kde_kwin_outputdevice#{}.scale(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(factor).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -1733,7 +1818,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 raw: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.edid()", object.id);
+                tracing::debug!("-> org_kde_kwin_outputdevice#{}.edid(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(raw))
                     .build();
@@ -1753,7 +1838,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 enabled: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.enabled()", object.id);
+                tracing::debug!("-> org_kde_kwin_outputdevice#{}.enabled(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(enabled).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
@@ -1769,7 +1854,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 uuid: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.uuid()", object.id);
+                tracing::debug!("-> org_kde_kwin_outputdevice#{}.uuid(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(uuid))
                     .build();
@@ -1805,7 +1890,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 factor: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.scalef()", object.id);
+                tracing::debug!("-> org_kde_kwin_outputdevice#{}.scalef(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_fixed(factor).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
@@ -1827,7 +1912,10 @@ pub mod org_kde_kwin_outputdevice {
                 green: Vec<u8>,
                 blue: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.colorcurves()", object.id);
+                tracing::debug!(
+                    "-> org_kde_kwin_outputdevice#{}.colorcurves(rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_array(red)
                     .put_array(green)
@@ -1845,7 +1933,10 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 serial_number: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.serial_number()", object.id);
+                tracing::debug!(
+                    "-> org_kde_kwin_outputdevice#{}.serial_number(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(serial_number))
                     .build();
@@ -1861,7 +1952,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 eisa_id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.eisa_id()", object.id);
+                tracing::debug!("-> org_kde_kwin_outputdevice#{}.eisa_id(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(eisa_id))
                     .build();
@@ -1878,7 +1969,10 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 flags: Capability,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.capabilities()", object.id);
+                tracing::debug!(
+                    "-> org_kde_kwin_outputdevice#{}.capabilities(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(flags.bits())
                     .build();
@@ -1895,7 +1989,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 overscan: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.overscan()", object.id);
+                tracing::debug!("-> org_kde_kwin_outputdevice#{}.overscan(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(overscan)
                     .build();
@@ -1912,7 +2006,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 vrr_policy: VrrPolicy,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.vrr_policy()", object.id);
+                tracing::debug!("-> org_kde_kwin_outputdevice#{}.vrr_policy(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(vrr_policy as u32)
                     .build();
@@ -1928,6 +2022,8 @@ pub mod org_kde_kwin_outputdevice {
 pub mod remote_access {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_remote_access_manager {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_remote_access_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinRemoteAccessManager: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_remote_access_manager";
@@ -1947,24 +2043,23 @@ pub mod remote_access {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let internal_buffer_id = message.int()?;
                         tracing::debug!(
-                            "org_kde_kwin_remote_access_manager#{}.get_buffer()",
-                            object.id
+                            "org_kde_kwin_remote_access_manager#{}.get_buffer({}, {})",
+                            object.id,
+                            buffer,
+                            internal_buffer_id
                         );
-                        self.get_buffer(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                        )
-                        .await
+                        self.get_buffer(object, client, buffer, internal_buffer_id)
+                            .await
                     }
                     1u16 => {
                         tracing::debug!(
                             "org_kde_kwin_remote_access_manager#{}.release()",
-                            object.id
+                            object.id,
                         );
                         self.release(object, client).await
                     }
@@ -1991,7 +2086,7 @@ pub mod remote_access {
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_kwin_remote_access_manager#{}.buffer_ready()",
+                    "-> org_kde_kwin_remote_access_manager#{}.buffer_ready(rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2007,6 +2102,8 @@ pub mod remote_access {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_remote_buffer {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_remote_buffer interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinRemoteBuffer: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_remote_buffer";
@@ -2026,7 +2123,7 @@ pub mod remote_access {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_remote_buffer#{}.release()", object.id);
+                        tracing::debug!("org_kde_kwin_remote_buffer#{}.release()", object.id,);
                         self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -2047,7 +2144,10 @@ pub mod remote_access {
                 stride: u32,
                 format: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_remote_buffer#{}.gbm_handle()", object.id);
+                tracing::debug!(
+                    "-> org_kde_kwin_remote_buffer#{}.gbm_handle(rq, rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_fd(fd)
                     .put_uint(width)
@@ -2068,6 +2168,8 @@ pub mod server_decoration_palette {
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration_palette_manager {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinServerDecorationPaletteManager: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette_manager";
@@ -2087,21 +2189,19 @@ pub mod server_decoration_palette {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_kwin_server_decoration_palette_manager#{}.create()",
-                            object.id
+                            "org_kde_kwin_server_decoration_palette_manager#{}.create({}, {})",
+                            object.id,
+                            id,
+                            surface
                         );
-                        self.create(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.create(object, client, id, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2118,6 +2218,8 @@ pub mod server_decoration_palette {
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration_palette {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinServerDecorationPalette: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette";
@@ -2137,23 +2239,20 @@ pub mod server_decoration_palette {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let palette = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_kwin_server_decoration_palette#{}.set_palette()",
-                            object.id
+                            "org_kde_kwin_server_decoration_palette#{}.set_palette({})",
+                            object.id,
+                            palette
                         );
-                        self.set_palette(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.set_palette(object, client, palette).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "org_kde_kwin_server_decoration_palette#{}.release()",
-                            object.id
+                            object.id,
                         );
                         self.release(object, client).await
                     }
@@ -2188,6 +2287,8 @@ pub mod server_decoration {
     #[doc = "Use in conjunction with zxdg_decoration_manager_v1 is undefined."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration_manager {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2229,21 +2330,19 @@ pub mod server_decoration {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_kwin_server_decoration_manager#{}.create()",
-                            object.id
+                            "org_kde_kwin_server_decoration_manager#{}.create({}, {})",
+                            object.id,
+                            id,
+                            surface
                         );
-                        self.create(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.create(object, client, id, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2278,7 +2377,7 @@ pub mod server_decoration {
                 mode: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_kwin_server_decoration_manager#{}.default_mode()",
+                    "-> org_kde_kwin_server_decoration_manager#{}.default_mode(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(mode).build();
@@ -2291,6 +2390,8 @@ pub mod server_decoration {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2332,15 +2433,17 @@ pub mod server_decoration {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_server_decoration#{}.release()", object.id);
+                        tracing::debug!("org_kde_kwin_server_decoration#{}.release()", object.id,);
                         self.release(object, client).await
                     }
                     1u16 => {
+                        let mode = message.uint()?;
                         tracing::debug!(
-                            "org_kde_kwin_server_decoration#{}.request_mode()",
-                            object.id
+                            "org_kde_kwin_server_decoration#{}.request_mode({})",
+                            object.id,
+                            mode
                         );
-                        self.request_mode(object, client, message.uint()?).await
+                        self.request_mode(object, client, mode).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2375,7 +2478,7 @@ pub mod server_decoration {
                 client: &mut crate::server::Client,
                 mode: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_server_decoration#{}.mode()", object.id);
+                tracing::debug!("-> org_kde_kwin_server_decoration#{}.mode(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(mode).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -2389,6 +2492,8 @@ pub mod server_decoration {
 pub mod shadow {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_shadow_manager {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_shadow_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinShadowManager: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_shadow_manager";
@@ -2408,32 +2513,33 @@ pub mod shadow {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_shadow_manager#{}.create()", object.id);
-                        self.create(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_shadow_manager#{}.create({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.create(object, client, id, surface).await
                     }
                     1u16 => {
-                        tracing::debug!("org_kde_kwin_shadow_manager#{}.unset()", object.id);
-                        self.unset(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_shadow_manager#{}.unset({})",
+                            object.id,
+                            surface
+                        );
+                        self.unset(object, client, surface).await
                     }
                     2u16 => {
-                        tracing::debug!("org_kde_kwin_shadow_manager#{}.destroy()", object.id);
+                        tracing::debug!("org_kde_kwin_shadow_manager#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -2462,6 +2568,8 @@ pub mod shadow {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_shadow {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_shadow interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinShadow: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_shadow";
@@ -2481,117 +2589,131 @@ pub mod shadow {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_shadow#{}.commit()", object.id);
+                        tracing::debug!("org_kde_kwin_shadow#{}.commit()", object.id,);
                         self.commit(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("org_kde_kwin_shadow#{}.attach_left()", object.id);
-                        self.attach_left(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_shadow#{}.attach_left({})",
+                            object.id,
+                            buffer
+                        );
+                        self.attach_left(object, client, buffer).await
                     }
                     2u16 => {
-                        tracing::debug!("org_kde_kwin_shadow#{}.attach_top_left()", object.id);
-                        self.attach_top_left(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_shadow#{}.attach_top_left({})",
+                            object.id,
+                            buffer
+                        );
+                        self.attach_top_left(object, client, buffer).await
                     }
                     3u16 => {
-                        tracing::debug!("org_kde_kwin_shadow#{}.attach_top()", object.id);
-                        self.attach_top(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("org_kde_kwin_shadow#{}.attach_top({})", object.id, buffer);
+                        self.attach_top(object, client, buffer).await
                     }
                     4u16 => {
-                        tracing::debug!("org_kde_kwin_shadow#{}.attach_top_right()", object.id);
-                        self.attach_top_right(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_shadow#{}.attach_top_right({})",
+                            object.id,
+                            buffer
+                        );
+                        self.attach_top_right(object, client, buffer).await
                     }
                     5u16 => {
-                        tracing::debug!("org_kde_kwin_shadow#{}.attach_right()", object.id);
-                        self.attach_right(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_shadow#{}.attach_right({})",
+                            object.id,
+                            buffer
+                        );
+                        self.attach_right(object, client, buffer).await
                     }
                     6u16 => {
-                        tracing::debug!("org_kde_kwin_shadow#{}.attach_bottom_right()", object.id);
-                        self.attach_bottom_right(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_shadow#{}.attach_bottom_right({})",
+                            object.id,
+                            buffer
+                        );
+                        self.attach_bottom_right(object, client, buffer).await
                     }
                     7u16 => {
-                        tracing::debug!("org_kde_kwin_shadow#{}.attach_bottom()", object.id);
-                        self.attach_bottom(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_shadow#{}.attach_bottom({})",
+                            object.id,
+                            buffer
+                        );
+                        self.attach_bottom(object, client, buffer).await
                     }
                     8u16 => {
-                        tracing::debug!("org_kde_kwin_shadow#{}.attach_bottom_left()", object.id);
-                        self.attach_bottom_left(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_shadow#{}.attach_bottom_left({})",
+                            object.id,
+                            buffer
+                        );
+                        self.attach_bottom_left(object, client, buffer).await
                     }
                     9u16 => {
-                        tracing::debug!("org_kde_kwin_shadow#{}.set_left_offset()", object.id);
-                        self.set_left_offset(object, client, message.fixed()?).await
+                        let offset = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_shadow#{}.set_left_offset({})",
+                            object.id,
+                            offset
+                        );
+                        self.set_left_offset(object, client, offset).await
                     }
                     10u16 => {
-                        tracing::debug!("org_kde_kwin_shadow#{}.set_top_offset()", object.id);
-                        self.set_top_offset(object, client, message.fixed()?).await
+                        let offset = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_shadow#{}.set_top_offset({})",
+                            object.id,
+                            offset
+                        );
+                        self.set_top_offset(object, client, offset).await
                     }
                     11u16 => {
-                        tracing::debug!("org_kde_kwin_shadow#{}.set_right_offset()", object.id);
-                        self.set_right_offset(object, client, message.fixed()?)
-                            .await
+                        let offset = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_shadow#{}.set_right_offset({})",
+                            object.id,
+                            offset
+                        );
+                        self.set_right_offset(object, client, offset).await
                     }
                     12u16 => {
-                        tracing::debug!("org_kde_kwin_shadow#{}.set_bottom_offset()", object.id);
-                        self.set_bottom_offset(object, client, message.fixed()?)
-                            .await
+                        let offset = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_shadow#{}.set_bottom_offset({})",
+                            object.id,
+                            offset
+                        );
+                        self.set_bottom_offset(object, client, offset).await
                     }
                     13u16 => {
-                        tracing::debug!("org_kde_kwin_shadow#{}.destroy()", object.id);
+                        tracing::debug!("org_kde_kwin_shadow#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -2690,6 +2812,8 @@ pub mod shadow {
 pub mod slide {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_slide_manager {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_slide_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinSlideManager: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_slide_manager";
@@ -2709,29 +2833,30 @@ pub mod slide {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_slide_manager#{}.create()", object.id);
-                        self.create(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_slide_manager#{}.create({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.create(object, client, id, surface).await
                     }
                     1u16 => {
-                        tracing::debug!("org_kde_kwin_slide_manager#{}.unset()", object.id);
-                        self.unset(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_slide_manager#{}.unset({})",
+                            object.id,
+                            surface
+                        );
+                        self.unset(object, client, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2758,6 +2883,8 @@ pub mod slide {
     #[doc = "begins, offset is the distance from screen edge to begin the animation."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_slide {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2798,19 +2925,25 @@ pub mod slide {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_slide#{}.commit()", object.id);
+                        tracing::debug!("org_kde_kwin_slide#{}.commit()", object.id,);
                         self.commit(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("org_kde_kwin_slide#{}.set_location()", object.id);
-                        self.set_location(object, client, message.uint()?).await
+                        let location = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_kwin_slide#{}.set_location({})",
+                            object.id,
+                            location
+                        );
+                        self.set_location(object, client, location).await
                     }
                     2u16 => {
-                        tracing::debug!("org_kde_kwin_slide#{}.set_offset()", object.id);
-                        self.set_offset(object, client, message.int()?).await
+                        let offset = message.int()?;
+                        tracing::debug!("org_kde_kwin_slide#{}.set_offset({})", object.id, offset);
+                        self.set_offset(object, client, offset).await
                     }
                     3u16 => {
-                        tracing::debug!("org_kde_kwin_slide#{}.release()", object.id);
+                        tracing::debug!("org_kde_kwin_slide#{}.release()", object.id,);
                         self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -2845,6 +2978,8 @@ pub mod slide {
 pub mod surface_extension {
     #[allow(clippy::too_many_arguments)]
     pub mod qt_surface_extension {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the qt_surface_extension interface. See the module level documentation for more info"]
         pub trait QtSurfaceExtension: crate::server::Dispatcher {
             const INTERFACE: &'static str = "qt_surface_extension";
@@ -2864,21 +2999,19 @@ pub mod surface_extension {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "qt_surface_extension#{}.get_extended_surface()",
-                            object.id
+                            "qt_surface_extension#{}.get_extended_surface({}, {})",
+                            object.id,
+                            id,
+                            surface
                         );
-                        self.get_extended_surface(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_extended_surface(object, client, id, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2894,6 +3027,8 @@ pub mod surface_extension {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod qt_extended_surface {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2955,38 +3090,44 @@ pub mod surface_extension {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let value = message.array()?;
                         tracing::debug!(
-                            "qt_extended_surface#{}.update_generic_property()",
-                            object.id
+                            "qt_extended_surface#{}.update_generic_property({}, {})",
+                            object.id,
+                            name,
+                            value
                         );
-                        self.update_generic_property(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.array()?,
-                        )
-                        .await
+                        self.update_generic_property(object, client, name, value)
+                            .await
                     }
                     1u16 => {
+                        let orientation = message.int()?;
                         tracing::debug!(
-                            "qt_extended_surface#{}.set_content_orientation_mask()",
-                            object.id
+                            "qt_extended_surface#{}.set_content_orientation_mask({})",
+                            object.id,
+                            orientation
                         );
-                        self.set_content_orientation_mask(object, client, message.int()?)
+                        self.set_content_orientation_mask(object, client, orientation)
                             .await
                     }
                     2u16 => {
-                        tracing::debug!("qt_extended_surface#{}.set_window_flags()", object.id);
-                        self.set_window_flags(object, client, message.int()?).await
+                        let flags = message.int()?;
+                        tracing::debug!(
+                            "qt_extended_surface#{}.set_window_flags({})",
+                            object.id,
+                            flags
+                        );
+                        self.set_window_flags(object, client, flags).await
                     }
                     3u16 => {
-                        tracing::debug!("qt_extended_surface#{}.raise()", object.id);
+                        tracing::debug!("qt_extended_surface#{}.raise()", object.id,);
                         self.raise(object, client).await
                     }
                     4u16 => {
-                        tracing::debug!("qt_extended_surface#{}.lower()", object.id);
+                        tracing::debug!("qt_extended_surface#{}.lower()", object.id,);
                         self.lower(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -3027,7 +3168,10 @@ pub mod surface_extension {
                 client: &mut crate::server::Client,
                 visible: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> qt_extended_surface#{}.onscreen_visibility()", object.id);
+                tracing::debug!(
+                    "-> qt_extended_surface#{}.onscreen_visibility(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(visible).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -3042,7 +3186,7 @@ pub mod surface_extension {
                 value: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> qt_extended_surface#{}.set_generic_property()",
+                    "-> qt_extended_surface#{}.set_generic_property(rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -3095,6 +3239,8 @@ pub mod text_input_unstable_v2 {
     #[doc = "invalidates all current state information."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_v2 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behaviour"] const None = 0u32 ; # [doc = "suggest word completions"] const AutoCompletion = 1u32 ; # [doc = "suggest word corrections"] const AutoCorrection = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; } }
         impl TryFrom<u32> for ContentHint {
             type Error = crate::wire::DecodeError;
@@ -3282,94 +3428,97 @@ pub mod text_input_unstable_v2 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwp_text_input_v2#{}.destroy()", object.id);
+                        tracing::debug!("zwp_text_input_v2#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("zwp_text_input_v2#{}.enable()", object.id);
-                        self.enable(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("zwp_text_input_v2#{}.enable({})", object.id, surface);
+                        self.enable(object, client, surface).await
                     }
                     2u16 => {
-                        tracing::debug!("zwp_text_input_v2#{}.disable()", object.id);
-                        self.disable(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("zwp_text_input_v2#{}.disable({})", object.id, surface);
+                        self.disable(object, client, surface).await
                     }
                     3u16 => {
-                        tracing::debug!("zwp_text_input_v2#{}.show_input_panel()", object.id);
+                        tracing::debug!("zwp_text_input_v2#{}.show_input_panel()", object.id,);
                         self.show_input_panel(object, client).await
                     }
                     4u16 => {
-                        tracing::debug!("zwp_text_input_v2#{}.hide_input_panel()", object.id);
+                        tracing::debug!("zwp_text_input_v2#{}.hide_input_panel()", object.id,);
                         self.hide_input_panel(object, client).await
                     }
                     5u16 => {
-                        tracing::debug!("zwp_text_input_v2#{}.set_surrounding_text()", object.id);
-                        self.set_surrounding_text(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message.int()?,
-                        )
-                        .await
+                        let text = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let cursor = message.int()?;
+                        let anchor = message.int()?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.set_surrounding_text({}, {}, {})",
+                            object.id,
+                            text,
+                            cursor,
+                            anchor
+                        );
+                        self.set_surrounding_text(object, client, text, cursor, anchor)
+                            .await
                     }
                     6u16 => {
-                        tracing::debug!("zwp_text_input_v2#{}.set_content_type()", object.id);
-                        self.set_content_type(
-                            object,
-                            client,
-                            message.uint()?.try_into()?,
-                            message.uint()?.try_into()?,
-                        )
-                        .await
+                        let hint = message.uint()?;
+                        let purpose = message.uint()?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.set_content_type({}, {})",
+                            object.id,
+                            hint,
+                            purpose
+                        );
+                        self.set_content_type(object, client, hint.try_into()?, purpose.try_into()?)
+                            .await
                     }
                     7u16 => {
-                        tracing::debug!("zwp_text_input_v2#{}.set_cursor_rectangle()", object.id);
-                        self.set_cursor_rectangle(
-                            object,
-                            client,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                        )
-                        .await
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.set_cursor_rectangle({}, {}, {}, {})",
+                            object.id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.set_cursor_rectangle(object, client, x, y, width, height)
+                            .await
                     }
                     8u16 => {
-                        tracing::debug!("zwp_text_input_v2#{}.set_preferred_language()", object.id);
-                        self.set_preferred_language(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let language = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.set_preferred_language({})",
+                            object.id,
+                            language
+                        );
+                        self.set_preferred_language(object, client, language).await
                     }
                     9u16 => {
-                        tracing::debug!("zwp_text_input_v2#{}.update_state()", object.id);
-                        self.update_state(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.uint()?.try_into()?,
-                        )
-                        .await
+                        let serial = message.uint()?;
+                        let reason = message.uint()?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.update_state({}, {})",
+                            object.id,
+                            serial,
+                            reason
+                        );
+                        self.update_state(object, client, serial, reason.try_into()?)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3519,7 +3668,7 @@ pub mod text_input_unstable_v2 {
                 serial: u32,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.enter()", object.id);
+                tracing::debug!("-> zwp_text_input_v2#{}.enter(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_object(Some(surface))
@@ -3544,7 +3693,7 @@ pub mod text_input_unstable_v2 {
                 serial: u32,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.leave()", object.id);
+                tracing::debug!("-> zwp_text_input_v2#{}.leave(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_object(Some(surface))
@@ -3573,7 +3722,10 @@ pub mod text_input_unstable_v2 {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.input_panel_state()", object.id);
+                tracing::debug!(
+                    "-> zwp_text_input_v2#{}.input_panel_state(rq, rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(state as u32)
                     .put_int(x)
@@ -3602,7 +3754,7 @@ pub mod text_input_unstable_v2 {
                 text: String,
                 commit: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.preedit_string()", object.id);
+                tracing::debug!("-> zwp_text_input_v2#{}.preedit_string(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(text))
                     .put_string(Some(commit))
@@ -3626,7 +3778,10 @@ pub mod text_input_unstable_v2 {
                 length: u32,
                 style: PreeditStyle,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.preedit_styling()", object.id);
+                tracing::debug!(
+                    "-> zwp_text_input_v2#{}.preedit_styling(rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(index)
                     .put_uint(length)
@@ -3651,7 +3806,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 index: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.preedit_cursor()", object.id);
+                tracing::debug!("-> zwp_text_input_v2#{}.preedit_cursor(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(index).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
@@ -3671,7 +3826,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 text: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.commit_string()", object.id);
+                tracing::debug!("-> zwp_text_input_v2#{}.commit_string(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(text))
                     .build();
@@ -3693,7 +3848,7 @@ pub mod text_input_unstable_v2 {
                 index: i32,
                 anchor: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.cursor_position()", object.id);
+                tracing::debug!("-> zwp_text_input_v2#{}.cursor_position(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(index)
                     .put_int(anchor)
@@ -3718,7 +3873,7 @@ pub mod text_input_unstable_v2 {
                 after_length: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_text_input_v2#{}.delete_surrounding_text()",
+                    "-> zwp_text_input_v2#{}.delete_surrounding_text(rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -3739,7 +3894,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 map: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.modifiers_map()", object.id);
+                tracing::debug!("-> zwp_text_input_v2#{}.modifiers_map(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(map).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 9u16, payload, fds))
@@ -3761,7 +3916,7 @@ pub mod text_input_unstable_v2 {
                 state: u32,
                 modifiers: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.keysym()", object.id);
+                tracing::debug!("-> zwp_text_input_v2#{}.keysym(rq, rq, rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_uint(sym)
@@ -3781,7 +3936,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 language: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.language()", object.id);
+                tracing::debug!("-> zwp_text_input_v2#{}.language(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(language))
                     .build();
@@ -3801,7 +3956,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 direction: TextDirection,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.text_direction()", object.id);
+                tracing::debug!("-> zwp_text_input_v2#{}.text_direction(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(direction as u32)
                     .build();
@@ -3821,7 +3976,7 @@ pub mod text_input_unstable_v2 {
                 after_cursor: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_text_input_v2#{}.configure_surrounding_text()",
+                    "-> zwp_text_input_v2#{}.configure_surrounding_text(rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -3844,7 +3999,10 @@ pub mod text_input_unstable_v2 {
                 serial: u32,
                 flags: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.input_method_changed()", object.id);
+                tracing::debug!(
+                    "-> zwp_text_input_v2#{}.input_method_changed(rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_uint(flags)
@@ -3859,6 +4017,8 @@ pub mod text_input_unstable_v2 {
     #[doc = "A factory for text-input objects. This object is a global singleton."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_manager_v2 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_text_input_manager_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTextInputManagerV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_text_input_manager_v2";
@@ -3878,22 +4038,23 @@ pub mod text_input_unstable_v2 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwp_text_input_manager_v2#{}.destroy()", object.id);
+                        tracing::debug!("zwp_text_input_manager_v2#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("zwp_text_input_manager_v2#{}.get_text_input()", object.id);
-                        self.get_text_input(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let seat = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwp_text_input_manager_v2#{}.get_text_input({}, {})",
+                            object.id,
+                            id,
+                            seat
+                        );
+                        self.get_text_input(object, client, id, seat).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3938,6 +4099,8 @@ pub mod text {
     #[doc = "which are based on an outdated state (for example after a reset)."]
     #[allow(clippy::too_many_arguments)]
     pub mod wl_text_input {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Content hint is a bitmask to allow to modify the behavior of the text"]
         #[doc = "input."]
         #[repr(u32)]
@@ -4121,91 +4284,108 @@ pub mod text {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wl_text_input#{}.activate()", object.id);
-                        self.activate(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let seat = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wl_text_input#{}.activate({}, {})",
+                            object.id,
+                            seat,
+                            surface
+                        );
+                        self.activate(object, client, seat, surface).await
                     }
                     1u16 => {
-                        tracing::debug!("wl_text_input#{}.deactivate()", object.id);
-                        self.deactivate(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let seat = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("wl_text_input#{}.deactivate({})", object.id, seat);
+                        self.deactivate(object, client, seat).await
                     }
                     2u16 => {
-                        tracing::debug!("wl_text_input#{}.show_input_panel()", object.id);
+                        tracing::debug!("wl_text_input#{}.show_input_panel()", object.id,);
                         self.show_input_panel(object, client).await
                     }
                     3u16 => {
-                        tracing::debug!("wl_text_input#{}.hide_input_panel()", object.id);
+                        tracing::debug!("wl_text_input#{}.hide_input_panel()", object.id,);
                         self.hide_input_panel(object, client).await
                     }
                     4u16 => {
-                        tracing::debug!("wl_text_input#{}.reset()", object.id);
+                        tracing::debug!("wl_text_input#{}.reset()", object.id,);
                         self.reset(object, client).await
                     }
                     5u16 => {
-                        tracing::debug!("wl_text_input#{}.set_surrounding_text()", object.id);
-                        self.set_surrounding_text(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                            message.uint()?,
-                        )
-                        .await
+                        let text = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let cursor = message.uint()?;
+                        let anchor = message.uint()?;
+                        tracing::debug!(
+                            "wl_text_input#{}.set_surrounding_text({}, {}, {})",
+                            object.id,
+                            text,
+                            cursor,
+                            anchor
+                        );
+                        self.set_surrounding_text(object, client, text, cursor, anchor)
+                            .await
                     }
                     6u16 => {
-                        tracing::debug!("wl_text_input#{}.set_content_type()", object.id);
-                        self.set_content_type(object, client, message.uint()?, message.uint()?)
-                            .await
+                        let hint = message.uint()?;
+                        let purpose = message.uint()?;
+                        tracing::debug!(
+                            "wl_text_input#{}.set_content_type({}, {})",
+                            object.id,
+                            hint,
+                            purpose
+                        );
+                        self.set_content_type(object, client, hint, purpose).await
                     }
                     7u16 => {
-                        tracing::debug!("wl_text_input#{}.set_cursor_rectangle()", object.id);
-                        self.set_cursor_rectangle(
-                            object,
-                            client,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                        )
-                        .await
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "wl_text_input#{}.set_cursor_rectangle({}, {}, {}, {})",
+                            object.id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.set_cursor_rectangle(object, client, x, y, width, height)
+                            .await
                     }
                     8u16 => {
-                        tracing::debug!("wl_text_input#{}.set_preferred_language()", object.id);
-                        self.set_preferred_language(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let language = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wl_text_input#{}.set_preferred_language({})",
+                            object.id,
+                            language
+                        );
+                        self.set_preferred_language(object, client, language).await
                     }
                     9u16 => {
-                        tracing::debug!("wl_text_input#{}.commit_state()", object.id);
-                        self.commit_state(object, client, message.uint()?).await
+                        let serial = message.uint()?;
+                        tracing::debug!("wl_text_input#{}.commit_state({})", object.id, serial);
+                        self.commit_state(object, client, serial).await
                     }
                     10u16 => {
-                        tracing::debug!("wl_text_input#{}.invoke_action()", object.id);
-                        self.invoke_action(object, client, message.uint()?, message.uint()?)
-                            .await
+                        let button = message.uint()?;
+                        let index = message.uint()?;
+                        tracing::debug!(
+                            "wl_text_input#{}.invoke_action({}, {})",
+                            object.id,
+                            button,
+                            index
+                        );
+                        self.invoke_action(object, client, button, index).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4322,7 +4502,7 @@ pub mod text {
                 client: &mut crate::server::Client,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.enter()", object.id);
+                tracing::debug!("-> wl_text_input#{}.enter(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(surface))
                     .build();
@@ -4355,7 +4535,7 @@ pub mod text {
                 client: &mut crate::server::Client,
                 map: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.modifiers_map()", object.id);
+                tracing::debug!("-> wl_text_input#{}.modifiers_map(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(map).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -4369,7 +4549,7 @@ pub mod text {
                 client: &mut crate::server::Client,
                 state: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.input_panel_state()", object.id);
+                tracing::debug!("-> wl_text_input#{}.input_panel_state(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(state).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -4393,7 +4573,7 @@ pub mod text {
                 text: String,
                 commit: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.preedit_string()", object.id);
+                tracing::debug!("-> wl_text_input#{}.preedit_string(rq, rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_string(Some(text))
@@ -4419,7 +4599,7 @@ pub mod text {
                 length: u32,
                 style: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.preedit_styling()", object.id);
+                tracing::debug!("-> wl_text_input#{}.preedit_styling(rq, rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(index)
                     .put_uint(length)
@@ -4441,7 +4621,7 @@ pub mod text {
                 client: &mut crate::server::Client,
                 index: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.preedit_cursor()", object.id);
+                tracing::debug!("-> wl_text_input#{}.preedit_cursor(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(index).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
@@ -4462,7 +4642,7 @@ pub mod text {
                 serial: u32,
                 text: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.commit_string()", object.id);
+                tracing::debug!("-> wl_text_input#{}.commit_string(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_string(Some(text))
@@ -4483,7 +4663,7 @@ pub mod text {
                 index: i32,
                 anchor: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.cursor_position()", object.id);
+                tracing::debug!("-> wl_text_input#{}.cursor_position(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(index)
                     .put_int(anchor)
@@ -4508,7 +4688,10 @@ pub mod text {
                 index: i32,
                 length: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.delete_surrounding_text()", object.id);
+                tracing::debug!(
+                    "-> wl_text_input#{}.delete_surrounding_text(rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(index)
                     .put_uint(length)
@@ -4534,7 +4717,7 @@ pub mod text {
                 state: u32,
                 modifiers: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.keysym()", object.id);
+                tracing::debug!("-> wl_text_input#{}.keysym(rq, rq, rq, rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_uint(time)
@@ -4556,7 +4739,7 @@ pub mod text {
                 serial: u32,
                 language: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.language()", object.id);
+                tracing::debug!("-> wl_text_input#{}.language(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_string(Some(language))
@@ -4578,7 +4761,7 @@ pub mod text {
                 serial: u32,
                 direction: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.text_direction()", object.id);
+                tracing::debug!("-> wl_text_input#{}.text_direction(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_uint(direction)
@@ -4593,6 +4776,8 @@ pub mod text {
     #[doc = "A factory for text-input objects. This object is a global singleton."]
     #[allow(clippy::too_many_arguments)]
     pub mod wl_text_input_manager {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wl_text_input_manager interface. See the module level documentation for more info"]
         pub trait WlTextInputManager: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_text_input_manager";
@@ -4612,15 +4797,15 @@ pub mod text {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wl_text_input_manager#{}.create_text_input()", object.id);
-                        self.create_text_input(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wl_text_input_manager#{}.create_text_input({})",
+                            object.id,
+                            id
+                        );
+                        self.create_text_input(object, client, id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4639,6 +4824,8 @@ pub mod text {
 pub mod wl_eglstream_controller {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_eglstream_controller {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "- dont_care: Using this enum will tell the server to make its own"]
         #[doc = "decisions regarding present mode."]
         #[doc = ""]
@@ -4712,37 +4899,36 @@ pub mod wl_eglstream_controller {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let wl_surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let wl_resource = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "wl_eglstream_controller#{}.attach_eglstream_consumer()",
-                            object.id
+                            "wl_eglstream_controller#{}.attach_eglstream_consumer({}, {})",
+                            object.id,
+                            wl_surface,
+                            wl_resource
                         );
-                        self.attach_eglstream_consumer(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.attach_eglstream_consumer(object, client, wl_surface, wl_resource)
+                            .await
                     }
                     1u16 => {
-                        tracing::debug!(
-                            "wl_eglstream_controller#{}.attach_eglstream_consumer_attribs()",
-                            object.id
-                        );
+                        let wl_surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let wl_resource = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let attribs = message.array()?;
+                        tracing :: debug ! ("wl_eglstream_controller#{}.attach_eglstream_consumer_attribs({}, {}, {})" , object . id , wl_surface , wl_resource , attribs);
                         self.attach_eglstream_consumer_attribs(
                             object,
                             client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.array()?,
+                            wl_surface,
+                            wl_resource,
+                            attribs,
                         )
                         .await
                     }
@@ -4785,6 +4971,8 @@ pub mod dpms {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_dpms_manager {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_dpms_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinDpmsManager: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_dpms_manager";
@@ -4804,18 +4992,19 @@ pub mod dpms {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_dpms_manager#{}.get()", object.id);
-                        self.get(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_dpms_manager#{}.get({}, {})",
+                            object.id,
+                            id,
+                            output
+                        );
+                        self.get(object, client, id, output).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4839,6 +5028,8 @@ pub mod dpms {
     #[doc = "done event."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_dpms {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4879,11 +5070,12 @@ pub mod dpms {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_dpms#{}.set()", object.id);
-                        self.set(object, client, message.uint()?).await
+                        let mode = message.uint()?;
+                        tracing::debug!("org_kde_kwin_dpms#{}.set({})", object.id, mode);
+                        self.set(object, client, mode).await
                     }
                     1u16 => {
-                        tracing::debug!("org_kde_kwin_dpms#{}.release()", object.id);
+                        tracing::debug!("org_kde_kwin_dpms#{}.release()", object.id,);
                         self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -4915,7 +5107,7 @@ pub mod dpms {
                 client: &mut crate::server::Client,
                 supported: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_dpms#{}.supported()", object.id);
+                tracing::debug!("-> org_kde_kwin_dpms#{}.supported(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(supported)
                     .build();
@@ -4935,7 +5127,7 @@ pub mod dpms {
                 client: &mut crate::server::Client,
                 mode: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_dpms#{}.mode()", object.id);
+                tracing::debug!("-> org_kde_kwin_dpms#{}.mode(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(mode).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -4977,6 +5169,8 @@ pub mod fake_input {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_fake_input {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_fake_input interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinFakeInput: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_fake_input";
@@ -4996,88 +5190,116 @@ pub mod fake_input {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_kwin_fake_input#{}.authenticate()", object.id);
-                        self.authenticate(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let application = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let reason = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_fake_input#{}.authenticate({}, {})",
+                            object.id,
+                            application,
+                            reason
+                        );
+                        self.authenticate(object, client, application, reason).await
                     }
                     1u16 => {
-                        tracing::debug!("org_kde_kwin_fake_input#{}.pointer_motion()", object.id);
-                        self.pointer_motion(object, client, message.fixed()?, message.fixed()?)
-                            .await
+                        let delta_x = message.fixed()?;
+                        let delta_y = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_fake_input#{}.pointer_motion({}, {})",
+                            object.id,
+                            delta_x,
+                            delta_y
+                        );
+                        self.pointer_motion(object, client, delta_x, delta_y).await
                     }
                     2u16 => {
-                        tracing::debug!("org_kde_kwin_fake_input#{}.button()", object.id);
-                        self.button(object, client, message.uint()?, message.uint()?)
-                            .await
+                        let button = message.uint()?;
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_kwin_fake_input#{}.button({}, {})",
+                            object.id,
+                            button,
+                            state
+                        );
+                        self.button(object, client, button, state).await
                     }
                     3u16 => {
-                        tracing::debug!("org_kde_kwin_fake_input#{}.axis()", object.id);
-                        self.axis(object, client, message.uint()?, message.fixed()?)
-                            .await
+                        let axis = message.uint()?;
+                        let value = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_fake_input#{}.axis({}, {})",
+                            object.id,
+                            axis,
+                            value
+                        );
+                        self.axis(object, client, axis, value).await
                     }
                     4u16 => {
-                        tracing::debug!("org_kde_kwin_fake_input#{}.touch_down()", object.id);
-                        self.touch_down(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.fixed()?,
-                            message.fixed()?,
-                        )
-                        .await
+                        let id = message.uint()?;
+                        let x = message.fixed()?;
+                        let y = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_fake_input#{}.touch_down({}, {}, {})",
+                            object.id,
+                            id,
+                            x,
+                            y
+                        );
+                        self.touch_down(object, client, id, x, y).await
                     }
                     5u16 => {
-                        tracing::debug!("org_kde_kwin_fake_input#{}.touch_motion()", object.id);
-                        self.touch_motion(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.fixed()?,
-                            message.fixed()?,
-                        )
-                        .await
+                        let id = message.uint()?;
+                        let x = message.fixed()?;
+                        let y = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_fake_input#{}.touch_motion({}, {}, {})",
+                            object.id,
+                            id,
+                            x,
+                            y
+                        );
+                        self.touch_motion(object, client, id, x, y).await
                     }
                     6u16 => {
-                        tracing::debug!("org_kde_kwin_fake_input#{}.touch_up()", object.id);
-                        self.touch_up(object, client, message.uint()?).await
+                        let id = message.uint()?;
+                        tracing::debug!("org_kde_kwin_fake_input#{}.touch_up({})", object.id, id);
+                        self.touch_up(object, client, id).await
                     }
                     7u16 => {
-                        tracing::debug!("org_kde_kwin_fake_input#{}.touch_cancel()", object.id);
+                        tracing::debug!("org_kde_kwin_fake_input#{}.touch_cancel()", object.id,);
                         self.touch_cancel(object, client).await
                     }
                     8u16 => {
-                        tracing::debug!("org_kde_kwin_fake_input#{}.touch_frame()", object.id);
+                        tracing::debug!("org_kde_kwin_fake_input#{}.touch_frame()", object.id,);
                         self.touch_frame(object, client).await
                     }
                     9u16 => {
+                        let x = message.fixed()?;
+                        let y = message.fixed()?;
                         tracing::debug!(
-                            "org_kde_kwin_fake_input#{}.pointer_motion_absolute()",
-                            object.id
+                            "org_kde_kwin_fake_input#{}.pointer_motion_absolute({}, {})",
+                            object.id,
+                            x,
+                            y
                         );
-                        self.pointer_motion_absolute(
-                            object,
-                            client,
-                            message.fixed()?,
-                            message.fixed()?,
-                        )
-                        .await
+                        self.pointer_motion_absolute(object, client, x, y).await
                     }
                     10u16 => {
-                        tracing::debug!("org_kde_kwin_fake_input#{}.keyboard_key()", object.id);
-                        self.keyboard_key(object, client, message.uint()?, message.uint()?)
-                            .await
+                        let button = message.uint()?;
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_kwin_fake_input#{}.keyboard_key({}, {})",
+                            object.id,
+                            button,
+                            state
+                        );
+                        self.keyboard_key(object, client, button, state).await
                     }
                     11u16 => {
-                        tracing::debug!("org_kde_kwin_fake_input#{}.destroy()", object.id);
+                        tracing::debug!("org_kde_kwin_fake_input#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -5189,6 +5411,8 @@ pub mod kde_lockscreen_overlay_v1 {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod kde_lockscreen_overlay_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5224,18 +5448,18 @@ pub mod kde_lockscreen_overlay_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("kde_lockscreen_overlay_v1#{}.allow()", object.id);
-                        self.allow(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_lockscreen_overlay_v1#{}.allow({})",
+                            object.id,
+                            surface
+                        );
+                        self.allow(object, client, surface).await
                     }
                     1u16 => {
-                        tracing::debug!("kde_lockscreen_overlay_v1#{}.destroy()", object.id);
+                        tracing::debug!("kde_lockscreen_overlay_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -5282,6 +5506,8 @@ pub mod kde_output_device_v2 {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_device_v2 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
         #[repr(u32)]
@@ -5470,7 +5696,10 @@ pub mod kde_output_device_v2 {
                 model: String,
                 transform: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.geometry()", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.geometry(rq, rq, rq, rq, rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
                     .put_int(y)
@@ -5494,7 +5723,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 mode: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.current_mode()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.current_mode(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(mode))
                     .build();
@@ -5527,7 +5756,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 mode: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.mode()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.mode(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(mode))
                     .build();
@@ -5577,7 +5806,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 factor: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.scale()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.scale(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_fixed(factor).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -5596,7 +5825,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 raw: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.edid()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.edid(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(raw))
                     .build();
@@ -5616,7 +5845,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 enabled: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.enabled()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.enabled(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(enabled).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
@@ -5632,7 +5861,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 uuid: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.uuid()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.uuid(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(uuid))
                     .build();
@@ -5648,7 +5877,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 serial_number: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.serial_number()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.serial_number(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(serial_number))
                     .build();
@@ -5664,7 +5893,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 eisa_id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.eisa_id()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.eisa_id(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(eisa_id))
                     .build();
@@ -5681,7 +5910,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 flags: Capability,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.capabilities()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.capabilities(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(flags.bits())
                     .build();
@@ -5698,7 +5927,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 overscan: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.overscan()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.overscan(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(overscan)
                     .build();
@@ -5715,7 +5944,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 vrr_policy: VrrPolicy,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.vrr_policy()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.vrr_policy(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(vrr_policy as u32)
                     .build();
@@ -5731,7 +5960,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 rgb_range: RgbRange,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.rgb_range()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.rgb_range(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(rgb_range as u32)
                     .build();
@@ -5747,7 +5976,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.name()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.name(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -5763,7 +5992,10 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 hdr_enabled: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.high_dynamic_range()", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.high_dynamic_range(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(hdr_enabled)
                     .build();
@@ -5781,7 +6013,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sdr_brightness: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.sdr_brightness()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.sdr_brightness(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(sdr_brightness)
                     .build();
@@ -5797,7 +6029,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 wcg_enabled: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.wide_color_gamut()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.wide_color_gamut(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(wcg_enabled)
                     .build();
@@ -5812,7 +6044,10 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 policy: AutoRotatePolicy,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.auto_rotate_policy()", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.auto_rotate_policy(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(policy as u32)
                     .build();
@@ -5827,7 +6062,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 profile_path: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.icc_profile_path()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.icc_profile_path(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(profile_path))
                     .build();
@@ -5845,7 +6080,7 @@ pub mod kde_output_device_v2 {
                 min_brightness: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> kde_output_device_v2#{}.brightness_metadata()",
+                    "-> kde_output_device_v2#{}.brightness_metadata(rq, rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -5867,7 +6102,7 @@ pub mod kde_output_device_v2 {
                 min_brightness: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> kde_output_device_v2#{}.brightness_overrides()",
+                    "-> kde_output_device_v2#{}.brightness_overrides(rq, rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -5888,7 +6123,10 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 gamut_wideness: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.sdr_gamut_wideness()", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.sdr_gamut_wideness(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(gamut_wideness)
                     .build();
@@ -5904,7 +6142,7 @@ pub mod kde_output_device_v2 {
                 source: ColorProfileSource,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> kde_output_device_v2#{}.color_profile_source()",
+                    "-> kde_output_device_v2#{}.color_profile_source(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -5927,7 +6165,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 brightness: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.brightness()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.brightness(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(brightness)
                     .build();
@@ -5948,6 +6186,8 @@ pub mod kde_output_device_v2 {
     #[doc = "in which properties are sent."]
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_device_mode_v2 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_output_device_mode_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputDeviceModeV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "kde_output_device_mode_v2";
@@ -5980,7 +6220,7 @@ pub mod kde_output_device_v2 {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_mode_v2#{}.size()", object.id);
+                tracing::debug!("-> kde_output_device_mode_v2#{}.size(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -5998,7 +6238,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 refresh: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_mode_v2#{}.refresh()", object.id);
+                tracing::debug!("-> kde_output_device_mode_v2#{}.refresh(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(refresh).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -6082,6 +6322,8 @@ pub mod kde_output_management_v2 {
     #[doc = "changes may be added without bumping the major version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_management_v2 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputManagementV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "kde_output_management_v2";
@@ -6101,18 +6343,15 @@ pub mod kde_output_management_v2 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "kde_output_management_v2#{}.create_configuration()",
-                            object.id
+                            "kde_output_management_v2#{}.create_configuration({})",
+                            object.id,
+                            id
                         );
-                        self.create_configuration(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.create_configuration(object, client, id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -6141,6 +6380,8 @@ pub mod kde_output_management_v2 {
     #[doc = "applied to the hardware and before the server side sends the applied event."]
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_configuration_v2 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These error can be emitted in response to kde_output_configuration_v2 requests."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -6255,282 +6496,290 @@ pub mod kde_output_management_v2 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("kde_output_configuration_v2#{}.enable()", object.id);
-                        self.enable(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                        )
-                        .await
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let enable = message.int()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.enable({}, {})",
+                            object.id,
+                            outputdevice,
+                            enable
+                        );
+                        self.enable(object, client, outputdevice, enable).await
                     }
                     1u16 => {
-                        tracing::debug!("kde_output_configuration_v2#{}.mode()", object.id);
-                        self.mode(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let mode = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.mode({}, {})",
+                            object.id,
+                            outputdevice,
+                            mode
+                        );
+                        self.mode(object, client, outputdevice, mode).await
                     }
                     2u16 => {
-                        tracing::debug!("kde_output_configuration_v2#{}.transform()", object.id);
-                        self.transform(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                        )
-                        .await
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let transform = message.int()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.transform({}, {})",
+                            object.id,
+                            outputdevice,
+                            transform
+                        );
+                        self.transform(object, client, outputdevice, transform)
+                            .await
                     }
                     3u16 => {
-                        tracing::debug!("kde_output_configuration_v2#{}.position()", object.id);
-                        self.position(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message.int()?,
-                        )
-                        .await
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.position({}, {}, {})",
+                            object.id,
+                            outputdevice,
+                            x,
+                            y
+                        );
+                        self.position(object, client, outputdevice, x, y).await
                     }
                     4u16 => {
-                        tracing::debug!("kde_output_configuration_v2#{}.scale()", object.id);
-                        self.scale(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.fixed()?,
-                        )
-                        .await
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let scale = message.fixed()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.scale({}, {})",
+                            object.id,
+                            outputdevice,
+                            scale
+                        );
+                        self.scale(object, client, outputdevice, scale).await
                     }
                     5u16 => {
-                        tracing::debug!("kde_output_configuration_v2#{}.apply()", object.id);
+                        tracing::debug!("kde_output_configuration_v2#{}.apply()", object.id,);
                         self.apply(object, client).await
                     }
                     6u16 => {
-                        tracing::debug!("kde_output_configuration_v2#{}.destroy()", object.id);
+                        tracing::debug!("kde_output_configuration_v2#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     7u16 => {
-                        tracing::debug!("kde_output_configuration_v2#{}.overscan()", object.id);
-                        self.overscan(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let overscan = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.overscan({}, {})",
+                            object.id,
+                            outputdevice,
+                            overscan
+                        );
+                        self.overscan(object, client, outputdevice, overscan).await
                     }
                     8u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let policy = message.uint()?;
                         tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_vrr_policy()",
-                            object.id
+                            "kde_output_configuration_v2#{}.set_vrr_policy({}, {})",
+                            object.id,
+                            outputdevice,
+                            policy
                         );
-                        self.set_vrr_policy(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?.try_into()?,
-                        )
-                        .await
+                        self.set_vrr_policy(object, client, outputdevice, policy.try_into()?)
+                            .await
                     }
                     9u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let rgb_range = message.uint()?;
                         tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_rgb_range()",
-                            object.id
+                            "kde_output_configuration_v2#{}.set_rgb_range({}, {})",
+                            object.id,
+                            outputdevice,
+                            rgb_range
                         );
-                        self.set_rgb_range(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?.try_into()?,
-                        )
-                        .await
+                        self.set_rgb_range(object, client, outputdevice, rgb_range.try_into()?)
+                            .await
                     }
                     10u16 => {
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_primary_output()",
-                            object.id
+                            "kde_output_configuration_v2#{}.set_primary_output({})",
+                            object.id,
+                            output
                         );
-                        self.set_primary_output(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.set_primary_output(object, client, output).await
                     }
                     11u16 => {
-                        tracing::debug!("kde_output_configuration_v2#{}.set_priority()", object.id);
-                        self.set_priority(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let priority = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.set_priority({}, {})",
+                            object.id,
+                            outputdevice,
+                            priority
+                        );
+                        self.set_priority(object, client, outputdevice, priority)
+                            .await
                     }
                     12u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let enable_hdr = message.uint()?;
                         tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_high_dynamic_range()",
-                            object.id
+                            "kde_output_configuration_v2#{}.set_high_dynamic_range({}, {})",
+                            object.id,
+                            outputdevice,
+                            enable_hdr
                         );
-                        self.set_high_dynamic_range(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.set_high_dynamic_range(object, client, outputdevice, enable_hdr)
+                            .await
                     }
                     13u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let sdr_brightness = message.uint()?;
                         tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_sdr_brightness()",
-                            object.id
+                            "kde_output_configuration_v2#{}.set_sdr_brightness({}, {})",
+                            object.id,
+                            outputdevice,
+                            sdr_brightness
                         );
-                        self.set_sdr_brightness(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.set_sdr_brightness(object, client, outputdevice, sdr_brightness)
+                            .await
                     }
                     14u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let enable_wcg = message.uint()?;
                         tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_wide_color_gamut()",
-                            object.id
+                            "kde_output_configuration_v2#{}.set_wide_color_gamut({}, {})",
+                            object.id,
+                            outputdevice,
+                            enable_wcg
                         );
-                        self.set_wide_color_gamut(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.set_wide_color_gamut(object, client, outputdevice, enable_wcg)
+                            .await
                     }
                     15u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let policy = message.uint()?;
                         tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_auto_rotate_policy()",
-                            object.id
+                            "kde_output_configuration_v2#{}.set_auto_rotate_policy({}, {})",
+                            object.id,
+                            outputdevice,
+                            policy
                         );
                         self.set_auto_rotate_policy(
                             object,
                             client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?.try_into()?,
+                            outputdevice,
+                            policy.try_into()?,
                         )
                         .await
                     }
                     16u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let profile_path = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_icc_profile_path()",
-                            object.id
+                            "kde_output_configuration_v2#{}.set_icc_profile_path({}, {})",
+                            object.id,
+                            outputdevice,
+                            profile_path
                         );
-                        self.set_icc_profile_path(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.set_icc_profile_path(object, client, outputdevice, profile_path)
+                            .await
                     }
                     17u16 => {
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_brightness_overrides()",
-                            object.id
-                        );
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let max_peak_brightness = message.int()?;
+                        let max_frame_average_brightness = message.int()?;
+                        let min_brightness = message.int()?;
+                        tracing :: debug ! ("kde_output_configuration_v2#{}.set_brightness_overrides({}, {}, {}, {})" , object . id , outputdevice , max_peak_brightness , max_frame_average_brightness , min_brightness);
                         self.set_brightness_overrides(
                             object,
                             client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
+                            outputdevice,
+                            max_peak_brightness,
+                            max_frame_average_brightness,
+                            min_brightness,
                         )
                         .await
                     }
                     18u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let gamut_wideness = message.uint()?;
                         tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_sdr_gamut_wideness()",
-                            object.id
+                            "kde_output_configuration_v2#{}.set_sdr_gamut_wideness({}, {})",
+                            object.id,
+                            outputdevice,
+                            gamut_wideness
                         );
-                        self.set_sdr_gamut_wideness(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.set_sdr_gamut_wideness(object, client, outputdevice, gamut_wideness)
+                            .await
                     }
                     19u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let color_profile_source = message.uint()?;
                         tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_color_profile_source()",
-                            object.id
+                            "kde_output_configuration_v2#{}.set_color_profile_source({}, {})",
+                            object.id,
+                            outputdevice,
+                            color_profile_source
                         );
                         self.set_color_profile_source(
                             object,
                             client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?.try_into()?,
+                            outputdevice,
+                            color_profile_source.try_into()?,
                         )
                         .await
                     }
                     20u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let brightness = message.uint()?;
                         tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_brightness()",
-                            object.id
+                            "kde_output_configuration_v2#{}.set_brightness({}, {})",
+                            object.id,
+                            outputdevice,
+                            brightness
                         );
-                        self.set_brightness(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.set_brightness(object, client, outputdevice, brightness)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -6758,6 +7007,8 @@ pub mod kde_output_order_v1 {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_order_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_output_order_v1 interface. See the module level documentation for more info"]
         pub trait KdeOutputOrderV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "kde_output_order_v1";
@@ -6777,7 +7028,7 @@ pub mod kde_output_order_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("kde_output_order_v1#{}.destroy()", object.id);
+                        tracing::debug!("kde_output_order_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -6795,7 +7046,7 @@ pub mod kde_output_order_v1 {
                 client: &mut crate::server::Client,
                 output_name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_order_v1#{}.output()", object.id);
+                tracing::debug!("-> kde_output_order_v1#{}.output(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(output_name))
                     .build();
@@ -6831,6 +7082,8 @@ pub mod kde_primary_output_v1 {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod kde_primary_output_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_primary_output_v1 interface. See the module level documentation for more info"]
         pub trait KdePrimaryOutputV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "kde_primary_output_v1";
@@ -6850,7 +7103,7 @@ pub mod kde_primary_output_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("kde_primary_output_v1#{}.destroy()", object.id);
+                        tracing::debug!("kde_primary_output_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -6868,7 +7121,7 @@ pub mod kde_primary_output_v1 {
                 client: &mut crate::server::Client,
                 output_name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_primary_output_v1#{}.primary_output()", object.id);
+                tracing::debug!("-> kde_primary_output_v1#{}.primary_output(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(output_name))
                     .build();
@@ -6896,6 +7149,8 @@ pub mod kde_screen_edge_v1 {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod kde_screen_edge_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -6963,24 +7218,30 @@ pub mod kde_screen_edge_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("kde_screen_edge_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("kde_screen_edge_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let border = message.uint()?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "kde_screen_edge_manager_v1#{}.get_auto_hide_screen_edge()",
-                            object.id
+                            "kde_screen_edge_manager_v1#{}.get_auto_hide_screen_edge({}, {}, {})",
+                            object.id,
+                            id,
+                            border,
+                            surface
                         );
                         self.get_auto_hide_screen_edge(
                             object,
                             client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?.try_into()?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            id,
+                            border.try_into()?,
+                            surface,
                         )
                         .await
                     }
@@ -7032,6 +7293,8 @@ pub mod kde_screen_edge_v1 {
     #[doc = "client to activate the screen edge."]
     #[allow(clippy::too_many_arguments)]
     pub mod kde_auto_hide_screen_edge_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_auto_hide_screen_edge_v1 interface. See the module level documentation for more info"]
         pub trait KdeAutoHideScreenEdgeV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "kde_auto_hide_screen_edge_v1";
@@ -7051,15 +7314,15 @@ pub mod kde_screen_edge_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("kde_auto_hide_screen_edge_v1#{}.destroy()", object.id);
+                        tracing::debug!("kde_auto_hide_screen_edge_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("kde_auto_hide_screen_edge_v1#{}.deactivate()", object.id);
+                        tracing::debug!("kde_auto_hide_screen_edge_v1#{}.deactivate()", object.id,);
                         self.deactivate(object, client).await
                     }
                     2u16 => {
-                        tracing::debug!("kde_auto_hide_screen_edge_v1#{}.activate()", object.id);
+                        tracing::debug!("kde_auto_hide_screen_edge_v1#{}.activate()", object.id,);
                         self.activate(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -7092,6 +7355,8 @@ pub mod kde_screen_edge_v1 {
 pub mod org_kde_plasma_virtual_desktop {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_virtual_desktop_management {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop_management interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaVirtualDesktopManagement: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop_management";
@@ -7111,44 +7376,32 @@ pub mod org_kde_plasma_virtual_desktop {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!(
-                            "org_kde_plasma_virtual_desktop_management#{}.get_virtual_desktop()",
-                            object.id
-                        );
-                        self.get_virtual_desktop(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let desktop_id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.get_virtual_desktop({}, {})" , object . id , id , desktop_id);
+                        self.get_virtual_desktop(object, client, id, desktop_id)
+                            .await
                     }
                     1u16 => {
-                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.request_create_virtual_desktop()" , object . id);
-                        self.request_create_virtual_desktop(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let position = message.uint()?;
+                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.request_create_virtual_desktop({}, {})" , object . id , name , position);
+                        self.request_create_virtual_desktop(object, client, name, position)
+                            .await
                     }
                     2u16 => {
-                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.request_remove_virtual_desktop()" , object . id);
-                        self.request_remove_virtual_desktop(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let desktop_id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.request_remove_virtual_desktop({})" , object . id , desktop_id);
+                        self.request_remove_virtual_desktop(object, client, desktop_id)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -7189,7 +7442,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 position: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_created()",
+                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_created(rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -7208,7 +7461,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 desktop_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_removed()",
+                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_removed(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -7246,7 +7499,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 rows: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop_management#{}.rows()",
+                    "-> org_kde_plasma_virtual_desktop_management#{}.rows(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(rows).build();
@@ -7259,6 +7512,8 @@ pub mod org_kde_plasma_virtual_desktop {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_virtual_desktop {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaVirtualDesktop: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop";
@@ -7280,7 +7535,7 @@ pub mod org_kde_plasma_virtual_desktop {
                     0u16 => {
                         tracing::debug!(
                             "org_kde_plasma_virtual_desktop#{}.request_activate()",
-                            object.id
+                            object.id,
                         );
                         self.request_activate(object, client).await
                     }
@@ -7301,7 +7556,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 desktop_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop#{}.desktop_id()",
+                    "-> org_kde_plasma_virtual_desktop#{}.desktop_id(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -7318,7 +7573,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.name()", object.id);
+                tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.name(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -7405,6 +7660,8 @@ pub mod plasma_shell {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_shell {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_shell interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaShell: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_plasma_shell";
@@ -7424,18 +7681,19 @@ pub mod plasma_shell {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_plasma_shell#{}.get_surface()", object.id);
-                        self.get_surface(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_shell#{}.get_surface({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.get_surface(object, client, id, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -7465,6 +7723,8 @@ pub mod plasma_shell {
     #[doc = "destroying the wl_surface object."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_surface {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -7550,70 +7810,89 @@ pub mod plasma_shell {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_plasma_surface#{}.destroy()", object.id);
+                        tracing::debug!("org_kde_plasma_surface#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("org_kde_plasma_surface#{}.set_output()", object.id);
-                        self.set_output(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_surface#{}.set_output({})",
+                            object.id,
+                            output
+                        );
+                        self.set_output(object, client, output).await
                     }
                     2u16 => {
-                        tracing::debug!("org_kde_plasma_surface#{}.set_position()", object.id);
-                        self.set_position(object, client, message.int()?, message.int()?)
-                            .await
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        tracing::debug!(
+                            "org_kde_plasma_surface#{}.set_position({}, {})",
+                            object.id,
+                            x,
+                            y
+                        );
+                        self.set_position(object, client, x, y).await
                     }
                     3u16 => {
-                        tracing::debug!("org_kde_plasma_surface#{}.set_role()", object.id);
-                        self.set_role(object, client, message.uint()?).await
+                        let role = message.uint()?;
+                        tracing::debug!("org_kde_plasma_surface#{}.set_role({})", object.id, role);
+                        self.set_role(object, client, role).await
                     }
                     4u16 => {
+                        let flag = message.uint()?;
                         tracing::debug!(
-                            "org_kde_plasma_surface#{}.set_panel_behavior()",
-                            object.id
+                            "org_kde_plasma_surface#{}.set_panel_behavior({})",
+                            object.id,
+                            flag
                         );
-                        self.set_panel_behavior(object, client, message.uint()?)
-                            .await
+                        self.set_panel_behavior(object, client, flag).await
                     }
                     5u16 => {
-                        tracing::debug!("org_kde_plasma_surface#{}.set_skip_taskbar()", object.id);
-                        self.set_skip_taskbar(object, client, message.uint()?).await
+                        let skip = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_surface#{}.set_skip_taskbar({})",
+                            object.id,
+                            skip
+                        );
+                        self.set_skip_taskbar(object, client, skip).await
                     }
                     6u16 => {
                         tracing::debug!(
                             "org_kde_plasma_surface#{}.panel_auto_hide_hide()",
-                            object.id
+                            object.id,
                         );
                         self.panel_auto_hide_hide(object, client).await
                     }
                     7u16 => {
                         tracing::debug!(
                             "org_kde_plasma_surface#{}.panel_auto_hide_show()",
-                            object.id
+                            object.id,
                         );
                         self.panel_auto_hide_show(object, client).await
                     }
                     8u16 => {
+                        let takes_focus = message.uint()?;
                         tracing::debug!(
-                            "org_kde_plasma_surface#{}.set_panel_takes_focus()",
-                            object.id
+                            "org_kde_plasma_surface#{}.set_panel_takes_focus({})",
+                            object.id,
+                            takes_focus
                         );
-                        self.set_panel_takes_focus(object, client, message.uint()?)
+                        self.set_panel_takes_focus(object, client, takes_focus)
                             .await
                     }
                     9u16 => {
-                        tracing::debug!("org_kde_plasma_surface#{}.set_skip_switcher()", object.id);
-                        self.set_skip_switcher(object, client, message.uint()?)
-                            .await
+                        let skip = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_surface#{}.set_skip_switcher({})",
+                            object.id,
+                            skip
+                        );
+                        self.set_skip_switcher(object, client, skip).await
                     }
                     10u16 => {
-                        tracing::debug!("org_kde_plasma_surface#{}.open_under_cursor()", object.id);
+                        tracing::debug!("org_kde_plasma_surface#{}.open_under_cursor()", object.id,);
                         self.open_under_cursor(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -7864,6 +8143,8 @@ pub mod plasma_window_management {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_window_management {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -7951,57 +8232,55 @@ pub mod plasma_window_management {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let state = message.uint()?;
                         tracing::debug!(
-                            "org_kde_plasma_window_management#{}.show_desktop()",
-                            object.id
+                            "org_kde_plasma_window_management#{}.show_desktop({})",
+                            object.id,
+                            state
                         );
-                        self.show_desktop(object, client, message.uint()?).await
+                        self.show_desktop(object, client, state).await
                     }
                     1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let internal_window_id = message.uint()?;
                         tracing::debug!(
-                            "org_kde_plasma_window_management#{}.get_window()",
-                            object.id
+                            "org_kde_plasma_window_management#{}.get_window({}, {})",
+                            object.id,
+                            id,
+                            internal_window_id
                         );
-                        self.get_window(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.get_window(object, client, id, internal_window_id)
+                            .await
                     }
                     2u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let internal_window_uuid = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_plasma_window_management#{}.get_window_by_uuid()",
-                            object.id
+                            "org_kde_plasma_window_management#{}.get_window_by_uuid({}, {})",
+                            object.id,
+                            id,
+                            internal_window_uuid
                         );
-                        self.get_window_by_uuid(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_window_by_uuid(object, client, id, internal_window_uuid)
+                            .await
                     }
                     3u16 => {
+                        let stacking_order = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_plasma_window_management#{}.get_stacking_order()",
-                            object.id
+                            "org_kde_plasma_window_management#{}.get_stacking_order({})",
+                            object.id,
+                            stacking_order
                         );
-                        self.get_stacking_order(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_stacking_order(object, client, stacking_order)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -8045,7 +8324,7 @@ pub mod plasma_window_management {
                 state: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.show_desktop_changed()",
+                    "-> org_kde_plasma_window_management#{}.show_desktop_changed(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(state).build();
@@ -8061,7 +8340,10 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window_management#{}.window()", object.id);
+                tracing::debug!(
+                    "-> org_kde_plasma_window_management#{}.window(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -8078,7 +8360,7 @@ pub mod plasma_window_management {
                 ids: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.stacking_order_changed()",
+                    "-> org_kde_plasma_window_management#{}.stacking_order_changed(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(ids).build();
@@ -8097,7 +8379,7 @@ pub mod plasma_window_management {
                 uuids: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.stacking_order_uuid_changed()",
+                    "-> org_kde_plasma_window_management#{}.stacking_order_uuid_changed(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -8117,7 +8399,7 @@ pub mod plasma_window_management {
                 uuid: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.window_with_uuid()",
+                    "-> org_kde_plasma_window_management#{}.window_with_uuid(rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -8152,6 +8434,8 @@ pub mod plasma_window_management {
     #[doc = "Only one client can bind this interface at a time."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_window {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaWindow: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_plasma_window";
@@ -8171,143 +8455,142 @@ pub mod plasma_window_management {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_plasma_window#{}.set_state()", object.id);
-                        self.set_state(object, client, message.uint()?, message.uint()?)
-                            .await
+                        let flags = message.uint()?;
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.set_state({}, {})",
+                            object.id,
+                            flags,
+                            state
+                        );
+                        self.set_state(object, client, flags, state).await
                     }
                     1u16 => {
+                        let number = message.uint()?;
                         tracing::debug!(
-                            "org_kde_plasma_window#{}.set_virtual_desktop()",
-                            object.id
+                            "org_kde_plasma_window#{}.set_virtual_desktop({})",
+                            object.id,
+                            number
                         );
-                        self.set_virtual_desktop(object, client, message.uint()?)
-                            .await
+                        self.set_virtual_desktop(object, client, number).await
                     }
                     2u16 => {
+                        let panel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let x = message.uint()?;
+                        let y = message.uint()?;
+                        let width = message.uint()?;
+                        let height = message.uint()?;
                         tracing::debug!(
-                            "org_kde_plasma_window#{}.set_minimized_geometry()",
-                            object.id
+                            "org_kde_plasma_window#{}.set_minimized_geometry({}, {}, {}, {}, {})",
+                            object.id,
+                            panel,
+                            x,
+                            y,
+                            width,
+                            height
                         );
-                        self.set_minimized_geometry(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.set_minimized_geometry(object, client, panel, x, y, width, height)
+                            .await
                     }
                     3u16 => {
+                        let panel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_plasma_window#{}.unset_minimized_geometry()",
-                            object.id
+                            "org_kde_plasma_window#{}.unset_minimized_geometry({})",
+                            object.id,
+                            panel
                         );
-                        self.unset_minimized_geometry(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.unset_minimized_geometry(object, client, panel).await
                     }
                     4u16 => {
-                        tracing::debug!("org_kde_plasma_window#{}.close()", object.id);
+                        tracing::debug!("org_kde_plasma_window#{}.close()", object.id,);
                         self.close(object, client).await
                     }
                     5u16 => {
-                        tracing::debug!("org_kde_plasma_window#{}.request_move()", object.id);
+                        tracing::debug!("org_kde_plasma_window#{}.request_move()", object.id,);
                         self.request_move(object, client).await
                     }
                     6u16 => {
-                        tracing::debug!("org_kde_plasma_window#{}.request_resize()", object.id);
+                        tracing::debug!("org_kde_plasma_window#{}.request_resize()", object.id,);
                         self.request_resize(object, client).await
                     }
                     7u16 => {
-                        tracing::debug!("org_kde_plasma_window#{}.destroy()", object.id);
+                        tracing::debug!("org_kde_plasma_window#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     8u16 => {
-                        tracing::debug!("org_kde_plasma_window#{}.get_icon()", object.id);
-                        self.get_icon(object, client, message.fd()?).await
+                        let fd = message.fd()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.get_icon({})",
+                            object.id,
+                            fd.as_raw_fd()
+                        );
+                        self.get_icon(object, client, fd).await
                     }
                     9u16 => {
+                        let id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_plasma_window#{}.request_enter_virtual_desktop()",
-                            object.id
+                            "org_kde_plasma_window#{}.request_enter_virtual_desktop({})",
+                            object.id,
+                            id
                         );
-                        self.request_enter_virtual_desktop(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.request_enter_virtual_desktop(object, client, id).await
                     }
                     10u16 => {
                         tracing::debug!(
                             "org_kde_plasma_window#{}.request_enter_new_virtual_desktop()",
-                            object.id
+                            object.id,
                         );
                         self.request_enter_new_virtual_desktop(object, client).await
                     }
                     11u16 => {
+                        let id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_plasma_window#{}.request_leave_virtual_desktop()",
-                            object.id
+                            "org_kde_plasma_window#{}.request_leave_virtual_desktop({})",
+                            object.id,
+                            id
                         );
-                        self.request_leave_virtual_desktop(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.request_leave_virtual_desktop(object, client, id).await
                     }
                     12u16 => {
+                        let id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_plasma_window#{}.request_enter_activity()",
-                            object.id
+                            "org_kde_plasma_window#{}.request_enter_activity({})",
+                            object.id,
+                            id
                         );
-                        self.request_enter_activity(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.request_enter_activity(object, client, id).await
                     }
                     13u16 => {
+                        let id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "org_kde_plasma_window#{}.request_leave_activity()",
-                            object.id
+                            "org_kde_plasma_window#{}.request_leave_activity({})",
+                            object.id,
+                            id
                         );
-                        self.request_leave_activity(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.request_leave_activity(object, client, id).await
                     }
                     14u16 => {
-                        tracing::debug!("org_kde_plasma_window#{}.send_to_output()", object.id);
-                        self.send_to_output(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.send_to_output({})",
+                            object.id,
+                            output
+                        );
+                        self.send_to_output(object, client, output).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -8438,7 +8721,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 title: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.title_changed()", object.id);
+                tracing::debug!("-> org_kde_plasma_window#{}.title_changed(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(title))
                     .build();
@@ -8455,7 +8738,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 app_id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.app_id_changed()", object.id);
+                tracing::debug!("-> org_kde_plasma_window#{}.app_id_changed(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(app_id))
                     .build();
@@ -8473,7 +8756,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 flags: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.state_changed()", object.id);
+                tracing::debug!("-> org_kde_plasma_window#{}.state_changed(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(flags).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -8492,7 +8775,7 @@ pub mod plasma_window_management {
                 number: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.virtual_desktop_changed()",
+                    "-> org_kde_plasma_window#{}.virtual_desktop_changed(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(number).build();
@@ -8509,7 +8792,7 @@ pub mod plasma_window_management {
                 name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.themed_icon_name_changed()",
+                    "-> org_kde_plasma_window#{}.themed_icon_name_changed(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -8559,7 +8842,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 parent: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.parent_window()", object.id);
+                tracing::debug!("-> org_kde_plasma_window#{}.parent_window(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(parent)
                     .build();
@@ -8579,7 +8862,10 @@ pub mod plasma_window_management {
                 width: u32,
                 height: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.geometry()", object.id);
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.geometry(rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
                     .put_int(y)
@@ -8615,7 +8901,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 pid: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.pid_changed()", object.id);
+                tracing::debug!("-> org_kde_plasma_window#{}.pid_changed(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(pid).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 10u16, payload, fds))
@@ -8630,7 +8916,7 @@ pub mod plasma_window_management {
                 id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.virtual_desktop_entered()",
+                    "-> org_kde_plasma_window#{}.virtual_desktop_entered(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -8650,7 +8936,7 @@ pub mod plasma_window_management {
                 is: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.virtual_desktop_left()",
+                    "-> org_kde_plasma_window#{}.virtual_desktop_left(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -8670,7 +8956,10 @@ pub mod plasma_window_management {
                 service_name: String,
                 object_path: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.application_menu()", object.id);
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.application_menu(rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(service_name))
                     .put_string(Some(object_path))
@@ -8687,7 +8976,10 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.activity_entered()", object.id);
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.activity_entered(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(id))
                     .build();
@@ -8704,7 +8996,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.activity_left()", object.id);
+                tracing::debug!("-> org_kde_plasma_window#{}.activity_left(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(id))
                     .build();
@@ -8722,7 +9014,7 @@ pub mod plasma_window_management {
                 resource_name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.resource_name_changed()",
+                    "-> org_kde_plasma_window#{}.resource_name_changed(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -8744,7 +9036,10 @@ pub mod plasma_window_management {
                 width: u32,
                 height: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.client_geometry()", object.id);
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.client_geometry(rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
                     .put_int(y)
@@ -8762,6 +9057,8 @@ pub mod plasma_window_management {
     #[doc = "when an application is about to be activated."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_activation_feedback {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_activation_feedback interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaActivationFeedback: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_plasma_activation_feedback";
@@ -8783,7 +9080,7 @@ pub mod plasma_window_management {
                     0u16 => {
                         tracing::debug!(
                             "org_kde_plasma_activation_feedback#{}.destroy()",
-                            object.id
+                            object.id,
                         );
                         self.destroy(object, client).await
                     }
@@ -8807,7 +9104,7 @@ pub mod plasma_window_management {
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_activation_feedback#{}.activation()",
+                    "-> org_kde_plasma_activation_feedback#{}.activation(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -8822,6 +9119,8 @@ pub mod plasma_window_management {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_activation {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_activation interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaActivation: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_plasma_activation";
@@ -8841,7 +9140,7 @@ pub mod plasma_window_management {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("org_kde_plasma_activation#{}.destroy()", object.id);
+                        tracing::debug!("org_kde_plasma_activation#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -8860,7 +9159,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 app_id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_activation#{}.app_id()", object.id);
+                tracing::debug!("-> org_kde_plasma_activation#{}.app_id(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(app_id))
                     .build();
@@ -8888,6 +9187,8 @@ pub mod plasma_window_management {
     #[doc = "and destroys this object."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_stacking_order {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_stacking_order interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaStackingOrder: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_plasma_stacking_order";
@@ -8915,7 +9216,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 uuid: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_stacking_order#{}.window()", object.id);
+                tracing::debug!("-> org_kde_plasma_stacking_order#{}.window(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(uuid))
                     .build();
@@ -8947,6 +9248,8 @@ pub mod zkde_screencast_unstable_v1 {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod zkde_screencast_unstable_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -8988,83 +9291,75 @@ pub mod zkde_screencast_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let stream = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let pointer = message.uint()?;
                         tracing::debug!(
-                            "zkde_screencast_unstable_v1#{}.stream_output()",
-                            object.id
+                            "zkde_screencast_unstable_v1#{}.stream_output({}, {}, {})",
+                            object.id,
+                            stream,
+                            output,
+                            pointer
                         );
-                        self.stream_output(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.stream_output(object, client, stream, output, pointer)
+                            .await
                     }
                     1u16 => {
+                        let stream = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let window_uuid = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let pointer = message.uint()?;
                         tracing::debug!(
-                            "zkde_screencast_unstable_v1#{}.stream_window()",
-                            object.id
+                            "zkde_screencast_unstable_v1#{}.stream_window({}, {}, {})",
+                            object.id,
+                            stream,
+                            window_uuid,
+                            pointer
                         );
-                        self.stream_window(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.stream_window(object, client, stream, window_uuid, pointer)
+                            .await
                     }
                     2u16 => {
-                        tracing::debug!("zkde_screencast_unstable_v1#{}.destroy()", object.id);
+                        tracing::debug!("zkde_screencast_unstable_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     3u16 => {
-                        tracing::debug!(
-                            "zkde_screencast_unstable_v1#{}.stream_virtual_output()",
-                            object.id
-                        );
+                        let stream = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        let scale = message.fixed()?;
+                        let pointer = message.uint()?;
+                        tracing :: debug ! ("zkde_screencast_unstable_v1#{}.stream_virtual_output({}, {}, {}, {}, {}, {})" , object . id , stream , name , width , height , scale , pointer);
                         self.stream_virtual_output(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message.int()?,
-                            message.fixed()?,
-                            message.uint()?,
+                            object, client, stream, name, width, height, scale, pointer,
                         )
                         .await
                     }
                     4u16 => {
-                        tracing::debug!(
-                            "zkde_screencast_unstable_v1#{}.stream_region()",
-                            object.id
-                        );
+                        let stream = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.uint()?;
+                        let height = message.uint()?;
+                        let scale = message.fixed()?;
+                        let pointer = message.uint()?;
+                        tracing :: debug ! ("zkde_screencast_unstable_v1#{}.stream_region({}, {}, {}, {}, {}, {}, {})" , object . id , stream , x , y , width , height , scale , pointer);
                         self.stream_region(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message.int()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.fixed()?,
-                            message.uint()?,
+                            object, client, stream, x, y, width, height, scale, pointer,
                         )
                         .await
                     }
@@ -9120,6 +9415,8 @@ pub mod zkde_screencast_unstable_v1 {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod zkde_screencast_stream_unstable_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zkde_screencast_stream_unstable_v1 interface. See the module level documentation for more info"]
         pub trait ZkdeScreencastStreamUnstableV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zkde_screencast_stream_unstable_v1";
@@ -9139,7 +9436,7 @@ pub mod zkde_screencast_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zkde_screencast_stream_unstable_v1#{}.close()", object.id);
+                        tracing::debug!("zkde_screencast_stream_unstable_v1#{}.close()", object.id,);
                         self.close(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -9172,7 +9469,7 @@ pub mod zkde_screencast_unstable_v1 {
                 node: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zkde_screencast_stream_unstable_v1#{}.created()",
+                    "-> zkde_screencast_stream_unstable_v1#{}.created(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(node).build();
@@ -9188,7 +9485,7 @@ pub mod zkde_screencast_unstable_v1 {
                 error: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zkde_screencast_stream_unstable_v1#{}.failed()",
+                    "-> zkde_screencast_stream_unstable_v1#{}.failed(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
