@@ -1677,7 +1677,7 @@ pub mod color_management_v1 {
                 msg: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xx_image_description_v4#{}.failed({}, {})",
+                    "-> xx_image_description_v4#{}.failed({}, \"{}\")",
                     object.id,
                     cause,
                     msg
@@ -2902,7 +2902,7 @@ pub mod weston_debug {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "weston_debug_v1#{}.subscribe({}, {}, {})",
+                            "weston_debug_v1#{}.subscribe(\"{}\", {}, {})",
                             object.id,
                             name,
                             streamfd.as_raw_fd(),
@@ -2949,7 +2949,7 @@ pub mod weston_debug {
                 description: Option<String>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> weston_debug_v1#{}.available({}, {})",
+                    "-> weston_debug_v1#{}.available(\"{}\", \"{}\")",
                     object.id,
                     name,
                     description
@@ -3044,7 +3044,7 @@ pub mod weston_debug {
                 message: Option<String>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> weston_debug_stream_v1#{}.failure({})",
+                    "-> weston_debug_stream_v1#{}.failure(\"{}\")",
                     object.id,
                     message
                         .as_ref()
@@ -3890,7 +3890,7 @@ pub mod weston_output_capture {
                 msg: Option<String>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> weston_capture_source_v1#{}.failed({})",
+                    "-> weston_capture_source_v1#{}.failed(\"{}\")",
                     object.id,
                     msg.as_ref().map_or("null".to_string(), |v| v.to_string())
                 );
@@ -4080,14 +4080,14 @@ pub mod weston_test {
                         let device = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("weston_test#{}.device_release({})", object.id, device);
+                        tracing::debug!("weston_test#{}.device_release(\"{}\")", object.id, device);
                         self.device_release(object, client, device).await
                     }
                     7u16 => {
                         let device = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("weston_test#{}.device_add({})", object.id, device);
+                        tracing::debug!("weston_test#{}.device_add(\"{}\")", object.id, device);
                         self.device_add(object, client, device).await
                     }
                     8u16 => {
@@ -4313,7 +4313,7 @@ pub mod weston_test {
                         let test_name = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("weston_test_runner#{}.run({})", object.id, test_name);
+                        tracing::debug!("weston_test_runner#{}.run(\"{}\")", object.id, test_name);
                         self.run(object, client, test_name).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -4438,7 +4438,7 @@ pub mod weston_touch_calibration {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "weston_touch_calibration#{}.create_calibrator({}, {}, {})",
+                            "weston_touch_calibration#{}.create_calibrator({}, \"{}\", {})",
                             object.id,
                             surface,
                             device,
@@ -4453,10 +4453,10 @@ pub mod weston_touch_calibration {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let matrix = message.array()?;
                         tracing::debug!(
-                            "weston_touch_calibration#{}.save({}, {})",
+                            "weston_touch_calibration#{}.save(\"{}\", array[{}])",
                             object.id,
                             device,
-                            matrix
+                            matrix.len()
                         );
                         self.save(object, client, device, matrix).await
                     }
@@ -4532,7 +4532,7 @@ pub mod weston_touch_calibration {
                 head: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> weston_touch_calibration#{}.touch_device({}, {})",
+                    "-> weston_touch_calibration#{}.touch_device(\"{}\", \"{}\")",
                     object.id,
                     device,
                     head

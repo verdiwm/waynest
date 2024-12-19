@@ -122,7 +122,7 @@ pub mod wayland {
                 message: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> wl_display#{}.error({}, {}, {})",
+                    "-> wl_display#{}.error({}, {}, \"{}\")",
                     object.id,
                     object_id,
                     code,
@@ -232,7 +232,7 @@ pub mod wayland {
                 version: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> wl_registry#{}.global({}, {}, {})",
+                    "-> wl_registry#{}.global({}, \"{}\", {})",
                     object.id,
                     name,
                     interface,
@@ -1152,7 +1152,7 @@ pub mod wayland {
                         let serial = message.uint()?;
                         let mime_type = message.string()?;
                         tracing::debug!(
-                            "wl_data_offer#{}.accept({}, {})",
+                            "wl_data_offer#{}.accept({}, \"{}\")",
                             object.id,
                             serial,
                             mime_type
@@ -1167,7 +1167,7 @@ pub mod wayland {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let fd = message.fd()?;
                         tracing::debug!(
-                            "wl_data_offer#{}.receive({}, {})",
+                            "wl_data_offer#{}.receive(\"{}\", {})",
                             object.id,
                             mime_type,
                             fd.as_raw_fd()
@@ -1316,7 +1316,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 mime_type: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_offer#{}.offer({})", object.id, mime_type);
+                tracing::debug!("-> wl_data_offer#{}.offer(\"{}\")", object.id, mime_type);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(mime_type))
                     .build();
@@ -1454,7 +1454,7 @@ pub mod wayland {
                         let mime_type = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_data_source#{}.offer({})", object.id, mime_type);
+                        tracing::debug!("wl_data_source#{}.offer(\"{}\")", object.id, mime_type);
                         self.offer(object, client, mime_type).await
                     }
                     1u16 => {
@@ -1519,7 +1519,7 @@ pub mod wayland {
                 mime_type: Option<String>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> wl_data_source#{}.target({})",
+                    "-> wl_data_source#{}.target(\"{}\")",
                     object.id,
                     mime_type
                         .as_ref()
@@ -1544,7 +1544,7 @@ pub mod wayland {
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> wl_data_source#{}.send({}, {})",
+                    "-> wl_data_source#{}.send(\"{}\", {})",
                     object.id,
                     mime_type,
                     fd.as_raw_fd()
@@ -2362,14 +2362,14 @@ pub mod wayland {
                         let title = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_shell_surface#{}.set_title({})", object.id, title);
+                        tracing::debug!("wl_shell_surface#{}.set_title(\"{}\")", object.id, title);
                         self.set_title(object, client, title).await
                     }
                     9u16 => {
                         let class_ = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_shell_surface#{}.set_class({})", object.id, class_);
+                        tracing::debug!("wl_shell_surface#{}.set_class(\"{}\")", object.id, class_);
                         self.set_class(object, client, class_).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -3486,7 +3486,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_seat#{}.name({})", object.id, name);
+                tracing::debug!("-> wl_seat#{}.name(\"{}\")", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -4953,7 +4953,7 @@ pub mod wayland {
                 transform: Transform,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> wl_output#{}.geometry({}, {}, {}, {}, {}, {}, {}, {})",
+                    "-> wl_output#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
                     object.id,
                     x,
                     y,
@@ -5122,7 +5122,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.name({})", object.id, name);
+                tracing::debug!("-> wl_output#{}.name(\"{}\")", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -5151,7 +5151,11 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 description: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.description({})", object.id, description);
+                tracing::debug!(
+                    "-> wl_output#{}.description(\"{}\")",
+                    object.id,
+                    description
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(description))
                     .build();

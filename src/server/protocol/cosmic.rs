@@ -39,10 +39,10 @@ pub mod cosmic_atspi_v1 {
                         let virtual_mods = message.array()?;
                         let key = message.uint()?;
                         tracing::debug!(
-                            "cosmic_atspi_manager_v1#{}.add_key_grab({}, {}, {})",
+                            "cosmic_atspi_manager_v1#{}.add_key_grab({}, array[{}], {})",
                             object.id,
                             mods,
-                            virtual_mods,
+                            virtual_mods.len(),
                             key
                         );
                         self.add_key_grab(object, client, mods, virtual_mods, key)
@@ -53,10 +53,10 @@ pub mod cosmic_atspi_v1 {
                         let virtual_mods = message.array()?;
                         let key = message.uint()?;
                         tracing::debug!(
-                            "cosmic_atspi_manager_v1#{}.remove_key_grab({}, {}, {})",
+                            "cosmic_atspi_manager_v1#{}.remove_key_grab({}, array[{}], {})",
                             object.id,
                             mods,
-                            virtual_mods,
+                            virtual_mods.len(),
                             key
                         );
                         self.remove_key_grab(object, client, mods, virtual_mods, key)
@@ -684,7 +684,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 name: Option<String>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zcosmic_output_head_v1#{}.mirroring({})",
+                    "-> zcosmic_output_head_v1#{}.mirroring(\"{}\")",
                     object.id,
                     name.as_ref().map_or("null".to_string(), |v| v.to_string())
                 );
@@ -1146,17 +1146,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zcosmic_overlap_notification_v1#{}.layer_enter({}, {}, {}, {}, {}, {}, {})",
-                    object.id,
-                    identifier,
-                    exclusive,
-                    layer,
-                    x,
-                    y,
-                    width,
-                    height
-                );
+                tracing :: debug ! ("-> zcosmic_overlap_notification_v1#{}.layer_enter(\"{}\", {}, {}, {}, {}, {}, {})" , object . id , identifier , exclusive , layer , x , y , width , height);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(identifier))
                     .put_uint(exclusive)
@@ -1179,7 +1169,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 identifier: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zcosmic_overlap_notification_v1#{}.layer_leave({})",
+                    "-> zcosmic_overlap_notification_v1#{}.layer_leave(\"{}\")",
                     object.id,
                     identifier
                 );
@@ -2338,7 +2328,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 title: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zcosmic_toplevel_handle_v1#{}.title({})",
+                    "-> zcosmic_toplevel_handle_v1#{}.title(\"{}\")",
                     object.id,
                     title
                 );
@@ -2362,7 +2352,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 app_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zcosmic_toplevel_handle_v1#{}.app_id({})",
+                    "-> zcosmic_toplevel_handle_v1#{}.app_id(\"{}\")",
                     object.id,
                     app_id
                 );

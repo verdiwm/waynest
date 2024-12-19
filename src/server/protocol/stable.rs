@@ -2251,7 +2251,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.name({})", object.id, name);
+                tracing::debug!("-> zwp_tablet_v2#{}.name(\"{}\")", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -2304,7 +2304,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 path: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.path({})", object.id, path);
+                tracing::debug!("-> zwp_tablet_v2#{}.path(\"{}\")", object.id, path);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(path))
                     .build();
@@ -2406,7 +2406,7 @@ pub mod tablet_v2 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let serial = message.uint()?;
                         tracing::debug!(
-                            "zwp_tablet_pad_ring_v2#{}.set_feedback({}, {})",
+                            "zwp_tablet_pad_ring_v2#{}.set_feedback(\"{}\", {})",
                             object.id,
                             description,
                             serial
@@ -2606,7 +2606,7 @@ pub mod tablet_v2 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let serial = message.uint()?;
                         tracing::debug!(
-                            "zwp_tablet_pad_strip_v2#{}.set_feedback({}, {})",
+                            "zwp_tablet_pad_strip_v2#{}.set_feedback(\"{}\", {})",
                             object.id,
                             description,
                             serial
@@ -3058,7 +3058,7 @@ pub mod tablet_v2 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let serial = message.uint()?;
                         tracing::debug!(
-                            "zwp_tablet_pad_v2#{}.set_feedback({}, {}, {})",
+                            "zwp_tablet_pad_v2#{}.set_feedback({}, \"{}\", {})",
                             object.id,
                             button,
                             description,
@@ -3149,7 +3149,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 path: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.path({})", object.id, path);
+                tracing::debug!("-> zwp_tablet_pad_v2#{}.path(\"{}\")", object.id, path);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(path))
                     .build();
@@ -4631,14 +4631,14 @@ pub mod xdg_shell {
                         let title = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("xdg_toplevel#{}.set_title({})", object.id, title);
+                        tracing::debug!("xdg_toplevel#{}.set_title(\"{}\")", object.id, title);
                         self.set_title(object, client, title).await
                     }
                     3u16 => {
                         let app_id = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("xdg_toplevel#{}.set_app_id({})", object.id, app_id);
+                        tracing::debug!("xdg_toplevel#{}.set_app_id(\"{}\")", object.id, app_id);
                         self.set_app_id(object, client, app_id).await
                     }
                     4u16 => {

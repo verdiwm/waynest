@@ -221,7 +221,7 @@ pub mod ivi_input {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let accepted = message.int()?;
                         tracing::debug!(
-                            "ivi_input#{}.set_input_acceptance({}, {}, {})",
+                            "ivi_input#{}.set_input_acceptance({}, \"{}\", {})",
                             object.id,
                             surface,
                             seat,
@@ -270,7 +270,7 @@ pub mod ivi_input {
                 is_default: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ivi_input#{}.seat_created({}, {}, {})",
+                    "-> ivi_input#{}.seat_created(\"{}\", {}, {})",
                     object.id,
                     name,
                     capabilities,
@@ -294,7 +294,7 @@ pub mod ivi_input {
                 capabilities: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ivi_input#{}.seat_capabilities({}, {})",
+                    "-> ivi_input#{}.seat_capabilities(\"{}\", {})",
                     object.id,
                     name,
                     capabilities
@@ -314,7 +314,7 @@ pub mod ivi_input {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_input#{}.seat_destroyed({})", object.id, name);
+                tracing::debug!("-> ivi_input#{}.seat_destroyed(\"{}\")", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -365,7 +365,7 @@ pub mod ivi_input {
                 accepted: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ivi_input#{}.input_acceptance({}, {}, {})",
+                    "-> ivi_input#{}.input_acceptance({}, \"{}\", {})",
                     object.id,
                     surface,
                     seat,
@@ -562,7 +562,7 @@ pub mod ivi_wm {
                 process_name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ivi_wm_screen#{}.connector_name({})",
+                    "-> ivi_wm_screen#{}.connector_name(\"{}\")",
                     object.id,
                     process_name
                 );
@@ -583,7 +583,7 @@ pub mod ivi_wm {
                 message: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ivi_wm_screen#{}.error({}, {})",
+                    "-> ivi_wm_screen#{}.error({}, \"{}\")",
                     object.id,
                     error,
                     message
@@ -692,7 +692,7 @@ pub mod ivi_wm {
                 message: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ivi_screenshot#{}.error({}, {})",
+                    "-> ivi_screenshot#{}.error({}, \"{}\")",
                     object.id,
                     error,
                     message
@@ -1656,7 +1656,7 @@ pub mod ivi_wm {
                 message: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ivi_wm#{}.surface_error({}, {}, {})",
+                    "-> ivi_wm#{}.surface_error({}, {}, \"{}\")",
                     object.id,
                     object_id,
                     error,
@@ -1682,7 +1682,7 @@ pub mod ivi_wm {
                 message: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ivi_wm#{}.layer_error({}, {}, {})",
+                    "-> ivi_wm#{}.layer_error({}, {}, \"{}\")",
                     object.id,
                     object_id,
                     error,
