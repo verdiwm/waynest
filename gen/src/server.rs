@@ -146,7 +146,7 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
                 #name #tryinto
             });
 
-            tracing_fmt.push(format!("{{}}"));
+            tracing_fmt.push("{}");
             tracing_args.push(quote! { #name #fd_print #map_display });
         }
 
@@ -218,26 +218,41 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
             quote! {client: &mut crate::server::Client},
         ];
 
+        let mut tracing_fmt = Vec::new();
         let mut tracing_args = Vec::new();
 
         for arg in &event.args {
             let mut ty = arg.to_rust_type_token(arg.find_protocol(&pairs).as_ref().unwrap_or(pair));
 
+            let mut map_display = quote! {};
+            let mut fd_print = quote! {};
+
             if arg.allow_null {
                 ty = quote! {Option<#ty>};
+                map_display = quote! {.as_ref().map_or("null".to_string(), |v| v.to_string())}
+            }
+
+            if arg.ty.is_fd() {
+                fd_print = quote! { .as_raw_fd() }
             }
 
             let name = make_ident(arg.name.to_snek_case());
 
             args.push(quote! {#name: #ty});
 
-            tracing_args.push("rq");
+            if !arg.ty.is_array() {
+                tracing_fmt.push("{}");
+                tracing_args.push(quote! { #name #fd_print #map_display });
+            } else {
+                tracing_fmt.push("array[{}]");
+                tracing_args.push(quote! { #name .len() });
+            }
         }
 
-        let tracing_args = tracing_args.join(", ");
+        let tracing_fmt = tracing_fmt.join(", ");
 
         let tracing_inner = format!(
-            "-> {interface}#{{}}.{event}({tracing_args})",
+            "-> {interface}#{{}}.{event}({tracing_fmt})",
             interface = interface.name,
             event = event.name.to_snek_case()
         );
@@ -289,7 +304,7 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
         events.push(quote! {
             #(#docs)*
             async fn #name(#(#args),*) -> crate::server::Result<()> {
-                tracing::debug!(#tracing_inner, object.id);
+                tracing::debug!(#tracing_inner, object.id, #(#tracing_args),*);
 
                 let (payload,fds) = crate::wire::PayloadBuilder::new()
                     #(#build_args)*

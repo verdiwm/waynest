@@ -77,6 +77,11 @@ pub mod fullscreen_shell_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Hints to indicate to the compositor how to deal with a conflict"]
         #[doc = "between the dimensions of the surface and the dimensions of the"]
         #[doc = "output. The compositor is free to ignore this parameter."]
@@ -108,6 +113,11 @@ pub mod fullscreen_shell_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for PresentMethod {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "These errors can be emitted in response to wl_fullscreen_shell requests."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -126,6 +136,11 @@ pub mod fullscreen_shell_unstable_v1 {
                     1u32 => Ok(Self::Role),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_fullscreen_shell_v1 interface. See the module level documentation for more info"]
@@ -898,6 +913,11 @@ pub mod input_method_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Position {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zwp_input_panel_surface_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputPanelSurfaceV1 {
             const INTERFACE: &'static str = "zwp_input_panel_surface_v1";
@@ -1176,6 +1196,11 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                     0u32 => Ok(Self::AlreadyInhibited),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_keyboard_shortcuts_inhibit_manager_v1 interface. See the module level documentation for more info"]
@@ -1584,11 +1609,21 @@ pub mod linux_dmabuf_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInvert = 1u32 ; # [doc = "content is interlaced"] const Interlaced = 2u32 ; # [doc = "bottom field first"] const BottomFirst = 4u32 ; } }
         impl TryFrom<u32> for Flags {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Flags {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_linux_buffer_params_v1 interface. See the module level documentation for more info"]
@@ -1838,6 +1873,11 @@ pub mod linux_dmabuf_unstable_v1 {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
+        impl std::fmt::Display for TrancheFlags {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zwp_linux_dmabuf_feedback_v1 interface. See the module level documentation for more info"]
         pub trait ZwpLinuxDmabufFeedbackV1 {
             const INTERFACE: &'static str = "zwp_linux_dmabuf_feedback_v1";
@@ -2022,6 +2062,11 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zwp_linux_explicit_synchronization_v1 interface. See the module level documentation for more info"]
         pub trait ZwpLinuxExplicitSynchronizationV1 {
             const INTERFACE: &'static str = "zwp_linux_explicit_synchronization_v1";
@@ -2148,6 +2193,11 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                     5u32 => Ok(Self::NoBuffer),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_linux_surface_synchronization_v1 interface. See the module level documentation for more info"]
@@ -2376,6 +2426,11 @@ pub mod pointer_constraints_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "These values represent different lifetime semantics. They are passed"]
         #[doc = "as arguments to the factory requests to specify how the constraint"]
         #[doc = "lifetimes should be managed."]
@@ -2394,6 +2449,11 @@ pub mod pointer_constraints_unstable_v1 {
                     2u32 => Ok(Self::Persistent),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Lifetime {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_pointer_constraints_v1 interface. See the module level documentation for more info"]
@@ -3813,6 +3873,11 @@ pub mod tablet_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Type {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Describes extra capabilities on a tablet."]
         #[doc = ""]
         #[doc = "Any tool must provide x and y values, extra axes are"]
@@ -3848,6 +3913,11 @@ pub mod tablet_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Describes the physical state of a button that produced the button event."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -3868,6 +3938,11 @@ pub mod tablet_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for ButtonState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3882,6 +3957,11 @@ pub mod tablet_unstable_v1 {
                     0u32 => Ok(Self::Role),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_tablet_tool_v1 interface. See the module level documentation for more info"]
@@ -4487,6 +4567,11 @@ pub mod tablet_unstable_v2 {
                 }
             }
         }
+        impl std::fmt::Display for Type {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Describes extra capabilities on a tablet."]
         #[doc = ""]
         #[doc = "Any tool must provide x and y values, extra axes are"]
@@ -4522,6 +4607,11 @@ pub mod tablet_unstable_v2 {
                 }
             }
         }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Describes the physical state of a button that produced the button event."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -4542,6 +4632,11 @@ pub mod tablet_unstable_v2 {
                 }
             }
         }
+        impl std::fmt::Display for ButtonState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4556,6 +4651,11 @@ pub mod tablet_unstable_v2 {
                     0u32 => Ok(Self::Role),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_tablet_tool_v2 interface. See the module level documentation for more info"]
@@ -4942,6 +5042,11 @@ pub mod tablet_unstable_v2 {
                 }
             }
         }
+        impl std::fmt::Display for Source {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zwp_tablet_pad_ring_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletPadRingV2 {
             const INTERFACE: &'static str = "zwp_tablet_pad_ring_v2";
@@ -5075,6 +5180,11 @@ pub mod tablet_unstable_v2 {
                     1u32 => Ok(Self::Finger),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Source {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_strip_v2 interface. See the module level documentation for more info"]
@@ -5361,6 +5471,11 @@ pub mod tablet_unstable_v2 {
                 }
             }
         }
+        impl std::fmt::Display for ButtonState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zwp_tablet_pad_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletPadV2 {
             const INTERFACE: &'static str = "zwp_tablet_pad_v2";
@@ -5531,6 +5646,11 @@ pub mod text_input_unstable_v1 {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
+        impl std::fmt::Display for ContentHint {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
         #[doc = "The content purpose allows to specify the primary purpose of a text"]
         #[doc = "input."]
         #[doc = ""]
@@ -5588,6 +5708,11 @@ pub mod text_input_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for ContentPurpose {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5619,6 +5744,11 @@ pub mod text_input_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for PreeditStyle {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5639,6 +5769,11 @@ pub mod text_input_unstable_v1 {
                     2u32 => Ok(Self::Rtl),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for TextDirection {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_text_input_v1 interface. See the module level documentation for more info"]
@@ -6068,11 +6203,21 @@ pub mod text_input_unstable_v3 {
                 }
             }
         }
+        impl std::fmt::Display for ChangeCause {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behavior"] const None = 0u32 ; # [doc = "suggest word completions"] const Completion = 1u32 ; # [doc = "suggest word corrections"] const Spellcheck = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just Latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; } }
         impl TryFrom<u32> for ContentHint {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for ContentHint {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "The content purpose allows to specify the primary purpose of a text"]
@@ -6133,6 +6278,11 @@ pub mod text_input_unstable_v3 {
                     13u32 => Ok(Self::Terminal),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for ContentPurpose {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_text_input_v3 interface. See the module level documentation for more info"]
@@ -6674,6 +6824,11 @@ pub mod xdg_decoration_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "These values describe window decoration modes."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -6692,6 +6847,11 @@ pub mod xdg_decoration_unstable_v1 {
                     2u32 => Ok(Self::ServerSide),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Mode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zxdg_toplevel_decoration_v1 interface. See the module level documentation for more info"]
@@ -7088,6 +7248,11 @@ pub mod xdg_foreign_unstable_v2 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zxdg_exporter_v2 interface. See the module level documentation for more info"]
         pub trait ZxdgExporterV2 {
             const INTERFACE: &'static str = "zxdg_exporter_v2";
@@ -7264,6 +7429,11 @@ pub mod xdg_foreign_unstable_v2 {
                     0u32 => Ok(Self::InvalidSurface),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zxdg_imported_v2 interface. See the module level documentation for more info"]
@@ -7564,6 +7734,11 @@ pub mod xdg_shell_unstable_v5 {
                 }
             }
         }
+        impl std::fmt::Display for Version {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -7587,6 +7762,11 @@ pub mod xdg_shell_unstable_v5 {
                     3u32 => Ok(Self::InvalidPopupParent),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xdg_shell interface. See the module level documentation for more info"]
@@ -7784,6 +7964,11 @@ pub mod xdg_shell_unstable_v5 {
                 }
             }
         }
+        impl std::fmt::Display for ResizeEdge {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "The different state values used on the surface. This is designed for"]
         #[doc = "state values like maximized, fullscreen. It is paired with the"]
         #[doc = "configure event to ensure that both the client and the compositor"]
@@ -7825,6 +8010,11 @@ pub mod xdg_shell_unstable_v5 {
                     4u32 => Ok(Self::Activated),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for State {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xdg_surface interface. See the module level documentation for more info"]
@@ -8421,6 +8611,11 @@ pub mod xdg_shell_unstable_v6 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zxdg_shell_v6 interface. See the module level documentation for more info"]
         pub trait ZxdgShellV6 {
             const INTERFACE: &'static str = "zxdg_shell_v6";
@@ -8564,11 +8759,21 @@ pub mod xdg_shell_unstable_v6 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Anchor : u32 { # [doc = "the center of the anchor rectangle"] const None = 0u32 ; # [doc = "the top edge of the anchor rectangle"] const Top = 1u32 ; # [doc = "the bottom edge of the anchor rectangle"] const Bottom = 2u32 ; # [doc = "the left edge of the anchor rectangle"] const Left = 4u32 ; # [doc = "the right edge of the anchor rectangle"] const Right = 8u32 ; } }
         impl TryFrom<u32> for Anchor {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Anchor {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Gravity : u32 { # [doc = "center over the anchor edge"] const None = 0u32 ; # [doc = "position above the anchor edge"] const Top = 1u32 ; # [doc = "position below the anchor edge"] const Bottom = 2u32 ; # [doc = "position to the left of the anchor edge"] const Left = 4u32 ; # [doc = "position to the right of the anchor edge"] const Right = 8u32 ; } }
@@ -8578,11 +8783,21 @@ pub mod xdg_shell_unstable_v6 {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
+        impl std::fmt::Display for Gravity {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
         bitflags::bitflags! { # [doc = "The constraint adjustment value define ways the compositor will adjust"] # [doc = "the position of the surface, if the unadjusted position would result"] # [doc = "in the surface being partly constrained."] # [doc = ""] # [doc = "Whether a surface is considered 'constrained' is left to the compositor"] # [doc = "to determine. For example, the surface may be partly outside the"] # [doc = "compositor's defined 'work area', thus necessitating the child surface's"] # [doc = "position be adjusted until it is entirely inside the work area."] # [doc = ""] # [doc = "The adjustments can be combined, according to a defined precedence: 1)"] # [doc = "Flip, 2) Slide, 3) Resize."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ConstraintAdjustment : u32 { const None = 0u32 ; const SlideX = 1u32 ; const SlideY = 2u32 ; const FlipX = 4u32 ; const FlipY = 8u32 ; const ResizeX = 16u32 ; const ResizeY = 32u32 ; } }
         impl TryFrom<u32> for ConstraintAdjustment {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for ConstraintAdjustment {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the zxdg_positioner_v6 interface. See the module level documentation for more info"]
@@ -8826,6 +9041,11 @@ pub mod xdg_shell_unstable_v6 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zxdg_surface_v6 interface. See the module level documentation for more info"]
         pub trait ZxdgSurfaceV6 {
             const INTERFACE: &'static str = "zxdg_surface_v6";
@@ -9040,6 +9260,11 @@ pub mod xdg_shell_unstable_v6 {
                 }
             }
         }
+        impl std::fmt::Display for ResizeEdge {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "The different state values used on the surface. This is designed for"]
         #[doc = "state values like maximized, fullscreen. It is paired with the"]
         #[doc = "configure event to ensure that both the client and the compositor"]
@@ -9069,6 +9294,11 @@ pub mod xdg_shell_unstable_v6 {
                     4u32 => Ok(Self::Activated),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for State {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zxdg_toplevel_v6 interface. See the module level documentation for more info"]
@@ -9601,6 +9831,11 @@ pub mod xdg_shell_unstable_v6 {
                     0u32 => Ok(Self::InvalidGrab),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zxdg_popup_v6 interface. See the module level documentation for more info"]

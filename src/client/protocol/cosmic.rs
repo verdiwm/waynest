@@ -372,6 +372,11 @@ pub mod cosmic_output_management_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zcosmic_output_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicOutputManagerV1 {
             const INTERFACE: &'static str = "zcosmic_output_manager_v1";
@@ -507,6 +512,11 @@ pub mod cosmic_output_management_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for AdaptiveSyncAvailability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -527,6 +537,11 @@ pub mod cosmic_output_management_unstable_v1 {
                     2u32 => Ok(Self::Always),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for AdaptiveSyncStateExt {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zcosmic_output_head_v1 interface. See the module level documentation for more info"]
@@ -608,6 +623,11 @@ pub mod cosmic_output_management_unstable_v1 {
                     2u32 => Ok(Self::MirroredHeadBusy),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zcosmic_output_configuration_v1 interface. See the module level documentation for more info"]
@@ -937,11 +957,21 @@ pub mod cosmic_screencopy_unstable_v2 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Options : u32 { # [doc = "paint cursors onto captured frames"] const PaintCursors = 1u32 ; } }
         impl TryFrom<u32> for Options {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Options {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the zcosmic_screencopy_manager_v2 interface. See the module level documentation for more info"]
@@ -1177,6 +1207,11 @@ pub mod cosmic_screencopy_unstable_v2 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1194,6 +1229,11 @@ pub mod cosmic_screencopy_unstable_v2 {
                     2u32 => Ok(Self::Stopped),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for FailureReason {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zcosmic_screencopy_frame_v2 interface. See the module level documentation for more info"]
@@ -1381,6 +1421,11 @@ pub mod cosmic_screencopy_unstable_v2 {
                     1u32 => Ok(Self::DuplicateSession),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zcosmic_screencopy_cursor_session_v2 interface. See the module level documentation for more info"]
@@ -1612,6 +1657,11 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for State {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zcosmic_toplevel_handle_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicToplevelHandleV1 {
             const INTERFACE: &'static str = "zcosmic_toplevel_handle_v1";
@@ -1762,6 +1812,11 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for ZcosmicToplelevelManagementCapabilitiesV1 {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1776,6 +1831,11 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                     0u32 => Ok(Self::InvalidRectangle),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zcosmic_toplevel_manager_v1 interface. See the module level documentation for more info"]

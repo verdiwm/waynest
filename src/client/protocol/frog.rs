@@ -100,6 +100,11 @@ pub mod frog_color_management_v1 {
                 }
             }
         }
+        impl std::fmt::Display for TransferFunction {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -122,6 +127,11 @@ pub mod frog_color_management_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Primaries {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Extended information on render intents described"]
         #[doc = "here can be found in ICC.1:2022:"]
         #[doc = ""]
@@ -140,6 +150,11 @@ pub mod frog_color_management_v1 {
                     0u32 => Ok(Self::Perceptual),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for RenderIntent {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the frog_color_managed_surface interface. See the module level documentation for more info"]
@@ -334,6 +349,11 @@ pub mod frog_fifo_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the frog_fifo_manager_v1 interface. See the module level documentation for more info"]
         pub trait FrogFifoManagerV1 {
             const INTERFACE: &'static str = "frog_fifo_manager_v1";
@@ -410,6 +430,11 @@ pub mod frog_fifo_v1 {
                     0u32 => Ok(Self::SurfaceDestroyed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the frog_fifo_surface_v1 interface. See the module level documentation for more info"]

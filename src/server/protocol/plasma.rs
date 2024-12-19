@@ -536,6 +536,11 @@ pub mod fullscreen_shell {
                 }
             }
         }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Hints to indicate to the compositor how to deal with a conflict"]
         #[doc = "between the dimensions of the surface and the dimensions of the"]
         #[doc = "output. The compositor is free to ignore this parameter."]
@@ -567,6 +572,11 @@ pub mod fullscreen_shell {
                 }
             }
         }
+        impl std::fmt::Display for PresentMethod {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "These errors can be emitted in response to wl_fullscreen_shell requests"]
         #[repr(u32)]
         #[non_exhaustive]
@@ -582,6 +592,11 @@ pub mod fullscreen_shell {
                     0u32 => Ok(Self::InvalidMethod),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the _wl_fullscreen_shell interface. See the module level documentation for more info"]
@@ -746,7 +761,11 @@ pub mod fullscreen_shell {
                 client: &mut crate::server::Client,
                 capability: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> _wl_fullscreen_shell#{}.capability(rq)", object.id);
+                tracing::debug!(
+                    "-> _wl_fullscreen_shell#{}.capability({})",
+                    object.id,
+                    capability
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(capability)
                     .build();
@@ -795,7 +814,7 @@ pub mod fullscreen_shell {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> _wl_fullscreen_shell_mode_feedback#{}.mode_successful()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -816,7 +835,7 @@ pub mod fullscreen_shell {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> _wl_fullscreen_shell_mode_feedback#{}.mode_failed()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -837,7 +856,7 @@ pub mod fullscreen_shell {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> _wl_fullscreen_shell_mode_feedback#{}.present_cancelled()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -961,7 +980,7 @@ pub mod idle {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_idle_timeout#{}.idle()", object.id);
+                tracing::debug!("-> org_kde_kwin_idle_timeout#{}.idle()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -973,7 +992,7 @@ pub mod idle {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_idle_timeout#{}.resumed()", object.id);
+                tracing::debug!("-> org_kde_kwin_idle_timeout#{}.resumed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -1009,6 +1028,11 @@ pub mod keystate {
                 }
             }
         }
+        impl std::fmt::Display for Key {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1026,6 +1050,11 @@ pub mod keystate {
                     2u32 => Ok(Self::Locked),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for State {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_keystate interface. See the module level documentation for more info"]
@@ -1075,8 +1104,10 @@ pub mod keystate {
                 state: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_kwin_keystate#{}.state_changed(rq, rq)",
-                    object.id
+                    "-> org_kde_kwin_keystate#{}.state_changed({}, {})",
+                    object.id,
+                    key,
+                    state
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(key)
@@ -1210,6 +1241,11 @@ pub mod outputmanagement {
                     2u32 => Ok(Self::Automatic),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for VrrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_outputconfiguration interface. See the module level documentation for more info"]
@@ -1475,7 +1511,7 @@ pub mod outputmanagement {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> org_kde_kwin_outputconfiguration#{}.applied()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -1489,7 +1525,7 @@ pub mod outputmanagement {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputconfiguration#{}.failed()", object.id);
+                tracing::debug!("-> org_kde_kwin_outputconfiguration#{}.failed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -1548,6 +1584,11 @@ pub mod org_kde_kwin_outputdevice {
                 }
             }
         }
+        impl std::fmt::Display for Subpixel {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "This describes the transform, that a compositor will apply to a"]
         #[doc = "surface to compensate for the rotation or mirroring of an"]
         #[doc = "output device."]
@@ -1587,6 +1628,11 @@ pub mod org_kde_kwin_outputdevice {
                 }
             }
         }
+        impl std::fmt::Display for Transform {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "These flags describe properties of an output mode. They are"]
         #[doc = "used in the flags bitfield of the mode event."]
         #[repr(u32)]
@@ -1606,6 +1652,11 @@ pub mod org_kde_kwin_outputdevice {
                     2u32 => Ok(Self::Preferred),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Mode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Describes whether a device is enabled, i.e. device is used to"]
@@ -1628,11 +1679,21 @@ pub mod org_kde_kwin_outputdevice {
                 }
             }
         }
+        impl std::fmt::Display for Enablement {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this outputdevice can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; } }
         impl TryFrom<u32> for Capability {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Describes when the compositor may employ variable refresh rate"]
@@ -1653,6 +1714,11 @@ pub mod org_kde_kwin_outputdevice {
                     2u32 => Ok(Self::Automatic),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for VrrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_outputdevice interface. See the module level documentation for more info"]
@@ -1693,8 +1759,16 @@ pub mod org_kde_kwin_outputdevice {
                 transform: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_kwin_outputdevice#{}.geometry(rq, rq, rq, rq, rq, rq, rq, rq)",
-                    object.id
+                    "-> org_kde_kwin_outputdevice#{}.geometry({}, {}, {}, {}, {}, {}, {}, {})",
+                    object.id,
+                    x,
+                    y,
+                    physical_width,
+                    physical_height,
+                    subpixel,
+                    make,
+                    model,
+                    transform
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
@@ -1743,8 +1817,13 @@ pub mod org_kde_kwin_outputdevice {
                 mode_id: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_kwin_outputdevice#{}.mode(rq, rq, rq, rq, rq)",
-                    object.id
+                    "-> org_kde_kwin_outputdevice#{}.mode({}, {}, {}, {}, {})",
+                    object.id,
+                    flags,
+                    width,
+                    height,
+                    refresh,
+                    mode_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(flags)
@@ -1768,7 +1847,7 @@ pub mod org_kde_kwin_outputdevice {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.done()", object.id);
+                tracing::debug!("-> org_kde_kwin_outputdevice#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -1799,7 +1878,11 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 factor: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.scale(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_kwin_outputdevice#{}.scale({})",
+                    object.id,
+                    factor
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(factor).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -1818,7 +1901,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 raw: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.edid(rq)", object.id);
+                tracing::debug!("-> org_kde_kwin_outputdevice#{}.edid({})", object.id, raw);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(raw))
                     .build();
@@ -1838,7 +1921,11 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 enabled: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.enabled(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_kwin_outputdevice#{}.enabled({})",
+                    object.id,
+                    enabled
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(enabled).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
@@ -1854,7 +1941,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 uuid: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.uuid(rq)", object.id);
+                tracing::debug!("-> org_kde_kwin_outputdevice#{}.uuid({})", object.id, uuid);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(uuid))
                     .build();
@@ -1890,7 +1977,11 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 factor: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.scalef(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_kwin_outputdevice#{}.scalef({})",
+                    object.id,
+                    factor
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_fixed(factor).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
@@ -1913,8 +2004,11 @@ pub mod org_kde_kwin_outputdevice {
                 blue: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_kwin_outputdevice#{}.colorcurves(rq, rq, rq)",
-                    object.id
+                    "-> org_kde_kwin_outputdevice#{}.colorcurves(array[{}], array[{}], array[{}])",
+                    object.id,
+                    red.len(),
+                    green.len(),
+                    blue.len()
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_array(red)
@@ -1934,8 +2028,9 @@ pub mod org_kde_kwin_outputdevice {
                 serial_number: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_kwin_outputdevice#{}.serial_number(rq)",
-                    object.id
+                    "-> org_kde_kwin_outputdevice#{}.serial_number({})",
+                    object.id,
+                    serial_number
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(serial_number))
@@ -1952,7 +2047,11 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 eisa_id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.eisa_id(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_kwin_outputdevice#{}.eisa_id({})",
+                    object.id,
+                    eisa_id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(eisa_id))
                     .build();
@@ -1970,8 +2069,9 @@ pub mod org_kde_kwin_outputdevice {
                 flags: Capability,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_kwin_outputdevice#{}.capabilities(rq)",
-                    object.id
+                    "-> org_kde_kwin_outputdevice#{}.capabilities({})",
+                    object.id,
+                    flags
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(flags.bits())
@@ -1989,7 +2089,11 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 overscan: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.overscan(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_kwin_outputdevice#{}.overscan({})",
+                    object.id,
+                    overscan
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(overscan)
                     .build();
@@ -2006,7 +2110,11 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 vrr_policy: VrrPolicy,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_outputdevice#{}.vrr_policy(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_kwin_outputdevice#{}.vrr_policy({})",
+                    object.id,
+                    vrr_policy
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(vrr_policy as u32)
                     .build();
@@ -2086,8 +2194,10 @@ pub mod remote_access {
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_kwin_remote_access_manager#{}.buffer_ready(rq, rq)",
-                    object.id
+                    "-> org_kde_kwin_remote_access_manager#{}.buffer_ready({}, {})",
+                    object.id,
+                    id,
+                    output
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(id)
@@ -2145,8 +2255,13 @@ pub mod remote_access {
                 format: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_kwin_remote_buffer#{}.gbm_handle(rq, rq, rq, rq, rq)",
-                    object.id
+                    "-> org_kde_kwin_remote_buffer#{}.gbm_handle({}, {}, {}, {}, {})",
+                    object.id,
+                    fd.as_raw_fd(),
+                    width,
+                    height,
+                    stride,
+                    format
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_fd(fd)
@@ -2311,6 +2426,11 @@ pub mod server_decoration {
                 }
             }
         }
+        impl std::fmt::Display for Mode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinServerDecorationManager: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_manager";
@@ -2377,8 +2497,9 @@ pub mod server_decoration {
                 mode: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_kwin_server_decoration_manager#{}.default_mode(rq)",
-                    object.id
+                    "-> org_kde_kwin_server_decoration_manager#{}.default_mode({})",
+                    object.id,
+                    mode
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(mode).build();
                 client
@@ -2412,6 +2533,11 @@ pub mod server_decoration {
                     2u32 => Ok(Self::Server),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Mode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_server_decoration interface. See the module level documentation for more info"]
@@ -2478,7 +2604,11 @@ pub mod server_decoration {
                 client: &mut crate::server::Client,
                 mode: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_server_decoration#{}.mode(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_kwin_server_decoration#{}.mode({})",
+                    object.id,
+                    mode
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(mode).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -2906,6 +3036,11 @@ pub mod slide {
                 }
             }
         }
+        impl std::fmt::Display for Location {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the org_kde_kwin_slide interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinSlide: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_slide";
@@ -3052,6 +3187,11 @@ pub mod surface_extension {
                 }
             }
         }
+        impl std::fmt::Display for Orientation {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3069,6 +3209,11 @@ pub mod surface_extension {
                     4u32 => Ok(Self::BypassWindowManager),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Windowflag {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the qt_extended_surface interface. See the module level documentation for more info"]
@@ -3169,8 +3314,9 @@ pub mod surface_extension {
                 visible: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> qt_extended_surface#{}.onscreen_visibility(rq)",
-                    object.id
+                    "-> qt_extended_surface#{}.onscreen_visibility({})",
+                    object.id,
+                    visible
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(visible).build();
                 client
@@ -3186,8 +3332,10 @@ pub mod surface_extension {
                 value: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> qt_extended_surface#{}.set_generic_property(rq, rq)",
-                    object.id
+                    "-> qt_extended_surface#{}.set_generic_property({}, array[{}])",
+                    object.id,
+                    name,
+                    value.len()
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
@@ -3203,7 +3351,7 @@ pub mod surface_extension {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> qt_extended_surface#{}.close()", object.id);
+                tracing::debug!("-> qt_extended_surface#{}.close()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -3246,6 +3394,11 @@ pub mod text_input_unstable_v2 {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for ContentHint {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "The content purpose allows to specify the primary purpose of a text"]
@@ -3305,6 +3458,11 @@ pub mod text_input_unstable_v2 {
                 }
             }
         }
+        impl std::fmt::Display for ContentPurpose {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Defines the reason for sending an updated state."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -3331,6 +3489,11 @@ pub mod text_input_unstable_v2 {
                 }
             }
         }
+        impl std::fmt::Display for UpdateState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3348,6 +3511,11 @@ pub mod text_input_unstable_v2 {
                     1u32 => Ok(Self::Visible),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for InputPanelVisibility {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[repr(u32)]
@@ -3387,6 +3555,11 @@ pub mod text_input_unstable_v2 {
                 }
             }
         }
+        impl std::fmt::Display for PreeditStyle {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3407,6 +3580,11 @@ pub mod text_input_unstable_v2 {
                     2u32 => Ok(Self::Rtl),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for TextDirection {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_text_input_v2 interface. See the module level documentation for more info"]
@@ -3668,7 +3846,12 @@ pub mod text_input_unstable_v2 {
                 serial: u32,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.enter(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_text_input_v2#{}.enter({}, {})",
+                    object.id,
+                    serial,
+                    surface
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_object(Some(surface))
@@ -3693,7 +3876,12 @@ pub mod text_input_unstable_v2 {
                 serial: u32,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.leave(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_text_input_v2#{}.leave({}, {})",
+                    object.id,
+                    serial,
+                    surface
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_object(Some(surface))
@@ -3723,8 +3911,13 @@ pub mod text_input_unstable_v2 {
                 height: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_text_input_v2#{}.input_panel_state(rq, rq, rq, rq, rq)",
-                    object.id
+                    "-> zwp_text_input_v2#{}.input_panel_state({}, {}, {}, {}, {})",
+                    object.id,
+                    state,
+                    x,
+                    y,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(state as u32)
@@ -3754,7 +3947,12 @@ pub mod text_input_unstable_v2 {
                 text: String,
                 commit: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.preedit_string(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_text_input_v2#{}.preedit_string({}, {})",
+                    object.id,
+                    text,
+                    commit
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(text))
                     .put_string(Some(commit))
@@ -3779,8 +3977,11 @@ pub mod text_input_unstable_v2 {
                 style: PreeditStyle,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_text_input_v2#{}.preedit_styling(rq, rq, rq)",
-                    object.id
+                    "-> zwp_text_input_v2#{}.preedit_styling({}, {}, {})",
+                    object.id,
+                    index,
+                    length,
+                    style
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(index)
@@ -3806,7 +4007,11 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 index: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.preedit_cursor(rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_text_input_v2#{}.preedit_cursor({})",
+                    object.id,
+                    index
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(index).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
@@ -3826,7 +4031,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 text: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.commit_string(rq)", object.id);
+                tracing::debug!("-> zwp_text_input_v2#{}.commit_string({})", object.id, text);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(text))
                     .build();
@@ -3848,7 +4053,12 @@ pub mod text_input_unstable_v2 {
                 index: i32,
                 anchor: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.cursor_position(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_text_input_v2#{}.cursor_position({}, {})",
+                    object.id,
+                    index,
+                    anchor
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(index)
                     .put_int(anchor)
@@ -3873,8 +4083,10 @@ pub mod text_input_unstable_v2 {
                 after_length: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_text_input_v2#{}.delete_surrounding_text(rq, rq)",
-                    object.id
+                    "-> zwp_text_input_v2#{}.delete_surrounding_text({}, {})",
+                    object.id,
+                    before_length,
+                    after_length
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(before_length)
@@ -3894,7 +4106,11 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 map: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.modifiers_map(rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_text_input_v2#{}.modifiers_map(array[{}])",
+                    object.id,
+                    map.len()
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(map).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 9u16, payload, fds))
@@ -3916,7 +4132,14 @@ pub mod text_input_unstable_v2 {
                 state: u32,
                 modifiers: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.keysym(rq, rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_text_input_v2#{}.keysym({}, {}, {}, {})",
+                    object.id,
+                    time,
+                    sym,
+                    state,
+                    modifiers
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_uint(sym)
@@ -3936,7 +4159,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 language: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.language(rq)", object.id);
+                tracing::debug!("-> zwp_text_input_v2#{}.language({})", object.id, language);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(language))
                     .build();
@@ -3956,7 +4179,11 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 direction: TextDirection,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_text_input_v2#{}.text_direction(rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_text_input_v2#{}.text_direction({})",
+                    object.id,
+                    direction
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(direction as u32)
                     .build();
@@ -3976,8 +4203,10 @@ pub mod text_input_unstable_v2 {
                 after_cursor: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_text_input_v2#{}.configure_surrounding_text(rq, rq)",
-                    object.id
+                    "-> zwp_text_input_v2#{}.configure_surrounding_text({}, {})",
+                    object.id,
+                    before_cursor,
+                    after_cursor
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(before_cursor)
@@ -4000,8 +4229,10 @@ pub mod text_input_unstable_v2 {
                 flags: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_text_input_v2#{}.input_method_changed(rq, rq)",
-                    object.id
+                    "-> zwp_text_input_v2#{}.input_method_changed({}, {})",
+                    object.id,
+                    serial,
+                    flags
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
@@ -4155,6 +4386,11 @@ pub mod text {
                 }
             }
         }
+        impl std::fmt::Display for ContentHint {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "The content purpose allows to specify the primary purpose of a text"]
         #[doc = "input."]
         #[doc = ""]
@@ -4212,6 +4448,11 @@ pub mod text {
                 }
             }
         }
+        impl std::fmt::Display for ContentPurpose {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4243,6 +4484,11 @@ pub mod text {
                 }
             }
         }
+        impl std::fmt::Display for PreeditStyle {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4263,6 +4509,11 @@ pub mod text {
                     2u32 => Ok(Self::Rtl),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for TextDirection {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_text_input interface. See the module level documentation for more info"]
@@ -4502,7 +4753,7 @@ pub mod text {
                 client: &mut crate::server::Client,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.enter(rq)", object.id);
+                tracing::debug!("-> wl_text_input#{}.enter({})", object.id, surface);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(surface))
                     .build();
@@ -4519,7 +4770,7 @@ pub mod text {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.leave()", object.id);
+                tracing::debug!("-> wl_text_input#{}.leave()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -4535,7 +4786,11 @@ pub mod text {
                 client: &mut crate::server::Client,
                 map: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.modifiers_map(rq)", object.id);
+                tracing::debug!(
+                    "-> wl_text_input#{}.modifiers_map(array[{}])",
+                    object.id,
+                    map.len()
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(map).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -4549,7 +4804,11 @@ pub mod text {
                 client: &mut crate::server::Client,
                 state: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.input_panel_state(rq)", object.id);
+                tracing::debug!(
+                    "-> wl_text_input#{}.input_panel_state({})",
+                    object.id,
+                    state
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(state).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -4573,7 +4832,13 @@ pub mod text {
                 text: String,
                 commit: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.preedit_string(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_text_input#{}.preedit_string({}, {}, {})",
+                    object.id,
+                    serial,
+                    text,
+                    commit
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_string(Some(text))
@@ -4599,7 +4864,13 @@ pub mod text {
                 length: u32,
                 style: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.preedit_styling(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_text_input#{}.preedit_styling({}, {}, {})",
+                    object.id,
+                    index,
+                    length,
+                    style
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(index)
                     .put_uint(length)
@@ -4621,7 +4892,7 @@ pub mod text {
                 client: &mut crate::server::Client,
                 index: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.preedit_cursor(rq)", object.id);
+                tracing::debug!("-> wl_text_input#{}.preedit_cursor({})", object.id, index);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(index).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
@@ -4642,7 +4913,12 @@ pub mod text {
                 serial: u32,
                 text: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.commit_string(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_text_input#{}.commit_string({}, {})",
+                    object.id,
+                    serial,
+                    text
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_string(Some(text))
@@ -4663,7 +4939,12 @@ pub mod text {
                 index: i32,
                 anchor: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.cursor_position(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_text_input#{}.cursor_position({}, {})",
+                    object.id,
+                    index,
+                    anchor
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(index)
                     .put_int(anchor)
@@ -4689,8 +4970,10 @@ pub mod text {
                 length: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> wl_text_input#{}.delete_surrounding_text(rq, rq)",
-                    object.id
+                    "-> wl_text_input#{}.delete_surrounding_text({}, {})",
+                    object.id,
+                    index,
+                    length
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(index)
@@ -4717,7 +5000,15 @@ pub mod text {
                 state: u32,
                 modifiers: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.keysym(rq, rq, rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_text_input#{}.keysym({}, {}, {}, {}, {})",
+                    object.id,
+                    serial,
+                    time,
+                    sym,
+                    state,
+                    modifiers
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_uint(time)
@@ -4739,7 +5030,12 @@ pub mod text {
                 serial: u32,
                 language: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.language(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_text_input#{}.language({}, {})",
+                    object.id,
+                    serial,
+                    language
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_string(Some(language))
@@ -4761,7 +5057,12 @@ pub mod text {
                 serial: u32,
                 direction: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_text_input#{}.text_direction(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_text_input#{}.text_direction({}, {})",
+                    object.id,
+                    serial,
+                    direction
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_uint(direction)
@@ -4855,6 +5156,11 @@ pub mod wl_eglstream_controller {
                 }
             }
         }
+        impl std::fmt::Display for PresentMode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "- present_mode: Must be one of wl_eglstream_controller_present_mode. Tells the"]
         #[doc = "server the desired present mode that should be used."]
         #[doc = ""]
@@ -4878,6 +5184,11 @@ pub mod wl_eglstream_controller {
                     1u32 => Ok(Self::FifoLength),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Attrib {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_eglstream_controller interface. See the module level documentation for more info"]
@@ -5051,6 +5362,11 @@ pub mod dpms {
                 }
             }
         }
+        impl std::fmt::Display for Mode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the org_kde_kwin_dpms interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinDpms: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_kwin_dpms";
@@ -5107,7 +5423,11 @@ pub mod dpms {
                 client: &mut crate::server::Client,
                 supported: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_dpms#{}.supported(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_kwin_dpms#{}.supported({})",
+                    object.id,
+                    supported
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(supported)
                     .build();
@@ -5127,7 +5447,7 @@ pub mod dpms {
                 client: &mut crate::server::Client,
                 mode: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_dpms#{}.mode(rq)", object.id);
+                tracing::debug!("-> org_kde_kwin_dpms#{}.mode({})", object.id, mode);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(mode).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -5143,7 +5463,7 @@ pub mod dpms {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_dpms#{}.done()", object.id);
+                tracing::debug!("-> org_kde_kwin_dpms#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -5429,6 +5749,11 @@ pub mod kde_lockscreen_overlay_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the kde_lockscreen_overlay_v1 interface. See the module level documentation for more info"]
         pub trait KdeLockscreenOverlayV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "kde_lockscreen_overlay_v1";
@@ -5535,6 +5860,11 @@ pub mod kde_output_device_v2 {
                 }
             }
         }
+        impl std::fmt::Display for Subpixel {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "This describes the transform, that a compositor will apply to a"]
         #[doc = "surface to compensate for the rotation or mirroring of an"]
         #[doc = "output device."]
@@ -5574,11 +5904,21 @@ pub mod kde_output_device_v2 {
                 }
             }
         }
+        impl std::fmt::Display for Transform {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this output_device can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; # [doc = "if setting the rgb range is possible"] const RgbRange = 4u32 ; # [doc = "if this outputdevice supports high dynamic range"] const HighDynamicRange = 8u32 ; # [doc = "if this outputdevice supports a wide color gamut"] const WideColorGamut = 16u32 ; # [doc = "if this outputdevice supports autorotation"] const AutoRotate = 32u32 ; # [doc = "if this outputdevice supports icc profiles"] const IccProfile = 64u32 ; # [doc = "if this outputdevice supports the brightness setting"] const Brightness = 128u32 ; } }
         impl TryFrom<u32> for Capability {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Describes when the compositor may employ variable refresh rate"]
@@ -5601,6 +5941,11 @@ pub mod kde_output_device_v2 {
                 }
             }
         }
+        impl std::fmt::Display for VrrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Whether full or limited color range should be used"]
         #[repr(u32)]
         #[non_exhaustive]
@@ -5619,6 +5964,11 @@ pub mod kde_output_device_v2 {
                     2u32 => Ok(Self::Limited),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for RgbRange {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[repr(u32)]
@@ -5640,6 +5990,11 @@ pub mod kde_output_device_v2 {
                 }
             }
         }
+        impl std::fmt::Display for AutoRotatePolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5657,6 +6012,11 @@ pub mod kde_output_device_v2 {
                     2u32 => Ok(Self::Edid),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for ColorProfileSource {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the kde_output_device_v2 interface. See the module level documentation for more info"]
@@ -5697,8 +6057,16 @@ pub mod kde_output_device_v2 {
                 transform: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> kde_output_device_v2#{}.geometry(rq, rq, rq, rq, rq, rq, rq, rq)",
-                    object.id
+                    "-> kde_output_device_v2#{}.geometry({}, {}, {}, {}, {}, {}, {}, {})",
+                    object.id,
+                    x,
+                    y,
+                    physical_width,
+                    physical_height,
+                    subpixel,
+                    make,
+                    model,
+                    transform
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
@@ -5723,7 +6091,11 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 mode: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.current_mode(rq)", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.current_mode({})",
+                    object.id,
+                    mode
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(mode))
                     .build();
@@ -5756,7 +6128,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 mode: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.mode(rq)", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.mode({})", object.id, mode);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(mode))
                     .build();
@@ -5775,7 +6147,7 @@ pub mod kde_output_device_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.done()", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -5806,7 +6178,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 factor: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.scale(rq)", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.scale({})", object.id, factor);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_fixed(factor).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -5825,7 +6197,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 raw: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.edid(rq)", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.edid({})", object.id, raw);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(raw))
                     .build();
@@ -5845,7 +6217,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 enabled: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.enabled(rq)", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.enabled({})", object.id, enabled);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(enabled).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
@@ -5861,7 +6233,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 uuid: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.uuid(rq)", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.uuid({})", object.id, uuid);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(uuid))
                     .build();
@@ -5877,7 +6249,11 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 serial_number: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.serial_number(rq)", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.serial_number({})",
+                    object.id,
+                    serial_number
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(serial_number))
                     .build();
@@ -5893,7 +6269,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 eisa_id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.eisa_id(rq)", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.eisa_id({})", object.id, eisa_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(eisa_id))
                     .build();
@@ -5910,7 +6286,11 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 flags: Capability,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.capabilities(rq)", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.capabilities({})",
+                    object.id,
+                    flags
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(flags.bits())
                     .build();
@@ -5927,7 +6307,11 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 overscan: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.overscan(rq)", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.overscan({})",
+                    object.id,
+                    overscan
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(overscan)
                     .build();
@@ -5944,7 +6328,11 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 vrr_policy: VrrPolicy,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.vrr_policy(rq)", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.vrr_policy({})",
+                    object.id,
+                    vrr_policy
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(vrr_policy as u32)
                     .build();
@@ -5960,7 +6348,11 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 rgb_range: RgbRange,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.rgb_range(rq)", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.rgb_range({})",
+                    object.id,
+                    rgb_range
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(rgb_range as u32)
                     .build();
@@ -5976,7 +6368,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.name(rq)", object.id);
+                tracing::debug!("-> kde_output_device_v2#{}.name({})", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -5993,8 +6385,9 @@ pub mod kde_output_device_v2 {
                 hdr_enabled: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> kde_output_device_v2#{}.high_dynamic_range(rq)",
-                    object.id
+                    "-> kde_output_device_v2#{}.high_dynamic_range({})",
+                    object.id,
+                    hdr_enabled
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(hdr_enabled)
@@ -6013,7 +6406,11 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sdr_brightness: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.sdr_brightness(rq)", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.sdr_brightness({})",
+                    object.id,
+                    sdr_brightness
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(sdr_brightness)
                     .build();
@@ -6029,7 +6426,11 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 wcg_enabled: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.wide_color_gamut(rq)", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.wide_color_gamut({})",
+                    object.id,
+                    wcg_enabled
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(wcg_enabled)
                     .build();
@@ -6045,8 +6446,9 @@ pub mod kde_output_device_v2 {
                 policy: AutoRotatePolicy,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> kde_output_device_v2#{}.auto_rotate_policy(rq)",
-                    object.id
+                    "-> kde_output_device_v2#{}.auto_rotate_policy({})",
+                    object.id,
+                    policy
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(policy as u32)
@@ -6062,7 +6464,11 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 profile_path: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.icc_profile_path(rq)", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.icc_profile_path({})",
+                    object.id,
+                    profile_path
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(profile_path))
                     .build();
@@ -6080,8 +6486,11 @@ pub mod kde_output_device_v2 {
                 min_brightness: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> kde_output_device_v2#{}.brightness_metadata(rq, rq, rq)",
-                    object.id
+                    "-> kde_output_device_v2#{}.brightness_metadata({}, {}, {})",
+                    object.id,
+                    max_peak_brightness,
+                    max_frame_average_brightness,
+                    min_brightness
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(max_peak_brightness)
@@ -6102,8 +6511,11 @@ pub mod kde_output_device_v2 {
                 min_brightness: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> kde_output_device_v2#{}.brightness_overrides(rq, rq, rq)",
-                    object.id
+                    "-> kde_output_device_v2#{}.brightness_overrides({}, {}, {})",
+                    object.id,
+                    max_peak_brightness,
+                    max_average_brightness,
+                    min_brightness
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(max_peak_brightness)
@@ -6124,8 +6536,9 @@ pub mod kde_output_device_v2 {
                 gamut_wideness: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> kde_output_device_v2#{}.sdr_gamut_wideness(rq)",
-                    object.id
+                    "-> kde_output_device_v2#{}.sdr_gamut_wideness({})",
+                    object.id,
+                    gamut_wideness
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(gamut_wideness)
@@ -6142,8 +6555,9 @@ pub mod kde_output_device_v2 {
                 source: ColorProfileSource,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> kde_output_device_v2#{}.color_profile_source(rq)",
-                    object.id
+                    "-> kde_output_device_v2#{}.color_profile_source({})",
+                    object.id,
+                    source
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(source as u32)
@@ -6165,7 +6579,11 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 brightness: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.brightness(rq)", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.brightness({})",
+                    object.id,
+                    brightness
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(brightness)
                     .build();
@@ -6220,7 +6638,12 @@ pub mod kde_output_device_v2 {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_mode_v2#{}.size(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_mode_v2#{}.size({}, {})",
+                    object.id,
+                    width,
+                    height
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -6238,7 +6661,11 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 refresh: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_mode_v2#{}.refresh(rq)", object.id);
+                tracing::debug!(
+                    "-> kde_output_device_mode_v2#{}.refresh({})",
+                    object.id,
+                    refresh
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(refresh).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -6251,7 +6678,7 @@ pub mod kde_output_device_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_mode_v2#{}.preferred()", object.id);
+                tracing::debug!("-> kde_output_device_mode_v2#{}.preferred()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -6266,7 +6693,7 @@ pub mod kde_output_device_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_mode_v2#{}.removed()", object.id);
+                tracing::debug!("-> kde_output_device_mode_v2#{}.removed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -6399,6 +6826,11 @@ pub mod kde_output_management_v2 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Describes when the compositor may employ variable refresh rate"]
         #[repr(u32)]
         #[non_exhaustive]
@@ -6417,6 +6849,11 @@ pub mod kde_output_management_v2 {
                     2u32 => Ok(Self::Automatic),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for VrrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Whether this output should use full or limited rgb."]
@@ -6439,6 +6876,11 @@ pub mod kde_output_management_v2 {
                 }
             }
         }
+        impl std::fmt::Display for RgbRange {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -6458,6 +6900,11 @@ pub mod kde_output_management_v2 {
                 }
             }
         }
+        impl std::fmt::Display for AutoRotatePolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -6475,6 +6922,11 @@ pub mod kde_output_management_v2 {
                     2u32 => Ok(Self::Edid),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for ColorProfileSource {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the kde_output_configuration_v2 interface. See the module level documentation for more info"]
@@ -6973,7 +7425,7 @@ pub mod kde_output_management_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_configuration_v2#{}.applied()", object.id);
+                tracing::debug!("-> kde_output_configuration_v2#{}.applied()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -6986,7 +7438,7 @@ pub mod kde_output_management_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_configuration_v2#{}.failed()", object.id);
+                tracing::debug!("-> kde_output_configuration_v2#{}.failed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -7046,7 +7498,11 @@ pub mod kde_output_order_v1 {
                 client: &mut crate::server::Client,
                 output_name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_order_v1#{}.output(rq)", object.id);
+                tracing::debug!(
+                    "-> kde_output_order_v1#{}.output({})",
+                    object.id,
+                    output_name
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(output_name))
                     .build();
@@ -7061,7 +7517,7 @@ pub mod kde_output_order_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_order_v1#{}.done()", object.id);
+                tracing::debug!("-> kde_output_order_v1#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -7121,7 +7577,11 @@ pub mod kde_primary_output_v1 {
                 client: &mut crate::server::Client,
                 output_name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_primary_output_v1#{}.primary_output(rq)", object.id);
+                tracing::debug!(
+                    "-> kde_primary_output_v1#{}.primary_output({})",
+                    object.id,
+                    output_name
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(output_name))
                     .build();
@@ -7173,6 +7633,11 @@ pub mod kde_screen_edge_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "These values describe possible screen borders."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -7197,6 +7662,11 @@ pub mod kde_screen_edge_v1 {
                     4u32 => Ok(Self::Right),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Border {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the kde_screen_edge_manager_v1 interface. See the module level documentation for more info"]
@@ -7442,8 +7912,10 @@ pub mod org_kde_plasma_virtual_desktop {
                 position: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_created(rq, rq)",
-                    object.id
+                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_created({}, {})",
+                    object.id,
+                    desktop_id,
+                    position
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(desktop_id))
@@ -7461,8 +7933,9 @@ pub mod org_kde_plasma_virtual_desktop {
                 desktop_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_removed(rq)",
-                    object.id
+                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_removed({})",
+                    object.id,
+                    desktop_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(desktop_id))
@@ -7484,7 +7957,7 @@ pub mod org_kde_plasma_virtual_desktop {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> org_kde_plasma_virtual_desktop_management#{}.done()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -7499,8 +7972,9 @@ pub mod org_kde_plasma_virtual_desktop {
                 rows: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop_management#{}.rows(rq)",
-                    object.id
+                    "-> org_kde_plasma_virtual_desktop_management#{}.rows({})",
+                    object.id,
+                    rows
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(rows).build();
                 client
@@ -7556,8 +8030,9 @@ pub mod org_kde_plasma_virtual_desktop {
                 desktop_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop#{}.desktop_id(rq)",
-                    object.id
+                    "-> org_kde_plasma_virtual_desktop#{}.desktop_id({})",
+                    object.id,
+                    desktop_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(desktop_id))
@@ -7573,7 +8048,11 @@ pub mod org_kde_plasma_virtual_desktop {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.name(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_plasma_virtual_desktop#{}.name({})",
+                    object.id,
+                    name
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -7591,7 +8070,7 @@ pub mod org_kde_plasma_virtual_desktop {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> org_kde_plasma_virtual_desktop#{}.activated()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -7607,7 +8086,7 @@ pub mod org_kde_plasma_virtual_desktop {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> org_kde_plasma_virtual_desktop#{}.deactivated()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -7625,7 +8104,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.done()", object.id);
+                tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -7639,7 +8118,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.removed()", object.id);
+                tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.removed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
@@ -7754,6 +8233,11 @@ pub mod plasma_shell {
                 }
             }
         }
+        impl std::fmt::Display for Role {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -7775,6 +8259,11 @@ pub mod plasma_shell {
                 }
             }
         }
+        impl std::fmt::Display for PanelBehavior {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -7789,6 +8278,11 @@ pub mod plasma_shell {
                     0u32 => Ok(Self::PanelNotAutoHide),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the org_kde_plasma_surface interface. See the module level documentation for more info"]
@@ -8101,7 +8595,7 @@ pub mod plasma_shell {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> org_kde_plasma_surface#{}.auto_hidden_panel_hidden()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -8117,7 +8611,7 @@ pub mod plasma_shell {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> org_kde_plasma_surface#{}.auto_hidden_panel_shown()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -8196,6 +8690,11 @@ pub mod plasma_window_management {
                 }
             }
         }
+        impl std::fmt::Display for State {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -8211,6 +8710,11 @@ pub mod plasma_window_management {
                     1u32 => Ok(Self::Enabled),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for ShowDesktop {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the org_kde_plasma_window_management interface. See the module level documentation for more info"]
@@ -8324,8 +8828,9 @@ pub mod plasma_window_management {
                 state: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.show_desktop_changed(rq)",
-                    object.id
+                    "-> org_kde_plasma_window_management#{}.show_desktop_changed({})",
+                    object.id,
+                    state
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(state).build();
                 client
@@ -8341,8 +8846,9 @@ pub mod plasma_window_management {
                 id: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.window(rq)",
-                    object.id
+                    "-> org_kde_plasma_window_management#{}.window({})",
+                    object.id,
+                    id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
                 client
@@ -8360,8 +8866,9 @@ pub mod plasma_window_management {
                 ids: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.stacking_order_changed(rq)",
-                    object.id
+                    "-> org_kde_plasma_window_management#{}.stacking_order_changed(array[{}])",
+                    object.id,
+                    ids.len()
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(ids).build();
                 client
@@ -8379,8 +8886,9 @@ pub mod plasma_window_management {
                 uuids: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.stacking_order_uuid_changed(rq)",
-                    object.id
+                    "-> org_kde_plasma_window_management#{}.stacking_order_uuid_changed({})",
+                    object.id,
+                    uuids
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(uuids))
@@ -8399,8 +8907,10 @@ pub mod plasma_window_management {
                 uuid: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.window_with_uuid(rq, rq)",
-                    object.id
+                    "-> org_kde_plasma_window_management#{}.window_with_uuid({}, {})",
+                    object.id,
+                    id,
+                    uuid
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(id)
@@ -8419,7 +8929,7 @@ pub mod plasma_window_management {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> org_kde_plasma_window_management#{}.stacking_order_changed_2()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -8721,7 +9231,11 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 title: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.title_changed(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.title_changed({})",
+                    object.id,
+                    title
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(title))
                     .build();
@@ -8738,7 +9252,11 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 app_id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.app_id_changed(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.app_id_changed({})",
+                    object.id,
+                    app_id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(app_id))
                     .build();
@@ -8756,7 +9274,11 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 flags: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.state_changed(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.state_changed({})",
+                    object.id,
+                    flags
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(flags).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -8775,8 +9297,9 @@ pub mod plasma_window_management {
                 number: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.virtual_desktop_changed(rq)",
-                    object.id
+                    "-> org_kde_plasma_window#{}.virtual_desktop_changed({})",
+                    object.id,
+                    number
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(number).build();
                 client
@@ -8792,8 +9315,9 @@ pub mod plasma_window_management {
                 name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.themed_icon_name_changed(rq)",
-                    object.id
+                    "-> org_kde_plasma_window#{}.themed_icon_name_changed({})",
+                    object.id,
+                    name
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
@@ -8810,7 +9334,7 @@ pub mod plasma_window_management {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.unmapped()", object.id);
+                tracing::debug!("-> org_kde_plasma_window#{}.unmapped()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
@@ -8825,7 +9349,7 @@ pub mod plasma_window_management {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.initial_state()", object.id);
+                tracing::debug!("-> org_kde_plasma_window#{}.initial_state()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
@@ -8842,7 +9366,13 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 parent: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.parent_window(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.parent_window({})",
+                    object.id,
+                    parent
+                        .as_ref()
+                        .map_or("null".to_string(), |v| v.to_string())
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(parent)
                     .build();
@@ -8863,8 +9393,12 @@ pub mod plasma_window_management {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.geometry(rq, rq, rq, rq)",
-                    object.id
+                    "-> org_kde_plasma_window#{}.geometry({}, {}, {}, {})",
+                    object.id,
+                    x,
+                    y,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
@@ -8886,7 +9420,7 @@ pub mod plasma_window_management {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.icon_changed()", object.id);
+                tracing::debug!("-> org_kde_plasma_window#{}.icon_changed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 9u16, payload, fds))
@@ -8901,7 +9435,11 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 pid: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.pid_changed(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.pid_changed({})",
+                    object.id,
+                    pid
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(pid).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 10u16, payload, fds))
@@ -8916,8 +9454,9 @@ pub mod plasma_window_management {
                 id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.virtual_desktop_entered(rq)",
-                    object.id
+                    "-> org_kde_plasma_window#{}.virtual_desktop_entered({})",
+                    object.id,
+                    id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(id))
@@ -8936,8 +9475,9 @@ pub mod plasma_window_management {
                 is: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.virtual_desktop_left(rq)",
-                    object.id
+                    "-> org_kde_plasma_window#{}.virtual_desktop_left({})",
+                    object.id,
+                    is
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(is))
@@ -8957,8 +9497,10 @@ pub mod plasma_window_management {
                 object_path: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.application_menu(rq, rq)",
-                    object.id
+                    "-> org_kde_plasma_window#{}.application_menu({}, {})",
+                    object.id,
+                    service_name,
+                    object_path
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(service_name))
@@ -8977,8 +9519,9 @@ pub mod plasma_window_management {
                 id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.activity_entered(rq)",
-                    object.id
+                    "-> org_kde_plasma_window#{}.activity_entered({})",
+                    object.id,
+                    id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(id))
@@ -8996,7 +9539,11 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.activity_left(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.activity_left({})",
+                    object.id,
+                    id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(id))
                     .build();
@@ -9014,8 +9561,9 @@ pub mod plasma_window_management {
                 resource_name: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.resource_name_changed(rq)",
-                    object.id
+                    "-> org_kde_plasma_window#{}.resource_name_changed({})",
+                    object.id,
+                    resource_name
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(resource_name))
@@ -9037,8 +9585,12 @@ pub mod plasma_window_management {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_window#{}.client_geometry(rq, rq, rq, rq)",
-                    object.id
+                    "-> org_kde_plasma_window#{}.client_geometry({}, {}, {}, {})",
+                    object.id,
+                    x,
+                    y,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
@@ -9104,8 +9656,9 @@ pub mod plasma_window_management {
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> org_kde_plasma_activation_feedback#{}.activation(rq)",
-                    object.id
+                    "-> org_kde_plasma_activation_feedback#{}.activation({})",
+                    object.id,
+                    id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
@@ -9159,7 +9712,11 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 app_id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_activation#{}.app_id(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_plasma_activation#{}.app_id({})",
+                    object.id,
+                    app_id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(app_id))
                     .build();
@@ -9173,7 +9730,7 @@ pub mod plasma_window_management {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_activation#{}.finished()", object.id);
+                tracing::debug!("-> org_kde_plasma_activation#{}.finished()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -9216,7 +9773,11 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 uuid: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_stacking_order#{}.window(rq)", object.id);
+                tracing::debug!(
+                    "-> org_kde_plasma_stacking_order#{}.window({})",
+                    object.id,
+                    uuid
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(uuid))
                     .build();
@@ -9230,7 +9791,7 @@ pub mod plasma_window_management {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_stacking_order#{}.done()", object.id);
+                tracing::debug!("-> org_kde_plasma_stacking_order#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -9270,6 +9831,11 @@ pub mod zkde_screencast_unstable_v1 {
                     4u32 => Ok(Self::Metadata),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Pointer {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zkde_screencast_unstable_v1 interface. See the module level documentation for more info"]
@@ -9454,7 +10020,7 @@ pub mod zkde_screencast_unstable_v1 {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zkde_screencast_stream_unstable_v1#{}.closed()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -9469,8 +10035,9 @@ pub mod zkde_screencast_unstable_v1 {
                 node: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zkde_screencast_stream_unstable_v1#{}.created(rq)",
-                    object.id
+                    "-> zkde_screencast_stream_unstable_v1#{}.created({})",
+                    object.id,
+                    node
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(node).build();
                 client
@@ -9485,8 +10052,9 @@ pub mod zkde_screencast_unstable_v1 {
                 error: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zkde_screencast_stream_unstable_v1#{}.failed(rq)",
-                    object.id
+                    "-> zkde_screencast_stream_unstable_v1#{}.failed({})",
+                    object.id,
+                    error
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(error))

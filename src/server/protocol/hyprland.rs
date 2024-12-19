@@ -28,6 +28,11 @@ pub mod hyprland_ctm_control_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the hyprland_ctm_control_manager_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandCtmControlManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "hyprland_ctm_control_manager_v1";
@@ -302,7 +307,7 @@ pub mod hyprland_focus_grab_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> hyprland_focus_grab_v1#{}.cleared()", object.id);
+                tracing::debug!("-> hyprland_focus_grab_v1#{}.cleared()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -335,6 +340,11 @@ pub mod hyprland_global_shortcuts_v1 {
                     0u32 => Ok(Self::AlreadyTaken),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the hyprland_global_shortcuts_manager_v1 interface. See the module level documentation for more info"]
@@ -467,8 +477,11 @@ pub mod hyprland_global_shortcuts_v1 {
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> hyprland_global_shortcut_v1#{}.pressed(rq, rq, rq)",
-                    object.id
+                    "-> hyprland_global_shortcut_v1#{}.pressed({}, {}, {})",
+                    object.id,
+                    tv_sec_hi,
+                    tv_sec_lo,
+                    tv_nsec
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
@@ -492,8 +505,11 @@ pub mod hyprland_global_shortcuts_v1 {
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> hyprland_global_shortcut_v1#{}.released(rq, rq, rq)",
-                    object.id
+                    "-> hyprland_global_shortcut_v1#{}.released({}, {}, {})",
+                    object.id,
+                    tv_sec_hi,
+                    tv_sec_lo,
+                    tv_nsec
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
@@ -656,11 +672,21 @@ pub mod hyprland_toplevel_export_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInvert = 1u32 ; } }
         impl TryFrom<u32> for Flags {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Flags {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the hyprland_toplevel_export_frame_v1 interface. See the module level documentation for more info"]
@@ -740,8 +766,12 @@ pub mod hyprland_toplevel_export_v1 {
                 stride: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> hyprland_toplevel_export_frame_v1#{}.buffer(rq, rq, rq, rq)",
-                    object.id
+                    "-> hyprland_toplevel_export_frame_v1#{}.buffer({}, {}, {}, {})",
+                    object.id,
+                    format,
+                    width,
+                    height,
+                    stride
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(format as u32)
@@ -774,8 +804,12 @@ pub mod hyprland_toplevel_export_v1 {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> hyprland_toplevel_export_frame_v1#{}.damage(rq, rq, rq, rq)",
-                    object.id
+                    "-> hyprland_toplevel_export_frame_v1#{}.damage({}, {}, {}, {})",
+                    object.id,
+                    x,
+                    y,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(x)
@@ -797,8 +831,9 @@ pub mod hyprland_toplevel_export_v1 {
                 flags: Flags,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> hyprland_toplevel_export_frame_v1#{}.flags(rq)",
-                    object.id
+                    "-> hyprland_toplevel_export_frame_v1#{}.flags({})",
+                    object.id,
+                    flags
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(flags.bits())
@@ -829,8 +864,11 @@ pub mod hyprland_toplevel_export_v1 {
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> hyprland_toplevel_export_frame_v1#{}.ready(rq, rq, rq)",
-                    object.id
+                    "-> hyprland_toplevel_export_frame_v1#{}.ready({}, {}, {})",
+                    object.id,
+                    tv_sec_hi,
+                    tv_sec_lo,
+                    tv_nsec
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
@@ -852,7 +890,7 @@ pub mod hyprland_toplevel_export_v1 {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> hyprland_toplevel_export_frame_v1#{}.failed()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -872,8 +910,11 @@ pub mod hyprland_toplevel_export_v1 {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> hyprland_toplevel_export_frame_v1#{}.linux_dmabuf(rq, rq, rq)",
-                    object.id
+                    "-> hyprland_toplevel_export_frame_v1#{}.linux_dmabuf({}, {}, {})",
+                    object.id,
+                    format,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(format)
@@ -896,7 +937,7 @@ pub mod hyprland_toplevel_export_v1 {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> hyprland_toplevel_export_frame_v1#{}.buffer_done()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client

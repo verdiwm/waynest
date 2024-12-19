@@ -29,6 +29,11 @@ pub mod alpha_modifier_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wp_alpha_modifier_v1 interface. See the module level documentation for more info"]
         pub trait WpAlphaModifierV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_alpha_modifier_v1";
@@ -113,6 +118,11 @@ pub mod alpha_modifier_v1 {
                     0u32 => Ok(Self::NoSurface),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_alpha_modifier_surface_v1 interface. See the module level documentation for more info"]
@@ -222,6 +232,11 @@ pub mod commit_timing_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wp_commit_timing_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpCommitTimingManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_commit_timing_manager_v1";
@@ -308,6 +323,11 @@ pub mod commit_timing_v1 {
                     2u32 => Ok(Self::SurfaceDestroyed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_commit_timer_v1 interface. See the module level documentation for more info"]
@@ -412,6 +432,11 @@ pub mod content_type_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wp_content_type_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpContentTypeManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_content_type_manager_v1";
@@ -504,6 +529,11 @@ pub mod content_type_v1 {
                     3u32 => Ok(Self::Game),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Type {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_content_type_v1 interface. See the module level documentation for more info"]
@@ -791,6 +821,11 @@ pub mod cursor_shape_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Shape {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -805,6 +840,11 @@ pub mod cursor_shape_v1 {
                     1u32 => Ok(Self::InvalidShape),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_cursor_shape_device_v1 interface. See the module level documentation for more info"]
@@ -986,7 +1026,11 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_device_v1#{}.drm_fd(rq)", object.id);
+                tracing::debug!(
+                    "-> wp_drm_lease_device_v1#{}.drm_fd({})",
+                    object.id,
+                    fd.as_raw_fd()
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(fd).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -1009,7 +1053,7 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_device_v1#{}.connector(rq)", object.id);
+                tracing::debug!("-> wp_drm_lease_device_v1#{}.connector({})", object.id, id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
@@ -1029,7 +1073,7 @@ pub mod drm_lease_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_device_v1#{}.done()", object.id);
+                tracing::debug!("-> wp_drm_lease_device_v1#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -1046,7 +1090,7 @@ pub mod drm_lease_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_device_v1#{}.released()", object.id);
+                tracing::debug!("-> wp_drm_lease_device_v1#{}.released()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -1115,7 +1159,7 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.name(rq)", object.id);
+                tracing::debug!("-> wp_drm_lease_connector_v1#{}.name({})", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -1134,7 +1178,11 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 description: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.description(rq)", object.id);
+                tracing::debug!(
+                    "-> wp_drm_lease_connector_v1#{}.description({})",
+                    object.id,
+                    description
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(description))
                     .build();
@@ -1154,8 +1202,9 @@ pub mod drm_lease_v1 {
                 connector_id: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> wp_drm_lease_connector_v1#{}.connector_id(rq)",
-                    object.id
+                    "-> wp_drm_lease_connector_v1#{}.connector_id({})",
+                    object.id,
+                    connector_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(connector_id)
@@ -1173,7 +1222,7 @@ pub mod drm_lease_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.done()", object.id);
+                tracing::debug!("-> wp_drm_lease_connector_v1#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -1196,7 +1245,7 @@ pub mod drm_lease_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.withdrawn()", object.id);
+                tracing::debug!("-> wp_drm_lease_connector_v1#{}.withdrawn()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -1233,6 +1282,11 @@ pub mod drm_lease_v1 {
                     2u32 => Ok(Self::EmptyLease),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_drm_lease_request_v1 interface. See the module level documentation for more info"]
@@ -1370,7 +1424,11 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 leased_fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_v1#{}.lease_fd(rq)", object.id);
+                tracing::debug!(
+                    "-> wp_drm_lease_v1#{}.lease_fd({})",
+                    object.id,
+                    leased_fd.as_raw_fd()
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(leased_fd).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -1392,7 +1450,7 @@ pub mod drm_lease_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_v1#{}.finished()", object.id);
+                tracing::debug!("-> wp_drm_lease_v1#{}.finished()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -1511,7 +1569,11 @@ pub mod ext_foreign_toplevel_list_v1 {
                 client: &mut crate::server::Client,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.toplevel(rq)", object.id);
+                tracing::debug!(
+                    "-> ext_foreign_toplevel_list_v1#{}.toplevel({})",
+                    object.id,
+                    toplevel
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .build();
@@ -1530,7 +1592,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.finished()", object.id);
+                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.finished()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -1599,7 +1661,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.closed()", object.id);
+                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.closed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -1621,7 +1683,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.done()", object.id);
+                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -1638,7 +1700,11 @@ pub mod ext_foreign_toplevel_list_v1 {
                 client: &mut crate::server::Client,
                 title: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.title(rq)", object.id);
+                tracing::debug!(
+                    "-> ext_foreign_toplevel_handle_v1#{}.title({})",
+                    object.id,
+                    title
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(title))
                     .build();
@@ -1657,7 +1723,11 @@ pub mod ext_foreign_toplevel_list_v1 {
                 client: &mut crate::server::Client,
                 app_id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.app_id(rq)", object.id);
+                tracing::debug!(
+                    "-> ext_foreign_toplevel_handle_v1#{}.app_id({})",
+                    object.id,
+                    app_id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(app_id))
                     .build();
@@ -1693,8 +1763,9 @@ pub mod ext_foreign_toplevel_list_v1 {
                 identifier: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_foreign_toplevel_handle_v1#{}.identifier(rq)",
-                    object.id
+                    "-> ext_foreign_toplevel_handle_v1#{}.identifier({})",
+                    object.id,
+                    identifier
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(identifier))
@@ -1843,7 +1914,7 @@ pub mod ext_idle_notify_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_idle_notification_v1#{}.idled()", object.id);
+                tracing::debug!("-> ext_idle_notification_v1#{}.idled()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -1860,7 +1931,7 @@ pub mod ext_idle_notify_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_idle_notification_v1#{}.resumed()", object.id);
+                tracing::debug!("-> ext_idle_notification_v1#{}.resumed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -2094,11 +2165,21 @@ pub mod ext_image_copy_capture_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Options : u32 { # [doc = "paint cursors onto captured frames"] const PaintCursors = 1u32 ; } }
         impl TryFrom<u32> for Options {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Options {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_manager_v1 interface. See the module level documentation for more info"]
@@ -2233,6 +2314,11 @@ pub mod ext_image_copy_capture_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the ext_image_copy_capture_session_v1 interface. See the module level documentation for more info"]
         pub trait ExtImageCopyCaptureSessionV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_image_copy_capture_session_v1";
@@ -2304,8 +2390,10 @@ pub mod ext_image_copy_capture_v1 {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_session_v1#{}.buffer_size(rq, rq)",
-                    object.id
+                    "-> ext_image_copy_capture_session_v1#{}.buffer_size({}, {})",
+                    object.id,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(width)
@@ -2327,8 +2415,9 @@ pub mod ext_image_copy_capture_v1 {
                 format: super::super::super::core::wayland::wl_shm::Format,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_session_v1#{}.shm_format(rq)",
-                    object.id
+                    "-> ext_image_copy_capture_session_v1#{}.shm_format({})",
+                    object.id,
+                    format
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(format as u32)
@@ -2352,8 +2441,9 @@ pub mod ext_image_copy_capture_v1 {
                 device: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_session_v1#{}.dmabuf_device(rq)",
-                    object.id
+                    "-> ext_image_copy_capture_session_v1#{}.dmabuf_device(array[{}])",
+                    object.id,
+                    device.len()
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
                 client
@@ -2376,8 +2466,10 @@ pub mod ext_image_copy_capture_v1 {
                 modifiers: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_session_v1#{}.dmabuf_format(rq, rq)",
-                    object.id
+                    "-> ext_image_copy_capture_session_v1#{}.dmabuf_format({}, array[{}])",
+                    object.id,
+                    format,
+                    modifiers.len()
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(format)
@@ -2399,7 +2491,7 @@ pub mod ext_image_copy_capture_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_image_copy_capture_session_v1#{}.done()", object.id);
+                tracing::debug!("-> ext_image_copy_capture_session_v1#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -2419,7 +2511,7 @@ pub mod ext_image_copy_capture_v1 {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> ext_image_copy_capture_session_v1#{}.stopped()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -2465,6 +2557,11 @@ pub mod ext_image_copy_capture_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2482,6 +2579,11 @@ pub mod ext_image_copy_capture_v1 {
                     2u32 => Ok(Self::Stopped),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for FailureReason {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_frame_v1 interface. See the module level documentation for more info"]
@@ -2614,8 +2716,9 @@ pub mod ext_image_copy_capture_v1 {
                 transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_frame_v1#{}.transform(rq)",
-                    object.id
+                    "-> ext_image_copy_capture_frame_v1#{}.transform({})",
+                    object.id,
+                    transform
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(transform as u32)
@@ -2643,8 +2746,12 @@ pub mod ext_image_copy_capture_v1 {
                 height: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_frame_v1#{}.damage(rq, rq, rq, rq)",
-                    object.id
+                    "-> ext_image_copy_capture_frame_v1#{}.damage({}, {}, {}, {})",
+                    object.id,
+                    x,
+                    y,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
@@ -2675,8 +2782,11 @@ pub mod ext_image_copy_capture_v1 {
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_frame_v1#{}.presentation_time(rq, rq, rq)",
-                    object.id
+                    "-> ext_image_copy_capture_frame_v1#{}.presentation_time({}, {}, {})",
+                    object.id,
+                    tv_sec_hi,
+                    tv_sec_lo,
+                    tv_nsec
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
@@ -2699,7 +2809,7 @@ pub mod ext_image_copy_capture_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.ready()", object.id);
+                tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.ready()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -2716,8 +2826,9 @@ pub mod ext_image_copy_capture_v1 {
                 reason: FailureReason,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_frame_v1#{}.failed(rq)",
-                    object.id
+                    "-> ext_image_copy_capture_frame_v1#{}.failed({})",
+                    object.id,
+                    reason
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(reason as u32)
@@ -2749,6 +2860,11 @@ pub mod ext_image_copy_capture_v1 {
                     1u32 => Ok(Self::DuplicateSession),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_cursor_session_v1 interface. See the module level documentation for more info"]
@@ -2827,7 +2943,7 @@ pub mod ext_image_copy_capture_v1 {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> ext_image_copy_capture_cursor_session_v1#{}.enter()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -2845,7 +2961,7 @@ pub mod ext_image_copy_capture_v1 {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> ext_image_copy_capture_cursor_session_v1#{}.leave()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -2868,8 +2984,10 @@ pub mod ext_image_copy_capture_v1 {
                 y: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_cursor_session_v1#{}.position(rq, rq)",
-                    object.id
+                    "-> ext_image_copy_capture_cursor_session_v1#{}.position({}, {})",
+                    object.id,
+                    x,
+                    y
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
@@ -2898,8 +3016,10 @@ pub mod ext_image_copy_capture_v1 {
                 y: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_cursor_session_v1#{}.hotspot(rq, rq)",
-                    object.id
+                    "-> ext_image_copy_capture_cursor_session_v1#{}.hotspot({}, {})",
+                    object.id,
+                    x,
+                    y
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
@@ -3072,6 +3192,11 @@ pub mod ext_session_lock_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the ext_session_lock_v1 interface. See the module level documentation for more info"]
         pub trait ExtSessionLockV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_session_lock_v1";
@@ -3196,7 +3321,7 @@ pub mod ext_session_lock_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_session_lock_v1#{}.locked()", object.id);
+                tracing::debug!("-> ext_session_lock_v1#{}.locked()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -3230,7 +3355,7 @@ pub mod ext_session_lock_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_session_lock_v1#{}.finished()", object.id);
+                tracing::debug!("-> ext_session_lock_v1#{}.finished()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -3281,6 +3406,11 @@ pub mod ext_session_lock_v1 {
                     3u32 => Ok(Self::InvalidSerial),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the ext_session_lock_surface_v1 interface. See the module level documentation for more info"]
@@ -3376,8 +3506,11 @@ pub mod ext_session_lock_v1 {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_session_lock_surface_v1#{}.configure(rq, rq, rq)",
-                    object.id
+                    "-> ext_session_lock_surface_v1#{}.configure({}, {}, {})",
+                    object.id,
+                    serial,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
@@ -3525,7 +3658,11 @@ pub mod ext_transient_seat_v1 {
                 client: &mut crate::server::Client,
                 global_name: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_transient_seat_v1#{}.ready(rq)", object.id);
+                tracing::debug!(
+                    "-> ext_transient_seat_v1#{}.ready({})",
+                    object.id,
+                    global_name
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(global_name)
                     .build();
@@ -3546,7 +3683,7 @@ pub mod ext_transient_seat_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_transient_seat_v1#{}.denied()", object.id);
+                tracing::debug!("-> ext_transient_seat_v1#{}.denied()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -3589,6 +3726,11 @@ pub mod fifo_v1 {
                     0u32 => Ok(Self::AlreadyExists),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_fifo_manager_v1 interface. See the module level documentation for more info"]
@@ -3678,6 +3820,11 @@ pub mod fifo_v1 {
                     0u32 => Ok(Self::SurfaceDestroyed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_fifo_v1 interface. See the module level documentation for more info"]
@@ -3811,6 +3958,11 @@ pub mod fractional_scale_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wp_fractional_scale_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpFractionalScaleManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_fractional_scale_manager_v1";
@@ -3921,8 +4073,9 @@ pub mod fractional_scale_v1 {
                 scale: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> wp_fractional_scale_v1#{}.preferred_scale(rq)",
-                    object.id
+                    "-> wp_fractional_scale_v1#{}.preferred_scale({})",
+                    object.id,
+                    scale
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(scale).build();
                 client
@@ -3986,6 +4139,11 @@ pub mod linux_drm_syncobj_v1 {
                     1u32 => Ok(Self::InvalidTimeline),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_linux_drm_syncobj_manager_v1 interface. See the module level documentation for more info"]
@@ -4177,6 +4335,11 @@ pub mod linux_drm_syncobj_v1 {
                     6u32 => Ok(Self::ConflictingPoints),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_linux_drm_syncobj_surface_v1 interface. See the module level documentation for more info"]
@@ -4374,6 +4537,11 @@ pub mod security_context_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wp_security_context_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpSecurityContextManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_security_context_manager_v1";
@@ -4481,6 +4649,11 @@ pub mod security_context_v1 {
                     3u32 => Ok(Self::InvalidMetadata),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_security_context_v1 interface. See the module level documentation for more info"]
@@ -4741,6 +4914,11 @@ pub mod tearing_control_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wp_tearing_control_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpTearingControlManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_tearing_control_manager_v1";
@@ -4832,6 +5010,11 @@ pub mod tearing_control_v1 {
                     1u32 => Ok(Self::Async),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for PresentationHint {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_tearing_control_v1 interface. See the module level documentation for more info"]
@@ -5055,6 +5238,11 @@ pub mod xdg_activation_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the xdg_activation_token_v1 interface. See the module level documentation for more info"]
         pub trait XdgActivationTokenV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_activation_token_v1";
@@ -5183,7 +5371,7 @@ pub mod xdg_activation_v1 {
                 client: &mut crate::server::Client,
                 token: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_activation_token_v1#{}.done(rq)", object.id);
+                tracing::debug!("-> xdg_activation_token_v1#{}.done({})", object.id, token);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(token))
                     .build();
@@ -5226,6 +5414,11 @@ pub mod xdg_dialog_v1 {
                     0u32 => Ok(Self::AlreadyUsed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xdg_wm_dialog_v1 interface. See the module level documentation for more info"]
@@ -5496,6 +5689,11 @@ pub mod xdg_toplevel_drag_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the xdg_toplevel_drag_manager_v1 interface. See the module level documentation for more info"]
         pub trait XdgToplevelDragManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_toplevel_drag_manager_v1";
@@ -5585,6 +5783,11 @@ pub mod xdg_toplevel_drag_v1 {
                     1u32 => Ok(Self::OngoingDrag),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xdg_toplevel_drag_v1 interface. See the module level documentation for more info"]
@@ -5796,8 +5999,9 @@ pub mod xdg_toplevel_icon_v1 {
                 size: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xdg_toplevel_icon_manager_v1#{}.icon_size(rq)",
-                    object.id
+                    "-> xdg_toplevel_icon_manager_v1#{}.icon_size({})",
+                    object.id,
+                    size
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(size).build();
                 client
@@ -5811,7 +6015,7 @@ pub mod xdg_toplevel_icon_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.done()", object.id);
+                tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -5852,6 +6056,11 @@ pub mod xdg_toplevel_icon_v1 {
                     3u32 => Ok(Self::NoBuffer),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xdg_toplevel_icon_v1 interface. See the module level documentation for more info"]

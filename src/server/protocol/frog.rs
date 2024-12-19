@@ -107,6 +107,11 @@ pub mod frog_color_management_v1 {
                 }
             }
         }
+        impl std::fmt::Display for TransferFunction {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -129,6 +134,11 @@ pub mod frog_color_management_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Primaries {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Extended information on render intents described"]
         #[doc = "here can be found in ICC.1:2022:"]
         #[doc = ""]
@@ -147,6 +157,11 @@ pub mod frog_color_management_v1 {
                     0u32 => Ok(Self::Perceptual),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for RenderIntent {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the frog_color_managed_surface interface. See the module level documentation for more info"]
@@ -318,7 +333,7 @@ pub mod frog_color_management_v1 {
                 min_luminance: u32,
                 max_full_frame_luminance: u32,
             ) -> crate::server::Result<()> {
-                tracing :: debug ! ("-> frog_color_managed_surface#{}.preferred_metadata(rq, rq, rq, rq, rq, rq, rq, rq, rq, rq, rq, rq)" , object . id);
+                tracing :: debug ! ("-> frog_color_managed_surface#{}.preferred_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})" , object . id , transfer_function , output_display_primary_red_x , output_display_primary_red_y , output_display_primary_green_x , output_display_primary_green_y , output_display_primary_blue_x , output_display_primary_blue_y , output_white_point_x , output_white_point_y , max_luminance , min_luminance , max_full_frame_luminance);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(transfer_function as u32)
                     .put_uint(output_display_primary_red_x)
@@ -374,6 +389,11 @@ pub mod frog_fifo_v1 {
                     0u32 => Ok(Self::FifoSurfaceAlreadyExists),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the frog_fifo_manager_v1 interface. See the module level documentation for more info"]
@@ -463,6 +483,11 @@ pub mod frog_fifo_v1 {
                     0u32 => Ok(Self::SurfaceDestroyed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the frog_fifo_surface_v1 interface. See the module level documentation for more info"]

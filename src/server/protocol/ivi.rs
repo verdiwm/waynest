@@ -55,7 +55,12 @@ pub mod ivi_application {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_surface#{}.configure(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_surface#{}.configure({}, {})",
+                    object.id,
+                    width,
+                    height
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -91,6 +96,11 @@ pub mod ivi_application {
                     1u32 => Ok(Self::IviId),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
@@ -259,7 +269,13 @@ pub mod ivi_input {
                 capabilities: u32,
                 is_default: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_input#{}.seat_created(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_input#{}.seat_created({}, {}, {})",
+                    object.id,
+                    name,
+                    capabilities,
+                    is_default
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .put_uint(capabilities)
@@ -277,7 +293,12 @@ pub mod ivi_input {
                 name: String,
                 capabilities: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_input#{}.seat_capabilities(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_input#{}.seat_capabilities({}, {})",
+                    object.id,
+                    name,
+                    capabilities
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .put_uint(capabilities)
@@ -293,7 +314,7 @@ pub mod ivi_input {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_input#{}.seat_destroyed(rq)", object.id);
+                tracing::debug!("-> ivi_input#{}.seat_destroyed({})", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -313,7 +334,13 @@ pub mod ivi_input {
                 device: u32,
                 enabled: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_input#{}.input_focus(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_input#{}.input_focus({}, {}, {})",
+                    object.id,
+                    surface,
+                    device,
+                    enabled
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface)
                     .put_uint(device)
@@ -337,7 +364,13 @@ pub mod ivi_input {
                 seat: String,
                 accepted: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_input#{}.input_acceptance(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_input#{}.input_acceptance({}, {}, {})",
+                    object.id,
+                    surface,
+                    seat,
+                    accepted
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface)
                     .put_string(Some(seat))
@@ -377,6 +410,11 @@ pub mod ivi_wm {
                     2u32 => Ok(Self::BadParam),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the ivi_wm_screen interface. See the module level documentation for more info"]
@@ -493,7 +531,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm_screen#{}.screen_id(rq)", object.id);
+                tracing::debug!("-> ivi_wm_screen#{}.screen_id({})", object.id, id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -507,7 +545,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 layer_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm_screen#{}.layer_added(rq)", object.id);
+                tracing::debug!("-> ivi_wm_screen#{}.layer_added({})", object.id, layer_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
                     .build();
@@ -523,7 +561,11 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 process_name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm_screen#{}.connector_name(rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_wm_screen#{}.connector_name({})",
+                    object.id,
+                    process_name
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(process_name))
                     .build();
@@ -540,7 +582,12 @@ pub mod ivi_wm {
                 error: u32,
                 message: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm_screen#{}.error(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_wm_screen#{}.error({}, {})",
+                    object.id,
+                    error,
+                    message
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(error)
                     .put_string(Some(message))
@@ -593,6 +640,11 @@ pub mod ivi_wm {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the ivi_screenshot interface. See the module level documentation for more info"]
         pub trait IviScreenshot: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ivi_screenshot";
@@ -622,7 +674,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 timestamp: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_screenshot#{}.done(rq)", object.id);
+                tracing::debug!("-> ivi_screenshot#{}.done({})", object.id, timestamp);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(timestamp)
                     .build();
@@ -639,7 +691,12 @@ pub mod ivi_wm {
                 error: Error,
                 message: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_screenshot#{}.error(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_screenshot#{}.error({}, {})",
+                    object.id,
+                    error,
+                    message
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(error as u32)
                     .put_string(Some(message))
@@ -672,11 +729,21 @@ pub mod ivi_wm {
                 }
             }
         }
+        impl std::fmt::Display for Sync {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [doc = "The HMI controller can request different types of parameters of an"] # [doc = "ivi-object."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Param : u32 { const Opacity = 1u32 ; const Visibility = 2u32 ; const Size = 4u32 ; const RenderOrder = 8u32 ; } }
         impl TryFrom<u32> for Param {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Param {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "If a surface is restricted type, visible contents of the surface is strictly"]
@@ -711,6 +778,11 @@ pub mod ivi_wm {
                 }
             }
         }
+        impl std::fmt::Display for SurfaceType {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -733,6 +805,11 @@ pub mod ivi_wm {
                 }
             }
         }
+        impl std::fmt::Display for SurfaceError {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -753,6 +830,11 @@ pub mod ivi_wm {
                     2u32 => Ok(Self::BadParam),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for LayerError {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the ivi_wm interface. See the module level documentation for more info"]
@@ -1270,7 +1352,12 @@ pub mod ivi_wm {
                 surface_id: u32,
                 visibility: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_visibility(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_wm#{}.surface_visibility({}, {})",
+                    object.id,
+                    surface_id,
+                    visibility
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
                     .put_int(visibility)
@@ -1290,7 +1377,12 @@ pub mod ivi_wm {
                 layer_id: u32,
                 visibility: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.layer_visibility(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_wm#{}.layer_visibility({}, {})",
+                    object.id,
+                    layer_id,
+                    visibility
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
                     .put_int(visibility)
@@ -1309,7 +1401,12 @@ pub mod ivi_wm {
                 surface_id: u32,
                 opacity: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_opacity(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_wm#{}.surface_opacity({}, {})",
+                    object.id,
+                    surface_id,
+                    opacity
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
                     .put_fixed(opacity)
@@ -1328,7 +1425,12 @@ pub mod ivi_wm {
                 layer_id: u32,
                 opacity: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.layer_opacity(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_wm#{}.layer_opacity({}, {})",
+                    object.id,
+                    layer_id,
+                    opacity
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
                     .put_fixed(opacity)
@@ -1355,8 +1457,13 @@ pub mod ivi_wm {
                 height: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ivi_wm#{}.surface_source_rectangle(rq, rq, rq, rq, rq)",
-                    object.id
+                    "-> ivi_wm#{}.surface_source_rectangle({}, {}, {}, {}, {})",
+                    object.id,
+                    surface_id,
+                    x,
+                    y,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
@@ -1387,8 +1494,13 @@ pub mod ivi_wm {
                 height: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ivi_wm#{}.layer_source_rectangle(rq, rq, rq, rq, rq)",
-                    object.id
+                    "-> ivi_wm#{}.layer_source_rectangle({}, {}, {}, {}, {})",
+                    object.id,
+                    layer_id,
+                    x,
+                    y,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
@@ -1418,8 +1530,13 @@ pub mod ivi_wm {
                 height: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ivi_wm#{}.surface_destination_rectangle(rq, rq, rq, rq, rq)",
-                    object.id
+                    "-> ivi_wm#{}.surface_destination_rectangle({}, {}, {}, {}, {})",
+                    object.id,
+                    surface_id,
+                    x,
+                    y,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
@@ -1449,8 +1566,13 @@ pub mod ivi_wm {
                 height: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ivi_wm#{}.layer_destination_rectangle(rq, rq, rq, rq, rq)",
-                    object.id
+                    "-> ivi_wm#{}.layer_destination_rectangle({}, {}, {}, {}, {})",
+                    object.id,
+                    layer_id,
+                    x,
+                    y,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
@@ -1470,7 +1592,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 surface_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_created(rq)", object.id);
+                tracing::debug!("-> ivi_wm#{}.surface_created({})", object.id, surface_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
                     .build();
@@ -1485,7 +1607,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 layer_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.layer_created(rq)", object.id);
+                tracing::debug!("-> ivi_wm#{}.layer_created({})", object.id, layer_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
                     .build();
@@ -1500,7 +1622,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 surface_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_destroyed(rq)", object.id);
+                tracing::debug!("-> ivi_wm#{}.surface_destroyed({})", object.id, surface_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
                     .build();
@@ -1515,7 +1637,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 layer_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.layer_destroyed(rq)", object.id);
+                tracing::debug!("-> ivi_wm#{}.layer_destroyed({})", object.id, layer_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
                     .build();
@@ -1533,7 +1655,13 @@ pub mod ivi_wm {
                 error: u32,
                 message: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_error(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_wm#{}.surface_error({}, {}, {})",
+                    object.id,
+                    object_id,
+                    error,
+                    message
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(object_id)
                     .put_uint(error)
@@ -1553,7 +1681,13 @@ pub mod ivi_wm {
                 error: u32,
                 message: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.layer_error(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_wm#{}.layer_error({}, {}, {})",
+                    object.id,
+                    object_id,
+                    error,
+                    message
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(object_id)
                     .put_uint(error)
@@ -1574,7 +1708,13 @@ pub mod ivi_wm {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_size(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_wm#{}.surface_size({}, {}, {})",
+                    object.id,
+                    surface_id,
+                    width,
+                    height
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
                     .put_int(width)
@@ -1595,7 +1735,13 @@ pub mod ivi_wm {
                 frame_count: u32,
                 pid: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.surface_stats(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_wm#{}.surface_stats({}, {}, {})",
+                    object.id,
+                    surface_id,
+                    frame_count,
+                    pid
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(surface_id)
                     .put_uint(frame_count)
@@ -1614,7 +1760,12 @@ pub mod ivi_wm {
                 layer_id: u32,
                 surface_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_wm#{}.layer_surface_added(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_wm#{}.layer_surface_added({}, {})",
+                    object.id,
+                    layer_id,
+                    surface_id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(layer_id)
                     .put_uint(surface_id)

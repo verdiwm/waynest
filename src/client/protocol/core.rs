@@ -33,6 +33,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wl_display interface. See the module level documentation for more info"]
         pub trait WlDisplay {
             const INTERFACE: &'static str = "wl_display";
@@ -407,6 +412,11 @@ pub mod wayland {
                     2u32 => Ok(Self::InvalidFd),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "This describes the memory layout of an individual pixel."]
@@ -791,6 +801,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for Format {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wl_shm interface. See the module level documentation for more info"]
         pub trait WlShm {
             const INTERFACE: &'static str = "wl_shm";
@@ -944,6 +959,11 @@ pub mod wayland {
                     3u32 => Ok(Self::InvalidOffer),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_data_offer interface. See the module level documentation for more info"]
@@ -1187,6 +1207,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wl_data_source interface. See the module level documentation for more info"]
         pub trait WlDataSource {
             const INTERFACE: &'static str = "wl_data_source";
@@ -1366,6 +1391,11 @@ pub mod wayland {
                     1u32 => Ok(Self::UsedSource),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_data_device interface. See the module level documentation for more info"]
@@ -1555,6 +1585,11 @@ pub mod wayland {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
+        impl std::fmt::Display for DndAction {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wl_data_device_manager interface. See the module level documentation for more info"]
         pub trait WlDataDeviceManager {
             const INTERFACE: &'static str = "wl_data_device_manager";
@@ -1635,6 +1670,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wl_shell interface. See the module level documentation for more info"]
         pub trait WlShell {
             const INTERFACE: &'static str = "wl_shell";
@@ -1693,11 +1733,21 @@ pub mod wayland {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
+        impl std::fmt::Display for Resize {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
         bitflags::bitflags! { # [doc = "These flags specify details of the expected behaviour"] # [doc = "of transient surfaces. Used in the set_transient request."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Transient : u32 { # [doc = "do not set keyboard focus"] const Inactive = 1u32 ; } }
         impl TryFrom<u32> for Transient {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Transient {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Hints to indicate to the compositor how to deal with a conflict"]
@@ -1726,6 +1776,11 @@ pub mod wayland {
                     3u32 => Ok(Self::Fill),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for FullscreenMethod {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_shell_surface interface. See the module level documentation for more info"]
@@ -2121,6 +2176,11 @@ pub mod wayland {
                     4u32 => Ok(Self::DefunctRoleObject),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_surface interface. See the module level documentation for more info"]
@@ -2650,6 +2710,11 @@ pub mod wayland {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
         #[doc = "These errors can be emitted in response to wl_seat requests."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -2665,6 +2730,11 @@ pub mod wayland {
                     0u32 => Ok(Self::MissingCapability),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_seat interface. See the module level documentation for more info"]
@@ -2834,6 +2904,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Describes the physical state of a button that produced the button"]
         #[doc = "event."]
         #[repr(u32)]
@@ -2855,6 +2930,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for ButtonState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Describes the axis types of scroll events."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -2873,6 +2953,11 @@ pub mod wayland {
                     1u32 => Ok(Self::HorizontalScroll),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Axis {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Describes the source types for axis events. This indicates to the"]
@@ -2916,6 +3001,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for AxisSource {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "This specifies the direction of the physical motion that caused a"]
         #[doc = "wl_pointer.axis event, relative to the wl_pointer.axis direction."]
         #[repr(u32)]
@@ -2935,6 +3025,11 @@ pub mod wayland {
                     1u32 => Ok(Self::Inverted),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for AxisRelativeDirection {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_pointer interface. See the module level documentation for more info"]
@@ -3303,6 +3398,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for KeymapFormat {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Describes the physical state of a key that produced the key event."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -3321,6 +3421,11 @@ pub mod wayland {
                     1u32 => Ok(Self::Pressed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for KeyState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_keyboard interface. See the module level documentation for more info"]
@@ -3634,6 +3739,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for Subpixel {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "This describes transformations that clients and compositors apply to"]
         #[doc = "buffer contents."]
         #[doc = ""]
@@ -3681,11 +3791,21 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for Transform {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [doc = "These flags describe properties of an output mode."] # [doc = "They are used in the flags bitfield of the mode event."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Mode : u32 { # [doc = "indicates this is the current mode"] const Current = 1u32 ; # [doc = "indicates this is the preferred mode"] const Preferred = 2u32 ; } }
         impl TryFrom<u32> for Mode {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Mode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_output interface. See the module level documentation for more info"]
@@ -3977,6 +4097,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wl_subcompositor interface. See the module level documentation for more info"]
         pub trait WlSubcompositor {
             const INTERFACE: &'static str = "wl_subcompositor";
@@ -4114,6 +4239,11 @@ pub mod wayland {
                     0u32 => Ok(Self::BadSurface),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_subsurface interface. See the module level documentation for more info"]

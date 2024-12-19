@@ -63,6 +63,11 @@ pub mod color_management_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "See the ICC.1:2022 specification from the International Color Consortium"]
         #[doc = "for more details about rendering intents."]
         #[doc = ""]
@@ -99,6 +104,11 @@ pub mod color_management_v1 {
                 }
             }
         }
+        impl std::fmt::Display for RenderIntent {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -129,6 +139,11 @@ pub mod color_management_v1 {
                     6u32 => Ok(Self::ExtendedTargetVolume),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Feature {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Named color primaries used to encode well-known sets of primaries. H.273"]
@@ -167,6 +182,11 @@ pub mod color_management_v1 {
                     9u32 => Ok(Self::AdobeRgb),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Primaries {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Named transfer functions used to encode well-known transfer"]
@@ -214,6 +234,11 @@ pub mod color_management_v1 {
                     13u32 => Ok(Self::Hlg),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for TransferFunction {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xx_color_manager_v4 interface. See the module level documentation for more info"]
@@ -507,6 +532,11 @@ pub mod color_management_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the xx_color_management_surface_v4 interface. See the module level documentation for more info"]
         pub trait XxColorManagementSurfaceV4 {
             const INTERFACE: &'static str = "xx_color_management_surface_v4";
@@ -625,6 +655,11 @@ pub mod color_management_v1 {
                     0u32 => Ok(Self::Inert),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xx_color_management_feedback_surface_v4 interface. See the module level documentation for more info"]
@@ -762,6 +797,11 @@ pub mod color_management_v1 {
                     4u32 => Ok(Self::OutOfFile),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xx_image_description_creator_icc_v4 interface. See the module level documentation for more info"]
@@ -939,6 +979,11 @@ pub mod color_management_v1 {
                     7u32 => Ok(Self::InvalidMastering),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xx_image_description_creator_params_v4 interface. See the module level documentation for more info"]
@@ -1393,6 +1438,11 @@ pub mod color_management_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1416,6 +1466,11 @@ pub mod color_management_v1 {
                     3u32 => Ok(Self::NoOutput),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Cause {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xx_image_description_v4 interface. See the module level documentation for more info"]
@@ -1718,6 +1773,11 @@ pub mod ivi_application {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
         pub trait IviApplication {
             const INTERFACE: &'static str = "ivi_application";
@@ -1800,6 +1860,11 @@ pub mod ivi_hmi_controller {
                 }
             }
         }
+        impl std::fmt::Display for LayoutMode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1815,6 +1880,11 @@ pub mod ivi_hmi_controller {
                     1u32 => Ok(Self::On),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Home {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the ivi_hmi_controller interface. See the module level documentation for more info"]
@@ -2025,6 +2095,11 @@ pub mod weston_content_protection {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the weston_content_protection interface. See the module level documentation for more info"]
         pub trait WestonContentProtection {
             const INTERFACE: &'static str = "weston_content_protection";
@@ -2134,6 +2209,11 @@ pub mod weston_content_protection {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Description of a particular type of content protection."]
         #[doc = ""]
         #[doc = "A server may not necessarily support all of these types."]
@@ -2161,6 +2241,11 @@ pub mod weston_content_protection {
                     2u32 => Ok(Self::Hdcp1),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Type {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the weston_protected_surface interface. See the module level documentation for more info"]
@@ -2472,6 +2557,11 @@ pub mod weston_desktop {
                 }
             }
         }
+        impl std::fmt::Display for Cursor {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2493,6 +2583,11 @@ pub mod weston_desktop {
                 }
             }
         }
+        impl std::fmt::Display for PanelPosition {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2507,6 +2602,11 @@ pub mod weston_desktop {
                     0u32 => Ok(Self::InvalidArgument),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the weston_desktop_shell interface. See the module level documentation for more info"]
@@ -2806,6 +2906,11 @@ pub mod weston_output_capture {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2829,6 +2934,11 @@ pub mod weston_output_capture {
                     3u32 => Ok(Self::Blending),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Source {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the weston_capture_v1 interface. See the module level documentation for more info"]
@@ -2930,6 +3040,11 @@ pub mod weston_output_capture {
                     1u32 => Ok(Self::Sequence),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the weston_capture_source_v1 interface. See the module level documentation for more info"]
@@ -3073,6 +3188,11 @@ pub mod weston_test {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3087,6 +3207,11 @@ pub mod weston_test {
                     0u32 => Ok(Self::PostRepaint),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Breakpoint {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the weston_test interface. See the module level documentation for more info"]
@@ -3351,6 +3476,11 @@ pub mod weston_test {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the weston_test_runner interface. See the module level documentation for more info"]
         pub trait WestonTestRunner {
             const INTERFACE: &'static str = "weston_test_runner";
@@ -3447,6 +3577,11 @@ pub mod weston_touch_calibration {
                     2u32 => Ok(Self::AlreadyExists),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the weston_touch_calibration interface. See the module level documentation for more info"]
@@ -3609,6 +3744,11 @@ pub mod weston_touch_calibration {
                     2u32 => Ok(Self::BadCoordinates),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the weston_touch_calibrator interface. See the module level documentation for more info"]

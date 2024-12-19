@@ -109,6 +109,11 @@ pub mod wlr_data_control_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zwlr_data_control_device_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrDataControlDeviceV1 {
             const INTERFACE: &'static str = "zwlr_data_control_device_v1";
@@ -258,6 +263,11 @@ pub mod wlr_data_control_unstable_v1 {
                     1u32 => Ok(Self::InvalidOffer),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_data_control_source_v1 interface. See the module level documentation for more info"]
@@ -488,6 +498,11 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Flags {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Indicates reason for cancelling the frame."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -509,6 +524,11 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                     2u32 => Ok(Self::Resizing),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for CancelReason {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_export_dmabuf_frame_v1 interface. See the module level documentation for more info"]
@@ -696,6 +716,11 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for State {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -710,6 +735,11 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                     0u32 => Ok(Self::InvalidRectangle),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
@@ -1068,6 +1098,11 @@ pub mod wlr_gamma_control_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zwlr_gamma_control_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrGammaControlV1 {
             const INTERFACE: &'static str = "zwlr_gamma_control_v1";
@@ -1157,6 +1192,11 @@ pub mod wlr_input_inhibit_unstable_v1 {
                     0u32 => Ok(Self::AlreadyInhibited),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_input_inhibit_manager_v1 interface. See the module level documentation for more info"]
@@ -1269,6 +1309,11 @@ pub mod wlr_layer_shell_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "These values indicate which layers a surface can be rendered in. They"]
         #[doc = "are ordered by z depth, bottom-most first. Traditional shell surfaces"]
         #[doc = "will typically be rendered between the bottom and top layers."]
@@ -1294,6 +1339,11 @@ pub mod wlr_layer_shell_unstable_v1 {
                     3u32 => Ok(Self::Overlay),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Layer {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_layer_shell_v1 interface. See the module level documentation for more info"]
@@ -1412,6 +1462,11 @@ pub mod wlr_layer_shell_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for KeyboardInteractivity {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1440,11 +1495,21 @@ pub mod wlr_layer_shell_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Anchor : u32 { # [doc = "the top edge of the anchor rectangle"] const Top = 1u32 ; # [doc = "the bottom edge of the anchor rectangle"] const Bottom = 2u32 ; # [doc = "the left edge of the anchor rectangle"] const Left = 4u32 ; # [doc = "the right edge of the anchor rectangle"] const Right = 8u32 ; } }
         impl TryFrom<u32> for Anchor {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Anchor {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_layer_surface_v1 interface. See the module level documentation for more info"]
@@ -1910,6 +1975,11 @@ pub mod wlr_output_management_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for AdaptiveSyncState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zwlr_output_head_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrOutputHeadV1 {
             const INTERFACE: &'static str = "zwlr_output_head_v1";
@@ -2169,6 +2239,11 @@ pub mod wlr_output_management_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zwlr_output_configuration_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrOutputConfigurationV1 {
             const INTERFACE: &'static str = "zwlr_output_configuration_v1";
@@ -2344,6 +2419,11 @@ pub mod wlr_output_management_unstable_v1 {
                     6u32 => Ok(Self::InvalidAdaptiveSyncState),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_output_configuration_head_v1 interface. See the module level documentation for more info"]
@@ -2583,6 +2663,11 @@ pub mod wlr_output_power_management_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Mode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2597,6 +2682,11 @@ pub mod wlr_output_power_management_unstable_v1 {
                     1u32 => Ok(Self::InvalidMode),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_output_power_v1 interface. See the module level documentation for more info"]
@@ -2807,11 +2897,21 @@ pub mod wlr_screencopy_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInvert = 1u32 ; } }
         impl TryFrom<u32> for Flags {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Flags {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_screencopy_frame_v1 interface. See the module level documentation for more info"]
@@ -2974,6 +3074,11 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                     1u32 => Ok(Self::InvalidAxisSource),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_virtual_pointer_v1 interface. See the module level documentation for more info"]

@@ -70,6 +70,11 @@ pub mod ivi_application {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
         pub trait IviApplication {
             const INTERFACE: &'static str = "ivi_application";
@@ -258,6 +263,11 @@ pub mod ivi_wm {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the ivi_wm_screen interface. See the module level documentation for more info"]
         pub trait IviWmScreen {
             const INTERFACE: &'static str = "ivi_wm_screen";
@@ -417,6 +427,11 @@ pub mod ivi_wm {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the ivi_screenshot interface. See the module level documentation for more info"]
         pub trait IviScreenshot {
             const INTERFACE: &'static str = "ivi_screenshot";
@@ -457,11 +472,21 @@ pub mod ivi_wm {
                 }
             }
         }
+        impl std::fmt::Display for Sync {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [doc = "The HMI controller can request different types of parameters of an"] # [doc = "ivi-object."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Param : u32 { const Opacity = 1u32 ; const Visibility = 2u32 ; const Size = 4u32 ; const RenderOrder = 8u32 ; } }
         impl TryFrom<u32> for Param {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Param {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "If a surface is restricted type, visible contents of the surface is strictly"]
@@ -496,6 +521,11 @@ pub mod ivi_wm {
                 }
             }
         }
+        impl std::fmt::Display for SurfaceType {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -518,6 +548,11 @@ pub mod ivi_wm {
                 }
             }
         }
+        impl std::fmt::Display for SurfaceError {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -538,6 +573,11 @@ pub mod ivi_wm {
                     2u32 => Ok(Self::BadParam),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for LayerError {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the ivi_wm interface. See the module level documentation for more info"]

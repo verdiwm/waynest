@@ -188,7 +188,7 @@ pub mod linux_dmabuf_v1 {
                 client: &mut crate::server::Client,
                 format: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_dmabuf_v1#{}.format(rq)", object.id);
+                tracing::debug!("-> zwp_linux_dmabuf_v1#{}.format({})", object.id, format);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(format).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -226,7 +226,13 @@ pub mod linux_dmabuf_v1 {
                 modifier_hi: u32,
                 modifier_lo: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_dmabuf_v1#{}.modifier(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_linux_dmabuf_v1#{}.modifier({}, {}, {})",
+                    object.id,
+                    format,
+                    modifier_hi,
+                    modifier_lo
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(format)
                     .put_uint(modifier_hi)
@@ -295,11 +301,21 @@ pub mod linux_dmabuf_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInvert = 1u32 ; # [doc = "content is interlaced"] const Interlaced = 2u32 ; # [doc = "bottom field first"] const BottomFirst = 4u32 ; } }
         impl TryFrom<u32> for Flags {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Flags {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_linux_buffer_params_v1 interface. See the module level documentation for more info"]
@@ -549,7 +565,11 @@ pub mod linux_dmabuf_v1 {
                 client: &mut crate::server::Client,
                 buffer: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_buffer_params_v1#{}.created(rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_linux_buffer_params_v1#{}.created({})",
+                    object.id,
+                    buffer
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(buffer))
                     .build();
@@ -569,7 +589,7 @@ pub mod linux_dmabuf_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_buffer_params_v1#{}.failed()", object.id);
+                tracing::debug!("-> zwp_linux_buffer_params_v1#{}.failed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -614,6 +634,11 @@ pub mod linux_dmabuf_v1 {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
+        impl std::fmt::Display for TrancheFlags {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zwp_linux_dmabuf_feedback_v1 interface. See the module level documentation for more info"]
         pub trait ZwpLinuxDmabufFeedbackV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_linux_dmabuf_feedback_v1";
@@ -656,7 +681,7 @@ pub mod linux_dmabuf_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_dmabuf_feedback_v1#{}.done()", object.id);
+                tracing::debug!("-> zwp_linux_dmabuf_feedback_v1#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -685,8 +710,10 @@ pub mod linux_dmabuf_v1 {
                 size: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.format_table(rq, rq)",
-                    object.id
+                    "-> zwp_linux_dmabuf_feedback_v1#{}.format_table({}, {})",
+                    object.id,
+                    fd.as_raw_fd(),
+                    size
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_fd(fd)
@@ -727,8 +754,9 @@ pub mod linux_dmabuf_v1 {
                 device: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.main_device(rq)",
-                    object.id
+                    "-> zwp_linux_dmabuf_feedback_v1#{}.main_device(array[{}])",
+                    object.id,
+                    device.len()
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
                 client
@@ -747,7 +775,7 @@ pub mod linux_dmabuf_v1 {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_done()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -788,8 +816,9 @@ pub mod linux_dmabuf_v1 {
                 device: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_target_device(rq)",
-                    object.id
+                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_target_device(array[{}])",
+                    object.id,
+                    device.len()
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
                 client
@@ -828,8 +857,9 @@ pub mod linux_dmabuf_v1 {
                 indices: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_formats(rq)",
-                    object.id
+                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_formats(array[{}])",
+                    object.id,
+                    indices.len()
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_array(indices)
@@ -854,8 +884,9 @@ pub mod linux_dmabuf_v1 {
                 flags: TrancheFlags,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_flags(rq)",
-                    object.id
+                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_flags({})",
+                    object.id,
+                    flags
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(flags.bits())
@@ -912,6 +943,11 @@ pub mod presentation_time {
                     1u32 => Ok(Self::InvalidFlag),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_presentation interface. See the module level documentation for more info"]
@@ -1011,7 +1047,7 @@ pub mod presentation_time {
                 client: &mut crate::server::Client,
                 clk_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_presentation#{}.clock_id(rq)", object.id);
+                tracing::debug!("-> wp_presentation#{}.clock_id({})", object.id, clk_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(clk_id).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -1040,6 +1076,11 @@ pub mod presentation_time {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Kind {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_presentation_feedback interface. See the module level documentation for more info"]
@@ -1077,7 +1118,11 @@ pub mod presentation_time {
                 client: &mut crate::server::Client,
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_presentation_feedback#{}.sync_output(rq)", object.id);
+                tracing::debug!(
+                    "-> wp_presentation_feedback#{}.sync_output({})",
+                    object.id,
+                    output
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(output))
                     .build();
@@ -1143,8 +1188,15 @@ pub mod presentation_time {
                 flags: Kind,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> wp_presentation_feedback#{}.presented(rq, rq, rq, rq, rq, rq, rq)",
-                    object.id
+                    "-> wp_presentation_feedback#{}.presented({}, {}, {}, {}, {}, {}, {})",
+                    object.id,
+                    tv_sec_hi,
+                    tv_sec_lo,
+                    tv_nsec,
+                    refresh,
+                    seq_hi,
+                    seq_lo,
+                    flags
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
@@ -1166,7 +1218,7 @@ pub mod presentation_time {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_presentation_feedback#{}.discarded()", object.id);
+                tracing::debug!("-> wp_presentation_feedback#{}.discarded()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -1369,7 +1421,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_seat_v2#{}.tablet_added(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_seat_v2#{}.tablet_added({})", object.id, id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
@@ -1388,7 +1440,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_seat_v2#{}.tool_added(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_seat_v2#{}.tool_added({})", object.id, id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
@@ -1413,7 +1465,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_seat_v2#{}.pad_added(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_seat_v2#{}.pad_added({})", object.id, id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
@@ -1494,6 +1546,11 @@ pub mod tablet_v2 {
                 }
             }
         }
+        impl std::fmt::Display for Type {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Describes extra capabilities on a tablet."]
         #[doc = ""]
         #[doc = "Any tool must provide x and y values, extra axes are"]
@@ -1529,6 +1586,11 @@ pub mod tablet_v2 {
                 }
             }
         }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Describes the physical state of a button that produced the button event."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -1549,6 +1611,11 @@ pub mod tablet_v2 {
                 }
             }
         }
+        impl std::fmt::Display for ButtonState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1563,6 +1630,11 @@ pub mod tablet_v2 {
                     0u32 => Ok(Self::Role),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_tablet_tool_v2 interface. See the module level documentation for more info"]
@@ -1664,7 +1736,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 tool_type: Type,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.type(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_tool_v2#{}.type({})", object.id, tool_type);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tool_type as u32)
                     .build();
@@ -1696,8 +1768,10 @@ pub mod tablet_v2 {
                 hardware_serial_lo: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_tablet_tool_v2#{}.hardware_serial(rq, rq)",
-                    object.id
+                    "-> zwp_tablet_tool_v2#{}.hardware_serial({}, {})",
+                    object.id,
+                    hardware_serial_hi,
+                    hardware_serial_lo
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(hardware_serial_hi)
@@ -1726,8 +1800,10 @@ pub mod tablet_v2 {
                 hardware_id_lo: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_tablet_tool_v2#{}.hardware_id_wacom(rq, rq)",
-                    object.id
+                    "-> zwp_tablet_tool_v2#{}.hardware_id_wacom({}, {})",
+                    object.id,
+                    hardware_id_hi,
+                    hardware_id_lo
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(hardware_id_hi)
@@ -1751,7 +1827,11 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 capability: Capability,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.capability(rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_tablet_tool_v2#{}.capability({})",
+                    object.id,
+                    capability
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(capability as u32)
                     .build();
@@ -1768,7 +1848,7 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.done()", object.id);
+                tracing::debug!("-> zwp_tablet_tool_v2#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -1794,7 +1874,7 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.removed()", object.id);
+                tracing::debug!("-> zwp_tablet_tool_v2#{}.removed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
@@ -1819,8 +1899,11 @@ pub mod tablet_v2 {
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_tablet_tool_v2#{}.proximity_in(rq, rq, rq)",
-                    object.id
+                    "-> zwp_tablet_tool_v2#{}.proximity_in({}, {}, {})",
+                    object.id,
+                    serial,
+                    tablet,
+                    surface
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
@@ -1849,7 +1932,7 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.proximity_out()", object.id);
+                tracing::debug!("-> zwp_tablet_tool_v2#{}.proximity_out()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
@@ -1874,7 +1957,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.down(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_tool_v2#{}.down({})", object.id, serial);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
@@ -1902,7 +1985,7 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.up()", object.id);
+                tracing::debug!("-> zwp_tablet_tool_v2#{}.up()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 9u16, payload, fds))
@@ -1917,7 +2000,7 @@ pub mod tablet_v2 {
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.motion(rq, rq)", object.id);
+                tracing::debug!("-> zwp_tablet_tool_v2#{}.motion({}, {})", object.id, x, y);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_fixed(x)
                     .put_fixed(y)
@@ -1938,7 +2021,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 pressure: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.pressure(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_tool_v2#{}.pressure({})", object.id, pressure);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(pressure)
                     .build();
@@ -1958,7 +2041,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 distance: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.distance(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_tool_v2#{}.distance({})", object.id, distance);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(distance)
                     .build();
@@ -1978,7 +2061,12 @@ pub mod tablet_v2 {
                 tilt_x: crate::wire::Fixed,
                 tilt_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.tilt(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_tablet_tool_v2#{}.tilt({}, {})",
+                    object.id,
+                    tilt_x,
+                    tilt_y
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_fixed(tilt_x)
                     .put_fixed(tilt_y)
@@ -1997,7 +2085,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 degrees: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.rotation(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_tool_v2#{}.rotation({})", object.id, degrees);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_fixed(degrees)
                     .build();
@@ -2017,7 +2105,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 position: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.slider(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_tool_v2#{}.slider({})", object.id, position);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(position).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 15u16, payload, fds))
@@ -2043,7 +2131,12 @@ pub mod tablet_v2 {
                 degrees: crate::wire::Fixed,
                 clicks: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.wheel(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_tablet_tool_v2#{}.wheel({}, {})",
+                    object.id,
+                    degrees,
+                    clicks
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_fixed(degrees)
                     .put_int(clicks)
@@ -2067,7 +2160,13 @@ pub mod tablet_v2 {
                 button: u32,
                 state: ButtonState,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.button(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_tablet_tool_v2#{}.button({}, {}, {})",
+                    object.id,
+                    serial,
+                    button,
+                    state
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_uint(button)
@@ -2088,7 +2187,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 time: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_tool_v2#{}.frame(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_tool_v2#{}.frame({})", object.id, time);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(time).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 18u16, payload, fds))
@@ -2152,7 +2251,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.name(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_v2#{}.name({})", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -2175,7 +2274,7 @@ pub mod tablet_v2 {
                 vid: u32,
                 pid: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.id(rq, rq)", object.id);
+                tracing::debug!("-> zwp_tablet_v2#{}.id({}, {})", object.id, vid, pid);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(vid)
                     .put_uint(pid)
@@ -2205,7 +2304,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 path: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.path(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_v2#{}.path({})", object.id, path);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(path))
                     .build();
@@ -2223,7 +2322,7 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.done()", object.id);
+                tracing::debug!("-> zwp_tablet_v2#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -2240,7 +2339,7 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_v2#{}.removed()", object.id);
+                tracing::debug!("-> zwp_tablet_v2#{}.removed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -2276,6 +2375,11 @@ pub mod tablet_v2 {
                     1u32 => Ok(Self::Finger),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Source {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_ring_v2 interface. See the module level documentation for more info"]
@@ -2366,7 +2470,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 source: Source,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.source(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.source({})", object.id, source);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(source as u32)
                     .build();
@@ -2385,7 +2489,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 degrees: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.angle(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.angle({})", object.id, degrees);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_fixed(degrees)
                     .build();
@@ -2409,7 +2513,7 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.stop()", object.id);
+                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.stop()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -2435,7 +2539,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 time: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.frame(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.frame({})", object.id, time);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(time).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -2471,6 +2575,11 @@ pub mod tablet_v2 {
                     1u32 => Ok(Self::Finger),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Source {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_strip_v2 interface. See the module level documentation for more info"]
@@ -2561,7 +2670,11 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 source: Source,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.source(rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_tablet_pad_strip_v2#{}.source({})",
+                    object.id,
+                    source
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(source as u32)
                     .build();
@@ -2581,7 +2694,11 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 position: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.position(rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_tablet_pad_strip_v2#{}.position({})",
+                    object.id,
+                    position
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(position)
                     .build();
@@ -2605,7 +2722,7 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.stop()", object.id);
+                tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.stop()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -2632,7 +2749,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 time: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.frame(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.frame({})", object.id, time);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(time).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -2716,7 +2833,11 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 buttons: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.buttons(rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_tablet_pad_group_v2#{}.buttons(array[{}])",
+                    object.id,
+                    buttons.len()
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_array(buttons)
                     .build();
@@ -2736,7 +2857,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 ring: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.ring(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.ring({})", object.id, ring);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(ring))
                     .build();
@@ -2756,7 +2877,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 strip: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.strip(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.strip({})", object.id, strip);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(strip))
                     .build();
@@ -2783,7 +2904,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 modes: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.modes(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.modes({})", object.id, modes);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(modes).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -2799,7 +2920,7 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.done()", object.id);
+                tracing::debug!("-> zwp_tablet_pad_group_v2#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -2842,8 +2963,11 @@ pub mod tablet_v2 {
                 mode: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwp_tablet_pad_group_v2#{}.mode_switch(rq, rq, rq)",
-                    object.id
+                    "-> zwp_tablet_pad_group_v2#{}.mode_switch({}, {}, {})",
+                    object.id,
+                    time,
+                    serial,
+                    mode
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
@@ -2902,6 +3026,11 @@ pub mod tablet_v2 {
                     1u32 => Ok(Self::Pressed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for ButtonState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_v2 interface. See the module level documentation for more info"]
@@ -2995,7 +3124,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 pad_group: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.group(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_pad_v2#{}.group({})", object.id, pad_group);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(pad_group))
                     .build();
@@ -3020,7 +3149,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 path: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.path(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_pad_v2#{}.path({})", object.id, path);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(path))
                     .build();
@@ -3041,7 +3170,7 @@ pub mod tablet_v2 {
                 client: &mut crate::server::Client,
                 buttons: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.buttons(rq)", object.id);
+                tracing::debug!("-> zwp_tablet_pad_v2#{}.buttons({})", object.id, buttons);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(buttons).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -3056,7 +3185,7 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.done()", object.id);
+                tracing::debug!("-> zwp_tablet_pad_v2#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -3072,7 +3201,13 @@ pub mod tablet_v2 {
                 button: u32,
                 state: ButtonState,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.button(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_tablet_pad_v2#{}.button({}, {}, {})",
+                    object.id,
+                    time,
+                    button,
+                    state
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_uint(button)
@@ -3092,7 +3227,13 @@ pub mod tablet_v2 {
                 tablet: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.enter(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_tablet_pad_v2#{}.enter({}, {}, {})",
+                    object.id,
+                    serial,
+                    tablet,
+                    surface
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_object(Some(tablet))
@@ -3112,7 +3253,12 @@ pub mod tablet_v2 {
                 serial: u32,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.leave(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwp_tablet_pad_v2#{}.leave({}, {})",
+                    object.id,
+                    serial,
+                    surface
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_object(Some(surface))
@@ -3133,7 +3279,7 @@ pub mod tablet_v2 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_tablet_pad_v2#{}.removed()", object.id);
+                tracing::debug!("-> zwp_tablet_pad_v2#{}.removed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
@@ -3169,6 +3315,11 @@ pub mod viewporter {
                     0u32 => Ok(Self::ViewportExists),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_viewporter interface. See the module level documentation for more info"]
@@ -3315,6 +3466,11 @@ pub mod viewporter {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wp_viewport interface. See the module level documentation for more info"]
         pub trait WpViewport: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_viewport";
@@ -3457,6 +3613,11 @@ pub mod xdg_shell {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the xdg_wm_base interface. See the module level documentation for more info"]
         pub trait XdgWmBase: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_wm_base";
@@ -3576,7 +3737,7 @@ pub mod xdg_shell {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_wm_base#{}.ping(rq)", object.id);
+                tracing::debug!("-> xdg_wm_base#{}.ping({})", object.id, serial);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -3624,6 +3785,11 @@ pub mod xdg_shell {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3653,6 +3819,11 @@ pub mod xdg_shell {
                     8u32 => Ok(Self::BottomRight),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Anchor {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[repr(u32)]
@@ -3686,11 +3857,21 @@ pub mod xdg_shell {
                 }
             }
         }
+        impl std::fmt::Display for Gravity {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [doc = "The constraint adjustment value define ways the compositor will adjust"] # [doc = "the position of the surface, if the unadjusted position would result"] # [doc = "in the surface being partly constrained."] # [doc = ""] # [doc = "Whether a surface is considered 'constrained' is left to the compositor"] # [doc = "to determine. For example, the surface may be partly outside the"] # [doc = "compositor's defined 'work area', thus necessitating the child surface's"] # [doc = "position be adjusted until it is entirely inside the work area."] # [doc = ""] # [doc = "The adjustments can be combined, according to a defined precedence: 1)"] # [doc = "Flip, 2) Slide, 3) Resize."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ConstraintAdjustment : u32 { const None = 0u32 ; const SlideX = 1u32 ; const SlideY = 2u32 ; const FlipX = 4u32 ; const FlipY = 8u32 ; const ResizeX = 16u32 ; const ResizeY = 32u32 ; } }
         impl TryFrom<u32> for ConstraintAdjustment {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for ConstraintAdjustment {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the xdg_positioner interface. See the module level documentation for more info"]
@@ -4019,6 +4200,11 @@ pub mod xdg_shell {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the xdg_surface interface. See the module level documentation for more info"]
         pub trait XdgSurface: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_surface";
@@ -4232,7 +4418,7 @@ pub mod xdg_shell {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_surface#{}.configure(rq)", object.id);
+                tracing::debug!("-> xdg_surface#{}.configure({})", object.id, serial);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -4289,6 +4475,11 @@ pub mod xdg_shell {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "These values are used to indicate which edge of a surface"]
         #[doc = "is being dragged in a resize operation."]
         #[repr(u32)]
@@ -4320,6 +4511,11 @@ pub mod xdg_shell {
                     10u32 => Ok(Self::BottomRight),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for ResizeEdge {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "The different state values used on the surface. This is designed for"]
@@ -4363,6 +4559,11 @@ pub mod xdg_shell {
                 }
             }
         }
+        impl std::fmt::Display for State {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4386,6 +4587,11 @@ pub mod xdg_shell {
                     4u32 => Ok(Self::Minimize),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for WmCapabilities {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xdg_toplevel interface. See the module level documentation for more info"]
@@ -4908,7 +5114,13 @@ pub mod xdg_shell {
                 height: i32,
                 states: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_toplevel#{}.configure(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> xdg_toplevel#{}.configure({}, {}, array[{}])",
+                    object.id,
+                    width,
+                    height,
+                    states.len()
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -4932,7 +5144,7 @@ pub mod xdg_shell {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_toplevel#{}.close()", object.id);
+                tracing::debug!("-> xdg_toplevel#{}.close()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -4961,7 +5173,12 @@ pub mod xdg_shell {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_toplevel#{}.configure_bounds(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> xdg_toplevel#{}.configure_bounds({}, {})",
+                    object.id,
+                    width,
+                    height
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -4997,7 +5214,11 @@ pub mod xdg_shell {
                 client: &mut crate::server::Client,
                 capabilities: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_toplevel#{}.wm_capabilities(rq)", object.id);
+                tracing::debug!(
+                    "-> xdg_toplevel#{}.wm_capabilities(array[{}])",
+                    object.id,
+                    capabilities.len()
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_array(capabilities)
                     .build();
@@ -5050,6 +5271,11 @@ pub mod xdg_shell {
                     0u32 => Ok(Self::InvalidGrab),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xdg_popup interface. See the module level documentation for more info"]
@@ -5203,7 +5429,14 @@ pub mod xdg_shell {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_popup#{}.configure(rq, rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> xdg_popup#{}.configure({}, {}, {}, {})",
+                    object.id,
+                    x,
+                    y,
+                    width,
+                    height
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
                     .put_int(y)
@@ -5223,7 +5456,7 @@ pub mod xdg_shell {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_popup#{}.popup_done()", object.id);
+                tracing::debug!("-> xdg_popup#{}.popup_done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -5251,7 +5484,7 @@ pub mod xdg_shell {
                 client: &mut crate::server::Client,
                 token: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_popup#{}.repositioned(rq)", object.id);
+                tracing::debug!("-> xdg_popup#{}.repositioned({})", object.id, token);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(token).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
