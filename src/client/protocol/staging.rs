@@ -28,6 +28,11 @@ pub mod alpha_modifier_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wp_alpha_modifier_v1 interface. See the module level documentation for more info"]
         pub trait WpAlphaModifierV1 {
             const INTERFACE: &'static str = "wp_alpha_modifier_v1";
@@ -101,6 +106,11 @@ pub mod alpha_modifier_v1 {
                     0u32 => Ok(Self::NoSurface),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_alpha_modifier_surface_v1 interface. See the module level documentation for more info"]
@@ -205,6 +215,11 @@ pub mod commit_timing_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wp_commit_timing_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpCommitTimingManagerV1 {
             const INTERFACE: &'static str = "wp_commit_timing_manager_v1";
@@ -280,6 +295,11 @@ pub mod commit_timing_v1 {
                     2u32 => Ok(Self::SurfaceDestroyed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_commit_timer_v1 interface. See the module level documentation for more info"]
@@ -375,6 +395,11 @@ pub mod content_type_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wp_content_type_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpContentTypeManagerV1 {
             const INTERFACE: &'static str = "wp_content_type_manager_v1";
@@ -458,6 +483,11 @@ pub mod content_type_v1 {
                     3u32 => Ok(Self::Game),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Type {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_content_type_v1 interface. See the module level documentation for more info"]
@@ -723,6 +753,11 @@ pub mod cursor_shape_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Shape {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -737,6 +772,11 @@ pub mod cursor_shape_v1 {
                     1u32 => Ok(Self::InvalidShape),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_cursor_shape_device_v1 interface. See the module level documentation for more info"]
@@ -1031,6 +1071,11 @@ pub mod drm_lease_v1 {
                     2u32 => Ok(Self::EmptyLease),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_drm_lease_request_v1 interface. See the module level documentation for more info"]
@@ -1700,11 +1745,21 @@ pub mod ext_image_copy_capture_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Options : u32 { # [doc = "paint cursors onto captured frames"] const PaintCursors = 1u32 ; } }
         impl TryFrom<u32> for Options {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Options {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_manager_v1 interface. See the module level documentation for more info"]
@@ -1827,6 +1882,11 @@ pub mod ext_image_copy_capture_v1 {
                     1u32 => Ok(Self::DuplicateFrame),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_session_v1 interface. See the module level documentation for more info"]
@@ -1968,6 +2028,11 @@ pub mod ext_image_copy_capture_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1985,6 +2050,11 @@ pub mod ext_image_copy_capture_v1 {
                     2u32 => Ok(Self::Stopped),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for FailureReason {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_frame_v1 interface. See the module level documentation for more info"]
@@ -2174,6 +2244,11 @@ pub mod ext_image_copy_capture_v1 {
                     1u32 => Ok(Self::DuplicateSession),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_cursor_session_v1 interface. See the module level documentation for more info"]
@@ -2422,6 +2497,11 @@ pub mod ext_session_lock_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the ext_session_lock_v1 interface. See the module level documentation for more info"]
         pub trait ExtSessionLockV1 {
             const INTERFACE: &'static str = "ext_session_lock_v1";
@@ -2597,6 +2677,11 @@ pub mod ext_session_lock_v1 {
                     3u32 => Ok(Self::InvalidSerial),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the ext_session_lock_surface_v1 interface. See the module level documentation for more info"]
@@ -2847,6 +2932,11 @@ pub mod fifo_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wp_fifo_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpFifoManagerV1 {
             const INTERFACE: &'static str = "wp_fifo_manager_v1";
@@ -2923,6 +3013,11 @@ pub mod fifo_v1 {
                     0u32 => Ok(Self::SurfaceDestroyed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_fifo_v1 interface. See the module level documentation for more info"]
@@ -3054,6 +3149,11 @@ pub mod fractional_scale_v1 {
                     0u32 => Ok(Self::FractionalScaleExists),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_fractional_scale_manager_v1 interface. See the module level documentation for more info"]
@@ -3202,6 +3302,11 @@ pub mod linux_drm_syncobj_v1 {
                     1u32 => Ok(Self::InvalidTimeline),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_linux_drm_syncobj_manager_v1 interface. See the module level documentation for more info"]
@@ -3382,6 +3487,11 @@ pub mod linux_drm_syncobj_v1 {
                     6u32 => Ok(Self::ConflictingPoints),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_linux_drm_syncobj_surface_v1 interface. See the module level documentation for more info"]
@@ -3569,6 +3679,11 @@ pub mod security_context_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wp_security_context_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpSecurityContextManagerV1 {
             const INTERFACE: &'static str = "wp_security_context_manager_v1";
@@ -3668,6 +3783,11 @@ pub mod security_context_v1 {
                     3u32 => Ok(Self::InvalidMetadata),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_security_context_v1 interface. See the module level documentation for more info"]
@@ -3920,6 +4040,11 @@ pub mod tearing_control_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wp_tearing_control_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpTearingControlManagerV1 {
             const INTERFACE: &'static str = "wp_tearing_control_manager_v1";
@@ -4003,6 +4128,11 @@ pub mod tearing_control_v1 {
                     1u32 => Ok(Self::Async),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for PresentationHint {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wp_tearing_control_v1 interface. See the module level documentation for more info"]
@@ -4209,6 +4339,11 @@ pub mod xdg_activation_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the xdg_activation_token_v1 interface. See the module level documentation for more info"]
         pub trait XdgActivationTokenV1 {
             const INTERFACE: &'static str = "xdg_activation_token_v1";
@@ -4356,6 +4491,11 @@ pub mod xdg_dialog_v1 {
                     0u32 => Ok(Self::AlreadyUsed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xdg_wm_dialog_v1 interface. See the module level documentation for more info"]
@@ -4607,6 +4747,11 @@ pub mod xdg_toplevel_drag_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the xdg_toplevel_drag_manager_v1 interface. See the module level documentation for more info"]
         pub trait XdgToplevelDragManagerV1 {
             const INTERFACE: &'static str = "xdg_toplevel_drag_manager_v1";
@@ -4687,6 +4832,11 @@ pub mod xdg_toplevel_drag_v1 {
                     1u32 => Ok(Self::OngoingDrag),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xdg_toplevel_drag_v1 interface. See the module level documentation for more info"]
@@ -4909,6 +5059,11 @@ pub mod xdg_toplevel_icon_v1 {
                     3u32 => Ok(Self::NoBuffer),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xdg_toplevel_icon_v1 interface. See the module level documentation for more info"]

@@ -115,6 +115,10 @@ impl ArgType {
     pub const fn is_fd(&self) -> bool {
         matches!(self, Self::Fd)
     }
+
+    pub const fn is_array(&self) -> bool {
+        matches!(self, Self::Array)
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

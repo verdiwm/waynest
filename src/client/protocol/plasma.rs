@@ -466,6 +466,11 @@ pub mod fullscreen_shell {
                 }
             }
         }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Hints to indicate to the compositor how to deal with a conflict"]
         #[doc = "between the dimensions of the surface and the dimensions of the"]
         #[doc = "output. The compositor is free to ignore this parameter."]
@@ -497,6 +502,11 @@ pub mod fullscreen_shell {
                 }
             }
         }
+        impl std::fmt::Display for PresentMethod {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "These errors can be emitted in response to wl_fullscreen_shell requests"]
         #[repr(u32)]
         #[non_exhaustive]
@@ -512,6 +522,11 @@ pub mod fullscreen_shell {
                     0u32 => Ok(Self::InvalidMethod),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the _wl_fullscreen_shell interface. See the module level documentation for more info"]
@@ -810,6 +825,11 @@ pub mod keystate {
                 }
             }
         }
+        impl std::fmt::Display for Key {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -827,6 +847,11 @@ pub mod keystate {
                     2u32 => Ok(Self::Locked),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for State {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_keystate interface. See the module level documentation for more info"]
@@ -981,6 +1006,11 @@ pub mod outputmanagement {
                     2u32 => Ok(Self::Automatic),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for VrrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_outputconfiguration interface. See the module level documentation for more info"]
@@ -1275,6 +1305,11 @@ pub mod org_kde_kwin_outputdevice {
                 }
             }
         }
+        impl std::fmt::Display for Subpixel {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "This describes the transform, that a compositor will apply to a"]
         #[doc = "surface to compensate for the rotation or mirroring of an"]
         #[doc = "output device."]
@@ -1314,6 +1349,11 @@ pub mod org_kde_kwin_outputdevice {
                 }
             }
         }
+        impl std::fmt::Display for Transform {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "These flags describe properties of an output mode. They are"]
         #[doc = "used in the flags bitfield of the mode event."]
         #[repr(u32)]
@@ -1333,6 +1373,11 @@ pub mod org_kde_kwin_outputdevice {
                     2u32 => Ok(Self::Preferred),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Mode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Describes whether a device is enabled, i.e. device is used to"]
@@ -1355,11 +1400,21 @@ pub mod org_kde_kwin_outputdevice {
                 }
             }
         }
+        impl std::fmt::Display for Enablement {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this outputdevice can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; } }
         impl TryFrom<u32> for Capability {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Describes when the compositor may employ variable refresh rate"]
@@ -1380,6 +1435,11 @@ pub mod org_kde_kwin_outputdevice {
                     2u32 => Ok(Self::Automatic),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for VrrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_outputdevice interface. See the module level documentation for more info"]
@@ -1761,6 +1821,11 @@ pub mod server_decoration {
                 }
             }
         }
+        impl std::fmt::Display for Mode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinServerDecorationManager {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_manager";
@@ -1836,6 +1901,11 @@ pub mod server_decoration {
                     2u32 => Ok(Self::Server),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Mode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_server_decoration interface. See the module level documentation for more info"]
@@ -2261,6 +2331,11 @@ pub mod slide {
                 }
             }
         }
+        impl std::fmt::Display for Location {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the org_kde_kwin_slide interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinSlide {
             const INTERFACE: &'static str = "org_kde_kwin_slide";
@@ -2395,6 +2470,11 @@ pub mod surface_extension {
                 }
             }
         }
+        impl std::fmt::Display for Orientation {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2412,6 +2492,11 @@ pub mod surface_extension {
                     4u32 => Ok(Self::BypassWindowManager),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Windowflag {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the qt_extended_surface interface. See the module level documentation for more info"]
@@ -2546,6 +2631,11 @@ pub mod text_input_unstable_v2 {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
+        impl std::fmt::Display for ContentHint {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
         #[doc = "The content purpose allows to specify the primary purpose of a text"]
         #[doc = "input."]
         #[doc = ""]
@@ -2603,6 +2693,11 @@ pub mod text_input_unstable_v2 {
                 }
             }
         }
+        impl std::fmt::Display for ContentPurpose {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Defines the reason for sending an updated state."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -2629,6 +2724,11 @@ pub mod text_input_unstable_v2 {
                 }
             }
         }
+        impl std::fmt::Display for UpdateState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2646,6 +2746,11 @@ pub mod text_input_unstable_v2 {
                     1u32 => Ok(Self::Visible),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for InputPanelVisibility {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[repr(u32)]
@@ -2685,6 +2790,11 @@ pub mod text_input_unstable_v2 {
                 }
             }
         }
+        impl std::fmt::Display for PreeditStyle {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2705,6 +2815,11 @@ pub mod text_input_unstable_v2 {
                     2u32 => Ok(Self::Rtl),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for TextDirection {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwp_text_input_v2 interface. See the module level documentation for more info"]
@@ -3226,6 +3341,11 @@ pub mod text {
                 }
             }
         }
+        impl std::fmt::Display for ContentHint {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "The content purpose allows to specify the primary purpose of a text"]
         #[doc = "input."]
         #[doc = ""]
@@ -3283,6 +3403,11 @@ pub mod text {
                 }
             }
         }
+        impl std::fmt::Display for ContentPurpose {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3314,6 +3439,11 @@ pub mod text {
                 }
             }
         }
+        impl std::fmt::Display for PreeditStyle {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3334,6 +3464,11 @@ pub mod text {
                     2u32 => Ok(Self::Rtl),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for TextDirection {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_text_input interface. See the module level documentation for more info"]
@@ -3724,6 +3859,11 @@ pub mod wl_eglstream_controller {
                 }
             }
         }
+        impl std::fmt::Display for PresentMode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "- present_mode: Must be one of wl_eglstream_controller_present_mode. Tells the"]
         #[doc = "server the desired present mode that should be used."]
         #[doc = ""]
@@ -3747,6 +3887,11 @@ pub mod wl_eglstream_controller {
                     1u32 => Ok(Self::FifoLength),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Attrib {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_eglstream_controller interface. See the module level documentation for more info"]
@@ -3888,6 +4033,11 @@ pub mod dpms {
                     3u32 => Ok(Self::Off),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Mode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_dpms interface. See the module level documentation for more info"]
@@ -4218,6 +4368,11 @@ pub mod kde_lockscreen_overlay_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the kde_lockscreen_overlay_v1 interface. See the module level documentation for more info"]
         pub trait KdeLockscreenOverlayV1 {
             const INTERFACE: &'static str = "kde_lockscreen_overlay_v1";
@@ -4315,6 +4470,11 @@ pub mod kde_output_device_v2 {
                 }
             }
         }
+        impl std::fmt::Display for Subpixel {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "This describes the transform, that a compositor will apply to a"]
         #[doc = "surface to compensate for the rotation or mirroring of an"]
         #[doc = "output device."]
@@ -4354,11 +4514,21 @@ pub mod kde_output_device_v2 {
                 }
             }
         }
+        impl std::fmt::Display for Transform {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this output_device can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; # [doc = "if setting the rgb range is possible"] const RgbRange = 4u32 ; # [doc = "if this outputdevice supports high dynamic range"] const HighDynamicRange = 8u32 ; # [doc = "if this outputdevice supports a wide color gamut"] const WideColorGamut = 16u32 ; # [doc = "if this outputdevice supports autorotation"] const AutoRotate = 32u32 ; # [doc = "if this outputdevice supports icc profiles"] const IccProfile = 64u32 ; # [doc = "if this outputdevice supports the brightness setting"] const Brightness = 128u32 ; } }
         impl TryFrom<u32> for Capability {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Describes when the compositor may employ variable refresh rate"]
@@ -4381,6 +4551,11 @@ pub mod kde_output_device_v2 {
                 }
             }
         }
+        impl std::fmt::Display for VrrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Whether full or limited color range should be used"]
         #[repr(u32)]
         #[non_exhaustive]
@@ -4399,6 +4574,11 @@ pub mod kde_output_device_v2 {
                     2u32 => Ok(Self::Limited),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for RgbRange {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[repr(u32)]
@@ -4420,6 +4600,11 @@ pub mod kde_output_device_v2 {
                 }
             }
         }
+        impl std::fmt::Display for AutoRotatePolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4437,6 +4622,11 @@ pub mod kde_output_device_v2 {
                     2u32 => Ok(Self::Edid),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for ColorProfileSource {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the kde_output_device_v2 interface. See the module level documentation for more info"]
@@ -4742,6 +4932,11 @@ pub mod kde_output_management_v2 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Describes when the compositor may employ variable refresh rate"]
         #[repr(u32)]
         #[non_exhaustive]
@@ -4760,6 +4955,11 @@ pub mod kde_output_management_v2 {
                     2u32 => Ok(Self::Automatic),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for VrrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Whether this output should use full or limited rgb."]
@@ -4782,6 +4982,11 @@ pub mod kde_output_management_v2 {
                 }
             }
         }
+        impl std::fmt::Display for RgbRange {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4801,6 +5006,11 @@ pub mod kde_output_management_v2 {
                 }
             }
         }
+        impl std::fmt::Display for AutoRotatePolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4818,6 +5028,11 @@ pub mod kde_output_management_v2 {
                     2u32 => Ok(Self::Edid),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for ColorProfileSource {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the kde_output_configuration_v2 interface. See the module level documentation for more info"]
@@ -5393,6 +5608,11 @@ pub mod kde_screen_edge_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "These values describe possible screen borders."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -5417,6 +5637,11 @@ pub mod kde_screen_edge_v1 {
                     4u32 => Ok(Self::Right),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Border {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the kde_screen_edge_manager_v1 interface. See the module level documentation for more info"]
@@ -5791,6 +6016,11 @@ pub mod plasma_shell {
                 }
             }
         }
+        impl std::fmt::Display for Role {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5812,6 +6042,11 @@ pub mod plasma_shell {
                 }
             }
         }
+        impl std::fmt::Display for PanelBehavior {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5826,6 +6061,11 @@ pub mod plasma_shell {
                     0u32 => Ok(Self::PanelNotAutoHide),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the org_kde_plasma_surface interface. See the module level documentation for more info"]
@@ -6212,6 +6452,11 @@ pub mod plasma_window_management {
                 }
             }
         }
+        impl std::fmt::Display for State {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -6227,6 +6472,11 @@ pub mod plasma_window_management {
                     1u32 => Ok(Self::Enabled),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for ShowDesktop {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the org_kde_plasma_window_management interface. See the module level documentation for more info"]
@@ -6838,6 +7088,11 @@ pub mod zkde_screencast_unstable_v1 {
                     4u32 => Ok(Self::Metadata),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Pointer {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zkde_screencast_unstable_v1 interface. See the module level documentation for more info"]

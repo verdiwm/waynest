@@ -34,6 +34,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wl_display interface. See the module level documentation for more info"]
         pub trait WlDisplay: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_display";
@@ -116,7 +121,13 @@ pub mod wayland {
                 code: u32,
                 message: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_display#{}.error(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_display#{}.error({}, {}, {})",
+                    object.id,
+                    object_id,
+                    code,
+                    message
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(object_id))
                     .put_uint(code)
@@ -138,7 +149,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_display#{}.delete_id(rq)", object.id);
+                tracing::debug!("-> wl_display#{}.delete_id({})", object.id, id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -220,7 +231,13 @@ pub mod wayland {
                 interface: String,
                 version: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_registry#{}.global(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_registry#{}.global({}, {}, {})",
+                    object.id,
+                    name,
+                    interface,
+                    version
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(name)
                     .put_string(Some(interface))
@@ -247,7 +264,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 name: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_registry#{}.global_remove(rq)", object.id);
+                tracing::debug!("-> wl_registry#{}.global_remove({})", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(name).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -293,7 +310,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 callback_data: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_callback#{}.done(rq)", object.id);
+                tracing::debug!("-> wl_callback#{}.done({})", object.id, callback_data);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(callback_data)
                     .build();
@@ -518,6 +535,11 @@ pub mod wayland {
                     2u32 => Ok(Self::InvalidFd),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "This describes the memory layout of an individual pixel."]
@@ -902,6 +924,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for Format {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wl_shm interface. See the module level documentation for more info"]
         pub trait WlShm: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_shm";
@@ -973,7 +1000,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 format: Format,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_shm#{}.format(rq)", object.id);
+                tracing::debug!("-> wl_shm#{}.format({})", object.id, format);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(format as u32)
                     .build();
@@ -1054,7 +1081,7 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_buffer#{}.release()", object.id);
+                tracing::debug!("-> wl_buffer#{}.release()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -1096,6 +1123,11 @@ pub mod wayland {
                     3u32 => Ok(Self::InvalidOffer),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_data_offer interface. See the module level documentation for more info"]
@@ -1284,7 +1316,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 mime_type: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_offer#{}.offer(rq)", object.id);
+                tracing::debug!("-> wl_data_offer#{}.offer({})", object.id, mime_type);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(mime_type))
                     .build();
@@ -1303,7 +1335,11 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 source_actions : super :: super :: super :: core :: wayland :: wl_data_device_manager :: DndAction,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_offer#{}.source_actions(rq)", object.id);
+                tracing::debug!(
+                    "-> wl_data_offer#{}.source_actions({})",
+                    object.id,
+                    source_actions
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(source_actions.bits())
                     .build();
@@ -1353,7 +1389,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 dnd_action: super::super::super::core::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_offer#{}.action(rq)", object.id);
+                tracing::debug!("-> wl_data_offer#{}.action({})", object.id, dnd_action);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(dnd_action.bits())
                     .build();
@@ -1389,6 +1425,11 @@ pub mod wayland {
                     1u32 => Ok(Self::InvalidSource),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_data_source interface. See the module level documentation for more info"]
@@ -1477,7 +1518,13 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 mime_type: Option<String>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.target(rq)", object.id);
+                tracing::debug!(
+                    "-> wl_data_source#{}.target({})",
+                    object.id,
+                    mime_type
+                        .as_ref()
+                        .map_or("null".to_string(), |v| v.to_string())
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(mime_type)
                     .build();
@@ -1496,7 +1543,12 @@ pub mod wayland {
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.send(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_data_source#{}.send({}, {})",
+                    object.id,
+                    mime_type,
+                    fd.as_raw_fd()
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(mime_type))
                     .put_fd(fd)
@@ -1531,7 +1583,7 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.cancelled()", object.id);
+                tracing::debug!("-> wl_data_source#{}.cancelled()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -1552,7 +1604,7 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.dnd_drop_performed()", object.id);
+                tracing::debug!("-> wl_data_source#{}.dnd_drop_performed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -1570,7 +1622,7 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.dnd_finished()", object.id);
+                tracing::debug!("-> wl_data_source#{}.dnd_finished()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -1608,7 +1660,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 dnd_action: super::super::super::core::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.action(rq)", object.id);
+                tracing::debug!("-> wl_data_source#{}.action({})", object.id, dnd_action);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(dnd_action.bits())
                     .build();
@@ -1645,6 +1697,11 @@ pub mod wayland {
                     1u32 => Ok(Self::UsedSource),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_data_device interface. See the module level documentation for more info"]
@@ -1777,7 +1834,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_device#{}.data_offer(rq)", object.id);
+                tracing::debug!("-> wl_data_device#{}.data_offer({})", object.id, id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
@@ -1800,7 +1857,15 @@ pub mod wayland {
                 y: crate::wire::Fixed,
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_device#{}.enter(rq, rq, rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_data_device#{}.enter({}, {}, {}, {}, {})",
+                    object.id,
+                    serial,
+                    surface,
+                    x,
+                    y,
+                    id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_object(Some(surface))
@@ -1821,7 +1886,7 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_device#{}.leave()", object.id);
+                tracing::debug!("-> wl_data_device#{}.leave()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -1840,7 +1905,13 @@ pub mod wayland {
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_device#{}.motion(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_data_device#{}.motion({}, {}, {})",
+                    object.id,
+                    time,
+                    x,
+                    y
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_fixed(x)
@@ -1869,7 +1940,7 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_device#{}.drop()", object.id);
+                tracing::debug!("-> wl_data_device#{}.drop()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -1894,7 +1965,11 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_device#{}.selection(rq)", object.id);
+                tracing::debug!(
+                    "-> wl_data_device#{}.selection({})",
+                    object.id,
+                    id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
@@ -1922,6 +1997,11 @@ pub mod wayland {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for DndAction {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_data_device_manager interface. See the module level documentation for more info"]
@@ -2017,6 +2097,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the wl_shell interface. See the module level documentation for more info"]
         pub trait WlShell: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_shell";
@@ -2089,11 +2174,21 @@ pub mod wayland {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
+        impl std::fmt::Display for Resize {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
         bitflags::bitflags! { # [doc = "These flags specify details of the expected behaviour"] # [doc = "of transient surfaces. Used in the set_transient request."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Transient : u32 { # [doc = "do not set keyboard focus"] const Inactive = 1u32 ; } }
         impl TryFrom<u32> for Transient {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Transient {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Hints to indicate to the compositor how to deal with a conflict"]
@@ -2122,6 +2217,11 @@ pub mod wayland {
                     3u32 => Ok(Self::Fill),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for FullscreenMethod {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_shell_surface interface. See the module level documentation for more info"]
@@ -2460,7 +2560,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_shell_surface#{}.ping(rq)", object.id);
+                tracing::debug!("-> wl_shell_surface#{}.ping({})", object.id, serial);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -2492,7 +2592,13 @@ pub mod wayland {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_shell_surface#{}.configure(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_shell_surface#{}.configure({}, {}, {})",
+                    object.id,
+                    edges,
+                    width,
+                    height
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(edges.bits())
                     .put_int(width)
@@ -2511,7 +2617,7 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_shell_surface#{}.popup_done()", object.id);
+                tracing::debug!("-> wl_shell_surface#{}.popup_done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -2593,6 +2699,11 @@ pub mod wayland {
                     4u32 => Ok(Self::DefunctRoleObject),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_surface interface. See the module level documentation for more info"]
@@ -3085,7 +3196,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_surface#{}.enter(rq)", object.id);
+                tracing::debug!("-> wl_surface#{}.enter({})", object.id, output);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(output))
                     .build();
@@ -3109,7 +3220,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_surface#{}.leave(rq)", object.id);
+                tracing::debug!("-> wl_surface#{}.leave({})", object.id, output);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(output))
                     .build();
@@ -3136,7 +3247,11 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 factor: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_surface#{}.preferred_buffer_scale(rq)", object.id);
+                tracing::debug!(
+                    "-> wl_surface#{}.preferred_buffer_scale({})",
+                    object.id,
+                    factor
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(factor).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -3158,7 +3273,11 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_surface#{}.preferred_buffer_transform(rq)", object.id);
+                tracing::debug!(
+                    "-> wl_surface#{}.preferred_buffer_transform({})",
+                    object.id,
+                    transform
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(transform as u32)
                     .build();
@@ -3184,6 +3303,11 @@ pub mod wayland {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
             }
         }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
         #[doc = "These errors can be emitted in response to wl_seat requests."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -3199,6 +3323,11 @@ pub mod wayland {
                     0u32 => Ok(Self::MissingCapability),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_seat interface. See the module level documentation for more info"]
@@ -3326,7 +3455,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 capabilities: Capability,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_seat#{}.capabilities(rq)", object.id);
+                tracing::debug!("-> wl_seat#{}.capabilities({})", object.id, capabilities);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(capabilities.bits())
                     .build();
@@ -3357,7 +3486,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_seat#{}.name(rq)", object.id);
+                tracing::debug!("-> wl_seat#{}.name({})", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -3396,6 +3525,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Describes the physical state of a button that produced the button"]
         #[doc = "event."]
         #[repr(u32)]
@@ -3417,6 +3551,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for ButtonState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Describes the axis types of scroll events."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -3435,6 +3574,11 @@ pub mod wayland {
                     1u32 => Ok(Self::HorizontalScroll),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Axis {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Describes the source types for axis events. This indicates to the"]
@@ -3478,6 +3622,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for AxisSource {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "This specifies the direction of the physical motion that caused a"]
         #[doc = "wl_pointer.axis event, relative to the wl_pointer.axis direction."]
         #[repr(u32)]
@@ -3497,6 +3646,11 @@ pub mod wayland {
                     1u32 => Ok(Self::Inverted),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for AxisRelativeDirection {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_pointer interface. See the module level documentation for more info"]
@@ -3609,7 +3763,14 @@ pub mod wayland {
                 surface_x: crate::wire::Fixed,
                 surface_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.enter(rq, rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_pointer#{}.enter({}, {}, {}, {})",
+                    object.id,
+                    serial,
+                    surface,
+                    surface_x,
+                    surface_y
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_object(Some(surface))
@@ -3633,7 +3794,7 @@ pub mod wayland {
                 serial: u32,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.leave(rq, rq)", object.id);
+                tracing::debug!("-> wl_pointer#{}.leave({}, {})", object.id, serial, surface);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_object(Some(surface))
@@ -3654,7 +3815,13 @@ pub mod wayland {
                 surface_x: crate::wire::Fixed,
                 surface_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.motion(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_pointer#{}.motion({}, {}, {})",
+                    object.id,
+                    time,
+                    surface_x,
+                    surface_y
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_fixed(surface_x)
@@ -3688,7 +3855,14 @@ pub mod wayland {
                 button: u32,
                 state: ButtonState,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.button(rq, rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_pointer#{}.button({}, {}, {}, {})",
+                    object.id,
+                    serial,
+                    time,
+                    button,
+                    state
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_uint(time)
@@ -3724,7 +3898,13 @@ pub mod wayland {
                 axis: Axis,
                 value: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.axis(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_pointer#{}.axis({}, {}, {})",
+                    object.id,
+                    time,
+                    axis,
+                    value
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_uint(axis as u32)
@@ -3774,7 +3954,7 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.frame()", object.id);
+                tracing::debug!("-> wl_pointer#{}.frame()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
@@ -3812,7 +3992,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 axis_source: AxisSource,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.axis_source(rq)", object.id);
+                tracing::debug!("-> wl_pointer#{}.axis_source({})", object.id, axis_source);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(axis_source as u32)
                     .build();
@@ -3842,7 +4022,7 @@ pub mod wayland {
                 time: u32,
                 axis: Axis,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.axis_stop(rq, rq)", object.id);
+                tracing::debug!("-> wl_pointer#{}.axis_stop({}, {})", object.id, time, axis);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_uint(axis as u32)
@@ -3889,7 +4069,12 @@ pub mod wayland {
                 axis: Axis,
                 discrete: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.axis_discrete(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_pointer#{}.axis_discrete({}, {})",
+                    object.id,
+                    axis,
+                    discrete
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(axis as u32)
                     .put_int(discrete)
@@ -3927,7 +4112,12 @@ pub mod wayland {
                 axis: Axis,
                 value120: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.axis_value120(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_pointer#{}.axis_value120({}, {})",
+                    object.id,
+                    axis,
+                    value120
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(axis as u32)
                     .put_int(value120)
@@ -3980,8 +4170,10 @@ pub mod wayland {
                 direction: AxisRelativeDirection,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> wl_pointer#{}.axis_relative_direction(rq, rq)",
-                    object.id
+                    "-> wl_pointer#{}.axis_relative_direction({}, {})",
+                    object.id,
+                    axis,
+                    direction
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(axis as u32)
@@ -4031,6 +4223,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for KeymapFormat {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Describes the physical state of a key that produced the key event."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -4049,6 +4246,11 @@ pub mod wayland {
                     1u32 => Ok(Self::Pressed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for KeyState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_keyboard interface. See the module level documentation for more info"]
@@ -4095,7 +4297,13 @@ pub mod wayland {
                 fd: rustix::fd::OwnedFd,
                 size: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_keyboard#{}.keymap(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_keyboard#{}.keymap({}, {}, {})",
+                    object.id,
+                    format,
+                    fd.as_raw_fd(),
+                    size
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(format as u32)
                     .put_fd(fd)
@@ -4124,7 +4332,13 @@ pub mod wayland {
                 surface: crate::wire::ObjectId,
                 keys: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_keyboard#{}.enter(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_keyboard#{}.enter({}, {}, array[{}])",
+                    object.id,
+                    serial,
+                    surface,
+                    keys.len()
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_object(Some(surface))
@@ -4152,7 +4366,12 @@ pub mod wayland {
                 serial: u32,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_keyboard#{}.leave(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_keyboard#{}.leave({}, {})",
+                    object.id,
+                    serial,
+                    surface
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_object(Some(surface))
@@ -4189,7 +4408,14 @@ pub mod wayland {
                 key: u32,
                 state: KeyState,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_keyboard#{}.key(rq, rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_keyboard#{}.key({}, {}, {}, {})",
+                    object.id,
+                    serial,
+                    time,
+                    key,
+                    state
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_uint(time)
@@ -4224,7 +4450,15 @@ pub mod wayland {
                 mods_locked: u32,
                 group: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_keyboard#{}.modifiers(rq, rq, rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_keyboard#{}.modifiers({}, {}, {}, {}, {})",
+                    object.id,
+                    serial,
+                    mods_depressed,
+                    mods_latched,
+                    mods_locked,
+                    group
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_uint(mods_depressed)
@@ -4256,7 +4490,12 @@ pub mod wayland {
                 rate: i32,
                 delay: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_keyboard#{}.repeat_info(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_keyboard#{}.repeat_info({}, {})",
+                    object.id,
+                    rate,
+                    delay
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(rate)
                     .put_int(delay)
@@ -4325,7 +4564,16 @@ pub mod wayland {
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.down(rq, rq, rq, rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_touch#{}.down({}, {}, {}, {}, {}, {})",
+                    object.id,
+                    serial,
+                    time,
+                    surface,
+                    id,
+                    x,
+                    y
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_uint(time)
@@ -4350,7 +4598,7 @@ pub mod wayland {
                 time: u32,
                 id: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.up(rq, rq, rq)", object.id);
+                tracing::debug!("-> wl_touch#{}.up({}, {}, {})", object.id, serial, time, id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_uint(time)
@@ -4371,7 +4619,14 @@ pub mod wayland {
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.motion(rq, rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_touch#{}.motion({}, {}, {}, {})",
+                    object.id,
+                    time,
+                    id,
+                    x,
+                    y
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_int(id)
@@ -4396,7 +4651,7 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.frame()", object.id);
+                tracing::debug!("-> wl_touch#{}.frame()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -4416,7 +4671,7 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.cancel()", object.id);
+                tracing::debug!("-> wl_touch#{}.cancel()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -4456,7 +4711,13 @@ pub mod wayland {
                 major: crate::wire::Fixed,
                 minor: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.shape(rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_touch#{}.shape({}, {}, {})",
+                    object.id,
+                    id,
+                    major,
+                    minor
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(id)
                     .put_fixed(major)
@@ -4497,7 +4758,12 @@ pub mod wayland {
                 id: i32,
                 orientation: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.orientation(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_touch#{}.orientation({}, {})",
+                    object.id,
+                    id,
+                    orientation
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(id)
                     .put_fixed(orientation)
@@ -4552,6 +4818,11 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for Subpixel {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "This describes transformations that clients and compositors apply to"]
         #[doc = "buffer contents."]
         #[doc = ""]
@@ -4599,11 +4870,21 @@ pub mod wayland {
                 }
             }
         }
+        impl std::fmt::Display for Transform {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [doc = "These flags describe properties of an output mode."] # [doc = "They are used in the flags bitfield of the mode event."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Mode : u32 { # [doc = "indicates this is the current mode"] const Current = 1u32 ; # [doc = "indicates this is the preferred mode"] const Preferred = 2u32 ; } }
         impl TryFrom<u32> for Mode {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Mode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_output interface. See the module level documentation for more info"]
@@ -4672,8 +4953,16 @@ pub mod wayland {
                 transform: Transform,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> wl_output#{}.geometry(rq, rq, rq, rq, rq, rq, rq, rq)",
-                    object.id
+                    "-> wl_output#{}.geometry({}, {}, {}, {}, {}, {}, {}, {})",
+                    object.id,
+                    x,
+                    y,
+                    physical_width,
+                    physical_height,
+                    subpixel,
+                    make,
+                    model,
+                    transform
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
@@ -4732,7 +5021,14 @@ pub mod wayland {
                 height: i32,
                 refresh: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.mode(rq, rq, rq, rq)", object.id);
+                tracing::debug!(
+                    "-> wl_output#{}.mode({}, {}, {}, {})",
+                    object.id,
+                    flags,
+                    width,
+                    height,
+                    refresh
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(flags.bits())
                     .put_int(width)
@@ -4754,7 +5050,7 @@ pub mod wayland {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.done()", object.id);
+                tracing::debug!("-> wl_output#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -4785,7 +5081,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 factor: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.scale(rq)", object.id);
+                tracing::debug!("-> wl_output#{}.scale({})", object.id, factor);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(factor).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -4826,7 +5122,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.name(rq)", object.id);
+                tracing::debug!("-> wl_output#{}.name({})", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -4855,7 +5151,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 description: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.description(rq)", object.id);
+                tracing::debug!("-> wl_output#{}.description({})", object.id, description);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(description))
                     .build();
@@ -4997,6 +5293,11 @@ pub mod wayland {
                     1u32 => Ok(Self::BadParent),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_subcompositor interface. See the module level documentation for more info"]
@@ -5151,6 +5452,11 @@ pub mod wayland {
                     0u32 => Ok(Self::BadSurface),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the wl_subsurface interface. See the module level documentation for more info"]

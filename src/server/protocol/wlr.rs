@@ -117,6 +117,11 @@ pub mod wlr_data_control_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zwlr_data_control_device_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrDataControlDeviceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_data_control_device_v1";
@@ -216,8 +221,9 @@ pub mod wlr_data_control_unstable_v1 {
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_data_control_device_v1#{}.data_offer(rq)",
-                    object.id
+                    "-> zwlr_data_control_device_v1#{}.data_offer({})",
+                    object.id,
+                    id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
@@ -245,7 +251,11 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_data_control_device_v1#{}.selection(rq)", object.id);
+                tracing::debug!(
+                    "-> zwlr_data_control_device_v1#{}.selection({})",
+                    object.id,
+                    id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -259,7 +269,7 @@ pub mod wlr_data_control_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_data_control_device_v1#{}.finished()", object.id);
+                tracing::debug!("-> zwlr_data_control_device_v1#{}.finished()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -286,8 +296,9 @@ pub mod wlr_data_control_unstable_v1 {
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_data_control_device_v1#{}.primary_selection(rq)",
-                    object.id
+                    "-> zwlr_data_control_device_v1#{}.primary_selection({})",
+                    object.id,
+                    id.as_ref().map_or("null".to_string(), |v| v.to_string())
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
                 client
@@ -319,6 +330,11 @@ pub mod wlr_data_control_unstable_v1 {
                     1u32 => Ok(Self::InvalidOffer),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_data_control_source_v1 interface. See the module level documentation for more info"]
@@ -383,7 +399,12 @@ pub mod wlr_data_control_unstable_v1 {
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_data_control_source_v1#{}.send(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwlr_data_control_source_v1#{}.send({}, {})",
+                    object.id,
+                    mime_type,
+                    fd.as_raw_fd()
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(mime_type))
                     .put_fd(fd)
@@ -402,7 +423,7 @@ pub mod wlr_data_control_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_data_control_source_v1#{}.cancelled()", object.id);
+                tracing::debug!("-> zwlr_data_control_source_v1#{}.cancelled()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -488,7 +509,11 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 mime_type: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_data_control_offer_v1#{}.offer(rq)", object.id);
+                tracing::debug!(
+                    "-> zwlr_data_control_offer_v1#{}.offer({})",
+                    object.id,
+                    mime_type
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(mime_type))
                     .build();
@@ -613,6 +638,11 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Flags {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Indicates reason for cancelling the frame."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -634,6 +664,11 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                     2u32 => Ok(Self::Resizing),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for CancelReason {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_export_dmabuf_frame_v1 interface. See the module level documentation for more info"]
@@ -692,7 +727,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 mod_low: u32,
                 num_objects: u32,
             ) -> crate::server::Result<()> {
-                tracing :: debug ! ("-> zwlr_export_dmabuf_frame_v1#{}.frame(rq, rq, rq, rq, rq, rq, rq, rq, rq, rq)" , object . id);
+                tracing :: debug ! ("-> zwlr_export_dmabuf_frame_v1#{}.frame({}, {}, {}, {}, {}, {}, {}, {}, {}, {})" , object . id , width , height , offset_x , offset_y , buffer_flags , flags , format , mod_high , mod_low , num_objects);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(width)
                     .put_uint(height)
@@ -727,8 +762,14 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 plane_index: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_export_dmabuf_frame_v1#{}.object(rq, rq, rq, rq, rq, rq)",
-                    object.id
+                    "-> zwlr_export_dmabuf_frame_v1#{}.object({}, {}, {}, {}, {}, {})",
+                    object.id,
+                    index,
+                    fd.as_raw_fd(),
+                    size,
+                    offset,
+                    stride,
+                    plane_index
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(index)
@@ -764,8 +805,11 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_export_dmabuf_frame_v1#{}.ready(rq, rq, rq)",
-                    object.id
+                    "-> zwlr_export_dmabuf_frame_v1#{}.ready({}, {}, {})",
+                    object.id,
+                    tv_sec_hi,
+                    tv_sec_lo,
+                    tv_nsec
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
@@ -792,7 +836,11 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 reason: CancelReason,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_export_dmabuf_frame_v1#{}.cancel(rq)", object.id);
+                tracing::debug!(
+                    "-> zwlr_export_dmabuf_frame_v1#{}.cancel({})",
+                    object.id,
+                    reason
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(reason as u32)
                     .build();
@@ -865,8 +913,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_foreign_toplevel_manager_v1#{}.toplevel(rq)",
-                    object.id
+                    "-> zwlr_foreign_toplevel_manager_v1#{}.toplevel({})",
+                    object.id,
+                    toplevel
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
@@ -887,7 +936,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zwlr_foreign_toplevel_manager_v1#{}.finished()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -933,6 +982,11 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for State {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -947,6 +1001,11 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                     0u32 => Ok(Self::InvalidRectangle),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
@@ -1161,7 +1220,11 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 title: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.title(rq)", object.id);
+                tracing::debug!(
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.title({})",
+                    object.id,
+                    title
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(title))
                     .build();
@@ -1178,8 +1241,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 app_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_foreign_toplevel_handle_v1#{}.app_id(rq)",
-                    object.id
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.app_id({})",
+                    object.id,
+                    app_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(app_id))
@@ -1198,8 +1262,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_foreign_toplevel_handle_v1#{}.output_enter(rq)",
-                    object.id
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.output_enter({})",
+                    object.id,
+                    output
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(output))
@@ -1219,8 +1284,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_foreign_toplevel_handle_v1#{}.output_leave(rq)",
-                    object.id
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.output_leave({})",
+                    object.id,
+                    output
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(output))
@@ -1239,7 +1305,11 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 state: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.state(rq)", object.id);
+                tracing::debug!(
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.state(array[{}])",
+                    object.id,
+                    state.len()
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(state).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -1256,7 +1326,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.done()", object.id);
+                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
@@ -1272,7 +1342,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.closed()", object.id);
+                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.closed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
@@ -1289,8 +1359,11 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 parent: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_foreign_toplevel_handle_v1#{}.parent(rq)",
-                    object.id
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.parent({})",
+                    object.id,
+                    parent
+                        .as_ref()
+                        .map_or("null".to_string(), |v| v.to_string())
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(parent)
@@ -1410,6 +1483,11 @@ pub mod wlr_gamma_control_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zwlr_gamma_control_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrGammaControlV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_gamma_control_v1";
@@ -1473,7 +1551,11 @@ pub mod wlr_gamma_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 size: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_gamma_control_v1#{}.gamma_size(rq)", object.id);
+                tracing::debug!(
+                    "-> zwlr_gamma_control_v1#{}.gamma_size({})",
+                    object.id,
+                    size
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(size).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -1493,7 +1575,7 @@ pub mod wlr_gamma_control_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_gamma_control_v1#{}.failed()", object.id);
+                tracing::debug!("-> zwlr_gamma_control_v1#{}.failed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -1530,6 +1612,11 @@ pub mod wlr_input_inhibit_unstable_v1 {
                     0u32 => Ok(Self::AlreadyInhibited),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_input_inhibit_manager_v1 interface. See the module level documentation for more info"]
@@ -1656,6 +1743,11 @@ pub mod wlr_layer_shell_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "These values indicate which layers a surface can be rendered in. They"]
         #[doc = "are ordered by z depth, bottom-most first. Traditional shell surfaces"]
         #[doc = "will typically be rendered between the bottom and top layers."]
@@ -1681,6 +1773,11 @@ pub mod wlr_layer_shell_unstable_v1 {
                     3u32 => Ok(Self::Overlay),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Layer {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_layer_shell_v1 interface. See the module level documentation for more info"]
@@ -1826,6 +1923,11 @@ pub mod wlr_layer_shell_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for KeyboardInteractivity {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1854,11 +1956,21 @@ pub mod wlr_layer_shell_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Anchor : u32 { # [doc = "the top edge of the anchor rectangle"] const Top = 1u32 ; # [doc = "the bottom edge of the anchor rectangle"] const Bottom = 2u32 ; # [doc = "the left edge of the anchor rectangle"] const Left = 4u32 ; # [doc = "the right edge of the anchor rectangle"] const Right = 8u32 ; } }
         impl TryFrom<u32> for Anchor {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Anchor {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_layer_surface_v1 interface. See the module level documentation for more info"]
@@ -2170,8 +2282,11 @@ pub mod wlr_layer_shell_unstable_v1 {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_layer_surface_v1#{}.configure(rq, rq, rq)",
-                    object.id
+                    "-> zwlr_layer_surface_v1#{}.configure({}, {}, {})",
+                    object.id,
+                    serial,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
@@ -2193,7 +2308,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_layer_surface_v1#{}.closed()", object.id);
+                tracing::debug!("-> zwlr_layer_surface_v1#{}.closed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -2313,7 +2428,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 head: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_manager_v1#{}.head(rq)", object.id);
+                tracing::debug!("-> zwlr_output_manager_v1#{}.head({})", object.id, head);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(head))
                     .build();
@@ -2339,7 +2454,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_manager_v1#{}.done(rq)", object.id);
+                tracing::debug!("-> zwlr_output_manager_v1#{}.done({})", object.id, serial);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -2355,7 +2470,7 @@ pub mod wlr_output_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_manager_v1#{}.finished()", object.id);
+                tracing::debug!("-> zwlr_output_manager_v1#{}.finished()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -2398,6 +2513,11 @@ pub mod wlr_output_management_unstable_v1 {
                     1u32 => Ok(Self::Enabled),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for AdaptiveSyncState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_output_head_v1 interface. See the module level documentation for more info"]
@@ -2456,7 +2576,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.name(rq)", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.name({})", object.id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -2485,7 +2605,11 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 description: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.description(rq)", object.id);
+                tracing::debug!(
+                    "-> zwlr_output_head_v1#{}.description({})",
+                    object.id,
+                    description
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(description))
                     .build();
@@ -2508,7 +2632,12 @@ pub mod wlr_output_management_unstable_v1 {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.physical_size(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwlr_output_head_v1#{}.physical_size({}, {})",
+                    object.id,
+                    width,
+                    height
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -2526,7 +2655,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 mode: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.mode(rq)", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.mode({})", object.id, mode);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(mode))
                     .build();
@@ -2546,7 +2675,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 enabled: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.enabled(rq)", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.enabled({})", object.id, enabled);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(enabled).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -2561,7 +2690,11 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 mode: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.current_mode(rq)", object.id);
+                tracing::debug!(
+                    "-> zwlr_output_head_v1#{}.current_mode({})",
+                    object.id,
+                    mode
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(mode))
                     .build();
@@ -2579,7 +2712,12 @@ pub mod wlr_output_management_unstable_v1 {
                 x: i32,
                 y: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.position(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwlr_output_head_v1#{}.position({}, {})",
+                    object.id,
+                    x,
+                    y
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
                     .put_int(y)
@@ -2597,7 +2735,11 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.transform(rq)", object.id);
+                tracing::debug!(
+                    "-> zwlr_output_head_v1#{}.transform({})",
+                    object.id,
+                    transform
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(transform as u32)
                     .build();
@@ -2614,7 +2756,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 scale: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.scale(rq)", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.scale({})", object.id, scale);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_fixed(scale).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
@@ -2629,7 +2771,7 @@ pub mod wlr_output_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.finished()", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.finished()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 9u16, payload, fds))
@@ -2664,7 +2806,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 make: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.make(rq)", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.make({})", object.id, make);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(make))
                     .build();
@@ -2701,7 +2843,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 model: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.model(rq)", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.model({})", object.id, model);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(model))
                     .build();
@@ -2736,7 +2878,11 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 serial_number: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.serial_number(rq)", object.id);
+                tracing::debug!(
+                    "-> zwlr_output_head_v1#{}.serial_number({})",
+                    object.id,
+                    serial_number
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(serial_number))
                     .build();
@@ -2754,7 +2900,11 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 state: AdaptiveSyncState,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.adaptive_sync(rq)", object.id);
+                tracing::debug!(
+                    "-> zwlr_output_head_v1#{}.adaptive_sync({})",
+                    object.id,
+                    state
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(state as u32)
                     .build();
@@ -2820,7 +2970,12 @@ pub mod wlr_output_management_unstable_v1 {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_mode_v1#{}.size(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> zwlr_output_mode_v1#{}.size({}, {})",
+                    object.id,
+                    width,
+                    height
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -2838,7 +2993,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 refresh: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_mode_v1#{}.refresh(rq)", object.id);
+                tracing::debug!("-> zwlr_output_mode_v1#{}.refresh({})", object.id, refresh);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(refresh).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -2851,7 +3006,7 @@ pub mod wlr_output_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_mode_v1#{}.preferred()", object.id);
+                tracing::debug!("-> zwlr_output_mode_v1#{}.preferred()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -2866,7 +3021,7 @@ pub mod wlr_output_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_mode_v1#{}.finished()", object.id);
+                tracing::debug!("-> zwlr_output_mode_v1#{}.finished()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -2909,6 +3064,11 @@ pub mod wlr_output_management_unstable_v1 {
                     3u32 => Ok(Self::AlreadyUsed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_output_configuration_v1 interface. See the module level documentation for more info"]
@@ -3038,7 +3198,7 @@ pub mod wlr_output_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_configuration_v1#{}.succeeded()", object.id);
+                tracing::debug!("-> zwlr_output_configuration_v1#{}.succeeded()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -3055,7 +3215,7 @@ pub mod wlr_output_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_configuration_v1#{}.failed()", object.id);
+                tracing::debug!("-> zwlr_output_configuration_v1#{}.failed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -3075,7 +3235,7 @@ pub mod wlr_output_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_configuration_v1#{}.cancelled()", object.id);
+                tracing::debug!("-> zwlr_output_configuration_v1#{}.cancelled()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -3120,6 +3280,11 @@ pub mod wlr_output_management_unstable_v1 {
                     6u32 => Ok(Self::InvalidAdaptiveSyncState),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_output_configuration_head_v1 interface. See the module level documentation for more info"]
@@ -3368,6 +3533,11 @@ pub mod wlr_output_power_management_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Mode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3382,6 +3552,11 @@ pub mod wlr_output_power_management_unstable_v1 {
                     1u32 => Ok(Self::InvalidMode),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_output_power_v1 interface. See the module level documentation for more info"]
@@ -3442,7 +3617,7 @@ pub mod wlr_output_power_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 mode: Mode,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_power_v1#{}.mode(rq)", object.id);
+                tracing::debug!("-> zwlr_output_power_v1#{}.mode({})", object.id, mode);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(mode as u32)
                     .build();
@@ -3465,7 +3640,7 @@ pub mod wlr_output_power_management_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_power_v1#{}.failed()", object.id);
+                tracing::debug!("-> zwlr_output_power_v1#{}.failed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -3637,11 +3812,21 @@ pub mod wlr_screencopy_unstable_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInvert = 1u32 ; } }
         impl TryFrom<u32> for Flags {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Flags {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_screencopy_frame_v1 interface. See the module level documentation for more info"]
@@ -3726,8 +3911,12 @@ pub mod wlr_screencopy_unstable_v1 {
                 stride: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_screencopy_frame_v1#{}.buffer(rq, rq, rq, rq)",
-                    object.id
+                    "-> zwlr_screencopy_frame_v1#{}.buffer({}, {}, {}, {})",
+                    object.id,
+                    format,
+                    width,
+                    height,
+                    stride
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(format as u32)
@@ -3748,7 +3937,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 client: &mut crate::server::Client,
                 flags: Flags,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.flags(rq)", object.id);
+                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.flags({})", object.id, flags);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(flags.bits())
                     .build();
@@ -3778,8 +3967,11 @@ pub mod wlr_screencopy_unstable_v1 {
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_screencopy_frame_v1#{}.ready(rq, rq, rq)",
-                    object.id
+                    "-> zwlr_screencopy_frame_v1#{}.ready({}, {}, {})",
+                    object.id,
+                    tv_sec_hi,
+                    tv_sec_lo,
+                    tv_nsec
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
@@ -3799,7 +3991,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.failed()", object.id);
+                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.failed()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -3826,8 +4018,12 @@ pub mod wlr_screencopy_unstable_v1 {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_screencopy_frame_v1#{}.damage(rq, rq, rq, rq)",
-                    object.id
+                    "-> zwlr_screencopy_frame_v1#{}.damage({}, {}, {}, {})",
+                    object.id,
+                    x,
+                    y,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(x)
@@ -3852,8 +4048,11 @@ pub mod wlr_screencopy_unstable_v1 {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_screencopy_frame_v1#{}.linux_dmabuf(rq, rq, rq)",
-                    object.id
+                    "-> zwlr_screencopy_frame_v1#{}.linux_dmabuf({}, {}, {})",
+                    object.id,
+                    format,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(format)
@@ -3874,7 +4073,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.buffer_done()", object.id);
+                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.buffer_done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
@@ -3909,6 +4108,11 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                     1u32 => Ok(Self::InvalidAxisSource),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the zwlr_virtual_pointer_v1 interface. See the module level documentation for more info"]

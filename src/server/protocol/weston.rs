@@ -64,6 +64,11 @@ pub mod color_management_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "See the ICC.1:2022 specification from the International Color Consortium"]
         #[doc = "for more details about rendering intents."]
         #[doc = ""]
@@ -100,6 +105,11 @@ pub mod color_management_v1 {
                 }
             }
         }
+        impl std::fmt::Display for RenderIntent {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -130,6 +140,11 @@ pub mod color_management_v1 {
                     6u32 => Ok(Self::ExtendedTargetVolume),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Feature {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Named color primaries used to encode well-known sets of primaries. H.273"]
@@ -168,6 +183,11 @@ pub mod color_management_v1 {
                     9u32 => Ok(Self::AdobeRgb),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Primaries {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Named transfer functions used to encode well-known transfer"]
@@ -215,6 +235,11 @@ pub mod color_management_v1 {
                     13u32 => Ok(Self::Hlg),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for TransferFunction {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xx_color_manager_v4 interface. See the module level documentation for more info"]
@@ -389,7 +414,11 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 render_intent: RenderIntent,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_color_manager_v4#{}.supported_intent(rq)", object.id);
+                tracing::debug!(
+                    "-> xx_color_manager_v4#{}.supported_intent({})",
+                    object.id,
+                    render_intent
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(render_intent as u32)
                     .build();
@@ -406,7 +435,11 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 feature: Feature,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_color_manager_v4#{}.supported_feature(rq)", object.id);
+                tracing::debug!(
+                    "-> xx_color_manager_v4#{}.supported_feature({})",
+                    object.id,
+                    feature
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(feature as u32)
                     .build();
@@ -425,8 +458,9 @@ pub mod color_management_v1 {
                 tf: TransferFunction,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xx_color_manager_v4#{}.supported_tf_named(rq)",
-                    object.id
+                    "-> xx_color_manager_v4#{}.supported_tf_named({})",
+                    object.id,
+                    tf
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tf as u32)
@@ -446,8 +480,9 @@ pub mod color_management_v1 {
                 primaries: Primaries,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xx_color_manager_v4#{}.supported_primaries_named(rq)",
-                    object.id
+                    "-> xx_color_manager_v4#{}.supported_primaries_named({})",
+                    object.id,
+                    primaries
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(primaries as u32)
@@ -565,7 +600,7 @@ pub mod color_management_v1 {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> xx_color_management_output_v4#{}.image_description_changed()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -601,6 +636,11 @@ pub mod color_management_v1 {
                     1u32 => Ok(Self::ImageDescription),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xx_color_management_surface_v4 interface. See the module level documentation for more info"]
@@ -732,6 +772,11 @@ pub mod color_management_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the xx_color_management_feedback_surface_v4 interface. See the module level documentation for more info"]
         pub trait XxColorManagementFeedbackSurfaceV4: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xx_color_management_feedback_surface_v4";
@@ -832,7 +877,7 @@ pub mod color_management_v1 {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> xx_color_management_feedback_surface_v4#{}.preferred_changed()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -886,6 +931,11 @@ pub mod color_management_v1 {
                     4u32 => Ok(Self::OutOfFile),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xx_image_description_creator_icc_v4 interface. See the module level documentation for more info"]
@@ -1071,6 +1121,11 @@ pub mod color_management_v1 {
                     7u32 => Ok(Self::InvalidMastering),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xx_image_description_creator_params_v4 interface. See the module level documentation for more info"]
@@ -1510,6 +1565,11 @@ pub mod color_management_v1 {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1533,6 +1593,11 @@ pub mod color_management_v1 {
                     3u32 => Ok(Self::NoOutput),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Cause {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the xx_image_description_v4 interface. See the module level documentation for more info"]
@@ -1611,7 +1676,12 @@ pub mod color_management_v1 {
                 cause: Cause,
                 msg: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_image_description_v4#{}.failed(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> xx_image_description_v4#{}.failed({}, {})",
+                    object.id,
+                    cause,
+                    msg
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(cause as u32)
                     .put_string(Some(msg))
@@ -1653,7 +1723,11 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 identity: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_image_description_v4#{}.ready(rq)", object.id);
+                tracing::debug!(
+                    "-> xx_image_description_v4#{}.ready({})",
+                    object.id,
+                    identity
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(identity)
                     .build();
@@ -1703,7 +1777,7 @@ pub mod color_management_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_image_description_info_v4#{}.done()", object.id);
+                tracing::debug!("-> xx_image_description_info_v4#{}.done()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -1726,8 +1800,10 @@ pub mod color_management_v1 {
                 icc_size: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xx_image_description_info_v4#{}.icc_file(rq, rq)",
-                    object.id
+                    "-> xx_image_description_info_v4#{}.icc_file({}, {})",
+                    object.id,
+                    icc.as_raw_fd(),
+                    icc_size
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_fd(icc)
@@ -1757,8 +1833,16 @@ pub mod color_management_v1 {
                 w_y: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xx_image_description_info_v4#{}.primaries(rq, rq, rq, rq, rq, rq, rq, rq)",
-                    object.id
+                    "-> xx_image_description_info_v4#{}.primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                    object.id,
+                    r_x,
+                    r_y,
+                    g_x,
+                    g_y,
+                    b_x,
+                    b_y,
+                    w_x,
+                    w_y
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(r_x)
@@ -1784,8 +1868,9 @@ pub mod color_management_v1 {
                 primaries : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: Primaries,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xx_image_description_info_v4#{}.primaries_named(rq)",
-                    object.id
+                    "-> xx_image_description_info_v4#{}.primaries_named({})",
+                    object.id,
+                    primaries
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(primaries as u32)
@@ -1808,7 +1893,11 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 eexp: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_image_description_info_v4#{}.tf_power(rq)", object.id);
+                tracing::debug!(
+                    "-> xx_image_description_info_v4#{}.tf_power({})",
+                    object.id,
+                    eexp
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(eexp).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -1823,7 +1912,11 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 tf : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: TransferFunction,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xx_image_description_info_v4#{}.tf_named(rq)", object.id);
+                tracing::debug!(
+                    "-> xx_image_description_info_v4#{}.tf_named({})",
+                    object.id,
+                    tf
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tf as u32)
                     .build();
@@ -1847,8 +1940,11 @@ pub mod color_management_v1 {
                 reference_lum: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xx_image_description_info_v4#{}.luminances(rq, rq, rq)",
-                    object.id
+                    "-> xx_image_description_info_v4#{}.luminances({}, {}, {})",
+                    object.id,
+                    min_lum,
+                    max_lum,
+                    reference_lum
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(min_lum)
@@ -1884,7 +1980,7 @@ pub mod color_management_v1 {
                 w_x: i32,
                 w_y: i32,
             ) -> crate::server::Result<()> {
-                tracing :: debug ! ("-> xx_image_description_info_v4#{}.target_primaries(rq, rq, rq, rq, rq, rq, rq, rq)" , object . id);
+                tracing :: debug ! ("-> xx_image_description_info_v4#{}.target_primaries({}, {}, {}, {}, {}, {}, {}, {})" , object . id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(r_x)
                     .put_int(r_y)
@@ -1917,8 +2013,10 @@ pub mod color_management_v1 {
                 max_lum: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xx_image_description_info_v4#{}.target_luminance(rq, rq)",
-                    object.id
+                    "-> xx_image_description_info_v4#{}.target_luminance({}, {})",
+                    object.id,
+                    min_lum,
+                    max_lum
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(min_lum)
@@ -1941,8 +2039,9 @@ pub mod color_management_v1 {
                 max_cll: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xx_image_description_info_v4#{}.target_max_cll(rq)",
-                    object.id
+                    "-> xx_image_description_info_v4#{}.target_max_cll({})",
+                    object.id,
+                    max_cll
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(max_cll).build();
                 client
@@ -1962,8 +2061,9 @@ pub mod color_management_v1 {
                 max_fall: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> xx_image_description_info_v4#{}.target_max_fall(rq)",
-                    object.id
+                    "-> xx_image_description_info_v4#{}.target_max_fall({})",
+                    object.id,
+                    max_fall
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(max_fall)
@@ -2032,7 +2132,12 @@ pub mod ivi_application {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ivi_surface#{}.configure(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> ivi_surface#{}.configure({}, {})",
+                    object.id,
+                    width,
+                    height
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -2068,6 +2173,11 @@ pub mod ivi_application {
                     1u32 => Ok(Self::IviId),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
@@ -2168,6 +2278,11 @@ pub mod ivi_hmi_controller {
                 }
             }
         }
+        impl std::fmt::Display for LayoutMode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2183,6 +2298,11 @@ pub mod ivi_hmi_controller {
                     1u32 => Ok(Self::On),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Home {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the ivi_hmi_controller interface. See the module level documentation for more info"]
@@ -2293,8 +2413,9 @@ pub mod ivi_hmi_controller {
                 is_controlled: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ivi_hmi_controller#{}.workspace_end_control(rq)",
-                    object.id
+                    "-> ivi_hmi_controller#{}.workspace_end_control({})",
+                    object.id,
+                    is_controlled
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(is_controlled)
@@ -2430,6 +2551,11 @@ pub mod weston_content_protection {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the weston_content_protection interface. See the module level documentation for more info"]
         pub trait WestonContentProtection: crate::server::Dispatcher {
             const INTERFACE: &'static str = "weston_content_protection";
@@ -2547,6 +2673,11 @@ pub mod weston_content_protection {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Description of a particular type of content protection."]
         #[doc = ""]
         #[doc = "A server may not necessarily support all of these types."]
@@ -2574,6 +2705,11 @@ pub mod weston_content_protection {
                     2u32 => Ok(Self::Hdcp1),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Type {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the weston_protected_surface interface. See the module level documentation for more info"]
@@ -2694,7 +2830,11 @@ pub mod weston_content_protection {
                 client: &mut crate::server::Client,
                 r#type: Type,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_protected_surface#{}.status(rq)", object.id);
+                tracing::debug!(
+                    "-> weston_protected_surface#{}.status({})",
+                    object.id,
+                    r#type
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(r#type as u32)
                     .build();
@@ -2808,7 +2948,14 @@ pub mod weston_debug {
                 name: String,
                 description: Option<String>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_debug_v1#{}.available(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> weston_debug_v1#{}.available({}, {})",
+                    object.id,
+                    name,
+                    description
+                        .as_ref()
+                        .map_or("null".to_string(), |v| v.to_string())
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .put_string(description)
@@ -2876,7 +3023,7 @@ pub mod weston_debug {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_debug_stream_v1#{}.complete()", object.id);
+                tracing::debug!("-> weston_debug_stream_v1#{}.complete()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -2896,7 +3043,13 @@ pub mod weston_debug {
                 client: &mut crate::server::Client,
                 message: Option<String>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_debug_stream_v1#{}.failure(rq)", object.id);
+                tracing::debug!(
+                    "-> weston_debug_stream_v1#{}.failure({})",
+                    object.id,
+                    message
+                        .as_ref()
+                        .map_or("null".to_string(), |v| v.to_string())
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(message)
                     .build();
@@ -2954,6 +3107,11 @@ pub mod weston_desktop {
                 }
             }
         }
+        impl std::fmt::Display for Cursor {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2975,6 +3133,11 @@ pub mod weston_desktop {
                 }
             }
         }
+        impl std::fmt::Display for PanelPosition {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2989,6 +3152,11 @@ pub mod weston_desktop {
                     0u32 => Ok(Self::InvalidArgument),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the weston_desktop_shell interface. See the module level documentation for more info"]
@@ -3146,8 +3314,12 @@ pub mod weston_desktop {
                 height: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> weston_desktop_shell#{}.configure(rq, rq, rq, rq)",
-                    object.id
+                    "-> weston_desktop_shell#{}.configure({}, {}, {}, {})",
+                    object.id,
+                    edges,
+                    surface,
+                    width,
+                    height
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(edges)
@@ -3172,7 +3344,7 @@ pub mod weston_desktop {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> weston_desktop_shell#{}.prepare_lock_surface()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -3188,7 +3360,11 @@ pub mod weston_desktop {
                 client: &mut crate::server::Client,
                 cursor: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_desktop_shell#{}.grab_cursor(rq)", object.id);
+                tracing::debug!(
+                    "-> weston_desktop_shell#{}.grab_cursor({})",
+                    object.id,
+                    cursor
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(cursor).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -3370,6 +3546,11 @@ pub mod weston_output_capture {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3393,6 +3574,11 @@ pub mod weston_output_capture {
                     3u32 => Ok(Self::Blending),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Source {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the weston_capture_v1 interface. See the module level documentation for more info"]
@@ -3515,6 +3701,11 @@ pub mod weston_output_capture {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the weston_capture_source_v1 interface. See the module level documentation for more info"]
         pub trait WestonCaptureSourceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "weston_capture_source_v1";
@@ -3607,7 +3798,11 @@ pub mod weston_output_capture {
                 client: &mut crate::server::Client,
                 drm_format: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_capture_source_v1#{}.format(rq)", object.id);
+                tracing::debug!(
+                    "-> weston_capture_source_v1#{}.format({})",
+                    object.id,
+                    drm_format
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(drm_format)
                     .build();
@@ -3632,7 +3827,12 @@ pub mod weston_output_capture {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_capture_source_v1#{}.size(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> weston_capture_source_v1#{}.size({}, {})",
+                    object.id,
+                    width,
+                    height
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -3652,7 +3852,7 @@ pub mod weston_output_capture {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_capture_source_v1#{}.complete()", object.id);
+                tracing::debug!("-> weston_capture_source_v1#{}.complete()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -3668,7 +3868,7 @@ pub mod weston_output_capture {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_capture_source_v1#{}.retry()", object.id);
+                tracing::debug!("-> weston_capture_source_v1#{}.retry()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
@@ -3689,7 +3889,11 @@ pub mod weston_output_capture {
                 client: &mut crate::server::Client,
                 msg: Option<String>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_capture_source_v1#{}.failed(rq)", object.id);
+                tracing::debug!(
+                    "-> weston_capture_source_v1#{}.failed({})",
+                    object.id,
+                    msg.as_ref().map_or("null".to_string(), |v| v.to_string())
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_string(msg).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -3728,6 +3932,11 @@ pub mod weston_test {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3742,6 +3951,11 @@ pub mod weston_test {
                     0u32 => Ok(Self::PostRepaint),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Breakpoint {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the weston_test interface. See the module level documentation for more info"]
@@ -4011,7 +4225,12 @@ pub mod weston_test {
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_test#{}.pointer_position(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> weston_test#{}.pointer_position({}, {})",
+                    object.id,
+                    x,
+                    y
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_fixed(x)
                     .put_fixed(y)
@@ -4063,6 +4282,11 @@ pub mod weston_test {
                 }
             }
         }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the weston_test_runner interface. See the module level documentation for more info"]
         pub trait WestonTestRunner: crate::server::Dispatcher {
             const INTERFACE: &'static str = "weston_test_runner";
@@ -4111,7 +4335,7 @@ pub mod weston_test {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_test_runner#{}.finished()", object.id);
+                tracing::debug!("-> weston_test_runner#{}.finished()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -4174,6 +4398,11 @@ pub mod weston_touch_calibration {
                     2u32 => Ok(Self::AlreadyExists),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the weston_touch_calibration interface. See the module level documentation for more info"]
@@ -4303,8 +4532,10 @@ pub mod weston_touch_calibration {
                 head: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> weston_touch_calibration#{}.touch_device(rq, rq)",
-                    object.id
+                    "-> weston_touch_calibration#{}.touch_device({}, {})",
+                    object.id,
+                    device,
+                    head
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(device))
@@ -4369,6 +4600,11 @@ pub mod weston_touch_calibration {
                     2u32 => Ok(Self::BadCoordinates),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
             }
         }
         #[doc = "Trait to implement the weston_touch_calibrator interface. See the module level documentation for more info"]
@@ -4456,7 +4692,12 @@ pub mod weston_touch_calibration {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_touch_calibrator#{}.configure(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> weston_touch_calibrator#{}.configure({}, {})",
+                    object.id,
+                    width,
+                    height
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -4479,7 +4720,7 @@ pub mod weston_touch_calibration {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> weston_touch_calibrator#{}.cancel_calibration()",
-                    object.id
+                    object.id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
@@ -4504,7 +4745,7 @@ pub mod weston_touch_calibration {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_touch_calibrator#{}.invalid_touch()", object.id);
+                tracing::debug!("-> weston_touch_calibrator#{}.invalid_touch()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
@@ -4527,8 +4768,12 @@ pub mod weston_touch_calibration {
                 y: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> weston_touch_calibrator#{}.down(rq, rq, rq, rq)",
-                    object.id
+                    "-> weston_touch_calibrator#{}.down({}, {}, {}, {})",
+                    object.id,
+                    time,
+                    id,
+                    x,
+                    y
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
@@ -4551,7 +4796,12 @@ pub mod weston_touch_calibration {
                 time: u32,
                 id: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_touch_calibrator#{}.up(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> weston_touch_calibrator#{}.up({}, {})",
+                    object.id,
+                    time,
+                    id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_int(id)
@@ -4574,8 +4824,12 @@ pub mod weston_touch_calibration {
                 y: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> weston_touch_calibrator#{}.motion(rq, rq, rq, rq)",
-                    object.id
+                    "-> weston_touch_calibrator#{}.motion({}, {}, {}, {})",
+                    object.id,
+                    time,
+                    id,
+                    x,
+                    y
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
@@ -4601,7 +4855,7 @@ pub mod weston_touch_calibration {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_touch_calibrator#{}.frame()", object.id);
+                tracing::debug!("-> weston_touch_calibrator#{}.frame()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
@@ -4619,7 +4873,7 @@ pub mod weston_touch_calibration {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_touch_calibrator#{}.cancel()", object.id);
+                tracing::debug!("-> weston_touch_calibrator#{}.cancel()", object.id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
@@ -4667,7 +4921,12 @@ pub mod weston_touch_calibration {
                 x: u32,
                 y: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> weston_touch_coordinate#{}.result(rq, rq)", object.id);
+                tracing::debug!(
+                    "-> weston_touch_coordinate#{}.result({}, {})",
+                    object.id,
+                    x,
+                    y
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(x)
                     .put_uint(y)

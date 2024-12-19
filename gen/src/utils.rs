@@ -102,6 +102,12 @@ pub fn write_enums(interface: &Interface) -> Vec<TokenStream> {
                         }
                     }
                 }
+
+                impl std::fmt::Display for #name {
+                    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        (*self as u32).fmt(f)
+                    }
+                }
             })
         } else {
             let mut variants = Vec::new();
@@ -133,6 +139,12 @@ pub fn write_enums(interface: &Interface) -> Vec<TokenStream> {
 
                     fn try_from(v: u32) -> Result<Self, Self::Error> {
                        Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+                    }
+                }
+
+                impl std::fmt::Display for #name {
+                    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        self.bits().fmt(f)
                     }
                 }
             })
