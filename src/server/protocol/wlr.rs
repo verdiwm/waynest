@@ -17,6 +17,8 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "controls."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_data_control_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwlr_data_control_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrDataControlManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_data_control_manager_v1";
@@ -36,38 +38,33 @@ pub mod wlr_data_control_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwlr_data_control_manager_v1#{}.create_data_source()",
-                            object.id
+                            "zwlr_data_control_manager_v1#{}.create_data_source({})",
+                            object.id,
+                            id
                         );
-                        self.create_data_source(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.create_data_source(object, client, id).await
                     }
                     1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let seat = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwlr_data_control_manager_v1#{}.get_data_device()",
-                            object.id
+                            "zwlr_data_control_manager_v1#{}.get_data_device({}, {})",
+                            object.id,
+                            id,
+                            seat
                         );
-                        self.get_data_device(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_data_device(object, client, id, seat).await
                     }
                     2u16 => {
-                        tracing::debug!("zwlr_data_control_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_data_control_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -102,6 +99,8 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "When the seat is destroyed, this object becomes inert."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_data_control_device_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -137,23 +136,30 @@ pub mod wlr_data_control_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let source = message.object()?;
                         tracing::debug!(
-                            "zwlr_data_control_device_v1#{}.set_selection()",
-                            object.id
+                            "zwlr_data_control_device_v1#{}.set_selection({})",
+                            object.id,
+                            source
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.set_selection(object, client, message.object()?).await
+                        self.set_selection(object, client, source).await
                     }
                     1u16 => {
-                        tracing::debug!("zwlr_data_control_device_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_data_control_device_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     2u16 => {
+                        let source = message.object()?;
                         tracing::debug!(
-                            "zwlr_data_control_device_v1#{}.set_primary_selection()",
-                            object.id
+                            "zwlr_data_control_device_v1#{}.set_primary_selection({})",
+                            object.id,
+                            source
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.set_primary_selection(object, client, message.object()?)
-                            .await
+                        self.set_primary_selection(object, client, source).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -209,7 +215,10 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_data_control_device_v1#{}.data_offer()", object.id);
+                tracing::debug!(
+                    "-> zwlr_data_control_device_v1#{}.data_offer(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
@@ -236,7 +245,7 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_data_control_device_v1#{}.selection()", object.id);
+                tracing::debug!("-> zwlr_data_control_device_v1#{}.selection(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -277,7 +286,7 @@ pub mod wlr_data_control_unstable_v1 {
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_data_control_device_v1#{}.primary_selection()",
+                    "-> zwlr_data_control_device_v1#{}.primary_selection(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
@@ -294,6 +303,8 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "respond to requests to transfer the data."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_data_control_source_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -329,18 +340,18 @@ pub mod wlr_data_control_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwlr_data_control_source_v1#{}.offer()", object.id);
-                        self.offer(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let mime_type = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwlr_data_control_source_v1#{}.offer({})",
+                            object.id,
+                            mime_type
+                        );
+                        self.offer(object, client, mime_type).await
                     }
                     1u16 => {
-                        tracing::debug!("zwlr_data_control_source_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_data_control_source_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -372,7 +383,7 @@ pub mod wlr_data_control_unstable_v1 {
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_data_control_source_v1#{}.send()", object.id);
+                tracing::debug!("-> zwlr_data_control_source_v1#{}.send(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(mime_type))
                     .put_fd(fd)
@@ -406,6 +417,8 @@ pub mod wlr_data_control_unstable_v1 {
     #[doc = "for transferring the data directly from the source client."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_data_control_offer_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwlr_data_control_offer_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrDataControlOfferV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_data_control_offer_v1";
@@ -425,19 +438,20 @@ pub mod wlr_data_control_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwlr_data_control_offer_v1#{}.receive()", object.id);
-                        self.receive(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.fd()?,
-                        )
-                        .await
+                        let mime_type = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let fd = message.fd()?;
+                        tracing::debug!(
+                            "zwlr_data_control_offer_v1#{}.receive({}, {})",
+                            object.id,
+                            mime_type,
+                            fd.as_raw_fd()
+                        );
+                        self.receive(object, client, mime_type, fd).await
                     }
                     1u16 => {
-                        tracing::debug!("zwlr_data_control_offer_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_data_control_offer_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -474,7 +488,7 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 mime_type: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_data_control_offer_v1#{}.offer()", object.id);
+                tracing::debug!("-> zwlr_data_control_offer_v1#{}.offer(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(mime_type))
                     .build();
@@ -501,6 +515,8 @@ pub mod wlr_export_dmabuf_unstable_v1 {
     #[doc = "This object is a manager with which to start capturing from sources."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_export_dmabuf_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwlr_export_dmabuf_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrExportDmabufManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_export_dmabuf_manager_v1";
@@ -520,25 +536,25 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let frame = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let overlay_cursor = message.int()?;
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwlr_export_dmabuf_manager_v1#{}.capture_output()",
-                            object.id
+                            "zwlr_export_dmabuf_manager_v1#{}.capture_output({}, {}, {})",
+                            object.id,
+                            frame,
+                            overlay_cursor,
+                            output
                         );
-                        self.capture_output(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.capture_output(object, client, frame, overlay_cursor, output)
+                            .await
                     }
                     1u16 => {
-                        tracing::debug!("zwlr_export_dmabuf_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_export_dmabuf_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -578,6 +594,8 @@ pub mod wlr_export_dmabuf_unstable_v1 {
     #[doc = "All frames are read-only and may not be written into or altered."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_export_dmabuf_frame_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Special flags that should be respected by the client."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -637,7 +655,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwlr_export_dmabuf_frame_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_export_dmabuf_frame_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -674,7 +692,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 mod_low: u32,
                 num_objects: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_export_dmabuf_frame_v1#{}.frame()", object.id);
+                tracing :: debug ! ("-> zwlr_export_dmabuf_frame_v1#{}.frame(rq, rq, rq, rq, rq, rq, rq, rq, rq, rq)" , object . id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(width)
                     .put_uint(height)
@@ -708,7 +726,10 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 stride: u32,
                 plane_index: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_export_dmabuf_frame_v1#{}.object()", object.id);
+                tracing::debug!(
+                    "-> zwlr_export_dmabuf_frame_v1#{}.object(rq, rq, rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(index)
                     .put_fd(fd)
@@ -742,7 +763,10 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 tv_sec_lo: u32,
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_export_dmabuf_frame_v1#{}.ready()", object.id);
+                tracing::debug!(
+                    "-> zwlr_export_dmabuf_frame_v1#{}.ready(rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
                     .put_uint(tv_sec_lo)
@@ -768,7 +792,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 reason: CancelReason,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_export_dmabuf_frame_v1#{}.cancel()", object.id);
+                tracing::debug!("-> zwlr_export_dmabuf_frame_v1#{}.cancel(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(reason as u32)
                     .build();
@@ -790,6 +814,8 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
     #[doc = "toplevel window will be sent via the toplevel event"]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_foreign_toplevel_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwlr_foreign_toplevel_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrForeignToplevelManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_foreign_toplevel_manager_v1";
@@ -809,7 +835,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwlr_foreign_toplevel_manager_v1#{}.stop()", object.id);
+                        tracing::debug!("zwlr_foreign_toplevel_manager_v1#{}.stop()", object.id,);
                         self.stop(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -839,7 +865,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_foreign_toplevel_manager_v1#{}.toplevel()",
+                    "-> zwlr_foreign_toplevel_manager_v1#{}.toplevel(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -878,6 +904,8 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
     #[doc = "client with the output_enter and output_leave events."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_foreign_toplevel_handle_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "The different states that a toplevel can have. These have the same meaning"]
         #[doc = "as the states with the same names defined in xdg-toplevel"]
         #[repr(u32)]
@@ -942,79 +970,85 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                     0u16 => {
                         tracing::debug!(
                             "zwlr_foreign_toplevel_handle_v1#{}.set_maximized()",
-                            object.id
+                            object.id,
                         );
                         self.set_maximized(object, client).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwlr_foreign_toplevel_handle_v1#{}.unset_maximized()",
-                            object.id
+                            object.id,
                         );
                         self.unset_maximized(object, client).await
                     }
                     2u16 => {
                         tracing::debug!(
                             "zwlr_foreign_toplevel_handle_v1#{}.set_minimized()",
-                            object.id
+                            object.id,
                         );
                         self.set_minimized(object, client).await
                     }
                     3u16 => {
                         tracing::debug!(
                             "zwlr_foreign_toplevel_handle_v1#{}.unset_minimized()",
-                            object.id
+                            object.id,
                         );
                         self.unset_minimized(object, client).await
                     }
                     4u16 => {
-                        tracing::debug!("zwlr_foreign_toplevel_handle_v1#{}.activate()", object.id);
-                        self.activate(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let seat = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwlr_foreign_toplevel_handle_v1#{}.activate({})",
+                            object.id,
+                            seat
+                        );
+                        self.activate(object, client, seat).await
                     }
                     5u16 => {
-                        tracing::debug!("zwlr_foreign_toplevel_handle_v1#{}.close()", object.id);
+                        tracing::debug!("zwlr_foreign_toplevel_handle_v1#{}.close()", object.id,);
                         self.close(object, client).await
                     }
                     6u16 => {
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
                         tracing::debug!(
-                            "zwlr_foreign_toplevel_handle_v1#{}.set_rectangle()",
-                            object.id
+                            "zwlr_foreign_toplevel_handle_v1#{}.set_rectangle({}, {}, {}, {}, {})",
+                            object.id,
+                            surface,
+                            x,
+                            y,
+                            width,
+                            height
                         );
-                        self.set_rectangle(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                        )
-                        .await
+                        self.set_rectangle(object, client, surface, x, y, width, height)
+                            .await
                     }
                     7u16 => {
-                        tracing::debug!("zwlr_foreign_toplevel_handle_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_foreign_toplevel_handle_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     8u16 => {
+                        let output = message.object()?;
                         tracing::debug!(
-                            "zwlr_foreign_toplevel_handle_v1#{}.set_fullscreen()",
-                            object.id
+                            "zwlr_foreign_toplevel_handle_v1#{}.set_fullscreen({})",
+                            object.id,
+                            output
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.set_fullscreen(object, client, message.object()?).await
+                        self.set_fullscreen(object, client, output).await
                     }
                     9u16 => {
                         tracing::debug!(
                             "zwlr_foreign_toplevel_handle_v1#{}.unset_fullscreen()",
-                            object.id
+                            object.id,
                         );
                         self.unset_fullscreen(object, client).await
                     }
@@ -1127,7 +1161,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 title: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.title()", object.id);
+                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.title(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(title))
                     .build();
@@ -1143,7 +1177,10 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 app_id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.app_id()", object.id);
+                tracing::debug!(
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.app_id(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(app_id))
                     .build();
@@ -1161,7 +1198,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_foreign_toplevel_handle_v1#{}.output_enter()",
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.output_enter(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1182,7 +1219,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> zwlr_foreign_toplevel_handle_v1#{}.output_leave()",
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.output_leave(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1202,7 +1239,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 state: Vec<u8>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.state()", object.id);
+                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.state(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(state).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -1251,7 +1288,10 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 parent: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.parent()", object.id);
+                tracing::debug!(
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.parent(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(parent)
                     .build();
@@ -1280,6 +1320,8 @@ pub mod wlr_gamma_control_unstable_v1 {
     #[doc = "controls."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_gamma_control_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwlr_gamma_control_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrGammaControlManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_gamma_control_manager_v1";
@@ -1299,24 +1341,22 @@ pub mod wlr_gamma_control_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwlr_gamma_control_manager_v1#{}.get_gamma_control()",
-                            object.id
+                            "zwlr_gamma_control_manager_v1#{}.get_gamma_control({}, {})",
+                            object.id,
+                            id,
+                            output
                         );
-                        self.get_gamma_control(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_gamma_control(object, client, id, output).await
                     }
                     1u16 => {
-                        tracing::debug!("zwlr_gamma_control_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_gamma_control_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -1352,6 +1392,8 @@ pub mod wlr_gamma_control_unstable_v1 {
     #[doc = "object is destroyed, the gamma table is restored to its original value."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_gamma_control_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1387,11 +1429,16 @@ pub mod wlr_gamma_control_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwlr_gamma_control_v1#{}.set_gamma()", object.id);
-                        self.set_gamma(object, client, message.fd()?).await
+                        let fd = message.fd()?;
+                        tracing::debug!(
+                            "zwlr_gamma_control_v1#{}.set_gamma({})",
+                            object.id,
+                            fd.as_raw_fd()
+                        );
+                        self.set_gamma(object, client, fd).await
                     }
                     1u16 => {
-                        tracing::debug!("zwlr_gamma_control_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_gamma_control_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -1426,7 +1473,7 @@ pub mod wlr_gamma_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 size: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_gamma_control_v1#{}.gamma_size()", object.id);
+                tracing::debug!("-> zwlr_gamma_control_v1#{}.gamma_size(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(size).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -1467,6 +1514,8 @@ pub mod wlr_input_inhibit_unstable_v1 {
     #[doc = "For screen lockers, use the ext-session-lock-v1 protocol."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_input_inhibit_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1502,18 +1551,15 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwlr_input_inhibit_manager_v1#{}.get_inhibitor()",
-                            object.id
+                            "zwlr_input_inhibit_manager_v1#{}.get_inhibitor({})",
+                            object.id,
+                            id
                         );
-                        self.get_inhibitor(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_inhibitor(object, client, id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1539,6 +1585,8 @@ pub mod wlr_input_inhibit_unstable_v1 {
     #[doc = "such as an on-screen keyboard (via the input-method protocol)."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_input_inhibitor_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwlr_input_inhibitor_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrInputInhibitorV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_input_inhibitor_v1";
@@ -1558,7 +1606,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwlr_input_inhibitor_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_input_inhibitor_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -1584,6 +1632,8 @@ pub mod wlr_layer_shell_unstable_v1 {
     #[doc = "that interact with the desktop."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_layer_shell_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1652,26 +1702,41 @@ pub mod wlr_layer_shell_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwlr_layer_shell_v1#{}.get_layer_surface()", object.id);
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let output = message.object()?;
+                        let layer = message.uint()?;
+                        let namespace = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwlr_layer_shell_v1#{}.get_layer_surface({}, {}, {}, {}, {})",
+                            object.id,
+                            id,
+                            surface,
+                            output
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string()),
+                            layer,
+                            namespace
+                        );
                         self.get_layer_surface(
                             object,
                             client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.object()?,
-                            message.uint()?.try_into()?,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            id,
+                            surface,
+                            output,
+                            layer.try_into()?,
+                            namespace,
                         )
                         .await
                     }
                     1u16 => {
-                        tracing::debug!("zwlr_layer_shell_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_layer_shell_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -1735,6 +1800,8 @@ pub mod wlr_layer_shell_unstable_v1 {
     #[doc = "buffer attached, waiting for a configure event and handling it as usual."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_layer_surface_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Types of keyboard interaction possible for layer shell surfaces. The"]
         #[doc = "rationale for this is twofold: (1) some applications are not interested"]
         #[doc = "in keyboard events and not allowing them to be focused can improve the"]
@@ -1813,67 +1880,97 @@ pub mod wlr_layer_shell_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwlr_layer_surface_v1#{}.set_size()", object.id);
-                        self.set_size(object, client, message.uint()?, message.uint()?)
-                            .await
+                        let width = message.uint()?;
+                        let height = message.uint()?;
+                        tracing::debug!(
+                            "zwlr_layer_surface_v1#{}.set_size({}, {})",
+                            object.id,
+                            width,
+                            height
+                        );
+                        self.set_size(object, client, width, height).await
                     }
                     1u16 => {
-                        tracing::debug!("zwlr_layer_surface_v1#{}.set_anchor()", object.id);
-                        self.set_anchor(object, client, message.uint()?.try_into()?)
-                            .await
+                        let anchor = message.uint()?;
+                        tracing::debug!(
+                            "zwlr_layer_surface_v1#{}.set_anchor({})",
+                            object.id,
+                            anchor
+                        );
+                        self.set_anchor(object, client, anchor.try_into()?).await
                     }
                     2u16 => {
-                        tracing::debug!("zwlr_layer_surface_v1#{}.set_exclusive_zone()", object.id);
-                        self.set_exclusive_zone(object, client, message.int()?)
-                            .await
+                        let zone = message.int()?;
+                        tracing::debug!(
+                            "zwlr_layer_surface_v1#{}.set_exclusive_zone({})",
+                            object.id,
+                            zone
+                        );
+                        self.set_exclusive_zone(object, client, zone).await
                     }
                     3u16 => {
-                        tracing::debug!("zwlr_layer_surface_v1#{}.set_margin()", object.id);
-                        self.set_margin(
-                            object,
-                            client,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                        )
-                        .await
-                    }
-                    4u16 => {
+                        let top = message.int()?;
+                        let right = message.int()?;
+                        let bottom = message.int()?;
+                        let left = message.int()?;
                         tracing::debug!(
-                            "zwlr_layer_surface_v1#{}.set_keyboard_interactivity()",
-                            object.id
+                            "zwlr_layer_surface_v1#{}.set_margin({}, {}, {}, {})",
+                            object.id,
+                            top,
+                            right,
+                            bottom,
+                            left
                         );
-                        self.set_keyboard_interactivity(object, client, message.uint()?.try_into()?)
+                        self.set_margin(object, client, top, right, bottom, left)
                             .await
                     }
-                    5u16 => {
-                        tracing::debug!("zwlr_layer_surface_v1#{}.get_popup()", object.id);
-                        self.get_popup(
+                    4u16 => {
+                        let keyboard_interactivity = message.uint()?;
+                        tracing::debug!(
+                            "zwlr_layer_surface_v1#{}.set_keyboard_interactivity({})",
+                            object.id,
+                            keyboard_interactivity
+                        );
+                        self.set_keyboard_interactivity(
                             object,
                             client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
+                            keyboard_interactivity.try_into()?,
                         )
                         .await
                     }
+                    5u16 => {
+                        let popup = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("zwlr_layer_surface_v1#{}.get_popup({})", object.id, popup);
+                        self.get_popup(object, client, popup).await
+                    }
                     6u16 => {
-                        tracing::debug!("zwlr_layer_surface_v1#{}.ack_configure()", object.id);
-                        self.ack_configure(object, client, message.uint()?).await
+                        let serial = message.uint()?;
+                        tracing::debug!(
+                            "zwlr_layer_surface_v1#{}.ack_configure({})",
+                            object.id,
+                            serial
+                        );
+                        self.ack_configure(object, client, serial).await
                     }
                     7u16 => {
-                        tracing::debug!("zwlr_layer_surface_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_layer_surface_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     8u16 => {
-                        tracing::debug!("zwlr_layer_surface_v1#{}.set_layer()", object.id);
-                        self.set_layer(object, client, message.uint()?.try_into()?)
-                            .await
+                        let layer = message.uint()?;
+                        tracing::debug!("zwlr_layer_surface_v1#{}.set_layer({})", object.id, layer);
+                        self.set_layer(object, client, layer.try_into()?).await
                     }
                     9u16 => {
-                        tracing::debug!("zwlr_layer_surface_v1#{}.set_exclusive_edge()", object.id);
-                        self.set_exclusive_edge(object, client, message.uint()?.try_into()?)
+                        let edge = message.uint()?;
+                        tracing::debug!(
+                            "zwlr_layer_surface_v1#{}.set_exclusive_edge({})",
+                            object.id,
+                            edge
+                        );
+                        self.set_exclusive_edge(object, client, edge.try_into()?)
                             .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -2072,7 +2169,10 @@ pub mod wlr_layer_shell_unstable_v1 {
                 width: u32,
                 height: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_layer_surface_v1#{}.configure()", object.id);
+                tracing::debug!(
+                    "-> zwlr_layer_surface_v1#{}.configure(rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_uint(width)
@@ -2145,6 +2245,8 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "protocols such as xdg-output should be used."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwlr_output_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrOutputManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_output_manager_v1";
@@ -2164,22 +2266,20 @@ pub mod wlr_output_management_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let serial = message.uint()?;
                         tracing::debug!(
-                            "zwlr_output_manager_v1#{}.create_configuration()",
-                            object.id
+                            "zwlr_output_manager_v1#{}.create_configuration({}, {})",
+                            object.id,
+                            id,
+                            serial
                         );
-                        self.create_configuration(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.create_configuration(object, client, id, serial).await
                     }
                     1u16 => {
-                        tracing::debug!("zwlr_output_manager_v1#{}.stop()", object.id);
+                        tracing::debug!("zwlr_output_manager_v1#{}.stop()", object.id,);
                         self.stop(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -2213,7 +2313,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 head: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_manager_v1#{}.head()", object.id);
+                tracing::debug!("-> zwlr_output_manager_v1#{}.head(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(head))
                     .build();
@@ -2239,7 +2339,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_manager_v1#{}.done()", object.id);
+                tracing::debug!("-> zwlr_output_manager_v1#{}.done(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -2279,6 +2379,8 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "in which properties are sent."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_head_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2317,7 +2419,7 @@ pub mod wlr_output_management_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwlr_output_head_v1#{}.release()", object.id);
+                        tracing::debug!("zwlr_output_head_v1#{}.release()", object.id,);
                         self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -2354,7 +2456,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.name()", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.name(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -2383,7 +2485,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 description: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.description()", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.description(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(description))
                     .build();
@@ -2406,7 +2508,7 @@ pub mod wlr_output_management_unstable_v1 {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.physical_size()", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.physical_size(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -2424,7 +2526,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 mode: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.mode()", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.mode(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(mode))
                     .build();
@@ -2444,7 +2546,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 enabled: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.enabled()", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.enabled(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(enabled).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
@@ -2459,7 +2561,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 mode: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.current_mode()", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.current_mode(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(mode))
                     .build();
@@ -2477,7 +2579,7 @@ pub mod wlr_output_management_unstable_v1 {
                 x: i32,
                 y: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.position()", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.position(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
                     .put_int(y)
@@ -2495,7 +2597,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.transform()", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.transform(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(transform as u32)
                     .build();
@@ -2512,7 +2614,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 scale: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.scale()", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.scale(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_fixed(scale).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
@@ -2562,7 +2664,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 make: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.make()", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.make(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(make))
                     .build();
@@ -2599,7 +2701,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 model: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.model()", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.model(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(model))
                     .build();
@@ -2634,7 +2736,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 serial_number: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.serial_number()", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.serial_number(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(serial_number))
                     .build();
@@ -2652,7 +2754,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 state: AdaptiveSyncState,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_head_v1#{}.adaptive_sync()", object.id);
+                tracing::debug!("-> zwlr_output_head_v1#{}.adaptive_sync(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(state as u32)
                     .build();
@@ -2673,6 +2775,8 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "in which properties are sent."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_mode_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwlr_output_mode_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrOutputModeV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_output_mode_v1";
@@ -2692,7 +2796,7 @@ pub mod wlr_output_management_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwlr_output_mode_v1#{}.release()", object.id);
+                        tracing::debug!("zwlr_output_mode_v1#{}.release()", object.id,);
                         self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -2716,7 +2820,7 @@ pub mod wlr_output_management_unstable_v1 {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_mode_v1#{}.size()", object.id);
+                tracing::debug!("-> zwlr_output_mode_v1#{}.size(rq, rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(width)
                     .put_int(height)
@@ -2734,7 +2838,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 refresh: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_mode_v1#{}.refresh()", object.id);
+                tracing::debug!("-> zwlr_output_mode_v1#{}.refresh(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(refresh).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
@@ -2783,6 +2887,8 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "should destroy the configuration object."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_configuration_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2824,43 +2930,41 @@ pub mod wlr_output_management_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwlr_output_configuration_v1#{}.enable_head()", object.id);
-                        self.enable_head(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let head = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwlr_output_configuration_v1#{}.enable_head({}, {})",
+                            object.id,
+                            id,
+                            head
+                        );
+                        self.enable_head(object, client, id, head).await
                     }
                     1u16 => {
+                        let head = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwlr_output_configuration_v1#{}.disable_head()",
-                            object.id
+                            "zwlr_output_configuration_v1#{}.disable_head({})",
+                            object.id,
+                            head
                         );
-                        self.disable_head(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.disable_head(object, client, head).await
                     }
                     2u16 => {
-                        tracing::debug!("zwlr_output_configuration_v1#{}.apply()", object.id);
+                        tracing::debug!("zwlr_output_configuration_v1#{}.apply()", object.id,);
                         self.apply(object, client).await
                     }
                     3u16 => {
-                        tracing::debug!("zwlr_output_configuration_v1#{}.test()", object.id);
+                        tracing::debug!("zwlr_output_configuration_v1#{}.test()", object.id,);
                         self.test(object, client).await
                     }
                     4u16 => {
-                        tracing::debug!("zwlr_output_configuration_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_output_configuration_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -2985,6 +3089,8 @@ pub mod wlr_output_management_unstable_v1 {
     #[doc = "It is a protocol error to set the same property twice."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_configuration_head_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3035,62 +3141,68 @@ pub mod wlr_output_management_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let mode = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwlr_output_configuration_head_v1#{}.set_mode()",
-                            object.id
+                            "zwlr_output_configuration_head_v1#{}.set_mode({})",
+                            object.id,
+                            mode
                         );
-                        self.set_mode(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.set_mode(object, client, mode).await
                     }
                     1u16 => {
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        let refresh = message.int()?;
                         tracing::debug!(
-                            "zwlr_output_configuration_head_v1#{}.set_custom_mode()",
-                            object.id
+                            "zwlr_output_configuration_head_v1#{}.set_custom_mode({}, {}, {})",
+                            object.id,
+                            width,
+                            height,
+                            refresh
                         );
-                        self.set_custom_mode(
-                            object,
-                            client,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                        )
-                        .await
-                    }
-                    2u16 => {
-                        tracing::debug!(
-                            "zwlr_output_configuration_head_v1#{}.set_position()",
-                            object.id
-                        );
-                        self.set_position(object, client, message.int()?, message.int()?)
+                        self.set_custom_mode(object, client, width, height, refresh)
                             .await
                     }
-                    3u16 => {
+                    2u16 => {
+                        let x = message.int()?;
+                        let y = message.int()?;
                         tracing::debug!(
-                            "zwlr_output_configuration_head_v1#{}.set_transform()",
-                            object.id
+                            "zwlr_output_configuration_head_v1#{}.set_position({}, {})",
+                            object.id,
+                            x,
+                            y
                         );
-                        self.set_transform(object, client, message.uint()?.try_into()?)
+                        self.set_position(object, client, x, y).await
+                    }
+                    3u16 => {
+                        let transform = message.uint()?;
+                        tracing::debug!(
+                            "zwlr_output_configuration_head_v1#{}.set_transform({})",
+                            object.id,
+                            transform
+                        );
+                        self.set_transform(object, client, transform.try_into()?)
                             .await
                     }
                     4u16 => {
+                        let scale = message.fixed()?;
                         tracing::debug!(
-                            "zwlr_output_configuration_head_v1#{}.set_scale()",
-                            object.id
+                            "zwlr_output_configuration_head_v1#{}.set_scale({})",
+                            object.id,
+                            scale
                         );
-                        self.set_scale(object, client, message.fixed()?).await
+                        self.set_scale(object, client, scale).await
                     }
                     5u16 => {
+                        let state = message.uint()?;
                         tracing::debug!(
-                            "zwlr_output_configuration_head_v1#{}.set_adaptive_sync()",
-                            object.id
+                            "zwlr_output_configuration_head_v1#{}.set_adaptive_sync({})",
+                            object.id,
+                            state
                         );
-                        self.set_adaptive_sync(object, client, message.uint()?.try_into()?)
+                        self.set_adaptive_sync(object, client, state.try_into()?)
                             .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -3171,6 +3283,8 @@ pub mod wlr_output_power_management_unstable_v1 {
     #[doc = "management mode controls."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_power_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwlr_output_power_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrOutputPowerManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_output_power_manager_v1";
@@ -3190,24 +3304,22 @@ pub mod wlr_output_power_management_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwlr_output_power_manager_v1#{}.get_output_power()",
-                            object.id
+                            "zwlr_output_power_manager_v1#{}.get_output_power({}, {})",
+                            object.id,
+                            id,
+                            output
                         );
-                        self.get_output_power(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_output_power(object, client, id, output).await
                     }
                     1u16 => {
-                        tracing::debug!("zwlr_output_power_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_output_power_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -3235,6 +3347,8 @@ pub mod wlr_output_power_management_unstable_v1 {
     #[doc = "an output."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_power_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3289,12 +3403,12 @@ pub mod wlr_output_power_management_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwlr_output_power_v1#{}.set_mode()", object.id);
-                        self.set_mode(object, client, message.uint()?.try_into()?)
-                            .await
+                        let mode = message.uint()?;
+                        tracing::debug!("zwlr_output_power_v1#{}.set_mode({})", object.id, mode);
+                        self.set_mode(object, client, mode.try_into()?).await
                     }
                     1u16 => {
-                        tracing::debug!("zwlr_output_power_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_output_power_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -3328,7 +3442,7 @@ pub mod wlr_output_power_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 mode: Mode,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_output_power_v1#{}.mode()", object.id);
+                tracing::debug!("-> zwlr_output_power_v1#{}.mode(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(mode as u32)
                     .build();
@@ -3378,6 +3492,8 @@ pub mod wlr_screencopy_unstable_v1 {
     #[doc = "source."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_screencopy_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwlr_screencopy_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrScreencopyManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_screencopy_manager_v1";
@@ -3397,47 +3513,51 @@ pub mod wlr_screencopy_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let frame = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let overlay_cursor = message.int()?;
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwlr_screencopy_manager_v1#{}.capture_output()",
-                            object.id
+                            "zwlr_screencopy_manager_v1#{}.capture_output({}, {}, {})",
+                            object.id,
+                            frame,
+                            overlay_cursor,
+                            output
                         );
-                        self.capture_output(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.capture_output(object, client, frame, overlay_cursor, output)
+                            .await
                     }
                     1u16 => {
-                        tracing::debug!(
-                            "zwlr_screencopy_manager_v1#{}.capture_output_region()",
-                            object.id
-                        );
+                        let frame = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let overlay_cursor = message.int()?;
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing :: debug ! ("zwlr_screencopy_manager_v1#{}.capture_output_region({}, {}, {}, {}, {}, {}, {})" , object . id , frame , overlay_cursor , output , x , y , width , height);
                         self.capture_output_region(
                             object,
                             client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
+                            frame,
+                            overlay_cursor,
+                            output,
+                            x,
+                            y,
+                            width,
+                            height,
                         )
                         .await
                     }
                     2u16 => {
-                        tracing::debug!("zwlr_screencopy_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_screencopy_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -3496,6 +3616,8 @@ pub mod wlr_screencopy_unstable_v1 {
     #[doc = "destroy the frame."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_screencopy_frame_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3541,33 +3663,26 @@ pub mod wlr_screencopy_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwlr_screencopy_frame_v1#{}.copy()", object.id);
-                        self.copy(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("zwlr_screencopy_frame_v1#{}.copy({})", object.id, buffer);
+                        self.copy(object, client, buffer).await
                     }
                     1u16 => {
-                        tracing::debug!("zwlr_screencopy_frame_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_screencopy_frame_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     2u16 => {
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwlr_screencopy_frame_v1#{}.copy_with_damage()",
-                            object.id
+                            "zwlr_screencopy_frame_v1#{}.copy_with_damage({})",
+                            object.id,
+                            buffer
                         );
-                        self.copy_with_damage(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.copy_with_damage(object, client, buffer).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3610,7 +3725,10 @@ pub mod wlr_screencopy_unstable_v1 {
                 height: u32,
                 stride: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.buffer()", object.id);
+                tracing::debug!(
+                    "-> zwlr_screencopy_frame_v1#{}.buffer(rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(format as u32)
                     .put_uint(width)
@@ -3630,7 +3748,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 client: &mut crate::server::Client,
                 flags: Flags,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.flags()", object.id);
+                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.flags(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(flags.bits())
                     .build();
@@ -3659,7 +3777,10 @@ pub mod wlr_screencopy_unstable_v1 {
                 tv_sec_lo: u32,
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.ready()", object.id);
+                tracing::debug!(
+                    "-> zwlr_screencopy_frame_v1#{}.ready(rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
                     .put_uint(tv_sec_lo)
@@ -3704,7 +3825,10 @@ pub mod wlr_screencopy_unstable_v1 {
                 width: u32,
                 height: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.damage()", object.id);
+                tracing::debug!(
+                    "-> zwlr_screencopy_frame_v1#{}.damage(rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(x)
                     .put_uint(y)
@@ -3727,7 +3851,10 @@ pub mod wlr_screencopy_unstable_v1 {
                 width: u32,
                 height: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.linux_dmabuf()", object.id);
+                tracing::debug!(
+                    "-> zwlr_screencopy_frame_v1#{}.linux_dmabuf(rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(format)
                     .put_uint(width)
@@ -3763,6 +3890,8 @@ pub mod wlr_virtual_pointer_unstable_v1 {
     #[doc = "requests are mostly mirror opposites of those specified in wl_pointer."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_virtual_pointer_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3801,79 +3930,107 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zwlr_virtual_pointer_v1#{}.motion()", object.id);
-                        self.motion(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.fixed()?,
-                            message.fixed()?,
-                        )
-                        .await
+                        let time = message.uint()?;
+                        let dx = message.fixed()?;
+                        let dy = message.fixed()?;
+                        tracing::debug!(
+                            "zwlr_virtual_pointer_v1#{}.motion({}, {}, {})",
+                            object.id,
+                            time,
+                            dx,
+                            dy
+                        );
+                        self.motion(object, client, time, dx, dy).await
                     }
                     1u16 => {
-                        tracing::debug!("zwlr_virtual_pointer_v1#{}.motion_absolute()", object.id);
-                        self.motion_absolute(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                        )
-                        .await
+                        let time = message.uint()?;
+                        let x = message.uint()?;
+                        let y = message.uint()?;
+                        let x_extent = message.uint()?;
+                        let y_extent = message.uint()?;
+                        tracing::debug!(
+                            "zwlr_virtual_pointer_v1#{}.motion_absolute({}, {}, {}, {}, {})",
+                            object.id,
+                            time,
+                            x,
+                            y,
+                            x_extent,
+                            y_extent
+                        );
+                        self.motion_absolute(object, client, time, x, y, x_extent, y_extent)
+                            .await
                     }
                     2u16 => {
-                        tracing::debug!("zwlr_virtual_pointer_v1#{}.button()", object.id);
-                        self.button(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?.try_into()?,
-                        )
-                        .await
+                        let time = message.uint()?;
+                        let button = message.uint()?;
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "zwlr_virtual_pointer_v1#{}.button({}, {}, {})",
+                            object.id,
+                            time,
+                            button,
+                            state
+                        );
+                        self.button(object, client, time, button, state.try_into()?)
+                            .await
                     }
                     3u16 => {
-                        tracing::debug!("zwlr_virtual_pointer_v1#{}.axis()", object.id);
-                        self.axis(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.uint()?.try_into()?,
-                            message.fixed()?,
-                        )
-                        .await
+                        let time = message.uint()?;
+                        let axis = message.uint()?;
+                        let value = message.fixed()?;
+                        tracing::debug!(
+                            "zwlr_virtual_pointer_v1#{}.axis({}, {}, {})",
+                            object.id,
+                            time,
+                            axis,
+                            value
+                        );
+                        self.axis(object, client, time, axis.try_into()?, value)
+                            .await
                     }
                     4u16 => {
-                        tracing::debug!("zwlr_virtual_pointer_v1#{}.frame()", object.id);
+                        tracing::debug!("zwlr_virtual_pointer_v1#{}.frame()", object.id,);
                         self.frame(object, client).await
                     }
                     5u16 => {
-                        tracing::debug!("zwlr_virtual_pointer_v1#{}.axis_source()", object.id);
-                        self.axis_source(object, client, message.uint()?.try_into()?)
+                        let axis_source = message.uint()?;
+                        tracing::debug!(
+                            "zwlr_virtual_pointer_v1#{}.axis_source({})",
+                            object.id,
+                            axis_source
+                        );
+                        self.axis_source(object, client, axis_source.try_into()?)
                             .await
                     }
                     6u16 => {
-                        tracing::debug!("zwlr_virtual_pointer_v1#{}.axis_stop()", object.id);
-                        self.axis_stop(object, client, message.uint()?, message.uint()?.try_into()?)
-                            .await
+                        let time = message.uint()?;
+                        let axis = message.uint()?;
+                        tracing::debug!(
+                            "zwlr_virtual_pointer_v1#{}.axis_stop({}, {})",
+                            object.id,
+                            time,
+                            axis
+                        );
+                        self.axis_stop(object, client, time, axis.try_into()?).await
                     }
                     7u16 => {
-                        tracing::debug!("zwlr_virtual_pointer_v1#{}.axis_discrete()", object.id);
-                        self.axis_discrete(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.uint()?.try_into()?,
-                            message.fixed()?,
-                            message.int()?,
-                        )
-                        .await
+                        let time = message.uint()?;
+                        let axis = message.uint()?;
+                        let value = message.fixed()?;
+                        let discrete = message.int()?;
+                        tracing::debug!(
+                            "zwlr_virtual_pointer_v1#{}.axis_discrete({}, {}, {}, {})",
+                            object.id,
+                            time,
+                            axis,
+                            value,
+                            discrete
+                        );
+                        self.axis_discrete(object, client, time, axis.try_into()?, value, discrete)
+                            .await
                     }
                     8u16 => {
-                        tracing::debug!("zwlr_virtual_pointer_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_virtual_pointer_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -3966,6 +4123,8 @@ pub mod wlr_virtual_pointer_unstable_v1 {
     #[doc = "This object allows clients to create individual virtual pointer objects."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_virtual_pointer_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwlr_virtual_pointer_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrVirtualPointerManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwlr_virtual_pointer_manager_v1";
@@ -3985,36 +4144,31 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let seat = message.object()?;
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "zwlr_virtual_pointer_manager_v1#{}.create_virtual_pointer()",
-                            object.id
+                            "zwlr_virtual_pointer_manager_v1#{}.create_virtual_pointer({}, {})",
+                            object.id,
+                            seat.as_ref().map_or("null".to_string(), |v| v.to_string()),
+                            id
                         );
-                        self.create_virtual_pointer(
-                            object,
-                            client,
-                            message.object()?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.create_virtual_pointer(object, client, seat, id).await
                     }
                     1u16 => {
-                        tracing::debug!("zwlr_virtual_pointer_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("zwlr_virtual_pointer_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     2u16 => {
-                        tracing :: debug ! ("zwlr_virtual_pointer_manager_v1#{}.create_virtual_pointer_with_output()" , object . id);
-                        self.create_virtual_pointer_with_output(
-                            object,
-                            client,
-                            message.object()?,
-                            message.object()?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let seat = message.object()?;
+                        let output = message.object()?;
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing :: debug ! ("zwlr_virtual_pointer_manager_v1#{}.create_virtual_pointer_with_output({}, {}, {})" , object . id , seat . as_ref () . map_or ("null" . to_string () , | v | v . to_string ()) , output . as_ref () . map_or ("null" . to_string () , | v | v . to_string ()) , id);
+                        self.create_virtual_pointer_with_output(object, client, seat, output, id)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }

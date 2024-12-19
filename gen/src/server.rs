@@ -48,6 +48,9 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                 #(#docs)*
                 #[allow(clippy::too_many_arguments)]
                 pub mod #module_name {
+                    #[allow(unused)]
+                    use std::os::fd::AsRawFd;
+
                     #(#enums)*
 
                     #[doc = #trait_docs]
@@ -104,15 +107,25 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
         let opcode = opcode as u16;
         let name = make_ident(&request.name.to_snek_case());
 
-        let tracing_inner = format!("{}#{{}}.{}()", interface.name, request.name.to_snek_case());
+        let mut tracing_fmt = Vec::new();
+        let mut tracing_args = Vec::new();
 
         let mut args = vec![quote! { object }, quote! { client }];
+        let mut setters = Vec::new();
 
         for arg in &request.args {
             let mut optional = quote! {};
+            let mut map_display = quote! {};
+            let mut fd_print = quote! {};
 
             if !arg.allow_null && arg.is_return_option() {
                 optional = quote! {.ok_or(crate::wire::DecodeError::MalformedPayload)?};
+            } else if arg.allow_null {
+                map_display = quote! {.as_ref().map_or("null".to_string(), |v| v.to_string())}
+            }
+
+            if arg.ty.is_fd() {
+                fd_print = quote! { .as_raw_fd() }
             }
 
             let mut tryinto = quote! {};
@@ -123,14 +136,33 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
 
             let caller = make_ident(arg.to_caller());
 
+            let name = make_ident(&arg.name);
+
+            setters.push(quote! {
+               let #name = message.#caller()? #optional;
+            });
+
             args.push(quote! {
-                message.#caller()? #optional #tryinto
-            })
+                #name #tryinto
+            });
+
+            tracing_fmt.push(format!("{{}}"));
+            tracing_args.push(quote! { #name #fd_print #map_display });
         }
+
+        let tracing_fmt = tracing_fmt.join(", ");
+
+        let tracing_inner = format!(
+            "{interface}#{{}}.{request}({tracing_fmt})",
+            interface = interface.name,
+            request = request.name.to_snek_case()
+        );
 
         dispatchers.push(quote! {
             #opcode => {
-                tracing::debug!(#tracing_inner, object.id);
+                #(#setters)*
+
+                tracing::debug!(#tracing_inner, object.id, #(#tracing_args),*);
                 self.#name(#(#args),*).await
             }
         });
@@ -179,13 +211,14 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
 
         let docs = description_to_docs(event.description.as_ref());
         let name = make_ident(event.name.to_snek_case());
-        let tracing_inner = format!("-> {}#{{}}.{}()", interface.name, event.name.to_snek_case());
 
         let mut args = vec![
             quote! {&self },
             quote! {object: &crate::server::Object},
             quote! {client: &mut crate::server::Client},
         ];
+
+        let mut tracing_args = Vec::new();
 
         for arg in &event.args {
             let mut ty = arg.to_rust_type_token(arg.find_protocol(&pairs).as_ref().unwrap_or(pair));
@@ -196,8 +229,18 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
 
             let name = make_ident(arg.name.to_snek_case());
 
-            args.push(quote! {#name: #ty})
+            args.push(quote! {#name: #ty});
+
+            tracing_args.push("rq");
         }
+
+        let tracing_args = tracing_args.join(", ");
+
+        let tracing_inner = format!(
+            "-> {interface}#{{}}.{event}({tracing_args})",
+            interface = interface.name,
+            event = event.name.to_snek_case()
+        );
 
         let mut build_args = Vec::new();
 

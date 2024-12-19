@@ -58,3 +58,9 @@ pub struct NewId {
     pub version: u32,
     pub object_id: ObjectId,
 }
+
+impl std::fmt::Display for NewId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("NewId").finish()
+    }
+}

@@ -11,6 +11,8 @@ pub mod alpha_modifier_v1 {
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_alpha_modifier_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -46,22 +48,23 @@ pub mod alpha_modifier_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_alpha_modifier_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_alpha_modifier_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("wp_alpha_modifier_v1#{}.get_surface()", object.id);
-                        self.get_surface(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wp_alpha_modifier_v1#{}.get_surface({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.get_surface(object, client, id, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -94,6 +97,8 @@ pub mod alpha_modifier_v1 {
     #[doc = "no_surface error."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_alpha_modifier_surface_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -129,15 +134,17 @@ pub mod alpha_modifier_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_alpha_modifier_surface_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_alpha_modifier_surface_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let factor = message.uint()?;
                         tracing::debug!(
-                            "wp_alpha_modifier_surface_v1#{}.set_multiplier()",
-                            object.id
+                            "wp_alpha_modifier_surface_v1#{}.set_multiplier({})",
+                            object.id,
+                            factor
                         );
-                        self.set_multiplier(object, client, message.uint()?).await
+                        self.set_multiplier(object, client, factor).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -197,6 +204,8 @@ pub mod commit_timing_v1 {
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_commit_timing_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -232,22 +241,23 @@ pub mod commit_timing_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_commit_timing_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_commit_timing_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("wp_commit_timing_manager_v1#{}.get_timer()", object.id);
-                        self.get_timer(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wp_commit_timing_manager_v1#{}.get_timer({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.get_timer(object, client, id, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -276,6 +286,8 @@ pub mod commit_timing_v1 {
     #[doc = "An object to set a time constraint for a content update on a surface."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_commit_timer_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -317,18 +329,21 @@ pub mod commit_timing_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_commit_timer_v1#{}.set_timestamp()", object.id);
-                        self.set_timestamp(
-                            object,
-                            client,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                        )
-                        .await
+                        let tv_sec_hi = message.uint()?;
+                        let tv_sec_lo = message.uint()?;
+                        let tv_nsec = message.uint()?;
+                        tracing::debug!(
+                            "wp_commit_timer_v1#{}.set_timestamp({}, {}, {})",
+                            object.id,
+                            tv_sec_hi,
+                            tv_sec_lo,
+                            tv_nsec
+                        );
+                        self.set_timestamp(object, client, tv_sec_hi, tv_sec_lo, tv_nsec)
+                            .await
                     }
                     1u16 => {
-                        tracing::debug!("wp_commit_timer_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_commit_timer_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -379,6 +394,8 @@ pub mod content_type_v1 {
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_content_type_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -414,25 +431,24 @@ pub mod content_type_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_content_type_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_content_type_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "wp_content_type_manager_v1#{}.get_surface_content_type()",
-                            object.id
+                            "wp_content_type_manager_v1#{}.get_surface_content_type({}, {})",
+                            object.id,
+                            id,
+                            surface
                         );
-                        self.get_surface_content_type(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_surface_content_type(object, client, id, surface)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -466,6 +482,8 @@ pub mod content_type_v1 {
     #[doc = "the client should destroy it."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_content_type_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These values describe the available content types for a surface."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -507,12 +525,17 @@ pub mod content_type_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_content_type_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_content_type_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("wp_content_type_v1#{}.set_content_type()", object.id);
-                        self.set_content_type(object, client, message.uint()?.try_into()?)
+                        let content_type = message.uint()?;
+                        tracing::debug!(
+                            "wp_content_type_v1#{}.set_content_type({})",
+                            object.id,
+                            content_type
+                        );
+                        self.set_content_type(object, client, content_type.try_into()?)
                             .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -555,6 +578,8 @@ pub mod cursor_shape_v1 {
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_cursor_shape_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_cursor_shape_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpCursorShapeManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_cursor_shape_manager_v1";
@@ -574,39 +599,40 @@ pub mod cursor_shape_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_cursor_shape_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_cursor_shape_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("wp_cursor_shape_manager_v1#{}.get_pointer()", object.id);
-                        self.get_pointer(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let cursor_shape_device = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let pointer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wp_cursor_shape_manager_v1#{}.get_pointer({}, {})",
+                            object.id,
+                            cursor_shape_device,
+                            pointer
+                        );
+                        self.get_pointer(object, client, cursor_shape_device, pointer)
+                            .await
                     }
                     2u16 => {
+                        let cursor_shape_device = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let tablet_tool = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "wp_cursor_shape_manager_v1#{}.get_tablet_tool_v2()",
-                            object.id
+                            "wp_cursor_shape_manager_v1#{}.get_tablet_tool_v2({}, {})",
+                            object.id,
+                            cursor_shape_device,
+                            tablet_tool
                         );
-                        self.get_tablet_tool_v2(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_tablet_tool_v2(object, client, cursor_shape_device, tablet_tool)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -644,6 +670,8 @@ pub mod cursor_shape_v1 {
     #[doc = "This interface allows clients to set the cursor shape."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_cursor_shape_device_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "This enum describes cursor shapes."]
         #[doc = ""]
         #[doc = "The names are taken from the CSS W3C specification:"]
@@ -798,12 +826,19 @@ pub mod cursor_shape_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_cursor_shape_device_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_cursor_shape_device_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("wp_cursor_shape_device_v1#{}.set_shape()", object.id);
-                        self.set_shape(object, client, message.uint()?, message.uint()?.try_into()?)
+                        let serial = message.uint()?;
+                        let shape = message.uint()?;
+                        tracing::debug!(
+                            "wp_cursor_shape_device_v1#{}.set_shape({}, {})",
+                            object.id,
+                            serial,
+                            shape
+                        );
+                        self.set_shape(object, client, serial, shape.try_into()?)
                             .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -879,6 +914,8 @@ pub mod drm_lease_v1 {
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_drm_lease_device_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_drm_lease_device_v1 interface. See the module level documentation for more info"]
         pub trait WpDrmLeaseDeviceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_drm_lease_device_v1";
@@ -898,21 +935,18 @@ pub mod drm_lease_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "wp_drm_lease_device_v1#{}.create_lease_request()",
-                            object.id
+                            "wp_drm_lease_device_v1#{}.create_lease_request({})",
+                            object.id,
+                            id
                         );
-                        self.create_lease_request(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.create_lease_request(object, client, id).await
                     }
                     1u16 => {
-                        tracing::debug!("wp_drm_lease_device_v1#{}.release()", object.id);
+                        tracing::debug!("wp_drm_lease_device_v1#{}.release()", object.id,);
                         self.release(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -952,7 +986,7 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_device_v1#{}.drm_fd()", object.id);
+                tracing::debug!("-> wp_drm_lease_device_v1#{}.drm_fd(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(fd).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -975,7 +1009,7 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_device_v1#{}.connector()", object.id);
+                tracing::debug!("-> wp_drm_lease_device_v1#{}.connector(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
@@ -1030,6 +1064,8 @@ pub mod drm_lease_v1 {
     #[doc = "description event followed by a done event."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_drm_lease_connector_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_drm_lease_connector_v1 interface. See the module level documentation for more info"]
         pub trait WpDrmLeaseConnectorV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_drm_lease_connector_v1";
@@ -1049,7 +1085,7 @@ pub mod drm_lease_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_drm_lease_connector_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_drm_lease_connector_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -1079,7 +1115,7 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.name()", object.id);
+                tracing::debug!("-> wp_drm_lease_connector_v1#{}.name(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
@@ -1098,7 +1134,7 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 description: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.description()", object.id);
+                tracing::debug!("-> wp_drm_lease_connector_v1#{}.description(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(description))
                     .build();
@@ -1117,7 +1153,10 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 connector_id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.connector_id()", object.id);
+                tracing::debug!(
+                    "-> wp_drm_lease_connector_v1#{}.connector_id(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(connector_id)
                     .build();
@@ -1172,6 +1211,8 @@ pub mod drm_lease_v1 {
     #[doc = "request."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_drm_lease_request_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1213,29 +1254,22 @@ pub mod drm_lease_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let connector = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "wp_drm_lease_request_v1#{}.request_connector()",
-                            object.id
+                            "wp_drm_lease_request_v1#{}.request_connector({})",
+                            object.id,
+                            connector
                         );
-                        self.request_connector(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.request_connector(object, client, connector).await
                     }
                     1u16 => {
-                        tracing::debug!("wp_drm_lease_request_v1#{}.submit()", object.id);
-                        self.submit(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("wp_drm_lease_request_v1#{}.submit({})", object.id, id);
+                        self.submit(object, client, id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1281,6 +1315,8 @@ pub mod drm_lease_v1 {
     #[doc = "event."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_drm_lease_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_drm_lease_v1 interface. See the module level documentation for more info"]
         pub trait WpDrmLeaseV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_drm_lease_v1";
@@ -1300,7 +1336,7 @@ pub mod drm_lease_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_drm_lease_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_drm_lease_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -1334,7 +1370,7 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 leased_fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_v1#{}.lease_fd()", object.id);
+                tracing::debug!("-> wp_drm_lease_v1#{}.lease_fd(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(leased_fd).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -1406,6 +1442,8 @@ pub mod ext_foreign_toplevel_list_v1 {
     #[doc = "ext_foreign_toplevel_list_v1.toplevel events."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_foreign_toplevel_list_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_foreign_toplevel_list_v1 interface. See the module level documentation for more info"]
         pub trait ExtForeignToplevelListV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_foreign_toplevel_list_v1";
@@ -1425,11 +1463,11 @@ pub mod ext_foreign_toplevel_list_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ext_foreign_toplevel_list_v1#{}.stop()", object.id);
+                        tracing::debug!("ext_foreign_toplevel_list_v1#{}.stop()", object.id,);
                         self.stop(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("ext_foreign_toplevel_list_v1#{}.destroy()", object.id);
+                        tracing::debug!("ext_foreign_toplevel_list_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -1473,7 +1511,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 client: &mut crate::server::Client,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.toplevel()", object.id);
+                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.toplevel(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .build();
@@ -1505,6 +1543,8 @@ pub mod ext_foreign_toplevel_list_v1 {
     #[doc = "window. A single app may have multiple mapped toplevels."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_foreign_toplevel_handle_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
         pub trait ExtForeignToplevelHandleV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_foreign_toplevel_handle_v1";
@@ -1524,7 +1564,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ext_foreign_toplevel_handle_v1#{}.destroy()", object.id);
+                        tracing::debug!("ext_foreign_toplevel_handle_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -1598,7 +1638,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 client: &mut crate::server::Client,
                 title: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.title()", object.id);
+                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.title(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(title))
                     .build();
@@ -1617,7 +1657,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 client: &mut crate::server::Client,
                 app_id: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.app_id()", object.id);
+                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.app_id(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(app_id))
                     .build();
@@ -1653,7 +1693,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 identifier: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_foreign_toplevel_handle_v1#{}.identifier()",
+                    "-> ext_foreign_toplevel_handle_v1#{}.identifier(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1675,6 +1715,8 @@ pub mod ext_idle_notify_v1 {
     #[doc = "objects to get notified when the user is idle for a given amount of time."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_idle_notifier_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_idle_notifier_v1 interface. See the module level documentation for more info"]
         pub trait ExtIdleNotifierV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_idle_notifier_v1";
@@ -1694,26 +1736,26 @@ pub mod ext_idle_notify_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ext_idle_notifier_v1#{}.destroy()", object.id);
+                        tracing::debug!("ext_idle_notifier_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let timeout = message.uint()?;
+                        let seat = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "ext_idle_notifier_v1#{}.get_idle_notification()",
-                            object.id
+                            "ext_idle_notifier_v1#{}.get_idle_notification({}, {}, {})",
+                            object.id,
+                            id,
+                            timeout,
+                            seat
                         );
-                        self.get_idle_notification(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_idle_notification(object, client, id, timeout, seat)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1759,6 +1801,8 @@ pub mod ext_idle_notify_v1 {
     #[doc = "a resumed event is sent and the timeout is restarted."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_idle_notification_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_idle_notification_v1 interface. See the module level documentation for more info"]
         pub trait ExtIdleNotificationV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_idle_notification_v1";
@@ -1778,7 +1822,7 @@ pub mod ext_idle_notify_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ext_idle_notification_v1#{}.destroy()", object.id);
+                        tracing::debug!("ext_idle_notification_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -1849,6 +1893,8 @@ pub mod ext_image_capture_source_v1 {
     #[doc = "frozen at version 1."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_image_capture_source_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_image_capture_source_v1 interface. See the module level documentation for more info"]
         pub trait ExtImageCaptureSourceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_image_capture_source_v1";
@@ -1868,7 +1914,7 @@ pub mod ext_image_capture_source_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ext_image_capture_source_v1#{}.destroy()", object.id);
+                        tracing::debug!("ext_image_capture_source_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -1886,6 +1932,8 @@ pub mod ext_image_capture_source_v1 {
     #[doc = "A manager for creating image capture source objects for wl_output objects."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_output_image_capture_source_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_output_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtOutputImageCaptureSourceManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_output_image_capture_source_manager_v1";
@@ -1905,26 +1953,24 @@ pub mod ext_image_capture_source_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let source = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "ext_output_image_capture_source_manager_v1#{}.create_source()",
-                            object.id
+                            "ext_output_image_capture_source_manager_v1#{}.create_source({}, {})",
+                            object.id,
+                            source,
+                            output
                         );
-                        self.create_source(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.create_source(object, client, source, output).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "ext_output_image_capture_source_manager_v1#{}.destroy()",
-                            object.id
+                            object.id,
                         );
                         self.destroy(object, client).await
                     }
@@ -1956,6 +2002,8 @@ pub mod ext_image_capture_source_v1 {
     #[doc = "ext_foreign_toplevel_handle_v1 objects."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_foreign_toplevel_image_capture_source_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_foreign_toplevel_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtForeignToplevelImageCaptureSourceManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_foreign_toplevel_image_capture_source_manager_v1";
@@ -1975,23 +2023,20 @@ pub mod ext_image_capture_source_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing :: debug ! ("ext_foreign_toplevel_image_capture_source_manager_v1#{}.create_source()" , object . id);
-                        self.create_source(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let source = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let toplevel_handle = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing :: debug ! ("ext_foreign_toplevel_image_capture_source_manager_v1#{}.create_source({}, {})" , object . id , source , toplevel_handle);
+                        self.create_source(object, client, source, toplevel_handle)
+                            .await
                     }
                     1u16 => {
                         tracing::debug!(
                             "ext_foreign_toplevel_image_capture_source_manager_v1#{}.destroy()",
-                            object.id
+                            object.id,
                         );
                         self.destroy(object, client).await
                     }
@@ -2031,6 +2076,8 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "source."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_image_copy_capture_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2073,47 +2120,41 @@ pub mod ext_image_copy_capture_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let session = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let source = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let options = message.uint()?;
                         tracing::debug!(
-                            "ext_image_copy_capture_manager_v1#{}.create_session()",
-                            object.id
+                            "ext_image_copy_capture_manager_v1#{}.create_session({}, {}, {})",
+                            object.id,
+                            session,
+                            source,
+                            options
                         );
-                        self.create_session(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?.try_into()?,
-                        )
-                        .await
+                        self.create_session(object, client, session, source, options.try_into()?)
+                            .await
                     }
                     1u16 => {
-                        tracing::debug!(
-                            "ext_image_copy_capture_manager_v1#{}.create_pointer_cursor_session()",
-                            object.id
-                        );
-                        self.create_pointer_cursor_session(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let session = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let source = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let pointer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing :: debug ! ("ext_image_copy_capture_manager_v1#{}.create_pointer_cursor_session({}, {}, {})" , object . id , session , source , pointer);
+                        self.create_pointer_cursor_session(object, client, session, source, pointer)
+                            .await
                     }
                     2u16 => {
                         tracing::debug!(
                             "ext_image_copy_capture_manager_v1#{}.destroy()",
-                            object.id
+                            object.id,
                         );
                         self.destroy(object, client).await
                     }
@@ -2174,6 +2215,8 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "request and then send the capture request."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_image_copy_capture_session_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2209,23 +2252,20 @@ pub mod ext_image_copy_capture_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let frame = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "ext_image_copy_capture_session_v1#{}.create_frame()",
-                            object.id
+                            "ext_image_copy_capture_session_v1#{}.create_frame({})",
+                            object.id,
+                            frame
                         );
-                        self.create_frame(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.create_frame(object, client, frame).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "ext_image_copy_capture_session_v1#{}.destroy()",
-                            object.id
+                            object.id,
                         );
                         self.destroy(object, client).await
                     }
@@ -2264,7 +2304,7 @@ pub mod ext_image_copy_capture_v1 {
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_session_v1#{}.buffer_size()",
+                    "-> ext_image_copy_capture_session_v1#{}.buffer_size(rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2287,7 +2327,7 @@ pub mod ext_image_copy_capture_v1 {
                 format: super::super::super::core::wayland::wl_shm::Format,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_session_v1#{}.shm_format()",
+                    "-> ext_image_copy_capture_session_v1#{}.shm_format(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2312,7 +2352,7 @@ pub mod ext_image_copy_capture_v1 {
                 device: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_session_v1#{}.dmabuf_device()",
+                    "-> ext_image_copy_capture_session_v1#{}.dmabuf_device(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
@@ -2336,7 +2376,7 @@ pub mod ext_image_copy_capture_v1 {
                 modifiers: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_session_v1#{}.dmabuf_format()",
+                    "-> ext_image_copy_capture_session_v1#{}.dmabuf_format(rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2401,6 +2441,8 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "If the capture fails, the compositor must send the failed event."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_image_copy_capture_frame_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2461,40 +2503,38 @@ pub mod ext_image_copy_capture_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ext_image_copy_capture_frame_v1#{}.destroy()", object.id);
+                        tracing::debug!("ext_image_copy_capture_frame_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "ext_image_copy_capture_frame_v1#{}.attach_buffer()",
-                            object.id
+                            "ext_image_copy_capture_frame_v1#{}.attach_buffer({})",
+                            object.id,
+                            buffer
                         );
-                        self.attach_buffer(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.attach_buffer(object, client, buffer).await
                     }
                     2u16 => {
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
                         tracing::debug!(
-                            "ext_image_copy_capture_frame_v1#{}.damage_buffer()",
-                            object.id
+                            "ext_image_copy_capture_frame_v1#{}.damage_buffer({}, {}, {}, {})",
+                            object.id,
+                            x,
+                            y,
+                            width,
+                            height
                         );
-                        self.damage_buffer(
-                            object,
-                            client,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                            message.int()?,
-                        )
-                        .await
+                        self.damage_buffer(object, client, x, y, width, height)
+                            .await
                     }
                     3u16 => {
-                        tracing::debug!("ext_image_copy_capture_frame_v1#{}.capture()", object.id);
+                        tracing::debug!("ext_image_copy_capture_frame_v1#{}.capture()", object.id,);
                         self.capture(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -2574,7 +2614,7 @@ pub mod ext_image_copy_capture_v1 {
                 transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_frame_v1#{}.transform()",
+                    "-> ext_image_copy_capture_frame_v1#{}.transform(rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2602,7 +2642,10 @@ pub mod ext_image_copy_capture_v1 {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.damage()", object.id);
+                tracing::debug!(
+                    "-> ext_image_copy_capture_frame_v1#{}.damage(rq, rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
                     .put_int(y)
@@ -2632,7 +2675,7 @@ pub mod ext_image_copy_capture_v1 {
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_frame_v1#{}.presentation_time()",
+                    "-> ext_image_copy_capture_frame_v1#{}.presentation_time(rq, rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2672,7 +2715,10 @@ pub mod ext_image_copy_capture_v1 {
                 client: &mut crate::server::Client,
                 reason: FailureReason,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.failed()", object.id);
+                tracing::debug!(
+                    "-> ext_image_copy_capture_frame_v1#{}.failed(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(reason as u32)
                     .build();
@@ -2687,6 +2733,8 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "capture session with cursor-specific metadata."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_image_copy_capture_cursor_session_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2724,23 +2772,20 @@ pub mod ext_image_copy_capture_v1 {
                     0u16 => {
                         tracing::debug!(
                             "ext_image_copy_capture_cursor_session_v1#{}.destroy()",
-                            object.id
+                            object.id,
                         );
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let session = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "ext_image_copy_capture_cursor_session_v1#{}.get_capture_session()",
-                            object.id
+                            "ext_image_copy_capture_cursor_session_v1#{}.get_capture_session({})",
+                            object.id,
+                            session
                         );
-                        self.get_capture_session(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_capture_session(object, client, session).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2823,7 +2868,7 @@ pub mod ext_image_copy_capture_v1 {
                 y: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_cursor_session_v1#{}.position()",
+                    "-> ext_image_copy_capture_cursor_session_v1#{}.position(rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2853,7 +2898,7 @@ pub mod ext_image_copy_capture_v1 {
                 y: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> ext_image_copy_capture_cursor_session_v1#{}.hotspot()",
+                    "-> ext_image_copy_capture_cursor_session_v1#{}.hotspot(rq, rq)",
                     object.id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2893,6 +2938,8 @@ pub mod ext_session_lock_v1 {
     #[doc = "This interface is used to request that the session be locked."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_session_lock_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_session_lock_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtSessionLockManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_session_lock_manager_v1";
@@ -2912,19 +2959,15 @@ pub mod ext_session_lock_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ext_session_lock_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("ext_session_lock_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("ext_session_lock_manager_v1#{}.lock()", object.id);
-                        self.lock(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("ext_session_lock_manager_v1#{}.lock({})", object.id, id);
+                        self.lock(object, client, id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2999,6 +3042,8 @@ pub mod ext_session_lock_v1 {
     #[doc = "instance automatically."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_session_lock_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3046,28 +3091,31 @@ pub mod ext_session_lock_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ext_session_lock_v1#{}.destroy()", object.id);
+                        tracing::debug!("ext_session_lock_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("ext_session_lock_v1#{}.get_lock_surface()", object.id);
-                        self.get_lock_surface(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_session_lock_v1#{}.get_lock_surface({}, {}, {})",
+                            object.id,
+                            id,
+                            surface,
+                            output
+                        );
+                        self.get_lock_surface(object, client, id, surface, output)
+                            .await
                     }
                     2u16 => {
-                        tracing::debug!("ext_session_lock_v1#{}.unlock_and_destroy()", object.id);
+                        tracing::debug!("ext_session_lock_v1#{}.unlock_and_destroy()", object.id,);
                         self.unlock_and_destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -3208,6 +3256,8 @@ pub mod ext_session_lock_v1 {
     #[doc = "focus if the user clicks on other surfaces."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_session_lock_surface_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3252,15 +3302,17 @@ pub mod ext_session_lock_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ext_session_lock_surface_v1#{}.destroy()", object.id);
+                        tracing::debug!("ext_session_lock_surface_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let serial = message.uint()?;
                         tracing::debug!(
-                            "ext_session_lock_surface_v1#{}.ack_configure()",
-                            object.id
+                            "ext_session_lock_surface_v1#{}.ack_configure({})",
+                            object.id,
+                            serial
                         );
-                        self.ack_configure(object, client, message.uint()?).await
+                        self.ack_configure(object, client, serial).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3323,7 +3375,10 @@ pub mod ext_session_lock_v1 {
                 width: u32,
                 height: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_session_lock_surface_v1#{}.configure()", object.id);
+                tracing::debug!(
+                    "-> ext_session_lock_surface_v1#{}.configure(rq, rq, rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_uint(width)
@@ -3360,6 +3415,8 @@ pub mod ext_transient_seat_v1 {
     #[doc = "The transient seat manager creates short-lived seats."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_transient_seat_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_transient_seat_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtTransientSeatManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_transient_seat_manager_v1";
@@ -3379,18 +3436,18 @@ pub mod ext_transient_seat_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ext_transient_seat_manager_v1#{}.create()", object.id);
-                        self.create(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let seat = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_transient_seat_manager_v1#{}.create({})",
+                            object.id,
+                            seat
+                        );
+                        self.create(object, client, seat).await
                     }
                     1u16 => {
-                        tracing::debug!("ext_transient_seat_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("ext_transient_seat_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -3422,6 +3479,8 @@ pub mod ext_transient_seat_v1 {
     #[doc = "destroyed."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_transient_seat_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_transient_seat_v1 interface. See the module level documentation for more info"]
         pub trait ExtTransientSeatV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_transient_seat_v1";
@@ -3441,7 +3500,7 @@ pub mod ext_transient_seat_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("ext_transient_seat_v1#{}.destroy()", object.id);
+                        tracing::debug!("ext_transient_seat_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -3466,7 +3525,7 @@ pub mod ext_transient_seat_v1 {
                 client: &mut crate::server::Client,
                 global_name: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_transient_seat_v1#{}.ready()", object.id);
+                tracing::debug!("-> ext_transient_seat_v1#{}.ready(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(global_name)
                     .build();
@@ -3512,6 +3571,8 @@ pub mod fifo_v1 {
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_fifo_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
         #[repr(u32)]
@@ -3549,22 +3610,23 @@ pub mod fifo_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_fifo_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_fifo_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("wp_fifo_manager_v1#{}.get_fifo()", object.id);
-                        self.get_fifo(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wp_fifo_manager_v1#{}.get_fifo({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.get_fifo(object, client, id, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3598,6 +3660,8 @@ pub mod fifo_v1 {
     #[doc = "display refresh constraints to content updates."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_fifo_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
         #[repr(u32)]
@@ -3635,15 +3699,15 @@ pub mod fifo_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_fifo_v1#{}.set_barrier()", object.id);
+                        tracing::debug!("wp_fifo_v1#{}.set_barrier()", object.id,);
                         self.set_barrier(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("wp_fifo_v1#{}.wait_barrier()", object.id);
+                        tracing::debug!("wp_fifo_v1#{}.wait_barrier()", object.id,);
                         self.wait_barrier(object, client).await
                     }
                     2u16 => {
-                        tracing::debug!("wp_fifo_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_fifo_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -3729,6 +3793,8 @@ pub mod fractional_scale_v1 {
     #[doc = "A global interface for requesting surfaces to use fractional scales."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_fractional_scale_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3764,25 +3830,23 @@ pub mod fractional_scale_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_fractional_scale_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_fractional_scale_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "wp_fractional_scale_manager_v1#{}.get_fractional_scale()",
-                            object.id
+                            "wp_fractional_scale_manager_v1#{}.get_fractional_scale({}, {})",
+                            object.id,
+                            id,
+                            surface
                         );
-                        self.get_fractional_scale(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_fractional_scale(object, client, id, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3812,6 +3876,8 @@ pub mod fractional_scale_v1 {
     #[doc = "to inform the client of the preferred scale."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_fractional_scale_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_fractional_scale_v1 interface. See the module level documentation for more info"]
         pub trait WpFractionalScaleV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_fractional_scale_v1";
@@ -3831,7 +3897,7 @@ pub mod fractional_scale_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_fractional_scale_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_fractional_scale_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -3854,7 +3920,10 @@ pub mod fractional_scale_v1 {
                 client: &mut crate::server::Client,
                 scale: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_fractional_scale_v1#{}.preferred_scale()", object.id);
+                tracing::debug!(
+                    "-> wp_fractional_scale_v1#{}.preferred_scale(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(scale).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -3898,6 +3967,8 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = "See wp_linux_drm_syncobj_surface_v1 for more information."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_linux_drm_syncobj_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3936,40 +4007,36 @@ pub mod linux_drm_syncobj_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_linux_drm_syncobj_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_linux_drm_syncobj_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "wp_linux_drm_syncobj_manager_v1#{}.get_surface()",
-                            object.id
+                            "wp_linux_drm_syncobj_manager_v1#{}.get_surface({}, {})",
+                            object.id,
+                            id,
+                            surface
                         );
-                        self.get_surface(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_surface(object, client, id, surface).await
                     }
                     2u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let fd = message.fd()?;
                         tracing::debug!(
-                            "wp_linux_drm_syncobj_manager_v1#{}.import_timeline()",
-                            object.id
+                            "wp_linux_drm_syncobj_manager_v1#{}.import_timeline({}, {})",
+                            object.id,
+                            id,
+                            fd.as_raw_fd()
                         );
-                        self.import_timeline(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.fd()?,
-                        )
-                        .await
+                        self.import_timeline(object, client, id, fd).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4015,6 +4082,8 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = "imported by the client to the compositor."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_linux_drm_syncobj_timeline_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_linux_drm_syncobj_timeline_v1 interface. See the module level documentation for more info"]
         pub trait WpLinuxDrmSyncobjTimelineV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_timeline_v1";
@@ -4034,7 +4103,7 @@ pub mod linux_drm_syncobj_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_linux_drm_syncobj_timeline_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_linux_drm_syncobj_timeline_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -4077,6 +4146,8 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = "raised."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_linux_drm_syncobj_surface_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4127,40 +4198,40 @@ pub mod linux_drm_syncobj_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_linux_drm_syncobj_surface_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_linux_drm_syncobj_surface_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let timeline = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let point_hi = message.uint()?;
+                        let point_lo = message.uint()?;
                         tracing::debug!(
-                            "wp_linux_drm_syncobj_surface_v1#{}.set_acquire_point()",
-                            object.id
+                            "wp_linux_drm_syncobj_surface_v1#{}.set_acquire_point({}, {}, {})",
+                            object.id,
+                            timeline,
+                            point_hi,
+                            point_lo
                         );
-                        self.set_acquire_point(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.set_acquire_point(object, client, timeline, point_hi, point_lo)
+                            .await
                     }
                     2u16 => {
+                        let timeline = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let point_hi = message.uint()?;
+                        let point_lo = message.uint()?;
                         tracing::debug!(
-                            "wp_linux_drm_syncobj_surface_v1#{}.set_release_point()",
-                            object.id
+                            "wp_linux_drm_syncobj_surface_v1#{}.set_release_point({}, {}, {})",
+                            object.id,
+                            timeline,
+                            point_hi,
+                            point_lo
                         );
-                        self.set_release_point(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                            message.uint()?,
-                        )
-                        .await
+                        self.set_release_point(object, client, timeline, point_hi, point_lo)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4282,6 +4353,8 @@ pub mod security_context_v1 {
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_security_context_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4320,24 +4393,24 @@ pub mod security_context_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_security_context_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_security_context_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let listen_fd = message.fd()?;
+                        let close_fd = message.fd()?;
                         tracing::debug!(
-                            "wp_security_context_manager_v1#{}.create_listener()",
-                            object.id
+                            "wp_security_context_manager_v1#{}.create_listener({}, {}, {})",
+                            object.id,
+                            id,
+                            listen_fd.as_raw_fd(),
+                            close_fd.as_raw_fd()
                         );
-                        self.create_listener(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.fd()?,
-                            message.fd()?,
-                        )
-                        .await
+                        self.create_listener(object, client, id, listen_fd, close_fd)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4386,6 +4459,8 @@ pub mod security_context_v1 {
     #[doc = "engine must uniquely identify a running instance of an application."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_security_context_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4427,47 +4502,44 @@ pub mod security_context_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_security_context_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_security_context_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "wp_security_context_v1#{}.set_sandbox_engine()",
-                            object.id
+                            "wp_security_context_v1#{}.set_sandbox_engine({})",
+                            object.id,
+                            name
                         );
-                        self.set_sandbox_engine(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.set_sandbox_engine(object, client, name).await
                     }
                     2u16 => {
-                        tracing::debug!("wp_security_context_v1#{}.set_app_id()", object.id);
-                        self.set_app_id(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let app_id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wp_security_context_v1#{}.set_app_id({})",
+                            object.id,
+                            app_id
+                        );
+                        self.set_app_id(object, client, app_id).await
                     }
                     3u16 => {
-                        tracing::debug!("wp_security_context_v1#{}.set_instance_id()", object.id);
-                        self.set_instance_id(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let instance_id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wp_security_context_v1#{}.set_instance_id({})",
+                            object.id,
+                            instance_id
+                        );
+                        self.set_instance_id(object, client, instance_id).await
                     }
                     4u16 => {
-                        tracing::debug!("wp_security_context_v1#{}.commit()", object.id);
+                        tracing::debug!("wp_security_context_v1#{}.commit()", object.id,);
                         self.commit(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -4563,6 +4635,8 @@ pub mod single_pixel_buffer_v1 {
     #[doc = "single-pixel buffers."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_single_pixel_buffer_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_single_pixel_buffer_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpSinglePixelBufferManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_single_pixel_buffer_manager_v1";
@@ -4584,27 +4658,21 @@ pub mod single_pixel_buffer_v1 {
                     0u16 => {
                         tracing::debug!(
                             "wp_single_pixel_buffer_manager_v1#{}.destroy()",
-                            object.id
+                            object.id,
                         );
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!(
-                            "wp_single_pixel_buffer_manager_v1#{}.create_u32_rgba_buffer()",
-                            object.id
-                        );
-                        self.create_u32_rgba_buffer(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let r = message.uint()?;
+                        let g = message.uint()?;
+                        let b = message.uint()?;
+                        let a = message.uint()?;
+                        tracing :: debug ! ("wp_single_pixel_buffer_manager_v1#{}.create_u32_rgba_buffer({}, {}, {}, {}, {})" , object . id , id , r , g , b , a);
+                        self.create_u32_rgba_buffer(object, client, id, r, g, b, a)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4655,6 +4723,8 @@ pub mod tearing_control_v1 {
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_tearing_control_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4690,25 +4760,23 @@ pub mod tearing_control_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wp_tearing_control_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_tearing_control_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "wp_tearing_control_manager_v1#{}.get_tearing_control()",
-                            object.id
+                            "wp_tearing_control_manager_v1#{}.get_tearing_control({}, {})",
+                            object.id,
+                            id,
+                            surface
                         );
-                        self.get_tearing_control(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_tearing_control(object, client, id, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4745,6 +4813,8 @@ pub mod tearing_control_v1 {
     #[doc = "should be destroyed."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_tearing_control_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "This enum provides information for if submitted frames from the client"]
         #[doc = "may be presented with tearing."]
         #[repr(u32)]
@@ -4783,15 +4853,17 @@ pub mod tearing_control_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
+                        let hint = message.uint()?;
                         tracing::debug!(
-                            "wp_tearing_control_v1#{}.set_presentation_hint()",
-                            object.id
+                            "wp_tearing_control_v1#{}.set_presentation_hint({})",
+                            object.id,
+                            hint
                         );
-                        self.set_presentation_hint(object, client, message.uint()?.try_into()?)
+                        self.set_presentation_hint(object, client, hint.try_into()?)
                             .await
                     }
                     1u16 => {
-                        tracing::debug!("wp_tearing_control_v1#{}.destroy()", object.id);
+                        tracing::debug!("wp_tearing_control_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -4864,6 +4936,8 @@ pub mod xdg_activation_v1 {
     #[doc = "activated."]
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_activation_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the xdg_activation_v1 interface. See the module level documentation for more info"]
         pub trait XdgActivationV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_activation_v1";
@@ -4883,33 +4957,34 @@ pub mod xdg_activation_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("xdg_activation_v1#{}.destroy()", object.id);
+                        tracing::debug!("xdg_activation_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("xdg_activation_v1#{}.get_activation_token()", object.id);
-                        self.get_activation_token(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "xdg_activation_v1#{}.get_activation_token({})",
+                            object.id,
+                            id
+                        );
+                        self.get_activation_token(object, client, id).await
                     }
                     2u16 => {
-                        tracing::debug!("xdg_activation_v1#{}.activate()", object.id);
-                        self.activate(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let token = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "xdg_activation_v1#{}.activate({}, {})",
+                            object.id,
+                            token,
+                            surface
+                        );
+                        self.activate(object, client, token, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4962,6 +5037,8 @@ pub mod xdg_activation_v1 {
     #[doc = "the compositor will provide an invalid token."]
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_activation_token_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4997,45 +5074,46 @@ pub mod xdg_activation_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("xdg_activation_token_v1#{}.set_serial()", object.id);
-                        self.set_serial(
-                            object,
-                            client,
-                            message.uint()?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let serial = message.uint()?;
+                        let seat = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "xdg_activation_token_v1#{}.set_serial({}, {})",
+                            object.id,
+                            serial,
+                            seat
+                        );
+                        self.set_serial(object, client, serial, seat).await
                     }
                     1u16 => {
-                        tracing::debug!("xdg_activation_token_v1#{}.set_app_id()", object.id);
-                        self.set_app_id(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let app_id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "xdg_activation_token_v1#{}.set_app_id({})",
+                            object.id,
+                            app_id
+                        );
+                        self.set_app_id(object, client, app_id).await
                     }
                     2u16 => {
-                        tracing::debug!("xdg_activation_token_v1#{}.set_surface()", object.id);
-                        self.set_surface(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "xdg_activation_token_v1#{}.set_surface({})",
+                            object.id,
+                            surface
+                        );
+                        self.set_surface(object, client, surface).await
                     }
                     3u16 => {
-                        tracing::debug!("xdg_activation_token_v1#{}.commit()", object.id);
+                        tracing::debug!("xdg_activation_token_v1#{}.commit()", object.id,);
                         self.commit(object, client).await
                     }
                     4u16 => {
-                        tracing::debug!("xdg_activation_token_v1#{}.destroy()", object.id);
+                        tracing::debug!("xdg_activation_token_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -5105,7 +5183,7 @@ pub mod xdg_activation_v1 {
                 client: &mut crate::server::Client,
                 token: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_activation_token_v1#{}.done()", object.id);
+                tracing::debug!("-> xdg_activation_token_v1#{}.done(rq)", object.id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(token))
                     .build();
@@ -5132,6 +5210,8 @@ pub mod xdg_dialog_v1 {
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_wm_dialog_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5167,22 +5247,23 @@ pub mod xdg_dialog_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("xdg_wm_dialog_v1#{}.destroy()", object.id);
+                        tracing::debug!("xdg_wm_dialog_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("xdg_wm_dialog_v1#{}.get_xdg_dialog()", object.id);
-                        self.get_xdg_dialog(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "xdg_wm_dialog_v1#{}.get_xdg_dialog({}, {})",
+                            object.id,
+                            id,
+                            toplevel
+                        );
+                        self.get_xdg_dialog(object, client, id, toplevel).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5219,6 +5300,8 @@ pub mod xdg_dialog_v1 {
     #[doc = "on toplevels that are not attached to a parent toplevel."]
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_dialog_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the xdg_dialog_v1 interface. See the module level documentation for more info"]
         pub trait XdgDialogV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_dialog_v1";
@@ -5238,15 +5321,15 @@ pub mod xdg_dialog_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("xdg_dialog_v1#{}.destroy()", object.id);
+                        tracing::debug!("xdg_dialog_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("xdg_dialog_v1#{}.set_modal()", object.id);
+                        tracing::debug!("xdg_dialog_v1#{}.set_modal()", object.id,);
                         self.set_modal(object, client).await
                     }
                     2u16 => {
-                        tracing::debug!("xdg_dialog_v1#{}.unset_modal()", object.id);
+                        tracing::debug!("xdg_dialog_v1#{}.unset_modal()", object.id,);
                         self.unset_modal(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -5296,6 +5379,8 @@ pub mod xdg_system_bell_v1 {
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_system_bell_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the xdg_system_bell_v1 interface. See the module level documentation for more info"]
         pub trait XdgSystemBellV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_system_bell_v1";
@@ -5315,12 +5400,19 @@ pub mod xdg_system_bell_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("xdg_system_bell_v1#{}.destroy()", object.id);
+                        tracing::debug!("xdg_system_bell_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("xdg_system_bell_v1#{}.ring()", object.id);
-                        self.ring(object, client, message.object()?).await
+                        let surface = message.object()?;
+                        tracing::debug!(
+                            "xdg_system_bell_v1#{}.ring({})",
+                            object.id,
+                            surface
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.ring(object, client, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5386,6 +5478,8 @@ pub mod xdg_toplevel_drag_v1 {
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_drag_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5421,25 +5515,24 @@ pub mod xdg_toplevel_drag_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("xdg_toplevel_drag_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("xdg_toplevel_drag_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let data_source = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "xdg_toplevel_drag_manager_v1#{}.get_xdg_toplevel_drag()",
-                            object.id
+                            "xdg_toplevel_drag_manager_v1#{}.get_xdg_toplevel_drag({}, {})",
+                            object.id,
+                            id,
+                            data_source
                         );
-                        self.get_xdg_toplevel_drag(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_xdg_toplevel_drag(object, client, id, data_source)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5473,6 +5566,8 @@ pub mod xdg_toplevel_drag_v1 {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_drag_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5511,21 +5606,24 @@ pub mod xdg_toplevel_drag_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("xdg_toplevel_drag_v1#{}.destroy()", object.id);
+                        tracing::debug!("xdg_toplevel_drag_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("xdg_toplevel_drag_v1#{}.attach()", object.id);
-                        self.attach(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                            message.int()?,
-                        )
-                        .await
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let x_offset = message.int()?;
+                        let y_offset = message.int()?;
+                        tracing::debug!(
+                            "xdg_toplevel_drag_v1#{}.attach({}, {}, {})",
+                            object.id,
+                            toplevel,
+                            x_offset,
+                            y_offset
+                        );
+                        self.attach(object, client, toplevel, x_offset, y_offset)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5586,6 +5684,8 @@ pub mod xdg_toplevel_icon_v1 {
     #[doc = "them on toplevel windows to be displayed to the user."]
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_icon_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the xdg_toplevel_icon_manager_v1 interface. See the module level documentation for more info"]
         pub trait XdgToplevelIconManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_toplevel_icon_manager_v1";
@@ -5605,31 +5705,32 @@ pub mod xdg_toplevel_icon_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("xdg_toplevel_icon_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("xdg_toplevel_icon_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("xdg_toplevel_icon_manager_v1#{}.create_icon()", object.id);
-                        self.create_icon(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "xdg_toplevel_icon_manager_v1#{}.create_icon({})",
+                            object.id,
+                            id
+                        );
+                        self.create_icon(object, client, id).await
                     }
                     2u16 => {
-                        tracing::debug!("xdg_toplevel_icon_manager_v1#{}.set_icon()", object.id);
-                        self.set_icon(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.object()?,
-                        )
-                        .await
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let icon = message.object()?;
+                        tracing::debug!(
+                            "xdg_toplevel_icon_manager_v1#{}.set_icon({}, {})",
+                            object.id,
+                            toplevel,
+                            icon.as_ref().map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.set_icon(object, client, toplevel, icon).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5694,7 +5795,10 @@ pub mod xdg_toplevel_icon_v1 {
                 client: &mut crate::server::Client,
                 size: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.icon_size()", object.id);
+                tracing::debug!(
+                    "-> xdg_toplevel_icon_manager_v1#{}.icon_size(rq)",
+                    object.id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(size).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
@@ -5726,6 +5830,8 @@ pub mod xdg_toplevel_icon_v1 {
     #[doc = "an icon via its name. See 'set_name' and 'add_buffer' for details."]
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_icon_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5767,31 +5873,32 @@ pub mod xdg_toplevel_icon_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("xdg_toplevel_icon_v1#{}.destroy()", object.id);
+                        tracing::debug!("xdg_toplevel_icon_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("xdg_toplevel_icon_v1#{}.set_name()", object.id);
-                        self.set_name(
-                            object,
-                            client,
-                            message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let icon_name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "xdg_toplevel_icon_v1#{}.set_name({})",
+                            object.id,
+                            icon_name
+                        );
+                        self.set_name(object, client, icon_name).await
                     }
                     2u16 => {
-                        tracing::debug!("xdg_toplevel_icon_v1#{}.add_buffer()", object.id);
-                        self.add_buffer(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message.int()?,
-                        )
-                        .await
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let scale = message.int()?;
+                        tracing::debug!(
+                            "xdg_toplevel_icon_v1#{}.add_buffer({}, {})",
+                            object.id,
+                            buffer,
+                            scale
+                        );
+                        self.add_buffer(object, client, buffer, scale).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }

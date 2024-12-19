@@ -9,6 +9,8 @@ pub mod frog_color_management_v1 {
     #[doc = "The color management factory singleton creates color managed surface objects."]
     #[allow(clippy::too_many_arguments)]
     pub mod frog_color_management_factory_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the frog_color_management_factory_v1 interface. See the module level documentation for more info"]
         pub trait FrogColorManagementFactoryV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "frog_color_management_factory_v1";
@@ -28,25 +30,24 @@ pub mod frog_color_management_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("frog_color_management_factory_v1#{}.destroy()", object.id);
+                        tracing::debug!("frog_color_management_factory_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let callback = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "frog_color_management_factory_v1#{}.get_color_managed_surface()",
-                            object.id
+                            "frog_color_management_factory_v1#{}.get_color_managed_surface({}, {})",
+                            object.id,
+                            surface,
+                            callback
                         );
-                        self.get_color_managed_surface(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        self.get_color_managed_surface(object, client, surface, callback)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -72,6 +73,8 @@ pub mod frog_color_management_v1 {
     #[doc = "Including all known enums associated with a given version."]
     #[allow(clippy::too_many_arguments)]
     pub mod frog_color_managed_surface {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Extended information on the transfer functions described"]
         #[doc = "here can be found in the Khronos Data Format specification:"]
         #[doc = ""]
@@ -165,61 +168,72 @@ pub mod frog_color_management_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("frog_color_managed_surface#{}.destroy()", object.id);
+                        tracing::debug!("frog_color_managed_surface#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
+                        let transfer_function = message.uint()?;
                         tracing::debug!(
-                            "frog_color_managed_surface#{}.set_known_transfer_function()",
-                            object.id
+                            "frog_color_managed_surface#{}.set_known_transfer_function({})",
+                            object.id,
+                            transfer_function
                         );
                         self.set_known_transfer_function(
                             object,
                             client,
-                            message.uint()?.try_into()?,
+                            transfer_function.try_into()?,
                         )
                         .await
                     }
                     2u16 => {
+                        let primaries = message.uint()?;
                         tracing::debug!(
-                            "frog_color_managed_surface#{}.set_known_container_color_volume()",
-                            object.id
+                            "frog_color_managed_surface#{}.set_known_container_color_volume({})",
+                            object.id,
+                            primaries
                         );
-                        self.set_known_container_color_volume(
-                            object,
-                            client,
-                            message.uint()?.try_into()?,
-                        )
-                        .await
+                        self.set_known_container_color_volume(object, client, primaries.try_into()?)
+                            .await
                     }
                     3u16 => {
+                        let render_intent = message.uint()?;
                         tracing::debug!(
-                            "frog_color_managed_surface#{}.set_render_intent()",
-                            object.id
+                            "frog_color_managed_surface#{}.set_render_intent({})",
+                            object.id,
+                            render_intent
                         );
-                        self.set_render_intent(object, client, message.uint()?.try_into()?)
+                        self.set_render_intent(object, client, render_intent.try_into()?)
                             .await
                     }
                     4u16 => {
-                        tracing::debug!(
-                            "frog_color_managed_surface#{}.set_hdr_metadata()",
-                            object.id
-                        );
+                        let mastering_display_primary_red_x = message.uint()?;
+                        let mastering_display_primary_red_y = message.uint()?;
+                        let mastering_display_primary_green_x = message.uint()?;
+                        let mastering_display_primary_green_y = message.uint()?;
+                        let mastering_display_primary_blue_x = message.uint()?;
+                        let mastering_display_primary_blue_y = message.uint()?;
+                        let mastering_white_point_x = message.uint()?;
+                        let mastering_white_point_y = message.uint()?;
+                        let max_display_mastering_luminance = message.uint()?;
+                        let min_display_mastering_luminance = message.uint()?;
+                        let max_cll = message.uint()?;
+                        let max_fall = message.uint()?;
+                        tracing :: debug ! ("frog_color_managed_surface#{}.set_hdr_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})" , object . id , mastering_display_primary_red_x , mastering_display_primary_red_y , mastering_display_primary_green_x , mastering_display_primary_green_y , mastering_display_primary_blue_x , mastering_display_primary_blue_y , mastering_white_point_x , mastering_white_point_y , max_display_mastering_luminance , min_display_mastering_luminance , max_cll , max_fall);
                         self.set_hdr_metadata(
                             object,
                             client,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
-                            message.uint()?,
+                            mastering_display_primary_red_x,
+                            mastering_display_primary_red_y,
+                            mastering_display_primary_green_x,
+                            mastering_display_primary_green_y,
+                            mastering_display_primary_blue_x,
+                            mastering_display_primary_blue_y,
+                            mastering_white_point_x,
+                            mastering_white_point_y,
+                            max_display_mastering_luminance,
+                            min_display_mastering_luminance,
+                            max_cll,
+                            max_fall,
                         )
                         .await
                     }
@@ -304,10 +318,7 @@ pub mod frog_color_management_v1 {
                 min_luminance: u32,
                 max_full_frame_luminance: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> frog_color_managed_surface#{}.preferred_metadata()",
-                    object.id
-                );
+                tracing :: debug ! ("-> frog_color_managed_surface#{}.preferred_metadata(rq, rq, rq, rq, rq, rq, rq, rq, rq, rq, rq, rq)" , object . id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(transfer_function as u32)
                     .put_uint(output_display_primary_red_x)
@@ -345,6 +356,8 @@ pub mod frog_fifo_v1 {
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod frog_fifo_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
         #[repr(u32)]
@@ -382,22 +395,23 @@ pub mod frog_fifo_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("frog_fifo_manager_v1#{}.destroy()", object.id);
+                        tracing::debug!("frog_fifo_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("frog_fifo_manager_v1#{}.get_fifo()", object.id);
-                        self.get_fifo(
-                            object,
-                            client,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                            message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?,
-                        )
-                        .await
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "frog_fifo_manager_v1#{}.get_fifo({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.get_fifo(object, client, id, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -431,6 +445,8 @@ pub mod frog_fifo_v1 {
     #[doc = "display refresh constraints to content updates."]
     #[allow(clippy::too_many_arguments)]
     pub mod frog_fifo_surface_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
         #[repr(u32)]
@@ -468,15 +484,15 @@ pub mod frog_fifo_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("frog_fifo_surface_v1#{}.set_barrier()", object.id);
+                        tracing::debug!("frog_fifo_surface_v1#{}.set_barrier()", object.id,);
                         self.set_barrier(object, client).await
                     }
                     1u16 => {
-                        tracing::debug!("frog_fifo_surface_v1#{}.wait_barrier()", object.id);
+                        tracing::debug!("frog_fifo_surface_v1#{}.wait_barrier()", object.id,);
                         self.wait_barrier(object, client).await
                     }
                     2u16 => {
-                        tracing::debug!("frog_fifo_surface_v1#{}.destroy()", object.id);
+                        tracing::debug!("frog_fifo_surface_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
