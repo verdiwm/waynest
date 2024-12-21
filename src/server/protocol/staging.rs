@@ -1464,6 +1464,531 @@ pub mod drm_lease_v1 {
         }
     }
 }
+#[doc = "This protocol allows a privileged client to control data devices. In"]
+#[doc = "particular, the client will be able to manage the current selection and take"]
+#[doc = "the role of a clipboard manager."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is currently in the testing"]
+#[doc = "phase. Backward compatible changes may be added together with the"]
+#[doc = "corresponding interface version bump. Backward incompatible changes can"]
+#[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
+pub mod ext_data_control_v1 {
+    #[doc = "This interface is a manager that allows creating per-seat data device"]
+    #[doc = "controls."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_data_control_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the ext_data_control_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ExtDataControlManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_data_control_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_data_control_manager_v1#{}.create_data_source({})",
+                            object.id,
+                            id
+                        );
+                        self.create_data_source(object, client, id).await
+                    }
+                    1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let seat = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_data_control_manager_v1#{}.get_data_device({}, {})",
+                            object.id,
+                            id,
+                            seat
+                        );
+                        self.get_data_device(object, client, id, seat).await
+                    }
+                    2u16 => {
+                        tracing::debug!("ext_data_control_manager_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Create a new data source."]
+            async fn create_data_source(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "Create a data device that can be used to manage a seat's selection."]
+            async fn get_data_device(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                seat: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "All objects created by the manager will still remain valid, until their"]
+            #[doc = "appropriate destroy request has been called."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+        }
+    }
+    #[doc = "This interface allows a client to manage a seat's selection."]
+    #[doc = ""]
+    #[doc = "When the seat is destroyed, this object becomes inert."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_data_control_device_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "source given to set_selection or set_primary_selection was already used before"]
+            UsedSource = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::UsedSource),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the ext_data_control_device_v1 interface. See the module level documentation for more info"]
+        pub trait ExtDataControlDeviceV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_data_control_device_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let source = message.object()?;
+                        tracing::debug!(
+                            "ext_data_control_device_v1#{}.set_selection({})",
+                            object.id,
+                            source
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.set_selection(object, client, source).await
+                    }
+                    1u16 => {
+                        tracing::debug!("ext_data_control_device_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    2u16 => {
+                        let source = message.object()?;
+                        tracing::debug!(
+                            "ext_data_control_device_v1#{}.set_primary_selection({})",
+                            object.id,
+                            source
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.set_primary_selection(object, client, source).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This request asks the compositor to set the selection to the data from"]
+            #[doc = "the source on behalf of the client."]
+            #[doc = ""]
+            #[doc = "The given source may not be used in any further set_selection or"]
+            #[doc = "set_primary_selection requests. Attempting to use a previously used"]
+            #[doc = "source triggers the used_source protocol error."]
+            #[doc = ""]
+            #[doc = "To unset the selection, set the source to NULL."]
+            async fn set_selection(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                source: Option<crate::wire::ObjectId>,
+            ) -> crate::server::Result<()>;
+            #[doc = "Destroys the data device object."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "This request asks the compositor to set the primary selection to the"]
+            #[doc = "data from the source on behalf of the client."]
+            #[doc = ""]
+            #[doc = "The given source may not be used in any further set_selection or"]
+            #[doc = "set_primary_selection requests. Attempting to use a previously used"]
+            #[doc = "source triggers the used_source protocol error."]
+            #[doc = ""]
+            #[doc = "To unset the primary selection, set the source to NULL."]
+            #[doc = ""]
+            #[doc = "The compositor will ignore this request if it does not support primary"]
+            #[doc = "selection."]
+            async fn set_primary_selection(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                source: Option<crate::wire::ObjectId>,
+            ) -> crate::server::Result<()>;
+            #[doc = "The data_offer event introduces a new ext_data_control_offer object,"]
+            #[doc = "which will subsequently be used in either the"]
+            #[doc = "ext_data_control_device.selection event (for the regular clipboard"]
+            #[doc = "selections) or the ext_data_control_device.primary_selection event (for"]
+            #[doc = "the primary clipboard selections). Immediately following the"]
+            #[doc = "ext_data_control_device.data_offer event, the new data_offer object"]
+            #[doc = "will send out ext_data_control_offer.offer events to describe the MIME"]
+            #[doc = "types it offers."]
+            async fn data_offer(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_data_control_device_v1#{}.data_offer({})",
+                    object.id,
+                    id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "The selection event is sent out to notify the client of a new"]
+            #[doc = "ext_data_control_offer for the selection for this device. The"]
+            #[doc = "ext_data_control_device.data_offer and the ext_data_control_offer.offer"]
+            #[doc = "events are sent out immediately before this event to introduce the data"]
+            #[doc = "offer object. The selection event is sent to a client when a new"]
+            #[doc = "selection is set. The ext_data_control_offer is valid until a new"]
+            #[doc = "ext_data_control_offer or NULL is received. The client must destroy the"]
+            #[doc = "previous selection ext_data_control_offer, if any, upon receiving this"]
+            #[doc = "event. Regardless, the previous selection will be ignored once a new"]
+            #[doc = "selection ext_data_control_offer is received."]
+            #[doc = ""]
+            #[doc = "The first selection event is sent upon binding the"]
+            #[doc = "ext_data_control_device object."]
+            async fn selection(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: Option<crate::wire::ObjectId>,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_data_control_device_v1#{}.selection({})",
+                    object.id,
+                    id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This data control object is no longer valid and should be destroyed by"]
+            #[doc = "the client."]
+            async fn finished(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> ext_data_control_device_v1#{}.finished()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "The primary_selection event is sent out to notify the client of a new"]
+            #[doc = "ext_data_control_offer for the primary selection for this device. The"]
+            #[doc = "ext_data_control_device.data_offer and the ext_data_control_offer.offer"]
+            #[doc = "events are sent out immediately before this event to introduce the data"]
+            #[doc = "offer object. The primary_selection event is sent to a client when a"]
+            #[doc = "new primary selection is set. The ext_data_control_offer is valid until"]
+            #[doc = "a new ext_data_control_offer or NULL is received. The client must"]
+            #[doc = "destroy the previous primary selection ext_data_control_offer, if any,"]
+            #[doc = "upon receiving this event. Regardless, the previous primary selection"]
+            #[doc = "will be ignored once a new primary selection ext_data_control_offer is"]
+            #[doc = "received."]
+            #[doc = ""]
+            #[doc = "If the compositor supports primary selection, the first"]
+            #[doc = "primary_selection event is sent upon binding the"]
+            #[doc = "ext_data_control_device object."]
+            async fn primary_selection(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: Option<crate::wire::ObjectId>,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_data_control_device_v1#{}.primary_selection({})",
+                    object.id,
+                    id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[doc = "The ext_data_control_source object is the source side of a"]
+    #[doc = "ext_data_control_offer. It is created by the source client in a data"]
+    #[doc = "transfer and provides a way to describe the offered data and a way to"]
+    #[doc = "respond to requests to transfer the data."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_data_control_source_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "offer sent after ext_data_control_device.set_selection"]
+            InvalidOffer = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::InvalidOffer),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the ext_data_control_source_v1 interface. See the module level documentation for more info"]
+        pub trait ExtDataControlSourceV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_data_control_source_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let mime_type = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_data_control_source_v1#{}.offer(\"{}\")",
+                            object.id,
+                            mime_type
+                        );
+                        self.offer(object, client, mime_type).await
+                    }
+                    1u16 => {
+                        tracing::debug!("ext_data_control_source_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This request adds a MIME type to the set of MIME types advertised to"]
+            #[doc = "targets. Can be called several times to offer multiple types."]
+            #[doc = ""]
+            #[doc = "Calling this after ext_data_control_device.set_selection is a protocol"]
+            #[doc = "error."]
+            async fn offer(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                mime_type: String,
+            ) -> crate::server::Result<()>;
+            #[doc = "Destroys the data source object."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Request for data from the client. Send the data as the specified MIME"]
+            #[doc = "type over the passed file descriptor, then close it."]
+            async fn send(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                mime_type: String,
+                fd: rustix::fd::OwnedFd,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_data_control_source_v1#{}.send(\"{}\", {})",
+                    object.id,
+                    mime_type,
+                    fd.as_raw_fd()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(mime_type))
+                    .put_fd(fd)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This data source is no longer valid. The data source has been replaced"]
+            #[doc = "by another data source."]
+            #[doc = ""]
+            #[doc = "The client should clean up and destroy this data source."]
+            async fn cancelled(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> ext_data_control_source_v1#{}.cancelled()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[doc = "A ext_data_control_offer represents a piece of data offered for transfer"]
+    #[doc = "by another client (the source client). The offer describes the different"]
+    #[doc = "MIME types that the data can be converted to and provides the mechanism"]
+    #[doc = "for transferring the data directly from the source client."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_data_control_offer_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the ext_data_control_offer_v1 interface. See the module level documentation for more info"]
+        pub trait ExtDataControlOfferV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_data_control_offer_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let mime_type = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let fd = message.fd()?;
+                        tracing::debug!(
+                            "ext_data_control_offer_v1#{}.receive(\"{}\", {})",
+                            object.id,
+                            mime_type,
+                            fd.as_raw_fd()
+                        );
+                        self.receive(object, client, mime_type, fd).await
+                    }
+                    1u16 => {
+                        tracing::debug!("ext_data_control_offer_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "To transfer the offered data, the client issues this request and"]
+            #[doc = "indicates the MIME type it wants to receive. The transfer happens"]
+            #[doc = "through the passed file descriptor (typically created with the pipe"]
+            #[doc = "system call). The source client writes the data in the MIME type"]
+            #[doc = "representation requested and then closes the file descriptor."]
+            #[doc = ""]
+            #[doc = "The receiving client reads from the read end of the pipe until EOF and"]
+            #[doc = "then closes its end, at which point the transfer is complete."]
+            #[doc = ""]
+            #[doc = "This request may happen multiple times for different MIME types."]
+            async fn receive(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                mime_type: String,
+                fd: rustix::fd::OwnedFd,
+            ) -> crate::server::Result<()>;
+            #[doc = "Destroys the data offer object."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Sent immediately after creating the ext_data_control_offer object."]
+            #[doc = "One event per offered MIME type."]
+            async fn offer(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                mime_type: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_data_control_offer_v1#{}.offer(\"{}\")",
+                    object.id,
+                    mime_type
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(mime_type))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
 #[doc = "The purpose of this protocol is to provide protocol object handles for"]
 #[doc = "toplevels, possibly originating from another client."]
 #[doc = ""]
@@ -2854,7 +3379,7 @@ pub mod ext_image_copy_capture_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            #[doc = "get_captuerer_session sent twice"]
+            #[doc = "get_capture_session sent twice"]
             DuplicateSession = 1u32,
         }
         impl TryFrom<u32> for Error {
@@ -3691,6 +4216,702 @@ pub mod ext_transient_seat_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod ext_workspace_v1 {
+    #[doc = "Workspaces, also called virtual desktops, are groups of surfaces. A"]
+    #[doc = "compositor with a concept of workspaces may only show some such groups of"]
+    #[doc = "surfaces (those of 'active' workspaces) at a time.\u{a0}'Activating' a"]
+    #[doc = "workspace is a request for the compositor to display that workspace's"]
+    #[doc = "surfaces as normal, whereas the compositor may hide or otherwise"]
+    #[doc = "de-emphasise surfaces that are associated only with 'inactive' workspaces."]
+    #[doc = "Workspaces are grouped by which sets of outputs they correspond to, and"]
+    #[doc = "may contain surfaces only from those outputs. In this way, it is possible"]
+    #[doc = "for each output to have its own set of workspaces, or for all outputs (or"]
+    #[doc = "any other arbitrary grouping) to share workspaces. Compositors may"]
+    #[doc = "optionally conceptually arrange each group of workspaces in an"]
+    #[doc = "N-dimensional grid."]
+    #[doc = ""]
+    #[doc = "The purpose of this protocol is to enable the creation of taskbars and"]
+    #[doc = "docks by providing them with a list of workspaces and their properties,"]
+    #[doc = "and allowing them to activate and deactivate workspaces."]
+    #[doc = ""]
+    #[doc = "After a client binds the ext_workspace_manager_v1, each workspace will be"]
+    #[doc = "sent via the workspace event."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_workspace_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the ext_workspace_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ExtWorkspaceManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_workspace_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("ext_workspace_manager_v1#{}.commit()", object.id,);
+                        self.commit(object, client).await
+                    }
+                    1u16 => {
+                        tracing::debug!("ext_workspace_manager_v1#{}.stop()", object.id,);
+                        self.stop(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "The client must send this request after it has finished sending other"]
+            #[doc = "requests. The compositor must process a series of requests preceding a"]
+            #[doc = "commit request atomically."]
+            #[doc = ""]
+            #[doc = "This allows changes to the workspace properties to be seen as atomic,"]
+            #[doc = "even if they happen via multiple events, and even if they involve"]
+            #[doc = "multiple ext_workspace_handle_v1 objects, for example, deactivating one"]
+            #[doc = "workspace and activating another."]
+            async fn commit(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Indicates the client no longer wishes to receive events for new"]
+            #[doc = "workspace groups. However the compositor may emit further workspace"]
+            #[doc = "events, until the finished event is emitted. The compositor is expected"]
+            #[doc = "to send the finished event eventually once the stop request has been processed."]
+            #[doc = ""]
+            #[doc = "The client must not send any requests after this one, doing so will raise a wl_display"]
+            #[doc = "invalid_object error."]
+            async fn stop(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "This event is emitted whenever a new workspace group has been created."]
+            #[doc = ""]
+            #[doc = "All initial details of the workspace group (outputs) will be"]
+            #[doc = "sent immediately after this event via the corresponding events in"]
+            #[doc = "ext_workspace_group_handle_v1 and ext_workspace_handle_v1."]
+            async fn workspace_group(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                workspace_group: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_workspace_manager_v1#{}.workspace_group({})",
+                    object.id,
+                    workspace_group
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(workspace_group))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is emitted whenever a new workspace has been created."]
+            #[doc = ""]
+            #[doc = "All initial details of the workspace (name, coordinates, state) will"]
+            #[doc = "be sent immediately after this event via the corresponding events in"]
+            #[doc = "ext_workspace_handle_v1."]
+            #[doc = ""]
+            #[doc = "Workspaces start off unassigned to any workspace group."]
+            async fn workspace(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                workspace: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_workspace_manager_v1#{}.workspace({})",
+                    object.id,
+                    workspace
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(workspace))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is sent after all changes in all workspaces and workspace groups have been"]
+            #[doc = "sent."]
+            #[doc = ""]
+            #[doc = "This allows changes to one or more ext_workspace_group_handle_v1"]
+            #[doc = "properties and ext_workspace_handle_v1 properties"]
+            #[doc = "to be seen as atomic, even if they happen via multiple events."]
+            #[doc = "In particular, an output moving from one workspace group to"]
+            #[doc = "another sends an output_enter event and an output_leave event to the two"]
+            #[doc = "ext_workspace_group_handle_v1 objects in question. The compositor sends"]
+            #[doc = "the done event only after updating the output information in both"]
+            #[doc = "workspace groups."]
+            async fn done(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> ext_workspace_manager_v1#{}.done()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event indicates that the compositor is done sending events to the"]
+            #[doc = "ext_workspace_manager_v1. The server will destroy the object"]
+            #[doc = "immediately after sending this request."]
+            async fn finished(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> ext_workspace_manager_v1#{}.finished()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[doc = "A ext_workspace_group_handle_v1 object represents a workspace group"]
+    #[doc = "that is assigned a set of outputs and contains a number of workspaces."]
+    #[doc = ""]
+    #[doc = "The set of outputs assigned to the workspace group is conveyed to the client via"]
+    #[doc = "output_enter and output_leave events, and its workspaces are conveyed with"]
+    #[doc = "workspace events."]
+    #[doc = ""]
+    #[doc = "For example, a compositor which has a set of workspaces for each output may"]
+    #[doc = "advertise a workspace group (and its workspaces) per output, whereas a compositor"]
+    #[doc = "where a workspace spans all outputs may advertise a single workspace group for all"]
+    #[doc = "outputs."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_workspace_group_handle_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct GroupCapabilities : u32 { # [doc = "create_workspace request is available"] const CreateWorkspace = 1u32 ; } }
+        impl TryFrom<u32> for GroupCapabilities {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for GroupCapabilities {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the ext_workspace_group_handle_v1 interface. See the module level documentation for more info"]
+        pub trait ExtWorkspaceGroupHandleV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_workspace_group_handle_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let workspace = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_workspace_group_handle_v1#{}.create_workspace(\"{}\")",
+                            object.id,
+                            workspace
+                        );
+                        self.create_workspace(object, client, workspace).await
+                    }
+                    1u16 => {
+                        tracing::debug!("ext_workspace_group_handle_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Request that the compositor create a new workspace with the given name"]
+            #[doc = "and assign it to this group."]
+            #[doc = ""]
+            #[doc = "There is no guarantee that the compositor will create a new workspace,"]
+            #[doc = "or that the created workspace will have the provided name."]
+            async fn create_workspace(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                workspace: String,
+            ) -> crate::server::Result<()>;
+            #[doc = "Destroys the ext_workspace_group_handle_v1 object."]
+            #[doc = ""]
+            #[doc = "This request should be send either when the client does not want to"]
+            #[doc = "use the workspace group object any more or after the removed event to finalize"]
+            #[doc = "the destruction of the object."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "This event advertises the capabilities supported by the compositor. If"]
+            #[doc = "a capability isn't supported, clients should hide or disable the UI"]
+            #[doc = "elements that expose this functionality. For instance, if the"]
+            #[doc = "compositor doesn't advertise support for creating workspaces, a button"]
+            #[doc = "triggering the create_workspace request should not be displayed."]
+            #[doc = ""]
+            #[doc = "The compositor will ignore requests it doesn't support. For instance,"]
+            #[doc = "a compositor which doesn't advertise support for creating workspaces will ignore"]
+            #[doc = "create_workspace requests."]
+            #[doc = ""]
+            #[doc = "Compositors must send this event once after creation of an"]
+            #[doc = "ext_workspace_group_handle_v1. When the capabilities change, compositors"]
+            #[doc = "must send this event again."]
+            async fn capabilities(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                capabilities: GroupCapabilities,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_workspace_group_handle_v1#{}.capabilities({})",
+                    object.id,
+                    capabilities
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(capabilities.bits())
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is emitted whenever an output is assigned to the workspace"]
+            #[doc = "group or a new `wl_output` object is bound by the client, which was already"]
+            #[doc = "assigned to this workspace_group."]
+            async fn output_enter(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                output: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_workspace_group_handle_v1#{}.output_enter({})",
+                    object.id,
+                    output
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is emitted whenever an output is removed from the workspace"]
+            #[doc = "group."]
+            async fn output_leave(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                output: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_workspace_group_handle_v1#{}.output_leave({})",
+                    object.id,
+                    output
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is emitted whenever a workspace is assigned to this group."]
+            #[doc = "A workspace may only ever be assigned to a single group at a single point"]
+            #[doc = "in time, but can be re-assigned during it's lifetime."]
+            async fn workspace_enter(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                workspace: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_workspace_group_handle_v1#{}.workspace_enter({})",
+                    object.id,
+                    workspace
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(workspace))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is emitted whenever a workspace is removed from this group."]
+            async fn workspace_leave(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                workspace: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_workspace_group_handle_v1#{}.workspace_leave({})",
+                    object.id,
+                    workspace
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(workspace))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is send when the group associated with the ext_workspace_group_handle_v1"]
+            #[doc = "has been removed. After sending this request the compositor will immediately consider"]
+            #[doc = "the object inert. Any requests will be ignored except the destroy request."]
+            #[doc = "It is guaranteed there won't be any more events referencing this"]
+            #[doc = "ext_workspace_group_handle_v1."]
+            #[doc = ""]
+            #[doc = "The compositor must remove all workspaces belonging to a workspace group"]
+            #[doc = "via a workspace_leave event before removing the workspace group."]
+            async fn removed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> ext_workspace_group_handle_v1#{}.removed()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[doc = "A ext_workspace_handle_v1 object represents a workspace that handles a"]
+    #[doc = "group of surfaces."]
+    #[doc = ""]
+    #[doc = "Each workspace has:"]
+    #[doc = "- a name, conveyed to the client with the name event"]
+    #[doc = "- potentially an id conveyed with the id event"]
+    #[doc = "- a list of states, conveyed to the client with the state event"]
+    #[doc = "- and optionally a set of coordinates, conveyed to the client with the"]
+    #[doc = "coordinates event"]
+    #[doc = ""]
+    #[doc = "The client may request that the compositor activate or deactivate the workspace."]
+    #[doc = ""]
+    #[doc = "Each workspace can belong to only a single workspace group."]
+    #[doc = "Depepending on the compositor policy, there might be workspaces with"]
+    #[doc = "the same name in different workspace groups, but these workspaces are still"]
+    #[doc = "separate (e.g. one of them might be active while the other is not)."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_workspace_handle_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        bitflags::bitflags! { # [doc = "The different states that a workspace can have."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct State : u32 { # [doc = "the workspace is active"] const Active = 1u32 ; # [doc = "the workspace requests attention"] const Urgent = 2u32 ; const Hidden = 4u32 ; } }
+        impl TryFrom<u32> for State {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for State {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct WorkspaceCapabilities : u32 { # [doc = "activate request is available"] const Activate = 1u32 ; # [doc = "deactivate request is available"] const Deactivate = 2u32 ; # [doc = "remove request is available"] const Remove = 4u32 ; # [doc = "assign request is available"] const Assign = 8u32 ; } }
+        impl TryFrom<u32> for WorkspaceCapabilities {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for WorkspaceCapabilities {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the ext_workspace_handle_v1 interface. See the module level documentation for more info"]
+        pub trait ExtWorkspaceHandleV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_workspace_handle_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("ext_workspace_handle_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        tracing::debug!("ext_workspace_handle_v1#{}.activate()", object.id,);
+                        self.activate(object, client).await
+                    }
+                    2u16 => {
+                        tracing::debug!("ext_workspace_handle_v1#{}.deactivate()", object.id,);
+                        self.deactivate(object, client).await
+                    }
+                    3u16 => {
+                        let workspace_group = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_workspace_handle_v1#{}.assign({})",
+                            object.id,
+                            workspace_group
+                        );
+                        self.assign(object, client, workspace_group).await
+                    }
+                    4u16 => {
+                        tracing::debug!("ext_workspace_handle_v1#{}.remove()", object.id,);
+                        self.remove(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroys the ext_workspace_handle_v1 object."]
+            #[doc = ""]
+            #[doc = "This request should be made either when the client does not want to"]
+            #[doc = "use the workspace object any more or after the remove event to finalize"]
+            #[doc = "the destruction of the object."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Request that this workspace be activated."]
+            #[doc = ""]
+            #[doc = "There is no guarantee the workspace will be actually activated, and"]
+            #[doc = "behaviour may be compositor-dependent. For example, activating a"]
+            #[doc = "workspace may or may not deactivate all other workspaces in the same"]
+            #[doc = "group."]
+            async fn activate(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Request that this workspace be deactivated."]
+            #[doc = ""]
+            #[doc = "There is no guarantee the workspace will be actually deactivated."]
+            async fn deactivate(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Requests that this workspace is assigned to the given workspace group."]
+            #[doc = ""]
+            #[doc = "There is no guarantee the workspace will be assigned."]
+            async fn assign(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                workspace_group: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "Request that this workspace be removed."]
+            #[doc = ""]
+            #[doc = "There is no guarantee the workspace will be actually removed."]
+            async fn remove(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "If this event is emitted, it will be send immediately after the"]
+            #[doc = "ext_workspace_handle_v1 is created or when an id is assigned to"]
+            #[doc = "a workspace (at most once during it's lifetime)."]
+            #[doc = ""]
+            #[doc = "An id will never change during the lifetime of the `ext_workspace_handle_v1`"]
+            #[doc = "and is guaranteed to be unique during it's lifetime."]
+            #[doc = ""]
+            #[doc = "Ids are not human-readable and shouldn't be displayed, use `name` for that purpose."]
+            #[doc = ""]
+            #[doc = "Compositors are expected to only send ids for workspaces likely stable across multiple"]
+            #[doc = "sessions and can be used by clients to store preferences for workspaces. Workspaces without"]
+            #[doc = "ids should be considered temporary and any data associated with them should be deleted once"]
+            #[doc = "the respective object is lost."]
+            async fn id(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> ext_workspace_handle_v1#{}.id(\"{}\")", object.id, id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(id))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is emitted immediately after the ext_workspace_handle_v1 is"]
+            #[doc = "created and whenever the name of the workspace changes."]
+            #[doc = ""]
+            #[doc = "A name is meant to be human-readable and can be displayed to a user."]
+            #[doc = "Unlike the id it is neither stable nor unique."]
+            async fn name(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                name: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_workspace_handle_v1#{}.name(\"{}\")",
+                    object.id,
+                    name
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is used to organize workspaces into an N-dimensional grid"]
+            #[doc = "within a workspace group, and if supported, is emitted immediately after"]
+            #[doc = "the ext_workspace_handle_v1 is created and whenever the coordinates of"]
+            #[doc = "the workspace change. Compositors may not send this event if they do not"]
+            #[doc = "conceptually arrange workspaces in this way. If compositors simply"]
+            #[doc = "number workspaces, without any geometric interpretation, they may send"]
+            #[doc = "1D coordinates, which clients should not interpret as implying any"]
+            #[doc = "geometry. Sending an empty array means that the compositor no longer"]
+            #[doc = "orders the workspace geometrically."]
+            #[doc = ""]
+            #[doc = "Coordinates have an arbitrary number of dimensions N with an uint32"]
+            #[doc = "position along each dimension. By convention if N > 1, the first"]
+            #[doc = "dimension is X, the second Y, the third Z, and so on. The compositor may"]
+            #[doc = "chose to utilize these events for a more novel workspace layout"]
+            #[doc = "convention, however. No guarantee is made about the grid being filled or"]
+            #[doc = "bounded; there may be a workspace at coordinate 1 and another at"]
+            #[doc = "coordinate 1000 and none in between. Within a workspace group, however,"]
+            #[doc = "workspaces must have unique coordinates of equal dimensionality."]
+            async fn coordinates(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                coordinates: Vec<u8>,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_workspace_handle_v1#{}.coordinates(array[{}])",
+                    object.id,
+                    coordinates.len()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_array(coordinates)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is emitted immediately after the ext_workspace_handle_v1 is"]
+            #[doc = "created and each time the workspace state changes, either because of a"]
+            #[doc = "compositor action or because of a request in this protocol."]
+            #[doc = ""]
+            #[doc = "Missing states convey the opposite meaning, e.g. an unset active bit"]
+            #[doc = "means the workspace is currently inactive."]
+            async fn state(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                state: State,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> ext_workspace_handle_v1#{}.state({})", object.id, state);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(state.bits())
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event advertises the capabilities supported by the compositor. If"]
+            #[doc = "a capability isn't supported, clients should hide or disable the UI"]
+            #[doc = "elements that expose this functionality. For instance, if the"]
+            #[doc = "compositor doesn't advertise support for removing workspaces, a button"]
+            #[doc = "triggering the remove request should not be displayed."]
+            #[doc = ""]
+            #[doc = "The compositor will ignore requests it doesn't support. For instance,"]
+            #[doc = "a compositor which doesn't advertise support for remove will ignore"]
+            #[doc = "remove requests."]
+            #[doc = ""]
+            #[doc = "Compositors must send this event once after creation of an"]
+            #[doc = "ext_workspace_handle_v1 . When the capabilities change, compositors"]
+            #[doc = "must send this event again."]
+            async fn capabilities(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                capabilities: WorkspaceCapabilities,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> ext_workspace_handle_v1#{}.capabilities({})",
+                    object.id,
+                    capabilities
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(capabilities.bits())
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is send when the workspace associated with the ext_workspace_handle_v1"]
+            #[doc = "has been removed. After sending this request, the compositor will immediately consider"]
+            #[doc = "the object inert. Any requests will be ignored except the destroy request."]
+            #[doc = ""]
+            #[doc = "It is guaranteed there won't be any more events referencing this"]
+            #[doc = "ext_workspace_handle_v1."]
+            #[doc = ""]
+            #[doc = "The compositor must only remove a workspaces not currently belonging to any"]
+            #[doc = "workspace_group."]
+            async fn removed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> ext_workspace_handle_v1#{}.removed()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
