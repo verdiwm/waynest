@@ -2,7 +2,7 @@ use anyhow::Result;
 use clap::Parser;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     fmt::Write as _,
     fs::OpenOptions,
     io::{stdout, Write as _},
@@ -26,7 +26,7 @@ fn main() -> Result<()> {
 
     let Args { json } = Args::parse();
 
-    let protocols_list: HashMap<String, Vec<String>> =
+    let protocols_list: HashMap<String, HashSet<String>> =
         serde_json::from_str(include_str!("protocols.json"))?;
 
     let mut protocols = Vec::new();

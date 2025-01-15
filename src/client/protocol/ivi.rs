@@ -1,137 +1,5 @@
 #![allow(async_fn_in_trait)]
 #[allow(clippy::module_inception)]
-pub mod ivi_application {
-    #[allow(clippy::too_many_arguments)]
-    pub mod ivi_surface {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
-        pub trait IviSurface {
-            const INTERFACE: &'static str = "ivi_surface";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "This removes the link from ivi_id to wl_surface and destroys ivi_surface."]
-            #[doc = "The ID, ivi_id, is free and can be used for surface_create again."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ivi_surface#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "The configure event asks the client to resize its surface."]
-            #[doc = ""]
-            #[doc = "The size is a hint, in the sense that the client is free to"]
-            #[doc = "ignore it if it doesn't resize, pick a smaller size (to"]
-            #[doc = "satisfy aspect ratio or resize in steps of NxM pixels)."]
-            #[doc = ""]
-            #[doc = "The client is free to dismiss all but the last configure"]
-            #[doc = "event it received."]
-            #[doc = ""]
-            #[doc = "The width and height arguments specify the size of the window"]
-            #[doc = "in surface local coordinates."]
-            async fn configure(&self, width: i32, height: i32) -> crate::client::Result<()>;
-        }
-    }
-    #[doc = "This interface is exposed as a global singleton."]
-    #[doc = "This interface is implemented by servers that provide IVI-style user interfaces."]
-    #[doc = "It allows clients to associate an ivi_surface with wl_surface."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod ivi_application {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "given wl_surface has another role"]
-            Role = 0u32,
-            #[doc = "given ivi_id is assigned to another wl_surface"]
-            IviId = 1u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Role),
-                    1u32 => Ok(Self::IviId),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
-        pub trait IviApplication {
-            const INTERFACE: &'static str = "ivi_application";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "This request gives the wl_surface the role of an IVI Surface. Creating more than"]
-            #[doc = "one ivi_surface for a wl_surface is not allowed. Note, that this still allows the"]
-            #[doc = "following example:"]
-            #[doc = ""]
-            #[doc = "1. create a wl_surface"]
-            #[doc = "2. create ivi_surface for the wl_surface"]
-            #[doc = "3. destroy the ivi_surface"]
-            #[doc = "4. create ivi_surface for the wl_surface (with the same or another ivi_id as before)"]
-            #[doc = ""]
-            #[doc = "surface_create will create an interface:ivi_surface with numeric ID; ivi_id in"]
-            #[doc = "ivi compositor. These ivi_ids are defined as unique in the system to identify"]
-            #[doc = "it inside of ivi compositor. The ivi compositor implements business logic how to"]
-            #[doc = "set properties of the surface with ivi_id according to the status of the system."]
-            #[doc = "E.g. a unique ID for Car Navigation application is used for implementing special"]
-            #[doc = "logic of the application about where it shall be located."]
-            #[doc = "The server regards the following cases as protocol errors and disconnects the client."]
-            #[doc = "- wl_surface already has another role."]
-            #[doc = "- ivi_id is already assigned to another wl_surface."]
-            #[doc = ""]
-            #[doc = "If client destroys ivi_surface or wl_surface which is assigne to the ivi_surface,"]
-            #[doc = "ivi_id which is assigned to the ivi_surface is free for reuse."]
-            async fn surface_create(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                ivi_id: u32,
-                surface: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ivi_application#{}.surface_create()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(ivi_id)
-                    .put_object(Some(surface))
-                    .put_object(Some(id))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
 pub mod ivi_input {
     #[doc = "This includes handling the existence of seats, seat capabilities,"]
     #[doc = "seat acceptance and input focus."]
@@ -1163,6 +1031,138 @@ pub mod ivi_wm {
                 layer_id: u32,
                 surface_id: u32,
             ) -> crate::client::Result<()>;
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod ivi_application {
+    #[allow(clippy::too_many_arguments)]
+    pub mod ivi_surface {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
+        pub trait IviSurface {
+            const INTERFACE: &'static str = "ivi_surface";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This removes the link from ivi_id to wl_surface and destroys ivi_surface."]
+            #[doc = "The ID, ivi_id, is free and can be used for surface_create again."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ivi_surface#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "The configure event asks the client to resize its surface."]
+            #[doc = ""]
+            #[doc = "The size is a hint, in the sense that the client is free to"]
+            #[doc = "ignore it if it doesn't resize, pick a smaller size (to"]
+            #[doc = "satisfy aspect ratio or resize in steps of NxM pixels)."]
+            #[doc = ""]
+            #[doc = "The client is free to dismiss all but the last configure"]
+            #[doc = "event it received."]
+            #[doc = ""]
+            #[doc = "The width and height arguments specify the size of the window"]
+            #[doc = "in surface local coordinates."]
+            async fn configure(&self, width: i32, height: i32) -> crate::client::Result<()>;
+        }
+    }
+    #[doc = "This interface is exposed as a global singleton."]
+    #[doc = "This interface is implemented by servers that provide IVI-style user interfaces."]
+    #[doc = "It allows clients to associate an ivi_surface with wl_surface."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ivi_application {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "given wl_surface has another role"]
+            Role = 0u32,
+            #[doc = "given ivi_id is assigned to another wl_surface"]
+            IviId = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Role),
+                    1u32 => Ok(Self::IviId),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
+        pub trait IviApplication {
+            const INTERFACE: &'static str = "ivi_application";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This request gives the wl_surface the role of an IVI Surface. Creating more than"]
+            #[doc = "one ivi_surface for a wl_surface is not allowed. Note, that this still allows the"]
+            #[doc = "following example:"]
+            #[doc = ""]
+            #[doc = "1. create a wl_surface"]
+            #[doc = "2. create ivi_surface for the wl_surface"]
+            #[doc = "3. destroy the ivi_surface"]
+            #[doc = "4. create ivi_surface for the wl_surface (with the same or another ivi_id as before)"]
+            #[doc = ""]
+            #[doc = "surface_create will create an interface:ivi_surface with numeric ID; ivi_id in"]
+            #[doc = "ivi compositor. These ivi_ids are defined as unique in the system to identify"]
+            #[doc = "it inside of ivi compositor. The ivi compositor implements business logic how to"]
+            #[doc = "set properties of the surface with ivi_id according to the status of the system."]
+            #[doc = "E.g. a unique ID for Car Navigation application is used for implementing special"]
+            #[doc = "logic of the application about where it shall be located."]
+            #[doc = "The server regards the following cases as protocol errors and disconnects the client."]
+            #[doc = "- wl_surface already has another role."]
+            #[doc = "- ivi_id is already assigned to another wl_surface."]
+            #[doc = ""]
+            #[doc = "If client destroys ivi_surface or wl_surface which is assigne to the ivi_surface,"]
+            #[doc = "ivi_id which is assigned to the ivi_surface is free for reuse."]
+            async fn surface_create(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                ivi_id: u32,
+                surface: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ivi_application#{}.surface_create()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(ivi_id)
+                    .put_object(Some(surface))
+                    .put_object(Some(id))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
         }
     }
 }
