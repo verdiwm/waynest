@@ -1,4 +1,131 @@
 #![allow(async_fn_in_trait)]
+#[doc = "This protocol allows a client to control outputs' color transform matrix (CTM)."]
+#[doc = ""]
+#[doc = "This protocol is privileged and should not be exposed to unprivileged clients."]
+#[allow(clippy::module_inception)]
+pub mod hyprland_ctm_control_v1 {
+    #[doc = "This object is a manager which offers requests to control CTMs."]
+    #[doc = ""]
+    #[doc = "If any changes are done, once this object is destroyed, CTMs are reset back to"]
+    #[doc = "an identity matrix."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod hyprland_ctm_control_manager_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the matrix values are invalid."]
+            InvalidMatrix = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidMatrix),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the hyprland_ctm_control_manager_v1 interface. See the module level documentation for more info"]
+        pub trait HyprlandCtmControlManagerV1 {
+            const INTERFACE: &'static str = "hyprland_ctm_control_manager_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Set a CTM for a wl_output."]
+            #[doc = ""]
+            #[doc = "This state is not applied immediately; clients must call .commit to"]
+            #[doc = "apply any pending changes."]
+            #[doc = ""]
+            #[doc = "The provided values describe a 3x3 Row-Major CTM with values in the range of [0, ∞)"]
+            #[doc = ""]
+            #[doc = "Passing values outside of the range will raise an invalid_matrix error."]
+            #[doc = ""]
+            #[doc = "The default value of the CTM is an identity matrix."]
+            #[doc = ""]
+            #[doc = "If an output doesn't get a CTM set with set_ctm_for_output and commit is called,"]
+            #[doc = "that output will get its CTM reset to an identity matrix."]
+            async fn set_ctm_for_output(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
+                mat0: crate::wire::Fixed,
+                mat1: crate::wire::Fixed,
+                mat2: crate::wire::Fixed,
+                mat3: crate::wire::Fixed,
+                mat4: crate::wire::Fixed,
+                mat5: crate::wire::Fixed,
+                mat6: crate::wire::Fixed,
+                mat7: crate::wire::Fixed,
+                mat8: crate::wire::Fixed,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> hyprland_ctm_control_manager_v1#{}.set_ctm_for_output()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .put_fixed(mat0)
+                    .put_fixed(mat1)
+                    .put_fixed(mat2)
+                    .put_fixed(mat3)
+                    .put_fixed(mat4)
+                    .put_fixed(mat5)
+                    .put_fixed(mat6)
+                    .put_fixed(mat7)
+                    .put_fixed(mat8)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Commits the pending state(s) set by set_ctm_for_output."]
+            async fn commit(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> hyprland_ctm_control_manager_v1#{}.commit()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "All objects created by the manager will still remain valid, until their"]
+            #[doc = "appropriate destroy request has been called."]
+            #[doc = ""]
+            #[doc = "The CTMs of all outputs will be reset to an identity matrix."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> hyprland_ctm_control_manager_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
 #[doc = "This protocol allows clients to limit input focus to a specific set"]
 #[doc = "of surfaces and receive a notification when the limiter is removed as"]
 #[doc = "detailed below."]
@@ -165,30 +292,26 @@ pub mod hyprland_focus_grab_v1 {
         }
     }
 }
-#[doc = "This protocol allows a client to control outputs' color transform matrix (CTM)."]
-#[doc = ""]
-#[doc = "This protocol is privileged and should not be exposed to unprivileged clients."]
+#[doc = "This protocol allows a client to register triggerable actions,"]
+#[doc = "meant to be global shortcuts."]
 #[allow(clippy::module_inception)]
-pub mod hyprland_ctm_control_v1 {
-    #[doc = "This object is a manager which offers requests to control CTMs."]
-    #[doc = ""]
-    #[doc = "If any changes are done, once this object is destroyed, CTMs are reset back to"]
-    #[doc = "an identity matrix."]
+pub mod hyprland_global_shortcuts_v1 {
+    #[doc = "This object is a manager which offers requests to create global shortcuts."]
     #[allow(clippy::too_many_arguments)]
-    pub mod hyprland_ctm_control_manager_v1 {
+    pub mod hyprland_global_shortcuts_manager_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            #[doc = "the matrix values are invalid."]
-            InvalidMatrix = 0u32,
+            #[doc = "the app_id + id combination has already been registered."]
+            AlreadyTaken = 0u32,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::InvalidMatrix),
+                    0u32 => Ok(Self::AlreadyTaken),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -198,9 +321,9 @@ pub mod hyprland_ctm_control_v1 {
                 (*self as u32).fmt(f)
             }
         }
-        #[doc = "Trait to implement the hyprland_ctm_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandCtmControlManagerV1 {
-            const INTERFACE: &'static str = "hyprland_ctm_control_manager_v1";
+        #[doc = "Trait to implement the hyprland_global_shortcuts_manager_v1 interface. See the module level documentation for more info"]
+        pub trait HyprlandGlobalShortcutsManagerV1 {
+            const INTERFACE: &'static str = "hyprland_global_shortcuts_manager_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
@@ -211,84 +334,106 @@ pub mod hyprland_ctm_control_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
-            #[doc = "Set a CTM for a wl_output."]
+            #[doc = "Register a new global shortcut."]
             #[doc = ""]
-            #[doc = "This state is not applied immediately; clients must call .commit to"]
-            #[doc = "apply any pending changes."]
+            #[doc = "A global shortcut is anonymous, meaning the app does not know what key(s) trigger it."]
             #[doc = ""]
-            #[doc = "The provided values describe a 3x3 Row-Major CTM with values in the range of [0, ∞)"]
+            #[doc = "The shortcut's keybinding shall be dealt with by the compositor."]
             #[doc = ""]
-            #[doc = "Passing values outside of the range will raise an invalid_matrix error."]
-            #[doc = ""]
-            #[doc = "The default value of the CTM is an identity matrix."]
-            #[doc = ""]
-            #[doc = "If an output doesn't get a CTM set with set_ctm_for_output and commit is called,"]
-            #[doc = "that output will get its CTM reset to an identity matrix."]
-            async fn set_ctm_for_output(
+            #[doc = "In the case of a duplicate app_id + id combination, the already_taken protocol error is raised."]
+            async fn register_shortcut(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
-                mat0: crate::wire::Fixed,
-                mat1: crate::wire::Fixed,
-                mat2: crate::wire::Fixed,
-                mat3: crate::wire::Fixed,
-                mat4: crate::wire::Fixed,
-                mat5: crate::wire::Fixed,
-                mat6: crate::wire::Fixed,
-                mat7: crate::wire::Fixed,
-                mat8: crate::wire::Fixed,
+                shortcut: crate::wire::ObjectId,
+                id: String,
+                app_id: String,
+                description: String,
+                trigger_description: String,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
-                    "-> hyprland_ctm_control_manager_v1#{}.set_ctm_for_output()",
+                    "-> hyprland_global_shortcuts_manager_v1#{}.register_shortcut()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(output))
-                    .put_fixed(mat0)
-                    .put_fixed(mat1)
-                    .put_fixed(mat2)
-                    .put_fixed(mat3)
-                    .put_fixed(mat4)
-                    .put_fixed(mat5)
-                    .put_fixed(mat6)
-                    .put_fixed(mat7)
-                    .put_fixed(mat8)
+                    .put_object(Some(shortcut))
+                    .put_string(Some(id))
+                    .put_string(Some(app_id))
+                    .put_string(Some(description))
+                    .put_string(Some(trigger_description))
                     .build();
                 socket
                     .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
-            #[doc = "Commits the pending state(s) set by set_ctm_for_output."]
-            async fn commit(
+            #[doc = "All objects created by the manager will still remain valid, until their"]
+            #[doc = "appropriate destroy request has been called."]
+            async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> hyprland_ctm_control_manager_v1#{}.commit()", object_id);
+                tracing::debug!(
+                    "-> hyprland_global_shortcuts_manager_v1#{}.destroy()",
+                    object_id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
                     .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
-            #[doc = "All objects created by the manager will still remain valid, until their"]
-            #[doc = "appropriate destroy request has been called."]
-            #[doc = ""]
-            #[doc = "The CTMs of all outputs will be reset to an identity matrix."]
+        }
+    }
+    #[doc = "This object represents a single shortcut."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod hyprland_global_shortcut_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the hyprland_global_shortcut_v1 interface. See the module level documentation for more info"]
+        pub trait HyprlandGlobalShortcutV1 {
+            const INTERFACE: &'static str = "hyprland_global_shortcut_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroys the shortcut. Can be sent at any time by the client."]
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> hyprland_ctm_control_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> hyprland_global_shortcut_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "The keystroke was pressed."]
+            #[doc = ""]
+            #[doc = "tv_ values hold the timestamp of the occurrence."]
+            async fn pressed(
+                &self,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "The keystroke was released."]
+            #[doc = ""]
+            #[doc = "tv_ values hold the timestamp of the occurrence."]
+            async fn released(
+                &self,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -563,151 +708,6 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = "The client should proceed to create a buffer of one of the supported"]
             #[doc = "types, and send a \"copy\" request."]
             async fn buffer_done(&self) -> crate::client::Result<()>;
-        }
-    }
-}
-#[doc = "This protocol allows a client to register triggerable actions,"]
-#[doc = "meant to be global shortcuts."]
-#[allow(clippy::module_inception)]
-pub mod hyprland_global_shortcuts_v1 {
-    #[doc = "This object is a manager which offers requests to create global shortcuts."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod hyprland_global_shortcuts_manager_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "the app_id + id combination has already been registered."]
-            AlreadyTaken = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::AlreadyTaken),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the hyprland_global_shortcuts_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandGlobalShortcutsManagerV1 {
-            const INTERFACE: &'static str = "hyprland_global_shortcuts_manager_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Register a new global shortcut."]
-            #[doc = ""]
-            #[doc = "A global shortcut is anonymous, meaning the app does not know what key(s) trigger it."]
-            #[doc = ""]
-            #[doc = "The shortcut's keybinding shall be dealt with by the compositor."]
-            #[doc = ""]
-            #[doc = "In the case of a duplicate app_id + id combination, the already_taken protocol error is raised."]
-            async fn register_shortcut(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                shortcut: crate::wire::ObjectId,
-                id: String,
-                app_id: String,
-                description: String,
-                trigger_description: String,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> hyprland_global_shortcuts_manager_v1#{}.register_shortcut()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(shortcut))
-                    .put_string(Some(id))
-                    .put_string(Some(app_id))
-                    .put_string(Some(description))
-                    .put_string(Some(trigger_description))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "All objects created by the manager will still remain valid, until their"]
-            #[doc = "appropriate destroy request has been called."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> hyprland_global_shortcuts_manager_v1#{}.destroy()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-    #[doc = "This object represents a single shortcut."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod hyprland_global_shortcut_v1 {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the hyprland_global_shortcut_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandGlobalShortcutV1 {
-            const INTERFACE: &'static str = "hyprland_global_shortcut_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroys the shortcut. Can be sent at any time by the client."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> hyprland_global_shortcut_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "The keystroke was pressed."]
-            #[doc = ""]
-            #[doc = "tv_ values hold the timestamp of the occurrence."]
-            async fn pressed(
-                &self,
-                tv_sec_hi: u32,
-                tv_sec_lo: u32,
-                tv_nsec: u32,
-            ) -> crate::client::Result<()>;
-            #[doc = "The keystroke was released."]
-            #[doc = ""]
-            #[doc = "tv_ values hold the timestamp of the occurrence."]
-            async fn released(
-                &self,
-                tv_sec_hi: u32,
-                tv_sec_lo: u32,
-                tv_nsec: u32,
-            ) -> crate::client::Result<()>;
         }
     }
 }
