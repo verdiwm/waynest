@@ -476,6 +476,457 @@ pub mod contrast {
     }
 }
 #[allow(clippy::module_inception)]
+pub mod dpms {
+    #[doc = "The Dpms manager allows to get a org_kde_kwin_dpms for a given wl_output."]
+    #[doc = "The org_kde_kwin_dpms provides the currently used VESA Display Power Management"]
+    #[doc = "Signaling state (see https://en.wikipedia.org/wiki/VESA_Display_Power_Management_Signaling )."]
+    #[doc = "In addition it allows to request a state change. A compositor is not obliged to honor it"]
+    #[doc = "and will normally automatically switch back to on state."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_kwin_dpms_manager {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the org_kde_kwin_dpms_manager interface. See the module level documentation for more info"]
+        pub trait OrgKdeKwinDpmsManager: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "org_kde_kwin_dpms_manager";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_dpms_manager#{}.get({}, {})",
+                            object.id,
+                            id,
+                            output
+                        );
+                        self.get(object, client, id, output).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Factory request to get the org_kde_kwin_dpms for a given wl_output."]
+            async fn get(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+        }
+    }
+    #[doc = "This interface provides information about the VESA DPMS state for a wl_output."]
+    #[doc = "It gets created through the request get on the org_kde_kwin_dpms_manager interface."]
+    #[doc = ""]
+    #[doc = "On creating the resource the server will push whether DPSM is supported for the output,"]
+    #[doc = "the currently used DPMS state and notifies the client through the done event once all"]
+    #[doc = "states are pushed. Whenever a state changes the set of changes is committed with the"]
+    #[doc = "done event."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_kwin_dpms {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Mode {
+            On = 0u32,
+            Standby = 1u32,
+            Suspend = 2u32,
+            Off = 3u32,
+        }
+        impl TryFrom<u32> for Mode {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::On),
+                    1u32 => Ok(Self::Standby),
+                    2u32 => Ok(Self::Suspend),
+                    3u32 => Ok(Self::Off),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Mode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the org_kde_kwin_dpms interface. See the module level documentation for more info"]
+        pub trait OrgKdeKwinDpms: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "org_kde_kwin_dpms";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let mode = message.uint()?;
+                        tracing::debug!("org_kde_kwin_dpms#{}.set({})", object.id, mode);
+                        self.set(object, client, mode).await
+                    }
+                    1u16 => {
+                        tracing::debug!("org_kde_kwin_dpms#{}.release()", object.id,);
+                        self.release(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Requests that the compositor puts the wl_output into the passed mode. The compositor"]
+            #[doc = "is not obliged to change the state. In addition the compositor might leave the mode"]
+            #[doc = "whenever it seems suitable. E.g. the compositor might return to On state on user input."]
+            #[doc = ""]
+            #[doc = "The client should not assume that the mode changed after requesting a new mode."]
+            #[doc = "Instead the client should listen for the mode event."]
+            async fn set(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                mode: u32,
+            ) -> crate::server::Result<()>;
+            async fn release(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "This event gets pushed on binding the resource and indicates whether the wl_output"]
+            #[doc = "supports DPMS. There are operation modes of a Wayland server where DPMS might not"]
+            #[doc = "make sense (e.g. nested compositors)."]
+            async fn supported(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                supported: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_kwin_dpms#{}.supported({})",
+                    object.id,
+                    supported
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(supported)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This mode gets pushed on binding the resource and provides the currently used"]
+            #[doc = "DPMS mode. It also gets pushed if DPMS is not supported for the wl_output, in that"]
+            #[doc = "case the value will be On."]
+            #[doc = ""]
+            #[doc = "The event is also pushed whenever the state changes."]
+            async fn mode(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                mode: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> org_kde_kwin_dpms#{}.mode({})", object.id, mode);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(mode).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event gets pushed on binding the resource once all other states are pushed."]
+            #[doc = ""]
+            #[doc = "In addition it gets pushed whenever a state changes to tell the client that all"]
+            #[doc = "state changes have been pushed."]
+            async fn done(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> org_kde_kwin_dpms#{}.done()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod fake_input {
+    #[doc = "This interface allows other processes to provide fake input events."]
+    #[doc = "Purpose is on the one hand side to provide testing facilities like XTest on X11."]
+    #[doc = "But also to support use case like kdeconnect's mouse pad interface."]
+    #[doc = ""]
+    #[doc = "A compositor should not trust the input received from this interface."]
+    #[doc = "Clients should not expect that the compositor honors the requests from this"]
+    #[doc = "interface."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_kwin_fake_input {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the org_kde_kwin_fake_input interface. See the module level documentation for more info"]
+        pub trait OrgKdeKwinFakeInput: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "org_kde_kwin_fake_input";
+            const VERSION: u32 = 5u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let application = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let reason = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_fake_input#{}.authenticate(\"{}\", \"{}\")",
+                            object.id,
+                            application,
+                            reason
+                        );
+                        self.authenticate(object, client, application, reason).await
+                    }
+                    1u16 => {
+                        let delta_x = message.fixed()?;
+                        let delta_y = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_fake_input#{}.pointer_motion({}, {})",
+                            object.id,
+                            delta_x,
+                            delta_y
+                        );
+                        self.pointer_motion(object, client, delta_x, delta_y).await
+                    }
+                    2u16 => {
+                        let button = message.uint()?;
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_kwin_fake_input#{}.button({}, {})",
+                            object.id,
+                            button,
+                            state
+                        );
+                        self.button(object, client, button, state).await
+                    }
+                    3u16 => {
+                        let axis = message.uint()?;
+                        let value = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_fake_input#{}.axis({}, {})",
+                            object.id,
+                            axis,
+                            value
+                        );
+                        self.axis(object, client, axis, value).await
+                    }
+                    4u16 => {
+                        let id = message.uint()?;
+                        let x = message.fixed()?;
+                        let y = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_fake_input#{}.touch_down({}, {}, {})",
+                            object.id,
+                            id,
+                            x,
+                            y
+                        );
+                        self.touch_down(object, client, id, x, y).await
+                    }
+                    5u16 => {
+                        let id = message.uint()?;
+                        let x = message.fixed()?;
+                        let y = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_fake_input#{}.touch_motion({}, {}, {})",
+                            object.id,
+                            id,
+                            x,
+                            y
+                        );
+                        self.touch_motion(object, client, id, x, y).await
+                    }
+                    6u16 => {
+                        let id = message.uint()?;
+                        tracing::debug!("org_kde_kwin_fake_input#{}.touch_up({})", object.id, id);
+                        self.touch_up(object, client, id).await
+                    }
+                    7u16 => {
+                        tracing::debug!("org_kde_kwin_fake_input#{}.touch_cancel()", object.id,);
+                        self.touch_cancel(object, client).await
+                    }
+                    8u16 => {
+                        tracing::debug!("org_kde_kwin_fake_input#{}.touch_frame()", object.id,);
+                        self.touch_frame(object, client).await
+                    }
+                    9u16 => {
+                        let x = message.fixed()?;
+                        let y = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_fake_input#{}.pointer_motion_absolute({}, {})",
+                            object.id,
+                            x,
+                            y
+                        );
+                        self.pointer_motion_absolute(object, client, x, y).await
+                    }
+                    10u16 => {
+                        let button = message.uint()?;
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_kwin_fake_input#{}.keyboard_key({}, {})",
+                            object.id,
+                            button,
+                            state
+                        );
+                        self.keyboard_key(object, client, button, state).await
+                    }
+                    11u16 => {
+                        tracing::debug!("org_kde_kwin_fake_input#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "A client should use this request to tell the compositor why it wants to"]
+            #[doc = "use this interface. The compositor might use the information to decide"]
+            #[doc = "whether it wants to grant the request. The data might also be passed to"]
+            #[doc = "the user to decide whether the application should get granted access to"]
+            #[doc = "this very privileged interface."]
+            async fn authenticate(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                application: String,
+                reason: String,
+            ) -> crate::server::Result<()>;
+            async fn pointer_motion(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                delta_x: crate::wire::Fixed,
+                delta_y: crate::wire::Fixed,
+            ) -> crate::server::Result<()>;
+            async fn button(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                button: u32,
+                state: u32,
+            ) -> crate::server::Result<()>;
+            async fn axis(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                axis: u32,
+                value: crate::wire::Fixed,
+            ) -> crate::server::Result<()>;
+            #[doc = "A client should use this request to send touch down event at specific"]
+            #[doc = "coordinates."]
+            async fn touch_down(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: u32,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
+            ) -> crate::server::Result<()>;
+            #[doc = "A client should use this request to send touch motion to specific position."]
+            async fn touch_motion(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: u32,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
+            ) -> crate::server::Result<()>;
+            #[doc = "A client should use this request to send touch up event."]
+            async fn touch_up(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "A client should use this request to cancel the current"]
+            #[doc = "touch event."]
+            async fn touch_cancel(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "A client should use this request to send touch frame event."]
+            async fn touch_frame(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            async fn pointer_motion_absolute(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
+            ) -> crate::server::Result<()>;
+            async fn keyboard_key(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                button: u32,
+                state: u32,
+            ) -> crate::server::Result<()>;
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+        }
+    }
+}
+#[allow(clippy::module_inception)]
 pub mod fullscreen_shell {
     #[doc = "Displays a single surface per output."]
     #[doc = ""]
@@ -1012,6 +1463,2487 @@ pub mod idle {
     }
 }
 #[allow(clippy::module_inception)]
+pub mod kde_external_brightness_v1 {
+    #[doc = "Some brightness control mechanisms are somewhat unstable, or require root"]
+    #[doc = "privileges, so putting them inside of the compositor is not desired."]
+    #[doc = "This protocol is for outsourcing the actual brightness-setting to a"]
+    #[doc = "process outside of the compositor."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_external_brightness_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the kde_external_brightness_v1 interface. See the module level documentation for more info"]
+        pub trait KdeExternalBrightnessV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "kde_external_brightness_v1";
+            const VERSION: u32 = 2u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("kde_external_brightness_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_external_brightness_v1#{}.create_brightness_control({})",
+                            object.id,
+                            id
+                        );
+                        self.create_brightness_control(object, client, id).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            async fn create_brightness_control(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+        }
+    }
+    #[doc = "After creating this object, the client should issue all relevant setup requests"]
+    #[doc = "(set_internal, set_edid, set_max_brightness, optionally set_observed_brightness)"]
+    #[doc = "and finish the sequence with commit."]
+    #[doc = "Afterwards, for each change in values, the client must call commit again."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_external_brightness_device_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the kde_external_brightness_device_v1 interface. See the module level documentation for more info"]
+        pub trait KdeExternalBrightnessDeviceV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "kde_external_brightness_device_v1";
+            const VERSION: u32 = 2u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!(
+                            "kde_external_brightness_device_v1#{}.destroy()",
+                            object.id,
+                        );
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        let internal = message.uint()?;
+                        tracing::debug!(
+                            "kde_external_brightness_device_v1#{}.set_internal({})",
+                            object.id,
+                            internal
+                        );
+                        self.set_internal(object, client, internal).await
+                    }
+                    2u16 => {
+                        let string = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_external_brightness_device_v1#{}.set_edid(\"{}\")",
+                            object.id,
+                            string
+                        );
+                        self.set_edid(object, client, string).await
+                    }
+                    3u16 => {
+                        let value = message.uint()?;
+                        tracing::debug!(
+                            "kde_external_brightness_device_v1#{}.set_max_brightness({})",
+                            object.id,
+                            value
+                        );
+                        self.set_max_brightness(object, client, value).await
+                    }
+                    4u16 => {
+                        tracing::debug!("kde_external_brightness_device_v1#{}.commit()", object.id,);
+                        self.commit(object, client).await
+                    }
+                    5u16 => {
+                        let value = message.uint()?;
+                        tracing::debug!(
+                            "kde_external_brightness_device_v1#{}.set_observed_brightness({})",
+                            object.id,
+                            value
+                        );
+                        self.set_observed_brightness(object, client, value).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            async fn set_internal(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                internal: u32,
+            ) -> crate::server::Result<()>;
+            async fn set_edid(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                string: String,
+            ) -> crate::server::Result<()>;
+            async fn set_max_brightness(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                value: u32,
+            ) -> crate::server::Result<()>;
+            async fn commit(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "The client can set this to notify the compositor of the device's initial brightness."]
+            #[doc = "It can also set this again after the initial commit to notify the compositor that"]
+            #[doc = "the brightness level has changed due to external factors."]
+            #[doc = "The compositor is free to use or ignore this value as it sees fit."]
+            async fn set_observed_brightness(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                value: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "The client must ensure that if the brightness level changes due to external factors,"]
+            #[doc = "that it either overwrites those changes with what the compositor last requested,"]
+            #[doc = "or commit again with set_observed_brightness specifying the changed brightness."]
+            async fn requested_brightness(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                value: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_external_brightness_device_v1#{}.requested_brightness({})",
+                    object.id,
+                    value
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(value).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod kde_lockscreen_overlay_v1 {
+    #[doc = "Allows a client to request a surface to be visible when the system is locked."]
+    #[doc = ""]
+    #[doc = "This is meant to be used for specific high urgency cases like phone calls or alarms."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_lockscreen_overlay_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the client provided an invalid surface state"]
+            InvalidSurfaceState = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidSurfaceState),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the kde_lockscreen_overlay_v1 interface. See the module level documentation for more info"]
+        pub trait KdeLockscreenOverlayV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "kde_lockscreen_overlay_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_lockscreen_overlay_v1#{}.allow({})",
+                            object.id,
+                            surface
+                        );
+                        self.allow(object, client, surface).await
+                    }
+                    1u16 => {
+                        tracing::debug!("kde_lockscreen_overlay_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Informs the compositor that the surface could be shown when the screen is locked. This request should be called while the surface is unmapped."]
+            async fn allow(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                surface: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "This won't affect the surface previously marked with the allow request."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod kde_output_device_v2 {
+    #[doc = "An output device describes a display device available to the compositor."]
+    #[doc = "output_device is similar to wl_output, but focuses on output"]
+    #[doc = "configuration management."]
+    #[doc = ""]
+    #[doc = "A client can query all global output_device objects to enlist all"]
+    #[doc = "available display devices, even those that may currently not be"]
+    #[doc = "represented by the compositor as a wl_output."]
+    #[doc = ""]
+    #[doc = "The client sends configuration changes to the server through the"]
+    #[doc = "outputconfiguration interface, and the server applies the configuration"]
+    #[doc = "changes to the hardware and signals changes to the output devices"]
+    #[doc = "accordingly."]
+    #[doc = ""]
+    #[doc = "This object is published as global during start up for every available"]
+    #[doc = "display devices, or when one later becomes available, for example by"]
+    #[doc = "being hotplugged via a physical connector."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_output_device_v2 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "This enumeration describes how the physical pixels on an output are"]
+        #[doc = "laid out."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Subpixel {
+            Unknown = 0u32,
+            None = 1u32,
+            HorizontalRgb = 2u32,
+            HorizontalBgr = 3u32,
+            VerticalRgb = 4u32,
+            VerticalBgr = 5u32,
+        }
+        impl TryFrom<u32> for Subpixel {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Unknown),
+                    1u32 => Ok(Self::None),
+                    2u32 => Ok(Self::HorizontalRgb),
+                    3u32 => Ok(Self::HorizontalBgr),
+                    4u32 => Ok(Self::VerticalRgb),
+                    5u32 => Ok(Self::VerticalBgr),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Subpixel {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "This describes the transform, that a compositor will apply to a"]
+        #[doc = "surface to compensate for the rotation or mirroring of an"]
+        #[doc = "output device."]
+        #[doc = ""]
+        #[doc = "The flipped values correspond to an initial flip around a"]
+        #[doc = "vertical axis followed by rotation."]
+        #[doc = ""]
+        #[doc = "The purpose is mainly to allow clients to render accordingly and"]
+        #[doc = "tell the compositor, so that for fullscreen surfaces, the"]
+        #[doc = "compositor is still able to scan out directly client surfaces."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Transform {
+            Normal = 0u32,
+            _90 = 1u32,
+            _180 = 2u32,
+            _270 = 3u32,
+            Flipped = 4u32,
+            Flipped90 = 5u32,
+            Flipped180 = 6u32,
+            Flipped270 = 7u32,
+        }
+        impl TryFrom<u32> for Transform {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Normal),
+                    1u32 => Ok(Self::_90),
+                    2u32 => Ok(Self::_180),
+                    3u32 => Ok(Self::_270),
+                    4u32 => Ok(Self::Flipped),
+                    5u32 => Ok(Self::Flipped90),
+                    6u32 => Ok(Self::Flipped180),
+                    7u32 => Ok(Self::Flipped270),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Transform {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this output_device can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; # [doc = "if setting the rgb range is possible"] const RgbRange = 4u32 ; # [doc = "if this outputdevice supports high dynamic range"] const HighDynamicRange = 8u32 ; # [doc = "if this outputdevice supports a wide color gamut"] const WideColorGamut = 16u32 ; # [doc = "if this outputdevice supports autorotation"] const AutoRotate = 32u32 ; # [doc = "if this outputdevice supports icc profiles"] const IccProfile = 64u32 ; # [doc = "if this outputdevice supports the brightness setting"] const Brightness = 128u32 ; } }
+        impl TryFrom<u32> for Capability {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[doc = "Describes when the compositor may employ variable refresh rate"]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum VrrPolicy {
+            Never = 0u32,
+            Always = 1u32,
+            Automatic = 2u32,
+        }
+        impl TryFrom<u32> for VrrPolicy {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::Always),
+                    2u32 => Ok(Self::Automatic),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for VrrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Whether full or limited color range should be used"]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum RgbRange {
+            Automatic = 0u32,
+            Full = 1u32,
+            Limited = 2u32,
+        }
+        impl TryFrom<u32> for RgbRange {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Automatic),
+                    1u32 => Ok(Self::Full),
+                    2u32 => Ok(Self::Limited),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for RgbRange {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum AutoRotatePolicy {
+            Never = 0u32,
+            InTabletMode = 1u32,
+            Always = 2u32,
+        }
+        impl TryFrom<u32> for AutoRotatePolicy {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::InTabletMode),
+                    2u32 => Ok(Self::Always),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for AutoRotatePolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ColorProfileSource {
+            SRgb = 0u32,
+            Icc = 1u32,
+            Edid = 2u32,
+        }
+        impl TryFrom<u32> for ColorProfileSource {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::SRgb),
+                    1u32 => Ok(Self::Icc),
+                    2u32 => Ok(Self::Edid),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ColorProfileSource {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "The compositor can do a lot of things that trade between"]
+        #[doc = "performance, power and color accuracy. This setting describes"]
+        #[doc = "a high level preference from the user about in which direction"]
+        #[doc = "that tradeoff should be made."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ColorPowerTradeoff {
+            #[doc = "prefer efficiency and performance"]
+            Efficiency = 0u32,
+            #[doc = "prefer accuracy"]
+            Accuracy = 1u32,
+        }
+        impl TryFrom<u32> for ColorPowerTradeoff {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Efficiency),
+                    1u32 => Ok(Self::Accuracy),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ColorPowerTradeoff {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the kde_output_device_v2 interface. See the module level documentation for more info"]
+        pub trait KdeOutputDeviceV2: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "kde_output_device_v2";
+            const VERSION: u32 = 11u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "The geometry event describes geometric properties of the output."]
+            #[doc = "The event is sent when binding to the output object and whenever"]
+            #[doc = "any of the properties change."]
+            async fn geometry(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                physical_width: i32,
+                physical_height: i32,
+                subpixel: i32,
+                make: String,
+                model: String,
+                transform: i32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
+                    object.id,
+                    x,
+                    y,
+                    physical_width,
+                    physical_height,
+                    subpixel,
+                    make,
+                    model,
+                    transform
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .put_int(physical_width)
+                    .put_int(physical_height)
+                    .put_int(subpixel)
+                    .put_string(Some(make))
+                    .put_string(Some(model))
+                    .put_int(transform)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event describes the mode currently in use for this head. It is only"]
+            #[doc = "sent if the output is enabled."]
+            async fn current_mode(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                mode: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.current_mode({})",
+                    object.id,
+                    mode
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(mode))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "The mode event describes an available mode for the output."]
+            #[doc = ""]
+            #[doc = "When the client binds to the output_device object, the server sends this"]
+            #[doc = "event once for every available mode the output_device can be operated by."]
+            #[doc = ""]
+            #[doc = "There will always be at least one event sent out on initial binding,"]
+            #[doc = "which represents the current mode."]
+            #[doc = ""]
+            #[doc = "Later if an output changes, its mode event is sent again for the"]
+            #[doc = "eventual added modes and lastly the current mode. In other words, the"]
+            #[doc = "current mode is always represented by the latest event sent with the current"]
+            #[doc = "flag set."]
+            #[doc = ""]
+            #[doc = "The size of a mode is given in physical hardware units of the output device."]
+            #[doc = "This is not necessarily the same as the output size in the global compositor"]
+            #[doc = "space. For instance, the output may be scaled, as described in"]
+            #[doc = "kde_output_device_v2.scale, or transformed, as described in"]
+            #[doc = "kde_output_device_v2.transform."]
+            async fn mode(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                mode: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> kde_output_device_v2#{}.mode({})", object.id, mode);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(mode))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is sent after all other properties have been"]
+            #[doc = "sent on binding to the output object as well as after any"]
+            #[doc = "other output property change have been applied later on."]
+            #[doc = "This allows to see changes to the output properties as atomic,"]
+            #[doc = "even if multiple events successively announce them."]
+            async fn done(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> kde_output_device_v2#{}.done()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event contains scaling geometry information"]
+            #[doc = "that is not in the geometry event. It may be sent after"]
+            #[doc = "binding the output object or if the output scale changes"]
+            #[doc = "later. If it is not sent, the client should assume a"]
+            #[doc = "scale of 1."]
+            #[doc = ""]
+            #[doc = "A scale larger than 1 means that the compositor will"]
+            #[doc = "automatically scale surface buffers by this amount"]
+            #[doc = "when rendering. This is used for high resolution"]
+            #[doc = "displays where applications rendering at the native"]
+            #[doc = "resolution would be too small to be legible."]
+            #[doc = ""]
+            #[doc = "It is intended that scaling aware clients track the"]
+            #[doc = "current output of a surface, and if it is on a scaled"]
+            #[doc = "output it should use wl_surface.set_buffer_scale with"]
+            #[doc = "the scale of the output. That way the compositor can"]
+            #[doc = "avoid scaling the surface, and the client can supply"]
+            #[doc = "a higher detail image."]
+            async fn scale(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                factor: crate::wire::Fixed,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> kde_output_device_v2#{}.scale({})", object.id, factor);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_fixed(factor).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "The edid event encapsulates the EDID data for the outputdevice."]
+            #[doc = ""]
+            #[doc = "The event is sent when binding to the output object. The EDID"]
+            #[doc = "data may be empty, in which case this event is sent anyway."]
+            #[doc = "If the EDID information is empty, you can fall back to the name"]
+            #[doc = "et al. properties of the outputdevice."]
+            async fn edid(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                raw: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> kde_output_device_v2#{}.edid(\"{}\")", object.id, raw);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(raw))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "The enabled event notifies whether this output is currently"]
+            #[doc = "enabled and used for displaying content by the server."]
+            #[doc = "The event is sent when binding to the output object and"]
+            #[doc = "whenever later on an output changes its state by becoming"]
+            #[doc = "enabled or disabled."]
+            async fn enabled(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                enabled: i32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> kde_output_device_v2#{}.enabled({})", object.id, enabled);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(enabled).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "The uuid can be used to identify the output. It's controlled by"]
+            #[doc = "the server entirely. The server should make sure the uuid is"]
+            #[doc = "persistent across restarts. An empty uuid is considered invalid."]
+            async fn uuid(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                uuid: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> kde_output_device_v2#{}.uuid(\"{}\")", object.id, uuid);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(uuid))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
+            async fn serial_number(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                serial_number: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.serial_number(\"{}\")",
+                    object.id,
+                    serial_number
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(serial_number))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
+            async fn eisa_id(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                eisa_id: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.eisa_id(\"{}\")",
+                    object.id,
+                    eisa_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(eisa_id))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 9u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "What capabilities this device has, sent on startup before the first"]
+            #[doc = "done event."]
+            async fn capabilities(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                flags: Capability,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.capabilities({})",
+                    object.id,
+                    flags
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(flags.bits())
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 10u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "Overscan value of the monitor in percent, sent on startup before the"]
+            #[doc = "first done event."]
+            async fn overscan(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                overscan: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.overscan({})",
+                    object.id,
+                    overscan
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(overscan)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 11u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "What policy the compositor will employ regarding its use of variable"]
+            #[doc = "refresh rate."]
+            async fn vrr_policy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                vrr_policy: VrrPolicy,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.vrr_policy({})",
+                    object.id,
+                    vrr_policy
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(vrr_policy as u32)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 12u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "What rgb range the compositor is using for this output"]
+            async fn rgb_range(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                rgb_range: RgbRange,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.rgb_range({})",
+                    object.id,
+                    rgb_range
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(rgb_range as u32)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 13u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "Name of the output, it's useful to cross-reference to an zxdg_output_v1 and ultimately QScreen"]
+            async fn name(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                name: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> kde_output_device_v2#{}.name(\"{}\")", object.id, name);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 14u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "Whether or not high dynamic range is enabled for this output"]
+            async fn high_dynamic_range(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                hdr_enabled: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.high_dynamic_range({})",
+                    object.id,
+                    hdr_enabled
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(hdr_enabled)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 15u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "If high dynamic range is used, this value defines the brightness in nits for content"]
+            #[doc = "that's in standard dynamic range format. Note that while the value is in nits, that"]
+            #[doc = "doesn't necessarily translate to the same brightness on the screen."]
+            async fn sdr_brightness(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                sdr_brightness: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.sdr_brightness({})",
+                    object.id,
+                    sdr_brightness
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(sdr_brightness)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 16u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "Whether or not the use of a wide color gamut is enabled for this output"]
+            async fn wide_color_gamut(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                wcg_enabled: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.wide_color_gamut({})",
+                    object.id,
+                    wcg_enabled
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(wcg_enabled)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 17u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            async fn auto_rotate_policy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                policy: AutoRotatePolicy,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.auto_rotate_policy({})",
+                    object.id,
+                    policy
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(policy as u32)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 18u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            async fn icc_profile_path(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                profile_path: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.icc_profile_path(\"{}\")",
+                    object.id,
+                    profile_path
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(profile_path))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 19u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            async fn brightness_metadata(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                max_peak_brightness: u32,
+                max_frame_average_brightness: u32,
+                min_brightness: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.brightness_metadata({}, {}, {})",
+                    object.id,
+                    max_peak_brightness,
+                    max_frame_average_brightness,
+                    min_brightness
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(max_peak_brightness)
+                    .put_uint(max_frame_average_brightness)
+                    .put_uint(min_brightness)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 20u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            async fn brightness_overrides(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                max_peak_brightness: i32,
+                max_average_brightness: i32,
+                min_brightness: i32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.brightness_overrides({}, {}, {})",
+                    object.id,
+                    max_peak_brightness,
+                    max_average_brightness,
+                    min_brightness
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(max_peak_brightness)
+                    .put_int(max_average_brightness)
+                    .put_int(min_brightness)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 21u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
+            #[doc = "default experience on many modern sRGB screens."]
+            async fn sdr_gamut_wideness(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                gamut_wideness: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.sdr_gamut_wideness({})",
+                    object.id,
+                    gamut_wideness
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(gamut_wideness)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 22u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            async fn color_profile_source(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                source: ColorProfileSource,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.color_profile_source({})",
+                    object.id,
+                    source
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(source as u32)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 23u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This is the brightness modifier of the output. It doesn't specify"]
+            #[doc = "any absolute values, but is merely a multiplier on top of other"]
+            #[doc = "brightness values, like sdr_brightness and brightness_metadata."]
+            #[doc = "0 is the minimum brightness (not completely dark) and 10000 is"]
+            #[doc = "the maximum brightness."]
+            #[doc = "This is currently only supported / meaningful while HDR is active."]
+            async fn brightness(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                brightness: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.brightness({})",
+                    object.id,
+                    brightness
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(brightness)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 24u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            async fn color_power_tradeoff(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                preference: ColorPowerTradeoff,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.color_power_tradeoff({})",
+                    object.id,
+                    preference
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(preference as u32)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 25u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This is the dimming multiplier of the output. This is similar to"]
+            #[doc = "the brightness setting, except it's meant to be a temporary setting"]
+            #[doc = "only, not persistent and may be implemented differently depending"]
+            #[doc = "on the display."]
+            #[doc = "0 is the minimum dimming factor (not completely dark) and 10000"]
+            #[doc = "means the output is not dimmed."]
+            async fn dimming(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                multiplier: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_v2#{}.dimming({})",
+                    object.id,
+                    multiplier
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(multiplier)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 26u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[doc = "This object describes an output mode."]
+    #[doc = ""]
+    #[doc = "Some heads don't support output modes, in which case modes won't be"]
+    #[doc = "advertised."]
+    #[doc = ""]
+    #[doc = "Properties sent via this interface are applied atomically via the"]
+    #[doc = "kde_output_device.done event. No guarantees are made regarding the order"]
+    #[doc = "in which properties are sent."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_output_device_mode_v2 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the kde_output_device_mode_v2 interface. See the module level documentation for more info"]
+        pub trait KdeOutputDeviceModeV2: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "kde_output_device_mode_v2";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This event describes the mode size. The size is given in physical"]
+            #[doc = "hardware units of the output device. This is not necessarily the same as"]
+            #[doc = "the output size in the global compositor space. For instance, the output"]
+            #[doc = "may be scaled or transformed."]
+            async fn size(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_mode_v2#{}.size({}, {})",
+                    object.id,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event describes the mode's fixed vertical refresh rate. It is only"]
+            #[doc = "sent if the mode has a fixed refresh rate."]
+            async fn refresh(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                refresh: i32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_device_mode_v2#{}.refresh({})",
+                    object.id,
+                    refresh
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(refresh).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event advertises this mode as preferred."]
+            async fn preferred(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> kde_output_device_mode_v2#{}.preferred()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "The compositor will destroy the object immediately after sending this"]
+            #[doc = "event, so it will become invalid and the client should release any"]
+            #[doc = "resources associated with it."]
+            async fn removed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> kde_output_device_mode_v2#{}.removed()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod kde_output_management_v2 {
+    #[doc = "This interface enables clients to set properties of output devices for screen"]
+    #[doc = "configuration purposes via the server. To this end output devices are referenced"]
+    #[doc = "by global kde_output_device_v2 objects."]
+    #[doc = ""]
+    #[doc = "outputmanagement (wl_global)"]
+    #[doc = "--------------------------"]
+    #[doc = "request:"]
+    #[doc = "* create_configuration -> outputconfiguration (wl_resource)"]
+    #[doc = ""]
+    #[doc = "outputconfiguration (wl_resource)"]
+    #[doc = "--------------------------"]
+    #[doc = "requests:"]
+    #[doc = "* enable(outputdevice, bool)"]
+    #[doc = "* mode(outputdevice, mode)"]
+    #[doc = "* transformation(outputdevice, flag)"]
+    #[doc = "* position(outputdevice, x, y)"]
+    #[doc = "* apply"]
+    #[doc = ""]
+    #[doc = "events:"]
+    #[doc = "* applied"]
+    #[doc = "* failed"]
+    #[doc = ""]
+    #[doc = "The server registers one outputmanagement object as a global object. In order"]
+    #[doc = "to configure outputs a client requests create_configuration, which provides a"]
+    #[doc = "resource referencing an outputconfiguration for one-time configuration. That"]
+    #[doc = "way the server knows which requests belong together and can group them by that."]
+    #[doc = ""]
+    #[doc = "On the outputconfiguration object the client calls for each output whether the"]
+    #[doc = "output should be enabled, which mode should be set (by referencing the mode from"]
+    #[doc = "the list of announced modes) and the output's global position. Once all outputs"]
+    #[doc = "are configured that way, the client calls apply."]
+    #[doc = "At that point and not earlier the server should try to apply the configuration."]
+    #[doc = "If this succeeds the server emits the applied signal, otherwise the failed"]
+    #[doc = "signal, such that the configuring client is noticed about the success of its"]
+    #[doc = "configuration request."]
+    #[doc = ""]
+    #[doc = "Through this design the interface enables atomic output configuration changes if"]
+    #[doc = "internally supported by the server."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment implementation"]
+    #[doc = "detail. Regular clients must not use this protocol. Backward incompatible"]
+    #[doc = "changes may be added without bumping the major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_output_management_v2 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
+        pub trait KdeOutputManagementV2: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "kde_output_management_v2";
+            const VERSION: u32 = 12u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_output_management_v2#{}.create_configuration({})",
+                            object.id,
+                            id
+                        );
+                        self.create_configuration(object, client, id).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Request an outputconfiguration object through which the client can configure"]
+            #[doc = "output devices."]
+            async fn create_configuration(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+        }
+    }
+    #[doc = "outputconfiguration is a client-specific resource that can be used to ask"]
+    #[doc = "the server to apply changes to available output devices."]
+    #[doc = ""]
+    #[doc = "The client receives a list of output devices from the registry. When it wants"]
+    #[doc = "to apply new settings, it creates a configuration object from the"]
+    #[doc = "outputmanagement global, writes changes through this object's enable, scale,"]
+    #[doc = "transform and mode calls. It then asks the server to apply these settings in"]
+    #[doc = "an atomic fashion, for example through Linux' DRM interface."]
+    #[doc = ""]
+    #[doc = "The server signals back whether the new settings have applied successfully"]
+    #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
+    #[doc = "applied to the hardware and before the server side sends the applied event."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_output_configuration_v2 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "These error can be emitted in response to kde_output_configuration_v2 requests."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the config is already applied"]
+            AlreadyApplied = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::AlreadyApplied),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Describes when the compositor may employ variable refresh rate"]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum VrrPolicy {
+            Never = 0u32,
+            Always = 1u32,
+            Automatic = 2u32,
+        }
+        impl TryFrom<u32> for VrrPolicy {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::Always),
+                    2u32 => Ok(Self::Automatic),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for VrrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Whether this output should use full or limited rgb."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum RgbRange {
+            Automatic = 0u32,
+            Full = 1u32,
+            Limited = 2u32,
+        }
+        impl TryFrom<u32> for RgbRange {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Automatic),
+                    1u32 => Ok(Self::Full),
+                    2u32 => Ok(Self::Limited),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for RgbRange {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum AutoRotatePolicy {
+            Never = 0u32,
+            InTabletMode = 1u32,
+            Always = 2u32,
+        }
+        impl TryFrom<u32> for AutoRotatePolicy {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::InTabletMode),
+                    2u32 => Ok(Self::Always),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for AutoRotatePolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ColorProfileSource {
+            SRgb = 0u32,
+            Icc = 1u32,
+            Edid = 2u32,
+        }
+        impl TryFrom<u32> for ColorProfileSource {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::SRgb),
+                    1u32 => Ok(Self::Icc),
+                    2u32 => Ok(Self::Edid),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ColorProfileSource {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "The compositor can do a lot of things that trade between"]
+        #[doc = "performance, power and color accuracy. This setting describes"]
+        #[doc = "a high level preference from the user about in which direction"]
+        #[doc = "that tradeoff should be made."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ColorPowerTradeoff {
+            #[doc = "prefer efficiency and performance"]
+            Efficiency = 0u32,
+            #[doc = "prefer accuracy"]
+            Accuracy = 1u32,
+        }
+        impl TryFrom<u32> for ColorPowerTradeoff {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Efficiency),
+                    1u32 => Ok(Self::Accuracy),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ColorPowerTradeoff {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the kde_output_configuration_v2 interface. See the module level documentation for more info"]
+        pub trait KdeOutputConfigurationV2: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "kde_output_configuration_v2";
+            const VERSION: u32 = 12u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let enable = message.int()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.enable({}, {})",
+                            object.id,
+                            outputdevice,
+                            enable
+                        );
+                        self.enable(object, client, outputdevice, enable).await
+                    }
+                    1u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let mode = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.mode({}, {})",
+                            object.id,
+                            outputdevice,
+                            mode
+                        );
+                        self.mode(object, client, outputdevice, mode).await
+                    }
+                    2u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let transform = message.int()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.transform({}, {})",
+                            object.id,
+                            outputdevice,
+                            transform
+                        );
+                        self.transform(object, client, outputdevice, transform)
+                            .await
+                    }
+                    3u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.position({}, {}, {})",
+                            object.id,
+                            outputdevice,
+                            x,
+                            y
+                        );
+                        self.position(object, client, outputdevice, x, y).await
+                    }
+                    4u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let scale = message.fixed()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.scale({}, {})",
+                            object.id,
+                            outputdevice,
+                            scale
+                        );
+                        self.scale(object, client, outputdevice, scale).await
+                    }
+                    5u16 => {
+                        tracing::debug!("kde_output_configuration_v2#{}.apply()", object.id,);
+                        self.apply(object, client).await
+                    }
+                    6u16 => {
+                        tracing::debug!("kde_output_configuration_v2#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    7u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let overscan = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.overscan({}, {})",
+                            object.id,
+                            outputdevice,
+                            overscan
+                        );
+                        self.overscan(object, client, outputdevice, overscan).await
+                    }
+                    8u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let policy = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.set_vrr_policy({}, {})",
+                            object.id,
+                            outputdevice,
+                            policy
+                        );
+                        self.set_vrr_policy(object, client, outputdevice, policy.try_into()?)
+                            .await
+                    }
+                    9u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let rgb_range = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.set_rgb_range({}, {})",
+                            object.id,
+                            outputdevice,
+                            rgb_range
+                        );
+                        self.set_rgb_range(object, client, outputdevice, rgb_range.try_into()?)
+                            .await
+                    }
+                    10u16 => {
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.set_primary_output({})",
+                            object.id,
+                            output
+                        );
+                        self.set_primary_output(object, client, output).await
+                    }
+                    11u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let priority = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.set_priority({}, {})",
+                            object.id,
+                            outputdevice,
+                            priority
+                        );
+                        self.set_priority(object, client, outputdevice, priority)
+                            .await
+                    }
+                    12u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let enable_hdr = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.set_high_dynamic_range({}, {})",
+                            object.id,
+                            outputdevice,
+                            enable_hdr
+                        );
+                        self.set_high_dynamic_range(object, client, outputdevice, enable_hdr)
+                            .await
+                    }
+                    13u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let sdr_brightness = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.set_sdr_brightness({}, {})",
+                            object.id,
+                            outputdevice,
+                            sdr_brightness
+                        );
+                        self.set_sdr_brightness(object, client, outputdevice, sdr_brightness)
+                            .await
+                    }
+                    14u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let enable_wcg = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.set_wide_color_gamut({}, {})",
+                            object.id,
+                            outputdevice,
+                            enable_wcg
+                        );
+                        self.set_wide_color_gamut(object, client, outputdevice, enable_wcg)
+                            .await
+                    }
+                    15u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let policy = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.set_auto_rotate_policy({}, {})",
+                            object.id,
+                            outputdevice,
+                            policy
+                        );
+                        self.set_auto_rotate_policy(
+                            object,
+                            client,
+                            outputdevice,
+                            policy.try_into()?,
+                        )
+                        .await
+                    }
+                    16u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let profile_path = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.set_icc_profile_path({}, \"{}\")",
+                            object.id,
+                            outputdevice,
+                            profile_path
+                        );
+                        self.set_icc_profile_path(object, client, outputdevice, profile_path)
+                            .await
+                    }
+                    17u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let max_peak_brightness = message.int()?;
+                        let max_frame_average_brightness = message.int()?;
+                        let min_brightness = message.int()?;
+                        tracing :: debug ! ("kde_output_configuration_v2#{}.set_brightness_overrides({}, {}, {}, {})" , object . id , outputdevice , max_peak_brightness , max_frame_average_brightness , min_brightness);
+                        self.set_brightness_overrides(
+                            object,
+                            client,
+                            outputdevice,
+                            max_peak_brightness,
+                            max_frame_average_brightness,
+                            min_brightness,
+                        )
+                        .await
+                    }
+                    18u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let gamut_wideness = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.set_sdr_gamut_wideness({}, {})",
+                            object.id,
+                            outputdevice,
+                            gamut_wideness
+                        );
+                        self.set_sdr_gamut_wideness(object, client, outputdevice, gamut_wideness)
+                            .await
+                    }
+                    19u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let color_profile_source = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.set_color_profile_source({}, {})",
+                            object.id,
+                            outputdevice,
+                            color_profile_source
+                        );
+                        self.set_color_profile_source(
+                            object,
+                            client,
+                            outputdevice,
+                            color_profile_source.try_into()?,
+                        )
+                        .await
+                    }
+                    20u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let brightness = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.set_brightness({}, {})",
+                            object.id,
+                            outputdevice,
+                            brightness
+                        );
+                        self.set_brightness(object, client, outputdevice, brightness)
+                            .await
+                    }
+                    21u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let preference = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.set_color_power_tradeoff({}, {})",
+                            object.id,
+                            outputdevice,
+                            preference
+                        );
+                        self.set_color_power_tradeoff(
+                            object,
+                            client,
+                            outputdevice,
+                            preference.try_into()?,
+                        )
+                        .await
+                    }
+                    22u16 => {
+                        let outputdevice = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let multiplier = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.set_dimming({}, {})",
+                            object.id,
+                            outputdevice,
+                            multiplier
+                        );
+                        self.set_dimming(object, client, outputdevice, multiplier)
+                            .await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Mark the output as enabled or disabled."]
+            async fn enable(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                enable: i32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Sets the mode for a given output."]
+            async fn mode(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                mode: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "Sets the transformation for a given output."]
+            async fn transform(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                transform: i32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Sets the position for this output device. (x,y) describe the top-left corner"]
+            #[doc = "of the output in global space, whereby the origin (0,0) of the global space"]
+            #[doc = "has to be aligned with the top-left corner of the most left and in case this"]
+            #[doc = "does not define a single one the top output."]
+            #[doc = ""]
+            #[doc = "There may be no gaps or overlaps between outputs, i.e. the outputs are"]
+            #[doc = "stacked horizontally, vertically, or both on each other."]
+            async fn position(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Sets the scaling factor for this output device."]
+            async fn scale(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                scale: crate::wire::Fixed,
+            ) -> crate::server::Result<()>;
+            #[doc = "Asks the server to apply property changes requested through this outputconfiguration"]
+            #[doc = "object to all outputs on the server side."]
+            #[doc = ""]
+            #[doc = "The output configuration can be applied only once. The already_applied protocol error"]
+            #[doc = "will be posted if the apply request is called the second time."]
+            async fn apply(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Set the overscan value of this output device with a value in percent."]
+            async fn overscan(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                overscan: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Set what policy the compositor should employ regarding its use of"]
+            #[doc = "variable refresh rate."]
+            async fn set_vrr_policy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                policy: VrrPolicy,
+            ) -> crate::server::Result<()>;
+            #[doc = "Whether full or limited color range should be used"]
+            async fn set_rgb_range(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                rgb_range: RgbRange,
+            ) -> crate::server::Result<()>;
+            async fn set_primary_output(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                output: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "The order of outputs can be used to assign desktop environment components to a specific screen,"]
+            #[doc = "see kde_output_order_v1 for details. The priority is 1-based for outputs that will be enabled after"]
+            #[doc = "this changeset is applied, all outputs that are disabled need to have the index set to zero."]
+            async fn set_priority(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                priority: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Sets whether or not the output should be set to HDR mode."]
+            async fn set_high_dynamic_range(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                enable_hdr: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Sets the brightness of standard dynamic range content in nits. Only has an effect while the output is in HDR mode."]
+            #[doc = "Note that while the value is in nits, that doesn't necessarily translate to the same brightness on the screen."]
+            async fn set_sdr_brightness(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                sdr_brightness: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Whether or not the output should use a wide color gamut"]
+            async fn set_wide_color_gamut(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                enable_wcg: u32,
+            ) -> crate::server::Result<()>;
+            async fn set_auto_rotate_policy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                policy: AutoRotatePolicy,
+            ) -> crate::server::Result<()>;
+            async fn set_icc_profile_path(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                profile_path: String,
+            ) -> crate::server::Result<()>;
+            async fn set_brightness_overrides(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                max_peak_brightness: i32,
+                max_frame_average_brightness: i32,
+                min_brightness: i32,
+            ) -> crate::server::Result<()>;
+            #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
+            #[doc = "default experience on many modern sRGB screens."]
+            async fn set_sdr_gamut_wideness(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                gamut_wideness: u32,
+            ) -> crate::server::Result<()>;
+            async fn set_color_profile_source(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                color_profile_source: ColorProfileSource,
+            ) -> crate::server::Result<()>;
+            #[doc = "Set the brightness modifier of the output. It doesn't specify"]
+            #[doc = "any absolute values, but is merely a multiplier on top of other"]
+            #[doc = "brightness values, like sdr_brightness and brightness_metadata."]
+            #[doc = "0 is the minimum brightness (not completely dark) and 10000 is"]
+            #[doc = "the maximum brightness."]
+            #[doc = "This is supported while HDR is active in versions 8 and below,"]
+            #[doc = "or when the device supports the brightness_control capability in"]
+            #[doc = "versions 9 and above."]
+            async fn set_brightness(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                brightness: u32,
+            ) -> crate::server::Result<()>;
+            async fn set_color_power_tradeoff(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                preference: ColorPowerTradeoff,
+            ) -> crate::server::Result<()>;
+            #[doc = "Set the dimming multiplier of the output. This is similar to the"]
+            #[doc = "brightness setting, except it's meant to be a temporary setting"]
+            #[doc = "only, not persistent and may be implemented differently depending"]
+            #[doc = "on the display."]
+            #[doc = "0 is the minimum dimming factor (not completely dark) and 10000"]
+            #[doc = "means the output is not dimmed."]
+            #[doc = ""]
+            #[doc = "This is supported only when the brightness_control capability is"]
+            #[doc = "also supported."]
+            async fn set_dimming(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                outputdevice: crate::wire::ObjectId,
+                multiplier: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Sent after the server has successfully applied the changes."]
+            #[doc = "."]
+            async fn applied(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> kde_output_configuration_v2#{}.applied()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "Sent if the server rejects the changes or failed to apply them."]
+            async fn failed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> kde_output_configuration_v2#{}.failed()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "Describes why applying the output configuration failed. Is only"]
+            #[doc = "sent before the failure event."]
+            async fn failure_reason(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                reason: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_configuration_v2#{}.failure_reason(\"{}\")",
+                    object.id,
+                    reason
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(reason))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod kde_output_order_v1 {
+    #[doc = "Announce the order in which desktop environment components should be placed on outputs."]
+    #[doc = "The compositor will send the list of outputs when the global is bound and whenever there is a change."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_output_order_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the kde_output_order_v1 interface. See the module level documentation for more info"]
+        pub trait KdeOutputOrderV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "kde_output_order_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("kde_output_order_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Specifies the output identified by their wl_output.name."]
+            async fn output(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                output_name: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_order_v1#{}.output(\"{}\")",
+                    object.id,
+                    output_name
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(output_name))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "Specifies that the output list is complete. On the next output event, a new list begins."]
+            async fn done(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> kde_output_order_v1#{}.done()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod kde_primary_output_v1 {
+    #[doc = "Protocol for telling which is the primary display among the selection"]
+    #[doc = "of enabled outputs."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_primary_output_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the kde_primary_output_v1 interface. See the module level documentation for more info"]
+        pub trait KdePrimaryOutputV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "kde_primary_output_v1";
+            const VERSION: u32 = 2u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("kde_primary_output_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Specifies which output is the primary one identified by their uuid. See kde_output_device_v2 uuid event for more information about it."]
+            async fn primary_output(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                output_name: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> kde_primary_output_v1#{}.primary_output(\"{}\")",
+                    object.id,
+                    output_name
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(output_name))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod kde_screen_edge_v1 {
+    #[doc = "This interface allows clients to associate actions with screen edges. For"]
+    #[doc = "example, showing a surface by moving the pointer to a screen edge."]
+    #[doc = ""]
+    #[doc = "Potential ways to trigger the screen edge are subject to compositor"]
+    #[doc = "policies. As an example, the compositor may consider the screen edge to be"]
+    #[doc = "triggered if the pointer hits its associated screen border. Other ways may"]
+    #[doc = "include using touchscreen or touchpad gestures."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_screen_edge_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the specified border value is invalid"]
+            InvalidBorder = 0u32,
+            #[doc = "the surface has invalid role"]
+            InvalidRole = 1u32,
+            #[doc = "the surface already has a screen edge"]
+            AlreadyConstructed = 2u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidBorder),
+                    1u32 => Ok(Self::InvalidRole),
+                    2u32 => Ok(Self::AlreadyConstructed),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "These values describe possible screen borders."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Border {
+            #[doc = "top screen edge"]
+            Top = 1u32,
+            #[doc = "bottom screen edge"]
+            Bottom = 2u32,
+            #[doc = "left screen edge"]
+            Left = 3u32,
+            #[doc = "right screen edge"]
+            Right = 4u32,
+        }
+        impl TryFrom<u32> for Border {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::Top),
+                    2u32 => Ok(Self::Bottom),
+                    3u32 => Ok(Self::Left),
+                    4u32 => Ok(Self::Right),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Border {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the kde_screen_edge_manager_v1 interface. See the module level documentation for more info"]
+        pub trait KdeScreenEdgeManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "kde_screen_edge_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("kde_screen_edge_manager_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let border = message.uint()?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_screen_edge_manager_v1#{}.get_auto_hide_screen_edge({}, {}, {})",
+                            object.id,
+                            id,
+                            border,
+                            surface
+                        );
+                        self.get_auto_hide_screen_edge(
+                            object,
+                            client,
+                            id,
+                            border.try_into()?,
+                            surface,
+                        )
+                        .await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the screen edge manager. This doesn't destroy objects created"]
+            #[doc = "with this manager."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Create a new auto hide screen edge object associated with the specified"]
+            #[doc = "surface and the border."]
+            #[doc = ""]
+            #[doc = "Creating a kde_auto_hide_screen_edge_v1 object does not change the"]
+            #[doc = "visibility of the surface. The kde_auto_hide_screen_edge_v1.activate"]
+            #[doc = "request must be issued in order to hide the surface."]
+            #[doc = ""]
+            #[doc = "The \"border\" argument must be a valid enum entry, otherwise the"]
+            #[doc = "invalid_border protocol error is raised."]
+            #[doc = ""]
+            #[doc = "The invalid_role protocol error will be raised if the specified surface"]
+            #[doc = "does not have layer_surface role."]
+            async fn get_auto_hide_screen_edge(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                border: Border,
+                surface: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+        }
+    }
+    #[doc = "The auto hide screen edge object allows to hide the surface and make it"]
+    #[doc = "visible by triggering the screen edge. The screen edge is inactive and"]
+    #[doc = "the surface is visible by default."]
+    #[doc = ""]
+    #[doc = "This interface can be used to implement user interface elements such as"]
+    #[doc = "auto-hide panels or docks."]
+    #[doc = ""]
+    #[doc = "kde_auto_hide_screen_edge_v1.activate activates the screen edge and makes"]
+    #[doc = "the surface hidden. The surface can be made visible by triggering the"]
+    #[doc = "screen edge or calling kde_auto_hide_screen_edge_v1.deactivate."]
+    #[doc = ""]
+    #[doc = "If the screen edge has been triggered, it won't be re-activated again."]
+    #[doc = "Another kde_auto_hide_screen_edge_v1.activate request must be made by the"]
+    #[doc = "client to activate the screen edge."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_auto_hide_screen_edge_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the kde_auto_hide_screen_edge_v1 interface. See the module level documentation for more info"]
+        pub trait KdeAutoHideScreenEdgeV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "kde_auto_hide_screen_edge_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("kde_auto_hide_screen_edge_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        tracing::debug!("kde_auto_hide_screen_edge_v1#{}.deactivate()", object.id,);
+                        self.deactivate(object, client).await
+                    }
+                    2u16 => {
+                        tracing::debug!("kde_auto_hide_screen_edge_v1#{}.activate()", object.id,);
+                        self.activate(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the auto hide screen edge object. If the screen edge is active,"]
+            #[doc = "it will be deactivated and the surface will be made visible."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Deactivate the screen edge. The surface will be made visible."]
+            async fn deactivate(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Activate the screen edge. The surface will be hidden until the screen"]
+            #[doc = "edge is triggered."]
+            async fn activate(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+        }
+    }
+}
+#[allow(clippy::module_inception)]
 pub mod keystate {
     #[doc = "Keeps track of the states of the different keys that have a state attached to it."]
     #[allow(clippy::too_many_arguments)]
@@ -1136,6 +4068,313 @@ pub mod keystate {
                     .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod org_kde_plasma_virtual_desktop {
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_plasma_virtual_desktop_management {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the org_kde_plasma_virtual_desktop_management interface. See the module level documentation for more info"]
+        pub trait OrgKdePlasmaVirtualDesktopManagement: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop_management";
+            const VERSION: u32 = 2u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let desktop_id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.get_virtual_desktop({}, \"{}\")" , object . id , id , desktop_id);
+                        self.get_virtual_desktop(object, client, id, desktop_id)
+                            .await
+                    }
+                    1u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let position = message.uint()?;
+                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.request_create_virtual_desktop(\"{}\", {})" , object . id , name , position);
+                        self.request_create_virtual_desktop(object, client, name, position)
+                            .await
+                    }
+                    2u16 => {
+                        let desktop_id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.request_remove_virtual_desktop(\"{}\")" , object . id , desktop_id);
+                        self.request_remove_virtual_desktop(object, client, desktop_id)
+                            .await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Given the id of a particular virtual desktop, get the corresponding org_kde_plasma_virtual_desktop which represents only the desktop with that id."]
+            #[doc = ""]
+            #[doc = "Warning! The protocol described in this file is a desktop environment"]
+            #[doc = "implementation detail. Regular clients must not use this protocol."]
+            #[doc = "Backward incompatible changes may be added without bumping the major"]
+            #[doc = "version of the extension."]
+            async fn get_virtual_desktop(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                desktop_id: String,
+            ) -> crate::server::Result<()>;
+            #[doc = "Ask the server to create a new virtual desktop, and position it at a specified position. If the position is zero or less, it will be positioned at the beginning, if the position is the count or more, it will be positioned at the end."]
+            async fn request_create_virtual_desktop(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                name: String,
+                position: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Ask the server to get rid of a virtual desktop, the server may or may not acconsent to the request."]
+            async fn request_remove_virtual_desktop(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                desktop_id: String,
+            ) -> crate::server::Result<()>;
+            async fn desktop_created(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                desktop_id: String,
+                position: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_created(\"{}\", {})",
+                    object.id,
+                    desktop_id,
+                    position
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(desktop_id))
+                    .put_uint(position)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            async fn desktop_removed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                desktop_id: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_removed(\"{}\")",
+                    object.id,
+                    desktop_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(desktop_id))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is sent after all other properties has been"]
+            #[doc = "sent after binding to the desktop manager object and after any"]
+            #[doc = "other property changes done after that. This allows"]
+            #[doc = "changes to the org_kde_plasma_virtual_desktop_management properties to be seen as"]
+            #[doc = "atomic, even if they happen via multiple events."]
+            async fn done(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_virtual_desktop_management#{}.done()",
+                    object.id,
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            async fn rows(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                rows: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_virtual_desktop_management#{}.rows({})",
+                    object.id,
+                    rows
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(rows).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_plasma_virtual_desktop {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the org_kde_plasma_virtual_desktop interface. See the module level documentation for more info"]
+        pub trait OrgKdePlasmaVirtualDesktop: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!(
+                            "org_kde_plasma_virtual_desktop#{}.request_activate()",
+                            object.id,
+                        );
+                        self.request_activate(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Request the server to set the status of this desktop to active: The server is free to consent or deny the request. This will be the new \"current\" virtual desktop of the system."]
+            async fn request_activate(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "The format of the id is decided by the compositor implementation. A desktop id univocally identifies a virtual desktop and must be guaranteed to never exist two desktops with the same id. The format of the string id is up to the server implementation."]
+            async fn desktop_id(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                desktop_id: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_virtual_desktop#{}.desktop_id(\"{}\")",
+                    object.id,
+                    desktop_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(desktop_id))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            async fn name(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                name: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_virtual_desktop#{}.name(\"{}\")",
+                    object.id,
+                    name
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "The desktop will be the new \"current\" desktop of the system. The server may support either one virtual desktop active at a time, or other combinations such as one virtual desktop active per screen."]
+            #[doc = "Windows associated to this virtual desktop will be shown."]
+            async fn activated(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_virtual_desktop#{}.activated()",
+                    object.id,
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "Windows that were associated only to this desktop will be hidden."]
+            async fn deactivated(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_virtual_desktop#{}.deactivated()",
+                    object.id,
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is sent after all other properties has been"]
+            #[doc = "sent after binding to the desktop object and after any"]
+            #[doc = "other property changes done after that. This allows"]
+            #[doc = "changes to the org_kde_plasma_virtual_desktop properties to be seen as"]
+            #[doc = "atomic, even if they happen via multiple events."]
+            async fn done(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.done()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This virtual desktop has just been removed by the server:"]
+            #[doc = "All windows will lose the association to this desktop."]
+            async fn removed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.removed()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2131,6 +5370,1679 @@ pub mod org_kde_kwin_outputdevice {
                     .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 13u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod plasma_shell {
+    #[doc = "This interface is used by KF5 powered Wayland shells to communicate with"]
+    #[doc = "the compositor and can only be bound one time."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_plasma_shell {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the org_kde_plasma_shell interface. See the module level documentation for more info"]
+        pub trait OrgKdePlasmaShell: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "org_kde_plasma_shell";
+            const VERSION: u32 = 8u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_shell#{}.get_surface({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.get_surface(object, client, id, surface).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Create a shell surface for an existing surface."]
+            #[doc = ""]
+            #[doc = "Only one shell surface can be associated with a given"]
+            #[doc = "surface."]
+            async fn get_surface(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+        }
+    }
+    #[doc = "An interface that may be implemented by a wl_surface, for"]
+    #[doc = "implementations that provide the shell user interface."]
+    #[doc = ""]
+    #[doc = "It provides requests to set surface roles, assign an output"]
+    #[doc = "or set the position in output coordinates."]
+    #[doc = ""]
+    #[doc = "On the server side the object is automatically destroyed when"]
+    #[doc = "the related wl_surface is destroyed.  On client side,"]
+    #[doc = "org_kde_plasma_surface.destroy() must be called before"]
+    #[doc = "destroying the wl_surface object."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_plasma_surface {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Role {
+            Normal = 0u32,
+            Desktop = 1u32,
+            Panel = 2u32,
+            Onscreendisplay = 3u32,
+            Notification = 4u32,
+            Tooltip = 5u32,
+            Criticalnotification = 6u32,
+            Appletpopup = 7u32,
+        }
+        impl TryFrom<u32> for Role {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Normal),
+                    1u32 => Ok(Self::Desktop),
+                    2u32 => Ok(Self::Panel),
+                    3u32 => Ok(Self::Onscreendisplay),
+                    4u32 => Ok(Self::Notification),
+                    5u32 => Ok(Self::Tooltip),
+                    6u32 => Ok(Self::Criticalnotification),
+                    7u32 => Ok(Self::Appletpopup),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Role {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum PanelBehavior {
+            AlwaysVisible = 1u32,
+            AutoHide = 2u32,
+            WindowsCanCover = 3u32,
+            WindowsGoBelow = 4u32,
+        }
+        impl TryFrom<u32> for PanelBehavior {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::AlwaysVisible),
+                    2u32 => Ok(Self::AutoHide),
+                    3u32 => Ok(Self::WindowsCanCover),
+                    4u32 => Ok(Self::WindowsGoBelow),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for PanelBehavior {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "Request panel_auto_hide performed on a surface which does not correspond to an auto-hide panel."]
+            PanelNotAutoHide = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::PanelNotAutoHide),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the org_kde_plasma_surface interface. See the module level documentation for more info"]
+        pub trait OrgKdePlasmaSurface: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "org_kde_plasma_surface";
+            const VERSION: u32 = 8u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("org_kde_plasma_surface#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_surface#{}.set_output({})",
+                            object.id,
+                            output
+                        );
+                        self.set_output(object, client, output).await
+                    }
+                    2u16 => {
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        tracing::debug!(
+                            "org_kde_plasma_surface#{}.set_position({}, {})",
+                            object.id,
+                            x,
+                            y
+                        );
+                        self.set_position(object, client, x, y).await
+                    }
+                    3u16 => {
+                        let role = message.uint()?;
+                        tracing::debug!("org_kde_plasma_surface#{}.set_role({})", object.id, role);
+                        self.set_role(object, client, role).await
+                    }
+                    4u16 => {
+                        let flag = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_surface#{}.set_panel_behavior({})",
+                            object.id,
+                            flag
+                        );
+                        self.set_panel_behavior(object, client, flag).await
+                    }
+                    5u16 => {
+                        let skip = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_surface#{}.set_skip_taskbar({})",
+                            object.id,
+                            skip
+                        );
+                        self.set_skip_taskbar(object, client, skip).await
+                    }
+                    6u16 => {
+                        tracing::debug!(
+                            "org_kde_plasma_surface#{}.panel_auto_hide_hide()",
+                            object.id,
+                        );
+                        self.panel_auto_hide_hide(object, client).await
+                    }
+                    7u16 => {
+                        tracing::debug!(
+                            "org_kde_plasma_surface#{}.panel_auto_hide_show()",
+                            object.id,
+                        );
+                        self.panel_auto_hide_show(object, client).await
+                    }
+                    8u16 => {
+                        let takes_focus = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_surface#{}.set_panel_takes_focus({})",
+                            object.id,
+                            takes_focus
+                        );
+                        self.set_panel_takes_focus(object, client, takes_focus)
+                            .await
+                    }
+                    9u16 => {
+                        let skip = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_surface#{}.set_skip_switcher({})",
+                            object.id,
+                            skip
+                        );
+                        self.set_skip_switcher(object, client, skip).await
+                    }
+                    10u16 => {
+                        tracing::debug!("org_kde_plasma_surface#{}.open_under_cursor()", object.id,);
+                        self.open_under_cursor(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "The org_kde_plasma_surface interface is removed from the"]
+            #[doc = "wl_surface object that was turned into a shell surface with the"]
+            #[doc = "org_kde_plasma_shell.get_surface request."]
+            #[doc = "The shell surface role is lost and wl_surface is unmapped."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Assign an output to this shell surface."]
+            #[doc = "The compositor will use this information to set the position"]
+            #[doc = "when org_kde_plasma_surface.set_position request is"]
+            #[doc = "called."]
+            async fn set_output(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                output: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "Move the surface to new coordinates."]
+            #[doc = ""]
+            #[doc = "Coordinates are global, for example 50,50 for a 1920,0+1920x1080 output"]
+            #[doc = "is 1970,50 in global coordinates space."]
+            #[doc = ""]
+            #[doc = "Use org_kde_plasma_surface.set_output to assign an output"]
+            #[doc = "to this surface."]
+            async fn set_position(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Assign a role to a shell surface."]
+            #[doc = ""]
+            #[doc = "The compositor handles surfaces depending on their role."]
+            #[doc = "See the explanation below."]
+            #[doc = ""]
+            #[doc = "This request fails if the surface already has a role, this means"]
+            #[doc = "the surface role may be assigned only once."]
+            #[doc = ""]
+            #[doc = "== Surfaces with splash role =="]
+            #[doc = ""]
+            #[doc = "Splash surfaces are placed above every other surface during the"]
+            #[doc = "shell startup phase."]
+            #[doc = ""]
+            #[doc = "The surfaces are placed according to the output coordinates."]
+            #[doc = "No size is imposed to those surfaces, the shell has to resize"]
+            #[doc = "them according to output size."]
+            #[doc = ""]
+            #[doc = "These surfaces are meant to hide the desktop during the startup"]
+            #[doc = "phase so that the user will always see a ready to work desktop."]
+            #[doc = ""]
+            #[doc = "A shell might not create splash surfaces if the compositor reveals"]
+            #[doc = "the desktop in an alternative fashion, for example with a fade"]
+            #[doc = "in effect."]
+            #[doc = ""]
+            #[doc = "That depends on how much time the desktop usually need to prepare"]
+            #[doc = "the workspace or specific design decisions."]
+            #[doc = "This specification doesn't impose any particular design."]
+            #[doc = ""]
+            #[doc = "When the startup phase is finished, the shell will send the"]
+            #[doc = "org_kde_plasma.desktop_ready request to the compositor."]
+            #[doc = ""]
+            #[doc = "== Surfaces with desktop role =="]
+            #[doc = ""]
+            #[doc = "Desktop surfaces are placed below all other surfaces and are used"]
+            #[doc = "to show the actual desktop view with icons, search results or"]
+            #[doc = "controls the user will interact with. What to show depends on the"]
+            #[doc = "shell implementation."]
+            #[doc = ""]
+            #[doc = "The surfaces are placed according to the output coordinates."]
+            #[doc = "No size is imposed to those surfaces, the shell has to resize"]
+            #[doc = "them according to output size."]
+            #[doc = ""]
+            #[doc = "Only one surface per output can have the desktop role."]
+            #[doc = ""]
+            #[doc = "== Surfaces with dashboard role =="]
+            #[doc = ""]
+            #[doc = "Dashboard surfaces are placed above desktop surfaces and are used to"]
+            #[doc = "show additional widgets and controls."]
+            #[doc = ""]
+            #[doc = "The surfaces are placed according to the output coordinates."]
+            #[doc = "No size is imposed to those surfaces, the shell has to resize"]
+            #[doc = "them according to output size."]
+            #[doc = ""]
+            #[doc = "Only one surface per output can have the dashboard role."]
+            #[doc = ""]
+            #[doc = "== Surfaces with config role =="]
+            #[doc = ""]
+            #[doc = "A configuration surface is shown when the user wants to configure"]
+            #[doc = "panel or desktop views."]
+            #[doc = ""]
+            #[doc = "Only one surface per output can have the config role."]
+            #[doc = ""]
+            #[doc = "TODO: This should grab the input like popup menus, right?"]
+            #[doc = ""]
+            #[doc = "== Surfaces with overlay role =="]
+            #[doc = ""]
+            #[doc = "Overlays are special surfaces that shows for a limited amount"]
+            #[doc = "of time.  Such surfaces are useful to display things like volume,"]
+            #[doc = "brightness and status changes."]
+            #[doc = ""]
+            #[doc = "Compositors may decide to show those surfaces in a layer above"]
+            #[doc = "all surfaces, even full screen ones if so is desired."]
+            #[doc = ""]
+            #[doc = "== Surfaces with notification role =="]
+            #[doc = ""]
+            #[doc = "Notification surfaces display informative content for a limited"]
+            #[doc = "amount of time.  The compositor may decide to show them in a corner"]
+            #[doc = "depending on the configuration."]
+            #[doc = ""]
+            #[doc = "These surfaces are shown in a layer above all other surfaces except"]
+            #[doc = "for full screen ones."]
+            #[doc = ""]
+            #[doc = "== Surfaces with lock role =="]
+            #[doc = ""]
+            #[doc = "The lock surface is shown by the compositor when the session is"]
+            #[doc = "locked, users interact with it to unlock the session."]
+            #[doc = ""]
+            #[doc = "Compositors should move lock surfaces to 0,0 in output"]
+            #[doc = "coordinates space and hide all other surfaces for security sake."]
+            #[doc = "For the same reason it is recommended that clients make the"]
+            #[doc = "lock surface as big as the screen."]
+            #[doc = ""]
+            #[doc = "Only one surface per output can have the lock role."]
+            async fn set_role(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                role: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Set flags bitmask as described by the flag enum."]
+            #[doc = "Pass 0 to unset any flag, the surface will adjust its behavior to"]
+            #[doc = "the default."]
+            #[doc = ""]
+            #[doc = "Deprecated in Plasma 6. Setting this flag will have no effect. Applications should use layer shell where appropriate."]
+            async fn set_panel_behavior(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                flag: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Setting this bit to the window, will make it say it prefers to not be listed in the taskbar. Taskbar implementations may or may not follow this hint."]
+            async fn set_skip_taskbar(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                skip: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "A panel surface with panel_behavior auto_hide can perform this request to hide the panel"]
+            #[doc = "on a screen edge without unmapping it. The compositor informs the client about the panel"]
+            #[doc = "being hidden with the event auto_hidden_panel_hidden."]
+            #[doc = ""]
+            #[doc = "The compositor will restore the visibility state of the"]
+            #[doc = "surface when the pointer touches the screen edge the panel borders. Once the compositor restores"]
+            #[doc = "the visibility the event auto_hidden_panel_shown will be sent. This event will also be sent"]
+            #[doc = "if the compositor is unable to hide the panel."]
+            #[doc = ""]
+            #[doc = "The client can also request to show the panel again with the request panel_auto_hide_show."]
+            async fn panel_auto_hide_hide(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "A panel surface with panel_behavior auto_hide can perform this request to show the panel"]
+            #[doc = "again which got hidden with panel_auto_hide_hide."]
+            async fn panel_auto_hide_show(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "By default various org_kde_plasma_surface roles do not take focus and cannot be"]
+            #[doc = "activated. With this request the compositor can be instructed to pass focus also to this"]
+            #[doc = "org_kde_plasma_surface."]
+            async fn set_panel_takes_focus(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                takes_focus: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Setting this bit will indicate that the window prefers not to be listed in a switcher."]
+            async fn set_skip_switcher(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                skip: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Request the initial position of this surface to be under the current"]
+            #[doc = "cursor position. Has to be called before attaching any buffer to this surface."]
+            async fn open_under_cursor(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "An auto-hiding panel got hidden by the compositor."]
+            async fn auto_hidden_panel_hidden(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_surface#{}.auto_hidden_panel_hidden()",
+                    object.id,
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "An auto-hiding panel got shown by the compositor."]
+            async fn auto_hidden_panel_shown(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_surface#{}.auto_hidden_panel_shown()",
+                    object.id,
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod plasma_window_management {
+    #[doc = "This interface manages application windows."]
+    #[doc = "It provides requests to show and hide the desktop and emits"]
+    #[doc = "an event every time a window is created so that the client can"]
+    #[doc = "use it to manage the window."]
+    #[doc = ""]
+    #[doc = "Only one client can bind this interface at a time."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_plasma_window_management {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum State {
+            Active = 1u32,
+            Minimized = 2u32,
+            Maximized = 4u32,
+            Fullscreen = 8u32,
+            KeepAbove = 16u32,
+            KeepBelow = 32u32,
+            OnAllDesktops = 64u32,
+            DemandsAttention = 128u32,
+            Closeable = 256u32,
+            Minimizable = 512u32,
+            Maximizable = 1024u32,
+            Fullscreenable = 2048u32,
+            Skiptaskbar = 4096u32,
+            Shadeable = 8192u32,
+            Shaded = 16384u32,
+            Movable = 32768u32,
+            Resizable = 65536u32,
+            VirtualDesktopChangeable = 131072u32,
+            Skipswitcher = 262144u32,
+        }
+        impl TryFrom<u32> for State {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::Active),
+                    2u32 => Ok(Self::Minimized),
+                    4u32 => Ok(Self::Maximized),
+                    8u32 => Ok(Self::Fullscreen),
+                    16u32 => Ok(Self::KeepAbove),
+                    32u32 => Ok(Self::KeepBelow),
+                    64u32 => Ok(Self::OnAllDesktops),
+                    128u32 => Ok(Self::DemandsAttention),
+                    256u32 => Ok(Self::Closeable),
+                    512u32 => Ok(Self::Minimizable),
+                    1024u32 => Ok(Self::Maximizable),
+                    2048u32 => Ok(Self::Fullscreenable),
+                    4096u32 => Ok(Self::Skiptaskbar),
+                    8192u32 => Ok(Self::Shadeable),
+                    16384u32 => Ok(Self::Shaded),
+                    32768u32 => Ok(Self::Movable),
+                    65536u32 => Ok(Self::Resizable),
+                    131072u32 => Ok(Self::VirtualDesktopChangeable),
+                    262144u32 => Ok(Self::Skipswitcher),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for State {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ShowDesktop {
+            Disabled = 0u32,
+            Enabled = 1u32,
+        }
+        impl TryFrom<u32> for ShowDesktop {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Disabled),
+                    1u32 => Ok(Self::Enabled),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ShowDesktop {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the org_kde_plasma_window_management interface. See the module level documentation for more info"]
+        pub trait OrgKdePlasmaWindowManagement: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "org_kde_plasma_window_management";
+            const VERSION: u32 = 18u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window_management#{}.show_desktop({})",
+                            object.id,
+                            state
+                        );
+                        self.show_desktop(object, client, state).await
+                    }
+                    1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let internal_window_id = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window_management#{}.get_window({}, {})",
+                            object.id,
+                            id,
+                            internal_window_id
+                        );
+                        self.get_window(object, client, id, internal_window_id)
+                            .await
+                    }
+                    2u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let internal_window_uuid = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window_management#{}.get_window_by_uuid({}, \"{}\")",
+                            object.id,
+                            id,
+                            internal_window_uuid
+                        );
+                        self.get_window_by_uuid(object, client, id, internal_window_uuid)
+                            .await
+                    }
+                    3u16 => {
+                        let stacking_order = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window_management#{}.get_stacking_order({})",
+                            object.id,
+                            stacking_order
+                        );
+                        self.get_stacking_order(object, client, stacking_order)
+                            .await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Tell the compositor to show/hide the desktop."]
+            async fn show_desktop(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                state: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Deprecated: use get_window_by_uuid"]
+            async fn get_window(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                internal_window_id: u32,
+            ) -> crate::server::Result<()>;
+            async fn get_window_by_uuid(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                internal_window_uuid: String,
+            ) -> crate::server::Result<()>;
+            async fn get_stacking_order(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                stacking_order: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "This event will be sent whenever the show desktop mode changes. E.g. when it is entered"]
+            #[doc = "or left."]
+            #[doc = ""]
+            #[doc = "On binding the interface the current state is sent."]
+            async fn show_desktop_changed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                state: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window_management#{}.show_desktop_changed({})",
+                    object.id,
+                    state
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(state).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent immediately after a window is mapped."]
+            async fn window(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window_management#{}.window({})",
+                    object.id,
+                    id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent when stacking order changed and on bind."]
+            #[doc = ""]
+            #[doc = "With version 17 this event is deprecated and will no longer be sent."]
+            async fn stacking_order_changed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                ids: Vec<u8>,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window_management#{}.stacking_order_changed(array[{}])",
+                    object.id,
+                    ids.len()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(ids).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent when stacking order changed and on bind."]
+            #[doc = ""]
+            #[doc = "With version 17 this event is deprecated and will no longer be sent."]
+            async fn stacking_order_uuid_changed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                uuids: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window_management#{}.stacking_order_uuid_changed(\"{}\")",
+                    object.id,
+                    uuids
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(uuids))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent immediately after a window is mapped."]
+            async fn window_with_uuid(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: u32,
+                uuid: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window_management#{}.window_with_uuid({}, \"{}\")",
+                    object.id,
+                    id,
+                    uuid
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(id)
+                    .put_string(Some(uuid))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent when stacking order changed."]
+            async fn stacking_order_changed_2(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window_management#{}.stacking_order_changed_2()",
+                    object.id,
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[doc = "Manages and control an application window."]
+    #[doc = ""]
+    #[doc = "Only one client can bind this interface at a time."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_plasma_window {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
+        pub trait OrgKdePlasmaWindow: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "org_kde_plasma_window";
+            const VERSION: u32 = 18u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let flags = message.uint()?;
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.set_state({}, {})",
+                            object.id,
+                            flags,
+                            state
+                        );
+                        self.set_state(object, client, flags, state).await
+                    }
+                    1u16 => {
+                        let number = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.set_virtual_desktop({})",
+                            object.id,
+                            number
+                        );
+                        self.set_virtual_desktop(object, client, number).await
+                    }
+                    2u16 => {
+                        let panel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let x = message.uint()?;
+                        let y = message.uint()?;
+                        let width = message.uint()?;
+                        let height = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.set_minimized_geometry({}, {}, {}, {}, {})",
+                            object.id,
+                            panel,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.set_minimized_geometry(object, client, panel, x, y, width, height)
+                            .await
+                    }
+                    3u16 => {
+                        let panel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.unset_minimized_geometry({})",
+                            object.id,
+                            panel
+                        );
+                        self.unset_minimized_geometry(object, client, panel).await
+                    }
+                    4u16 => {
+                        tracing::debug!("org_kde_plasma_window#{}.close()", object.id,);
+                        self.close(object, client).await
+                    }
+                    5u16 => {
+                        tracing::debug!("org_kde_plasma_window#{}.request_move()", object.id,);
+                        self.request_move(object, client).await
+                    }
+                    6u16 => {
+                        tracing::debug!("org_kde_plasma_window#{}.request_resize()", object.id,);
+                        self.request_resize(object, client).await
+                    }
+                    7u16 => {
+                        tracing::debug!("org_kde_plasma_window#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    8u16 => {
+                        let fd = message.fd()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.get_icon({})",
+                            object.id,
+                            fd.as_raw_fd()
+                        );
+                        self.get_icon(object, client, fd).await
+                    }
+                    9u16 => {
+                        let id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.request_enter_virtual_desktop(\"{}\")",
+                            object.id,
+                            id
+                        );
+                        self.request_enter_virtual_desktop(object, client, id).await
+                    }
+                    10u16 => {
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.request_enter_new_virtual_desktop()",
+                            object.id,
+                        );
+                        self.request_enter_new_virtual_desktop(object, client).await
+                    }
+                    11u16 => {
+                        let id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.request_leave_virtual_desktop(\"{}\")",
+                            object.id,
+                            id
+                        );
+                        self.request_leave_virtual_desktop(object, client, id).await
+                    }
+                    12u16 => {
+                        let id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.request_enter_activity(\"{}\")",
+                            object.id,
+                            id
+                        );
+                        self.request_enter_activity(object, client, id).await
+                    }
+                    13u16 => {
+                        let id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.request_leave_activity(\"{}\")",
+                            object.id,
+                            id
+                        );
+                        self.request_leave_activity(object, client, id).await
+                    }
+                    14u16 => {
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.send_to_output({})",
+                            object.id,
+                            output
+                        );
+                        self.send_to_output(object, client, output).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Set window state."]
+            #[doc = ""]
+            #[doc = "Values for state argument are described by org_kde_plasma_window_management.state"]
+            #[doc = "and can be used together in a bitfield. The flags bitfield describes which flags are"]
+            #[doc = "supposed to be set, the state bitfield the value for the set flags"]
+            async fn set_state(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                flags: u32,
+                state: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Deprecated: use enter_virtual_desktop"]
+            #[doc = "Maps the window to a different virtual desktop."]
+            #[doc = ""]
+            #[doc = "To show the window on all virtual desktops, call the"]
+            #[doc = "org_kde_plasma_window.set_state request and specify a on_all_desktops"]
+            #[doc = "state in the bitfield."]
+            async fn set_virtual_desktop(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                number: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Sets the geometry of the taskbar entry for this window."]
+            #[doc = "The geometry is relative to a panel in particular."]
+            async fn set_minimized_geometry(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                panel: crate::wire::ObjectId,
+                x: u32,
+                y: u32,
+                width: u32,
+                height: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Remove the task geometry information for a particular panel."]
+            async fn unset_minimized_geometry(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                panel: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "Close this window."]
+            async fn close(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Request an interactive move for this window."]
+            async fn request_move(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Request an interactive resize for this window."]
+            async fn request_resize(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Removes the resource bound for this org_kde_plasma_window."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "The compositor will write the window icon into the provided file descriptor."]
+            #[doc = "The data is a serialized QIcon with QDataStream."]
+            async fn get_icon(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                fd: rustix::fd::OwnedFd,
+            ) -> crate::server::Result<()>;
+            #[doc = "Make the window enter a virtual desktop. A window can enter more"]
+            #[doc = "than one virtual desktop. if the id is empty or invalid, no action will be performed."]
+            async fn request_enter_virtual_desktop(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: String,
+            ) -> crate::server::Result<()>;
+            #[doc = "RFC: do this with an empty id to request_enter_virtual_desktop?"]
+            #[doc = "Make the window enter a new virtual desktop. If the server consents the request,"]
+            #[doc = "it will create a new virtual desktop and assign the window to it."]
+            async fn request_enter_new_virtual_desktop(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Make the window exit a virtual desktop. If it exits all desktops it will be considered on all of them."]
+            async fn request_leave_virtual_desktop(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: String,
+            ) -> crate::server::Result<()>;
+            #[doc = "Make the window enter an activity. A window can enter more activity. If the id is empty or invalid, no action will be performed."]
+            async fn request_enter_activity(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: String,
+            ) -> crate::server::Result<()>;
+            #[doc = "Make the window exit a an activity. If it exits all activities it will be considered on all of them."]
+            async fn request_leave_activity(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: String,
+            ) -> crate::server::Result<()>;
+            #[doc = "Requests this window to be displayed in a specific output."]
+            async fn send_to_output(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                output: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "This event will be sent as soon as the window title is changed."]
+            async fn title_changed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                title: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.title_changed(\"{}\")",
+                    object.id,
+                    title
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(title))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent as soon as the application"]
+            #[doc = "identifier is changed."]
+            async fn app_id_changed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                app_id: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.app_id_changed(\"{}\")",
+                    object.id,
+                    app_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(app_id))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent as soon as the window state changes."]
+            #[doc = ""]
+            #[doc = "Values for state argument are described by org_kde_plasma_window_management.state."]
+            async fn state_changed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                flags: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.state_changed({})",
+                    object.id,
+                    flags
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(flags).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "DEPRECATED: use virtual_desktop_entered and virtual_desktop_left instead"]
+            #[doc = "This event will be sent when a window is moved to another"]
+            #[doc = "virtual desktop."]
+            #[doc = ""]
+            #[doc = "It is not sent if it becomes visible on all virtual desktops though."]
+            async fn virtual_desktop_changed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                number: i32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.virtual_desktop_changed({})",
+                    object.id,
+                    number
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(number).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent whenever the themed icon name changes. May be null."]
+            async fn themed_icon_name_changed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                name: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.themed_icon_name_changed(\"{}\")",
+                    object.id,
+                    name
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent immediately after the window is closed"]
+            #[doc = "and its surface is unmapped."]
+            async fn unmapped(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> org_kde_plasma_window#{}.unmapped()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent immediately after all initial state been sent to the client."]
+            #[doc = "If the Plasma window is already unmapped, the unmapped event will be sent before the"]
+            #[doc = "initial_state event."]
+            async fn initial_state(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> org_kde_plasma_window#{}.initial_state()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent whenever the parent window of this org_kde_plasma_window changes."]
+            #[doc = "The passed parent is another org_kde_plasma_window and this org_kde_plasma_window is a"]
+            #[doc = "transient window to the parent window. If the parent argument is null, this"]
+            #[doc = "org_kde_plasma_window does not have a parent window."]
+            async fn parent_window(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                parent: Option<crate::wire::ObjectId>,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.parent_window({})",
+                    object.id,
+                    parent
+                        .as_ref()
+                        .map_or("null".to_string(), |v| v.to_string())
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(parent)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
+            #[doc = "The coordinates are in absolute coordinates of the windowing system."]
+            async fn geometry(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: u32,
+                height: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.geometry({}, {}, {}, {})",
+                    object.id,
+                    x,
+                    y,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .put_uint(width)
+                    .put_uint(height)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent whenever the icon of the window changes, but there is no themed"]
+            #[doc = "icon name. Common examples are Xwayland windows which have a pixmap based icon."]
+            #[doc = ""]
+            #[doc = "The client can request the icon using get_icon."]
+            async fn icon_changed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> org_kde_plasma_window#{}.icon_changed()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 9u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent when the compositor has set the process id this window belongs to."]
+            #[doc = "This should be set once before the initial_state is sent."]
+            async fn pid_changed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                pid: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.pid_changed({})",
+                    object.id,
+                    pid
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(pid).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 10u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent when the window has entered a new virtual desktop. The window can be on more than one desktop, or none: then is considered on all of them."]
+            async fn virtual_desktop_entered(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.virtual_desktop_entered(\"{}\")",
+                    object.id,
+                    id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(id))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 11u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent when the window left a virtual desktop. If the window leaves all desktops, it can be considered on all."]
+            #[doc = "If the window gets manually added on all desktops, the server has to send virtual_desktop_left for every previous desktop it was in for the window to be really considered on all desktops."]
+            async fn virtual_desktop_left(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                is: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.virtual_desktop_left(\"{}\")",
+                    object.id,
+                    is
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(is))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 12u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent after the application menu"]
+            #[doc = "for the window has changed."]
+            async fn application_menu(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                service_name: String,
+                object_path: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.application_menu(\"{}\", \"{}\")",
+                    object.id,
+                    service_name,
+                    object_path
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(service_name))
+                    .put_string(Some(object_path))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 13u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent when the window has entered an activity. The window can be on more than one activity, or none: then is considered on all of them."]
+            async fn activity_entered(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.activity_entered(\"{}\")",
+                    object.id,
+                    id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(id))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 14u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent when the window left an activity. If the window leaves all activities, it will be considered on all."]
+            #[doc = "If the window gets manually added on all activities, the server has to send activity_left for every previous activity it was in for the window to be really considered on all activities."]
+            async fn activity_left(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.activity_left(\"{}\")",
+                    object.id,
+                    id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(id))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 15u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent when the X11 resource name of the window has changed."]
+            #[doc = "This is only set for XWayland windows."]
+            async fn resource_name_changed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                resource_name: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.resource_name_changed(\"{}\")",
+                    object.id,
+                    resource_name
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(resource_name))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 16u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
+            #[doc = "The coordinates are in absolute coordinates of the windowing system."]
+            async fn client_geometry(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                x: i32,
+                y: i32,
+                width: u32,
+                height: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_window#{}.client_geometry({}, {}, {}, {})",
+                    object.id,
+                    x,
+                    y,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .put_uint(width)
+                    .put_uint(height)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 17u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[doc = "The activation manager interface provides a way to get notified"]
+    #[doc = "when an application is about to be activated."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_plasma_activation_feedback {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the org_kde_plasma_activation_feedback interface. See the module level documentation for more info"]
+        pub trait OrgKdePlasmaActivationFeedback: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "org_kde_plasma_activation_feedback";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!(
+                            "org_kde_plasma_activation_feedback#{}.destroy()",
+                            object.id,
+                        );
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the activation manager object. The activation objects introduced"]
+            #[doc = "by this manager object will be unaffected."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Will be issued when an app is set to be activated. It offers"]
+            #[doc = "an instance of org_kde_plasma_activation that will tell us the app_id"]
+            #[doc = "and the extent of the activation."]
+            async fn activation(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_activation_feedback#{}.activation({})",
+                    object.id,
+                    id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_plasma_activation {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the org_kde_plasma_activation interface. See the module level documentation for more info"]
+        pub trait OrgKdePlasmaActivation: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "org_kde_plasma_activation";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("org_kde_plasma_activation#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Notify the compositor that the org_kde_plasma_activation object will no"]
+            #[doc = "longer be used."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            async fn app_id(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                app_id: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_activation#{}.app_id(\"{}\")",
+                    object.id,
+                    app_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(app_id))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            async fn finished(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> org_kde_plasma_activation#{}.finished()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[doc = "When this object is created, the compositor sends a window event for"]
+    #[doc = "each window in the stacking order, and afterwards sends the done event"]
+    #[doc = "and destroys this object."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_plasma_stacking_order {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the org_kde_plasma_stacking_order interface. See the module level documentation for more info"]
+        pub trait OrgKdePlasmaStackingOrder: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "org_kde_plasma_stacking_order";
+            const VERSION: u32 = 17u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            async fn window(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                uuid: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> org_kde_plasma_stacking_order#{}.window(\"{}\")",
+                    object.id,
+                    uuid
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(uuid))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            async fn done(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> org_kde_plasma_stacking_order#{}.done()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -5284,4720 +10196,6 @@ pub mod wl_eglstream_controller {
                 wl_resource: crate::wire::ObjectId,
                 attribs: Vec<u8>,
             ) -> crate::server::Result<()>;
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod dpms {
-    #[doc = "The Dpms manager allows to get a org_kde_kwin_dpms for a given wl_output."]
-    #[doc = "The org_kde_kwin_dpms provides the currently used VESA Display Power Management"]
-    #[doc = "Signaling state (see https://en.wikipedia.org/wiki/VESA_Display_Power_Management_Signaling )."]
-    #[doc = "In addition it allows to request a state change. A compositor is not obliged to honor it"]
-    #[doc = "and will normally automatically switch back to on state."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is a desktop environment"]
-    #[doc = "implementation detail. Regular clients must not use this protocol."]
-    #[doc = "Backward incompatible changes may be added without bumping the major"]
-    #[doc = "version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_kwin_dpms_manager {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the org_kde_kwin_dpms_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinDpmsManager: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_dpms_manager";
-            const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let output = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "org_kde_kwin_dpms_manager#{}.get({}, {})",
-                            object.id,
-                            id,
-                            output
-                        );
-                        self.get(object, client, id, output).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Factory request to get the org_kde_kwin_dpms for a given wl_output."]
-            async fn get(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-        }
-    }
-    #[doc = "This interface provides information about the VESA DPMS state for a wl_output."]
-    #[doc = "It gets created through the request get on the org_kde_kwin_dpms_manager interface."]
-    #[doc = ""]
-    #[doc = "On creating the resource the server will push whether DPSM is supported for the output,"]
-    #[doc = "the currently used DPMS state and notifies the client through the done event once all"]
-    #[doc = "states are pushed. Whenever a state changes the set of changes is committed with the"]
-    #[doc = "done event."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_kwin_dpms {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Mode {
-            On = 0u32,
-            Standby = 1u32,
-            Suspend = 2u32,
-            Off = 3u32,
-        }
-        impl TryFrom<u32> for Mode {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::On),
-                    1u32 => Ok(Self::Standby),
-                    2u32 => Ok(Self::Suspend),
-                    3u32 => Ok(Self::Off),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Mode {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the org_kde_kwin_dpms interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinDpms: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_dpms";
-            const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let mode = message.uint()?;
-                        tracing::debug!("org_kde_kwin_dpms#{}.set({})", object.id, mode);
-                        self.set(object, client, mode).await
-                    }
-                    1u16 => {
-                        tracing::debug!("org_kde_kwin_dpms#{}.release()", object.id,);
-                        self.release(object, client).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Requests that the compositor puts the wl_output into the passed mode. The compositor"]
-            #[doc = "is not obliged to change the state. In addition the compositor might leave the mode"]
-            #[doc = "whenever it seems suitable. E.g. the compositor might return to On state on user input."]
-            #[doc = ""]
-            #[doc = "The client should not assume that the mode changed after requesting a new mode."]
-            #[doc = "Instead the client should listen for the mode event."]
-            async fn set(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                mode: u32,
-            ) -> crate::server::Result<()>;
-            async fn release(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "This event gets pushed on binding the resource and indicates whether the wl_output"]
-            #[doc = "supports DPMS. There are operation modes of a Wayland server where DPMS might not"]
-            #[doc = "make sense (e.g. nested compositors)."]
-            async fn supported(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                supported: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_kwin_dpms#{}.supported({})",
-                    object.id,
-                    supported
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(supported)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This mode gets pushed on binding the resource and provides the currently used"]
-            #[doc = "DPMS mode. It also gets pushed if DPMS is not supported for the wl_output, in that"]
-            #[doc = "case the value will be On."]
-            #[doc = ""]
-            #[doc = "The event is also pushed whenever the state changes."]
-            async fn mode(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                mode: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_dpms#{}.mode({})", object.id, mode);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(mode).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event gets pushed on binding the resource once all other states are pushed."]
-            #[doc = ""]
-            #[doc = "In addition it gets pushed whenever a state changes to tell the client that all"]
-            #[doc = "state changes have been pushed."]
-            async fn done(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_kwin_dpms#{}.done()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod fake_input {
-    #[doc = "This interface allows other processes to provide fake input events."]
-    #[doc = "Purpose is on the one hand side to provide testing facilities like XTest on X11."]
-    #[doc = "But also to support use case like kdeconnect's mouse pad interface."]
-    #[doc = ""]
-    #[doc = "A compositor should not trust the input received from this interface."]
-    #[doc = "Clients should not expect that the compositor honors the requests from this"]
-    #[doc = "interface."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is a desktop environment"]
-    #[doc = "implementation detail. Regular clients must not use this protocol."]
-    #[doc = "Backward incompatible changes may be added without bumping the major"]
-    #[doc = "version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_kwin_fake_input {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the org_kde_kwin_fake_input interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinFakeInput: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_fake_input";
-            const VERSION: u32 = 5u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let application = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let reason = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "org_kde_kwin_fake_input#{}.authenticate(\"{}\", \"{}\")",
-                            object.id,
-                            application,
-                            reason
-                        );
-                        self.authenticate(object, client, application, reason).await
-                    }
-                    1u16 => {
-                        let delta_x = message.fixed()?;
-                        let delta_y = message.fixed()?;
-                        tracing::debug!(
-                            "org_kde_kwin_fake_input#{}.pointer_motion({}, {})",
-                            object.id,
-                            delta_x,
-                            delta_y
-                        );
-                        self.pointer_motion(object, client, delta_x, delta_y).await
-                    }
-                    2u16 => {
-                        let button = message.uint()?;
-                        let state = message.uint()?;
-                        tracing::debug!(
-                            "org_kde_kwin_fake_input#{}.button({}, {})",
-                            object.id,
-                            button,
-                            state
-                        );
-                        self.button(object, client, button, state).await
-                    }
-                    3u16 => {
-                        let axis = message.uint()?;
-                        let value = message.fixed()?;
-                        tracing::debug!(
-                            "org_kde_kwin_fake_input#{}.axis({}, {})",
-                            object.id,
-                            axis,
-                            value
-                        );
-                        self.axis(object, client, axis, value).await
-                    }
-                    4u16 => {
-                        let id = message.uint()?;
-                        let x = message.fixed()?;
-                        let y = message.fixed()?;
-                        tracing::debug!(
-                            "org_kde_kwin_fake_input#{}.touch_down({}, {}, {})",
-                            object.id,
-                            id,
-                            x,
-                            y
-                        );
-                        self.touch_down(object, client, id, x, y).await
-                    }
-                    5u16 => {
-                        let id = message.uint()?;
-                        let x = message.fixed()?;
-                        let y = message.fixed()?;
-                        tracing::debug!(
-                            "org_kde_kwin_fake_input#{}.touch_motion({}, {}, {})",
-                            object.id,
-                            id,
-                            x,
-                            y
-                        );
-                        self.touch_motion(object, client, id, x, y).await
-                    }
-                    6u16 => {
-                        let id = message.uint()?;
-                        tracing::debug!("org_kde_kwin_fake_input#{}.touch_up({})", object.id, id);
-                        self.touch_up(object, client, id).await
-                    }
-                    7u16 => {
-                        tracing::debug!("org_kde_kwin_fake_input#{}.touch_cancel()", object.id,);
-                        self.touch_cancel(object, client).await
-                    }
-                    8u16 => {
-                        tracing::debug!("org_kde_kwin_fake_input#{}.touch_frame()", object.id,);
-                        self.touch_frame(object, client).await
-                    }
-                    9u16 => {
-                        let x = message.fixed()?;
-                        let y = message.fixed()?;
-                        tracing::debug!(
-                            "org_kde_kwin_fake_input#{}.pointer_motion_absolute({}, {})",
-                            object.id,
-                            x,
-                            y
-                        );
-                        self.pointer_motion_absolute(object, client, x, y).await
-                    }
-                    10u16 => {
-                        let button = message.uint()?;
-                        let state = message.uint()?;
-                        tracing::debug!(
-                            "org_kde_kwin_fake_input#{}.keyboard_key({}, {})",
-                            object.id,
-                            button,
-                            state
-                        );
-                        self.keyboard_key(object, client, button, state).await
-                    }
-                    11u16 => {
-                        tracing::debug!("org_kde_kwin_fake_input#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "A client should use this request to tell the compositor why it wants to"]
-            #[doc = "use this interface. The compositor might use the information to decide"]
-            #[doc = "whether it wants to grant the request. The data might also be passed to"]
-            #[doc = "the user to decide whether the application should get granted access to"]
-            #[doc = "this very privileged interface."]
-            async fn authenticate(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                application: String,
-                reason: String,
-            ) -> crate::server::Result<()>;
-            async fn pointer_motion(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                delta_x: crate::wire::Fixed,
-                delta_y: crate::wire::Fixed,
-            ) -> crate::server::Result<()>;
-            async fn button(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                button: u32,
-                state: u32,
-            ) -> crate::server::Result<()>;
-            async fn axis(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                axis: u32,
-                value: crate::wire::Fixed,
-            ) -> crate::server::Result<()>;
-            #[doc = "A client should use this request to send touch down event at specific"]
-            #[doc = "coordinates."]
-            async fn touch_down(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: u32,
-                x: crate::wire::Fixed,
-                y: crate::wire::Fixed,
-            ) -> crate::server::Result<()>;
-            #[doc = "A client should use this request to send touch motion to specific position."]
-            async fn touch_motion(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: u32,
-                x: crate::wire::Fixed,
-                y: crate::wire::Fixed,
-            ) -> crate::server::Result<()>;
-            #[doc = "A client should use this request to send touch up event."]
-            async fn touch_up(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "A client should use this request to cancel the current"]
-            #[doc = "touch event."]
-            async fn touch_cancel(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "A client should use this request to send touch frame event."]
-            async fn touch_frame(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            async fn pointer_motion_absolute(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                x: crate::wire::Fixed,
-                y: crate::wire::Fixed,
-            ) -> crate::server::Result<()>;
-            async fn keyboard_key(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                button: u32,
-                state: u32,
-            ) -> crate::server::Result<()>;
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod kde_lockscreen_overlay_v1 {
-    #[doc = "Allows a client to request a surface to be visible when the system is locked."]
-    #[doc = ""]
-    #[doc = "This is meant to be used for specific high urgency cases like phone calls or alarms."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is a desktop environment"]
-    #[doc = "implementation detail. Regular clients must not use this protocol."]
-    #[doc = "Backward incompatible changes may be added without bumping the major"]
-    #[doc = "version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod kde_lockscreen_overlay_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "the client provided an invalid surface state"]
-            InvalidSurfaceState = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::InvalidSurfaceState),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the kde_lockscreen_overlay_v1 interface. See the module level documentation for more info"]
-        pub trait KdeLockscreenOverlayV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_lockscreen_overlay_v1";
-            const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "kde_lockscreen_overlay_v1#{}.allow({})",
-                            object.id,
-                            surface
-                        );
-                        self.allow(object, client, surface).await
-                    }
-                    1u16 => {
-                        tracing::debug!("kde_lockscreen_overlay_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Informs the compositor that the surface could be shown when the screen is locked. This request should be called while the surface is unmapped."]
-            async fn allow(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "This won't affect the surface previously marked with the allow request."]
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod kde_output_device_v2 {
-    #[doc = "An output device describes a display device available to the compositor."]
-    #[doc = "output_device is similar to wl_output, but focuses on output"]
-    #[doc = "configuration management."]
-    #[doc = ""]
-    #[doc = "A client can query all global output_device objects to enlist all"]
-    #[doc = "available display devices, even those that may currently not be"]
-    #[doc = "represented by the compositor as a wl_output."]
-    #[doc = ""]
-    #[doc = "The client sends configuration changes to the server through the"]
-    #[doc = "outputconfiguration interface, and the server applies the configuration"]
-    #[doc = "changes to the hardware and signals changes to the output devices"]
-    #[doc = "accordingly."]
-    #[doc = ""]
-    #[doc = "This object is published as global during start up for every available"]
-    #[doc = "display devices, or when one later becomes available, for example by"]
-    #[doc = "being hotplugged via a physical connector."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is a desktop environment"]
-    #[doc = "implementation detail. Regular clients must not use this protocol."]
-    #[doc = "Backward incompatible changes may be added without bumping the major"]
-    #[doc = "version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod kde_output_device_v2 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "This enumeration describes how the physical pixels on an output are"]
-        #[doc = "laid out."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Subpixel {
-            Unknown = 0u32,
-            None = 1u32,
-            HorizontalRgb = 2u32,
-            HorizontalBgr = 3u32,
-            VerticalRgb = 4u32,
-            VerticalBgr = 5u32,
-        }
-        impl TryFrom<u32> for Subpixel {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Unknown),
-                    1u32 => Ok(Self::None),
-                    2u32 => Ok(Self::HorizontalRgb),
-                    3u32 => Ok(Self::HorizontalBgr),
-                    4u32 => Ok(Self::VerticalRgb),
-                    5u32 => Ok(Self::VerticalBgr),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Subpixel {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "This describes the transform, that a compositor will apply to a"]
-        #[doc = "surface to compensate for the rotation or mirroring of an"]
-        #[doc = "output device."]
-        #[doc = ""]
-        #[doc = "The flipped values correspond to an initial flip around a"]
-        #[doc = "vertical axis followed by rotation."]
-        #[doc = ""]
-        #[doc = "The purpose is mainly to allow clients to render accordingly and"]
-        #[doc = "tell the compositor, so that for fullscreen surfaces, the"]
-        #[doc = "compositor is still able to scan out directly client surfaces."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Transform {
-            Normal = 0u32,
-            _90 = 1u32,
-            _180 = 2u32,
-            _270 = 3u32,
-            Flipped = 4u32,
-            Flipped90 = 5u32,
-            Flipped180 = 6u32,
-            Flipped270 = 7u32,
-        }
-        impl TryFrom<u32> for Transform {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Normal),
-                    1u32 => Ok(Self::_90),
-                    2u32 => Ok(Self::_180),
-                    3u32 => Ok(Self::_270),
-                    4u32 => Ok(Self::Flipped),
-                    5u32 => Ok(Self::Flipped90),
-                    6u32 => Ok(Self::Flipped180),
-                    7u32 => Ok(Self::Flipped270),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Transform {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this output_device can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; # [doc = "if setting the rgb range is possible"] const RgbRange = 4u32 ; # [doc = "if this outputdevice supports high dynamic range"] const HighDynamicRange = 8u32 ; # [doc = "if this outputdevice supports a wide color gamut"] const WideColorGamut = 16u32 ; # [doc = "if this outputdevice supports autorotation"] const AutoRotate = 32u32 ; # [doc = "if this outputdevice supports icc profiles"] const IccProfile = 64u32 ; # [doc = "if this outputdevice supports the brightness setting"] const Brightness = 128u32 ; } }
-        impl TryFrom<u32> for Capability {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
-        impl std::fmt::Display for Capability {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                self.bits().fmt(f)
-            }
-        }
-        #[doc = "Describes when the compositor may employ variable refresh rate"]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum VrrPolicy {
-            Never = 0u32,
-            Always = 1u32,
-            Automatic = 2u32,
-        }
-        impl TryFrom<u32> for VrrPolicy {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Never),
-                    1u32 => Ok(Self::Always),
-                    2u32 => Ok(Self::Automatic),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for VrrPolicy {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Whether full or limited color range should be used"]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum RgbRange {
-            Automatic = 0u32,
-            Full = 1u32,
-            Limited = 2u32,
-        }
-        impl TryFrom<u32> for RgbRange {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Automatic),
-                    1u32 => Ok(Self::Full),
-                    2u32 => Ok(Self::Limited),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for RgbRange {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum AutoRotatePolicy {
-            Never = 0u32,
-            InTabletMode = 1u32,
-            Always = 2u32,
-        }
-        impl TryFrom<u32> for AutoRotatePolicy {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Never),
-                    1u32 => Ok(Self::InTabletMode),
-                    2u32 => Ok(Self::Always),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for AutoRotatePolicy {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ColorProfileSource {
-            SRgb = 0u32,
-            Icc = 1u32,
-            Edid = 2u32,
-        }
-        impl TryFrom<u32> for ColorProfileSource {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::SRgb),
-                    1u32 => Ok(Self::Icc),
-                    2u32 => Ok(Self::Edid),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for ColorProfileSource {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "The compositor can do a lot of things that trade between"]
-        #[doc = "performance, power and color accuracy. This setting describes"]
-        #[doc = "a high level preference from the user about in which direction"]
-        #[doc = "that tradeoff should be made."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ColorPowerTradeoff {
-            #[doc = "prefer efficiency and performance"]
-            Efficiency = 0u32,
-            #[doc = "prefer accuracy"]
-            Accuracy = 1u32,
-        }
-        impl TryFrom<u32> for ColorPowerTradeoff {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Efficiency),
-                    1u32 => Ok(Self::Accuracy),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for ColorPowerTradeoff {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the kde_output_device_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputDeviceV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_output_device_v2";
-            const VERSION: u32 = 11u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                _object: &crate::server::Object,
-                _client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "The geometry event describes geometric properties of the output."]
-            #[doc = "The event is sent when binding to the output object and whenever"]
-            #[doc = "any of the properties change."]
-            async fn geometry(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                x: i32,
-                y: i32,
-                physical_width: i32,
-                physical_height: i32,
-                subpixel: i32,
-                make: String,
-                model: String,
-                transform: i32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
-                    object.id,
-                    x,
-                    y,
-                    physical_width,
-                    physical_height,
-                    subpixel,
-                    make,
-                    model,
-                    transform
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_int(x)
-                    .put_int(y)
-                    .put_int(physical_width)
-                    .put_int(physical_height)
-                    .put_int(subpixel)
-                    .put_string(Some(make))
-                    .put_string(Some(model))
-                    .put_int(transform)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event describes the mode currently in use for this head. It is only"]
-            #[doc = "sent if the output is enabled."]
-            async fn current_mode(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                mode: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.current_mode({})",
-                    object.id,
-                    mode
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(mode))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "The mode event describes an available mode for the output."]
-            #[doc = ""]
-            #[doc = "When the client binds to the output_device object, the server sends this"]
-            #[doc = "event once for every available mode the output_device can be operated by."]
-            #[doc = ""]
-            #[doc = "There will always be at least one event sent out on initial binding,"]
-            #[doc = "which represents the current mode."]
-            #[doc = ""]
-            #[doc = "Later if an output changes, its mode event is sent again for the"]
-            #[doc = "eventual added modes and lastly the current mode. In other words, the"]
-            #[doc = "current mode is always represented by the latest event sent with the current"]
-            #[doc = "flag set."]
-            #[doc = ""]
-            #[doc = "The size of a mode is given in physical hardware units of the output device."]
-            #[doc = "This is not necessarily the same as the output size in the global compositor"]
-            #[doc = "space. For instance, the output may be scaled, as described in"]
-            #[doc = "kde_output_device_v2.scale, or transformed, as described in"]
-            #[doc = "kde_output_device_v2.transform."]
-            async fn mode(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                mode: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.mode({})", object.id, mode);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(mode))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event is sent after all other properties have been"]
-            #[doc = "sent on binding to the output object as well as after any"]
-            #[doc = "other output property change have been applied later on."]
-            #[doc = "This allows to see changes to the output properties as atomic,"]
-            #[doc = "even if multiple events successively announce them."]
-            async fn done(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.done()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event contains scaling geometry information"]
-            #[doc = "that is not in the geometry event. It may be sent after"]
-            #[doc = "binding the output object or if the output scale changes"]
-            #[doc = "later. If it is not sent, the client should assume a"]
-            #[doc = "scale of 1."]
-            #[doc = ""]
-            #[doc = "A scale larger than 1 means that the compositor will"]
-            #[doc = "automatically scale surface buffers by this amount"]
-            #[doc = "when rendering. This is used for high resolution"]
-            #[doc = "displays where applications rendering at the native"]
-            #[doc = "resolution would be too small to be legible."]
-            #[doc = ""]
-            #[doc = "It is intended that scaling aware clients track the"]
-            #[doc = "current output of a surface, and if it is on a scaled"]
-            #[doc = "output it should use wl_surface.set_buffer_scale with"]
-            #[doc = "the scale of the output. That way the compositor can"]
-            #[doc = "avoid scaling the surface, and the client can supply"]
-            #[doc = "a higher detail image."]
-            async fn scale(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                factor: crate::wire::Fixed,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.scale({})", object.id, factor);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_fixed(factor).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "The edid event encapsulates the EDID data for the outputdevice."]
-            #[doc = ""]
-            #[doc = "The event is sent when binding to the output object. The EDID"]
-            #[doc = "data may be empty, in which case this event is sent anyway."]
-            #[doc = "If the EDID information is empty, you can fall back to the name"]
-            #[doc = "et al. properties of the outputdevice."]
-            async fn edid(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                raw: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.edid(\"{}\")", object.id, raw);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(raw))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "The enabled event notifies whether this output is currently"]
-            #[doc = "enabled and used for displaying content by the server."]
-            #[doc = "The event is sent when binding to the output object and"]
-            #[doc = "whenever later on an output changes its state by becoming"]
-            #[doc = "enabled or disabled."]
-            async fn enabled(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                enabled: i32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.enabled({})", object.id, enabled);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(enabled).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "The uuid can be used to identify the output. It's controlled by"]
-            #[doc = "the server entirely. The server should make sure the uuid is"]
-            #[doc = "persistent across restarts. An empty uuid is considered invalid."]
-            async fn uuid(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                uuid: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.uuid(\"{}\")", object.id, uuid);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(uuid))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
-            async fn serial_number(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                serial_number: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.serial_number(\"{}\")",
-                    object.id,
-                    serial_number
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(serial_number))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
-            async fn eisa_id(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                eisa_id: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.eisa_id(\"{}\")",
-                    object.id,
-                    eisa_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(eisa_id))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 9u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "What capabilities this device has, sent on startup before the first"]
-            #[doc = "done event."]
-            async fn capabilities(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                flags: Capability,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.capabilities({})",
-                    object.id,
-                    flags
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(flags.bits())
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 10u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "Overscan value of the monitor in percent, sent on startup before the"]
-            #[doc = "first done event."]
-            async fn overscan(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                overscan: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.overscan({})",
-                    object.id,
-                    overscan
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(overscan)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 11u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "What policy the compositor will employ regarding its use of variable"]
-            #[doc = "refresh rate."]
-            async fn vrr_policy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                vrr_policy: VrrPolicy,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.vrr_policy({})",
-                    object.id,
-                    vrr_policy
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(vrr_policy as u32)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 12u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "What rgb range the compositor is using for this output"]
-            async fn rgb_range(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                rgb_range: RgbRange,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.rgb_range({})",
-                    object.id,
-                    rgb_range
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(rgb_range as u32)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 13u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "Name of the output, it's useful to cross-reference to an zxdg_output_v1 and ultimately QScreen"]
-            async fn name(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                name: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_v2#{}.name(\"{}\")", object.id, name);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(name))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 14u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "Whether or not high dynamic range is enabled for this output"]
-            async fn high_dynamic_range(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                hdr_enabled: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.high_dynamic_range({})",
-                    object.id,
-                    hdr_enabled
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(hdr_enabled)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 15u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "If high dynamic range is used, this value defines the brightness in nits for content"]
-            #[doc = "that's in standard dynamic range format. Note that while the value is in nits, that"]
-            #[doc = "doesn't necessarily translate to the same brightness on the screen."]
-            async fn sdr_brightness(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                sdr_brightness: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.sdr_brightness({})",
-                    object.id,
-                    sdr_brightness
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(sdr_brightness)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 16u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "Whether or not the use of a wide color gamut is enabled for this output"]
-            async fn wide_color_gamut(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                wcg_enabled: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.wide_color_gamut({})",
-                    object.id,
-                    wcg_enabled
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(wcg_enabled)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 17u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            async fn auto_rotate_policy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                policy: AutoRotatePolicy,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.auto_rotate_policy({})",
-                    object.id,
-                    policy
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(policy as u32)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 18u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            async fn icc_profile_path(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                profile_path: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.icc_profile_path(\"{}\")",
-                    object.id,
-                    profile_path
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(profile_path))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 19u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            async fn brightness_metadata(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                max_peak_brightness: u32,
-                max_frame_average_brightness: u32,
-                min_brightness: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.brightness_metadata({}, {}, {})",
-                    object.id,
-                    max_peak_brightness,
-                    max_frame_average_brightness,
-                    min_brightness
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(max_peak_brightness)
-                    .put_uint(max_frame_average_brightness)
-                    .put_uint(min_brightness)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 20u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            async fn brightness_overrides(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                max_peak_brightness: i32,
-                max_average_brightness: i32,
-                min_brightness: i32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.brightness_overrides({}, {}, {})",
-                    object.id,
-                    max_peak_brightness,
-                    max_average_brightness,
-                    min_brightness
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_int(max_peak_brightness)
-                    .put_int(max_average_brightness)
-                    .put_int(min_brightness)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 21u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
-            #[doc = "default experience on many modern sRGB screens."]
-            async fn sdr_gamut_wideness(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                gamut_wideness: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.sdr_gamut_wideness({})",
-                    object.id,
-                    gamut_wideness
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(gamut_wideness)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 22u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            async fn color_profile_source(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                source: ColorProfileSource,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.color_profile_source({})",
-                    object.id,
-                    source
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(source as u32)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 23u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This is the brightness modifier of the output. It doesn't specify"]
-            #[doc = "any absolute values, but is merely a multiplier on top of other"]
-            #[doc = "brightness values, like sdr_brightness and brightness_metadata."]
-            #[doc = "0 is the minimum brightness (not completely dark) and 10000 is"]
-            #[doc = "the maximum brightness."]
-            #[doc = "This is currently only supported / meaningful while HDR is active."]
-            async fn brightness(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                brightness: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.brightness({})",
-                    object.id,
-                    brightness
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(brightness)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 24u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            async fn color_power_tradeoff(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                preference: ColorPowerTradeoff,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.color_power_tradeoff({})",
-                    object.id,
-                    preference
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(preference as u32)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 25u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This is the dimming multiplier of the output. This is similar to"]
-            #[doc = "the brightness setting, except it's meant to be a temporary setting"]
-            #[doc = "only, not persistent and may be implemented differently depending"]
-            #[doc = "on the display."]
-            #[doc = "0 is the minimum dimming factor (not completely dark) and 10000"]
-            #[doc = "means the output is not dimmed."]
-            async fn dimming(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                multiplier: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_v2#{}.dimming({})",
-                    object.id,
-                    multiplier
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(multiplier)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 26u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-    #[doc = "This object describes an output mode."]
-    #[doc = ""]
-    #[doc = "Some heads don't support output modes, in which case modes won't be"]
-    #[doc = "advertised."]
-    #[doc = ""]
-    #[doc = "Properties sent via this interface are applied atomically via the"]
-    #[doc = "kde_output_device.done event. No guarantees are made regarding the order"]
-    #[doc = "in which properties are sent."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod kde_output_device_mode_v2 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the kde_output_device_mode_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputDeviceModeV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_output_device_mode_v2";
-            const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                _object: &crate::server::Object,
-                _client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "This event describes the mode size. The size is given in physical"]
-            #[doc = "hardware units of the output device. This is not necessarily the same as"]
-            #[doc = "the output size in the global compositor space. For instance, the output"]
-            #[doc = "may be scaled or transformed."]
-            async fn size(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                width: i32,
-                height: i32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_mode_v2#{}.size({}, {})",
-                    object.id,
-                    width,
-                    height
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_int(width)
-                    .put_int(height)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event describes the mode's fixed vertical refresh rate. It is only"]
-            #[doc = "sent if the mode has a fixed refresh rate."]
-            async fn refresh(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                refresh: i32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_device_mode_v2#{}.refresh({})",
-                    object.id,
-                    refresh
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(refresh).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event advertises this mode as preferred."]
-            async fn preferred(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_mode_v2#{}.preferred()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "The compositor will destroy the object immediately after sending this"]
-            #[doc = "event, so it will become invalid and the client should release any"]
-            #[doc = "resources associated with it."]
-            async fn removed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_device_mode_v2#{}.removed()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod kde_output_management_v2 {
-    #[doc = "This interface enables clients to set properties of output devices for screen"]
-    #[doc = "configuration purposes via the server. To this end output devices are referenced"]
-    #[doc = "by global kde_output_device_v2 objects."]
-    #[doc = ""]
-    #[doc = "outputmanagement (wl_global)"]
-    #[doc = "--------------------------"]
-    #[doc = "request:"]
-    #[doc = "* create_configuration -> outputconfiguration (wl_resource)"]
-    #[doc = ""]
-    #[doc = "outputconfiguration (wl_resource)"]
-    #[doc = "--------------------------"]
-    #[doc = "requests:"]
-    #[doc = "* enable(outputdevice, bool)"]
-    #[doc = "* mode(outputdevice, mode)"]
-    #[doc = "* transformation(outputdevice, flag)"]
-    #[doc = "* position(outputdevice, x, y)"]
-    #[doc = "* apply"]
-    #[doc = ""]
-    #[doc = "events:"]
-    #[doc = "* applied"]
-    #[doc = "* failed"]
-    #[doc = ""]
-    #[doc = "The server registers one outputmanagement object as a global object. In order"]
-    #[doc = "to configure outputs a client requests create_configuration, which provides a"]
-    #[doc = "resource referencing an outputconfiguration for one-time configuration. That"]
-    #[doc = "way the server knows which requests belong together and can group them by that."]
-    #[doc = ""]
-    #[doc = "On the outputconfiguration object the client calls for each output whether the"]
-    #[doc = "output should be enabled, which mode should be set (by referencing the mode from"]
-    #[doc = "the list of announced modes) and the output's global position. Once all outputs"]
-    #[doc = "are configured that way, the client calls apply."]
-    #[doc = "At that point and not earlier the server should try to apply the configuration."]
-    #[doc = "If this succeeds the server emits the applied signal, otherwise the failed"]
-    #[doc = "signal, such that the configuring client is noticed about the success of its"]
-    #[doc = "configuration request."]
-    #[doc = ""]
-    #[doc = "Through this design the interface enables atomic output configuration changes if"]
-    #[doc = "internally supported by the server."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is a desktop environment implementation"]
-    #[doc = "detail. Regular clients must not use this protocol. Backward incompatible"]
-    #[doc = "changes may be added without bumping the major version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod kde_output_management_v2 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputManagementV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_output_management_v2";
-            const VERSION: u32 = 12u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "kde_output_management_v2#{}.create_configuration({})",
-                            object.id,
-                            id
-                        );
-                        self.create_configuration(object, client, id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Request an outputconfiguration object through which the client can configure"]
-            #[doc = "output devices."]
-            async fn create_configuration(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-        }
-    }
-    #[doc = "outputconfiguration is a client-specific resource that can be used to ask"]
-    #[doc = "the server to apply changes to available output devices."]
-    #[doc = ""]
-    #[doc = "The client receives a list of output devices from the registry. When it wants"]
-    #[doc = "to apply new settings, it creates a configuration object from the"]
-    #[doc = "outputmanagement global, writes changes through this object's enable, scale,"]
-    #[doc = "transform and mode calls. It then asks the server to apply these settings in"]
-    #[doc = "an atomic fashion, for example through Linux' DRM interface."]
-    #[doc = ""]
-    #[doc = "The server signals back whether the new settings have applied successfully"]
-    #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
-    #[doc = "applied to the hardware and before the server side sends the applied event."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod kde_output_configuration_v2 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "These error can be emitted in response to kde_output_configuration_v2 requests."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "the config is already applied"]
-            AlreadyApplied = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::AlreadyApplied),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Describes when the compositor may employ variable refresh rate"]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum VrrPolicy {
-            Never = 0u32,
-            Always = 1u32,
-            Automatic = 2u32,
-        }
-        impl TryFrom<u32> for VrrPolicy {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Never),
-                    1u32 => Ok(Self::Always),
-                    2u32 => Ok(Self::Automatic),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for VrrPolicy {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Whether this output should use full or limited rgb."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum RgbRange {
-            Automatic = 0u32,
-            Full = 1u32,
-            Limited = 2u32,
-        }
-        impl TryFrom<u32> for RgbRange {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Automatic),
-                    1u32 => Ok(Self::Full),
-                    2u32 => Ok(Self::Limited),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for RgbRange {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum AutoRotatePolicy {
-            Never = 0u32,
-            InTabletMode = 1u32,
-            Always = 2u32,
-        }
-        impl TryFrom<u32> for AutoRotatePolicy {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Never),
-                    1u32 => Ok(Self::InTabletMode),
-                    2u32 => Ok(Self::Always),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for AutoRotatePolicy {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ColorProfileSource {
-            SRgb = 0u32,
-            Icc = 1u32,
-            Edid = 2u32,
-        }
-        impl TryFrom<u32> for ColorProfileSource {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::SRgb),
-                    1u32 => Ok(Self::Icc),
-                    2u32 => Ok(Self::Edid),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for ColorProfileSource {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "The compositor can do a lot of things that trade between"]
-        #[doc = "performance, power and color accuracy. This setting describes"]
-        #[doc = "a high level preference from the user about in which direction"]
-        #[doc = "that tradeoff should be made."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ColorPowerTradeoff {
-            #[doc = "prefer efficiency and performance"]
-            Efficiency = 0u32,
-            #[doc = "prefer accuracy"]
-            Accuracy = 1u32,
-        }
-        impl TryFrom<u32> for ColorPowerTradeoff {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Efficiency),
-                    1u32 => Ok(Self::Accuracy),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for ColorPowerTradeoff {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the kde_output_configuration_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputConfigurationV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_output_configuration_v2";
-            const VERSION: u32 = 12u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let enable = message.int()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.enable({}, {})",
-                            object.id,
-                            outputdevice,
-                            enable
-                        );
-                        self.enable(object, client, outputdevice, enable).await
-                    }
-                    1u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let mode = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.mode({}, {})",
-                            object.id,
-                            outputdevice,
-                            mode
-                        );
-                        self.mode(object, client, outputdevice, mode).await
-                    }
-                    2u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let transform = message.int()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.transform({}, {})",
-                            object.id,
-                            outputdevice,
-                            transform
-                        );
-                        self.transform(object, client, outputdevice, transform)
-                            .await
-                    }
-                    3u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let x = message.int()?;
-                        let y = message.int()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.position({}, {}, {})",
-                            object.id,
-                            outputdevice,
-                            x,
-                            y
-                        );
-                        self.position(object, client, outputdevice, x, y).await
-                    }
-                    4u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let scale = message.fixed()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.scale({}, {})",
-                            object.id,
-                            outputdevice,
-                            scale
-                        );
-                        self.scale(object, client, outputdevice, scale).await
-                    }
-                    5u16 => {
-                        tracing::debug!("kde_output_configuration_v2#{}.apply()", object.id,);
-                        self.apply(object, client).await
-                    }
-                    6u16 => {
-                        tracing::debug!("kde_output_configuration_v2#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    7u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let overscan = message.uint()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.overscan({}, {})",
-                            object.id,
-                            outputdevice,
-                            overscan
-                        );
-                        self.overscan(object, client, outputdevice, overscan).await
-                    }
-                    8u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let policy = message.uint()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_vrr_policy({}, {})",
-                            object.id,
-                            outputdevice,
-                            policy
-                        );
-                        self.set_vrr_policy(object, client, outputdevice, policy.try_into()?)
-                            .await
-                    }
-                    9u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let rgb_range = message.uint()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_rgb_range({}, {})",
-                            object.id,
-                            outputdevice,
-                            rgb_range
-                        );
-                        self.set_rgb_range(object, client, outputdevice, rgb_range.try_into()?)
-                            .await
-                    }
-                    10u16 => {
-                        let output = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_primary_output({})",
-                            object.id,
-                            output
-                        );
-                        self.set_primary_output(object, client, output).await
-                    }
-                    11u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let priority = message.uint()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_priority({}, {})",
-                            object.id,
-                            outputdevice,
-                            priority
-                        );
-                        self.set_priority(object, client, outputdevice, priority)
-                            .await
-                    }
-                    12u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let enable_hdr = message.uint()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_high_dynamic_range({}, {})",
-                            object.id,
-                            outputdevice,
-                            enable_hdr
-                        );
-                        self.set_high_dynamic_range(object, client, outputdevice, enable_hdr)
-                            .await
-                    }
-                    13u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let sdr_brightness = message.uint()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_sdr_brightness({}, {})",
-                            object.id,
-                            outputdevice,
-                            sdr_brightness
-                        );
-                        self.set_sdr_brightness(object, client, outputdevice, sdr_brightness)
-                            .await
-                    }
-                    14u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let enable_wcg = message.uint()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_wide_color_gamut({}, {})",
-                            object.id,
-                            outputdevice,
-                            enable_wcg
-                        );
-                        self.set_wide_color_gamut(object, client, outputdevice, enable_wcg)
-                            .await
-                    }
-                    15u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let policy = message.uint()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_auto_rotate_policy({}, {})",
-                            object.id,
-                            outputdevice,
-                            policy
-                        );
-                        self.set_auto_rotate_policy(
-                            object,
-                            client,
-                            outputdevice,
-                            policy.try_into()?,
-                        )
-                        .await
-                    }
-                    16u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let profile_path = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_icc_profile_path({}, \"{}\")",
-                            object.id,
-                            outputdevice,
-                            profile_path
-                        );
-                        self.set_icc_profile_path(object, client, outputdevice, profile_path)
-                            .await
-                    }
-                    17u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let max_peak_brightness = message.int()?;
-                        let max_frame_average_brightness = message.int()?;
-                        let min_brightness = message.int()?;
-                        tracing :: debug ! ("kde_output_configuration_v2#{}.set_brightness_overrides({}, {}, {}, {})" , object . id , outputdevice , max_peak_brightness , max_frame_average_brightness , min_brightness);
-                        self.set_brightness_overrides(
-                            object,
-                            client,
-                            outputdevice,
-                            max_peak_brightness,
-                            max_frame_average_brightness,
-                            min_brightness,
-                        )
-                        .await
-                    }
-                    18u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let gamut_wideness = message.uint()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_sdr_gamut_wideness({}, {})",
-                            object.id,
-                            outputdevice,
-                            gamut_wideness
-                        );
-                        self.set_sdr_gamut_wideness(object, client, outputdevice, gamut_wideness)
-                            .await
-                    }
-                    19u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let color_profile_source = message.uint()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_color_profile_source({}, {})",
-                            object.id,
-                            outputdevice,
-                            color_profile_source
-                        );
-                        self.set_color_profile_source(
-                            object,
-                            client,
-                            outputdevice,
-                            color_profile_source.try_into()?,
-                        )
-                        .await
-                    }
-                    20u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let brightness = message.uint()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_brightness({}, {})",
-                            object.id,
-                            outputdevice,
-                            brightness
-                        );
-                        self.set_brightness(object, client, outputdevice, brightness)
-                            .await
-                    }
-                    21u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let preference = message.uint()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_color_power_tradeoff({}, {})",
-                            object.id,
-                            outputdevice,
-                            preference
-                        );
-                        self.set_color_power_tradeoff(
-                            object,
-                            client,
-                            outputdevice,
-                            preference.try_into()?,
-                        )
-                        .await
-                    }
-                    22u16 => {
-                        let outputdevice = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let multiplier = message.uint()?;
-                        tracing::debug!(
-                            "kde_output_configuration_v2#{}.set_dimming({}, {})",
-                            object.id,
-                            outputdevice,
-                            multiplier
-                        );
-                        self.set_dimming(object, client, outputdevice, multiplier)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Mark the output as enabled or disabled."]
-            async fn enable(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                enable: i32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Sets the mode for a given output."]
-            async fn mode(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                mode: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "Sets the transformation for a given output."]
-            async fn transform(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                transform: i32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Sets the position for this output device. (x,y) describe the top-left corner"]
-            #[doc = "of the output in global space, whereby the origin (0,0) of the global space"]
-            #[doc = "has to be aligned with the top-left corner of the most left and in case this"]
-            #[doc = "does not define a single one the top output."]
-            #[doc = ""]
-            #[doc = "There may be no gaps or overlaps between outputs, i.e. the outputs are"]
-            #[doc = "stacked horizontally, vertically, or both on each other."]
-            async fn position(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                x: i32,
-                y: i32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Sets the scaling factor for this output device."]
-            async fn scale(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                scale: crate::wire::Fixed,
-            ) -> crate::server::Result<()>;
-            #[doc = "Asks the server to apply property changes requested through this outputconfiguration"]
-            #[doc = "object to all outputs on the server side."]
-            #[doc = ""]
-            #[doc = "The output configuration can be applied only once. The already_applied protocol error"]
-            #[doc = "will be posted if the apply request is called the second time."]
-            async fn apply(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Set the overscan value of this output device with a value in percent."]
-            async fn overscan(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                overscan: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Set what policy the compositor should employ regarding its use of"]
-            #[doc = "variable refresh rate."]
-            async fn set_vrr_policy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                policy: VrrPolicy,
-            ) -> crate::server::Result<()>;
-            #[doc = "Whether full or limited color range should be used"]
-            async fn set_rgb_range(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                rgb_range: RgbRange,
-            ) -> crate::server::Result<()>;
-            async fn set_primary_output(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                output: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "The order of outputs can be used to assign desktop environment components to a specific screen,"]
-            #[doc = "see kde_output_order_v1 for details. The priority is 1-based for outputs that will be enabled after"]
-            #[doc = "this changeset is applied, all outputs that are disabled need to have the index set to zero."]
-            async fn set_priority(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                priority: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Sets whether or not the output should be set to HDR mode."]
-            async fn set_high_dynamic_range(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                enable_hdr: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Sets the brightness of standard dynamic range content in nits. Only has an effect while the output is in HDR mode."]
-            #[doc = "Note that while the value is in nits, that doesn't necessarily translate to the same brightness on the screen."]
-            async fn set_sdr_brightness(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                sdr_brightness: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Whether or not the output should use a wide color gamut"]
-            async fn set_wide_color_gamut(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                enable_wcg: u32,
-            ) -> crate::server::Result<()>;
-            async fn set_auto_rotate_policy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                policy: AutoRotatePolicy,
-            ) -> crate::server::Result<()>;
-            async fn set_icc_profile_path(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                profile_path: String,
-            ) -> crate::server::Result<()>;
-            async fn set_brightness_overrides(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                max_peak_brightness: i32,
-                max_frame_average_brightness: i32,
-                min_brightness: i32,
-            ) -> crate::server::Result<()>;
-            #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
-            #[doc = "default experience on many modern sRGB screens."]
-            async fn set_sdr_gamut_wideness(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                gamut_wideness: u32,
-            ) -> crate::server::Result<()>;
-            async fn set_color_profile_source(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                color_profile_source: ColorProfileSource,
-            ) -> crate::server::Result<()>;
-            #[doc = "Set the brightness modifier of the output. It doesn't specify"]
-            #[doc = "any absolute values, but is merely a multiplier on top of other"]
-            #[doc = "brightness values, like sdr_brightness and brightness_metadata."]
-            #[doc = "0 is the minimum brightness (not completely dark) and 10000 is"]
-            #[doc = "the maximum brightness."]
-            #[doc = "This is supported while HDR is active in versions 8 and below,"]
-            #[doc = "or when the device supports the brightness_control capability in"]
-            #[doc = "versions 9 and above."]
-            async fn set_brightness(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                brightness: u32,
-            ) -> crate::server::Result<()>;
-            async fn set_color_power_tradeoff(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                preference: ColorPowerTradeoff,
-            ) -> crate::server::Result<()>;
-            #[doc = "Set the dimming multiplier of the output. This is similar to the"]
-            #[doc = "brightness setting, except it's meant to be a temporary setting"]
-            #[doc = "only, not persistent and may be implemented differently depending"]
-            #[doc = "on the display."]
-            #[doc = "0 is the minimum dimming factor (not completely dark) and 10000"]
-            #[doc = "means the output is not dimmed."]
-            #[doc = ""]
-            #[doc = "This is supported only when the brightness_control capability is"]
-            #[doc = "also supported."]
-            async fn set_dimming(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                outputdevice: crate::wire::ObjectId,
-                multiplier: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Sent after the server has successfully applied the changes."]
-            #[doc = "."]
-            async fn applied(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_configuration_v2#{}.applied()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "Sent if the server rejects the changes or failed to apply them."]
-            async fn failed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_configuration_v2#{}.failed()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "Describes why applying the output configuration failed. Is only"]
-            #[doc = "sent before the failure event."]
-            async fn failure_reason(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                reason: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_configuration_v2#{}.failure_reason(\"{}\")",
-                    object.id,
-                    reason
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(reason))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod kde_output_order_v1 {
-    #[doc = "Announce the order in which desktop environment components should be placed on outputs."]
-    #[doc = "The compositor will send the list of outputs when the global is bound and whenever there is a change."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is a desktop environment"]
-    #[doc = "implementation detail. Regular clients must not use this protocol."]
-    #[doc = "Backward incompatible changes may be added without bumping the major"]
-    #[doc = "version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod kde_output_order_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the kde_output_order_v1 interface. See the module level documentation for more info"]
-        pub trait KdeOutputOrderV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_output_order_v1";
-            const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("kde_output_order_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Specifies the output identified by their wl_output.name."]
-            async fn output(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                output_name: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_output_order_v1#{}.output(\"{}\")",
-                    object.id,
-                    output_name
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(output_name))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "Specifies that the output list is complete. On the next output event, a new list begins."]
-            async fn done(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> kde_output_order_v1#{}.done()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod kde_primary_output_v1 {
-    #[doc = "Protocol for telling which is the primary display among the selection"]
-    #[doc = "of enabled outputs."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is a desktop environment"]
-    #[doc = "implementation detail. Regular clients must not use this protocol."]
-    #[doc = "Backward incompatible changes may be added without bumping the major"]
-    #[doc = "version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod kde_primary_output_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the kde_primary_output_v1 interface. See the module level documentation for more info"]
-        pub trait KdePrimaryOutputV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_primary_output_v1";
-            const VERSION: u32 = 2u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("kde_primary_output_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Specifies which output is the primary one identified by their uuid. See kde_output_device_v2 uuid event for more information about it."]
-            async fn primary_output(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                output_name: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> kde_primary_output_v1#{}.primary_output(\"{}\")",
-                    object.id,
-                    output_name
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(output_name))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod kde_screen_edge_v1 {
-    #[doc = "This interface allows clients to associate actions with screen edges. For"]
-    #[doc = "example, showing a surface by moving the pointer to a screen edge."]
-    #[doc = ""]
-    #[doc = "Potential ways to trigger the screen edge are subject to compositor"]
-    #[doc = "policies. As an example, the compositor may consider the screen edge to be"]
-    #[doc = "triggered if the pointer hits its associated screen border. Other ways may"]
-    #[doc = "include using touchscreen or touchpad gestures."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is a desktop environment"]
-    #[doc = "implementation detail. Regular clients must not use this protocol."]
-    #[doc = "Backward incompatible changes may be added without bumping the major"]
-    #[doc = "version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod kde_screen_edge_manager_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "the specified border value is invalid"]
-            InvalidBorder = 0u32,
-            #[doc = "the surface has invalid role"]
-            InvalidRole = 1u32,
-            #[doc = "the surface already has a screen edge"]
-            AlreadyConstructed = 2u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::InvalidBorder),
-                    1u32 => Ok(Self::InvalidRole),
-                    2u32 => Ok(Self::AlreadyConstructed),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "These values describe possible screen borders."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Border {
-            #[doc = "top screen edge"]
-            Top = 1u32,
-            #[doc = "bottom screen edge"]
-            Bottom = 2u32,
-            #[doc = "left screen edge"]
-            Left = 3u32,
-            #[doc = "right screen edge"]
-            Right = 4u32,
-        }
-        impl TryFrom<u32> for Border {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    1u32 => Ok(Self::Top),
-                    2u32 => Ok(Self::Bottom),
-                    3u32 => Ok(Self::Left),
-                    4u32 => Ok(Self::Right),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Border {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the kde_screen_edge_manager_v1 interface. See the module level documentation for more info"]
-        pub trait KdeScreenEdgeManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_screen_edge_manager_v1";
-            const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("kde_screen_edge_manager_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let border = message.uint()?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "kde_screen_edge_manager_v1#{}.get_auto_hide_screen_edge({}, {}, {})",
-                            object.id,
-                            id,
-                            border,
-                            surface
-                        );
-                        self.get_auto_hide_screen_edge(
-                            object,
-                            client,
-                            id,
-                            border.try_into()?,
-                            surface,
-                        )
-                        .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy the screen edge manager. This doesn't destroy objects created"]
-            #[doc = "with this manager."]
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Create a new auto hide screen edge object associated with the specified"]
-            #[doc = "surface and the border."]
-            #[doc = ""]
-            #[doc = "Creating a kde_auto_hide_screen_edge_v1 object does not change the"]
-            #[doc = "visibility of the surface. The kde_auto_hide_screen_edge_v1.activate"]
-            #[doc = "request must be issued in order to hide the surface."]
-            #[doc = ""]
-            #[doc = "The \"border\" argument must be a valid enum entry, otherwise the"]
-            #[doc = "invalid_border protocol error is raised."]
-            #[doc = ""]
-            #[doc = "The invalid_role protocol error will be raised if the specified surface"]
-            #[doc = "does not have layer_surface role."]
-            async fn get_auto_hide_screen_edge(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: crate::wire::ObjectId,
-                border: Border,
-                surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-        }
-    }
-    #[doc = "The auto hide screen edge object allows to hide the surface and make it"]
-    #[doc = "visible by triggering the screen edge. The screen edge is inactive and"]
-    #[doc = "the surface is visible by default."]
-    #[doc = ""]
-    #[doc = "This interface can be used to implement user interface elements such as"]
-    #[doc = "auto-hide panels or docks."]
-    #[doc = ""]
-    #[doc = "kde_auto_hide_screen_edge_v1.activate activates the screen edge and makes"]
-    #[doc = "the surface hidden. The surface can be made visible by triggering the"]
-    #[doc = "screen edge or calling kde_auto_hide_screen_edge_v1.deactivate."]
-    #[doc = ""]
-    #[doc = "If the screen edge has been triggered, it won't be re-activated again."]
-    #[doc = "Another kde_auto_hide_screen_edge_v1.activate request must be made by the"]
-    #[doc = "client to activate the screen edge."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod kde_auto_hide_screen_edge_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the kde_auto_hide_screen_edge_v1 interface. See the module level documentation for more info"]
-        pub trait KdeAutoHideScreenEdgeV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_auto_hide_screen_edge_v1";
-            const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("kde_auto_hide_screen_edge_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    1u16 => {
-                        tracing::debug!("kde_auto_hide_screen_edge_v1#{}.deactivate()", object.id,);
-                        self.deactivate(object, client).await
-                    }
-                    2u16 => {
-                        tracing::debug!("kde_auto_hide_screen_edge_v1#{}.activate()", object.id,);
-                        self.activate(object, client).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy the auto hide screen edge object. If the screen edge is active,"]
-            #[doc = "it will be deactivated and the surface will be made visible."]
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Deactivate the screen edge. The surface will be made visible."]
-            async fn deactivate(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Activate the screen edge. The surface will be hidden until the screen"]
-            #[doc = "edge is triggered."]
-            async fn activate(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod org_kde_plasma_virtual_desktop {
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_plasma_virtual_desktop_management {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the org_kde_plasma_virtual_desktop_management interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaVirtualDesktopManagement: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop_management";
-            const VERSION: u32 = 2u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let desktop_id = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.get_virtual_desktop({}, \"{}\")" , object . id , id , desktop_id);
-                        self.get_virtual_desktop(object, client, id, desktop_id)
-                            .await
-                    }
-                    1u16 => {
-                        let name = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let position = message.uint()?;
-                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.request_create_virtual_desktop(\"{}\", {})" , object . id , name , position);
-                        self.request_create_virtual_desktop(object, client, name, position)
-                            .await
-                    }
-                    2u16 => {
-                        let desktop_id = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.request_remove_virtual_desktop(\"{}\")" , object . id , desktop_id);
-                        self.request_remove_virtual_desktop(object, client, desktop_id)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Given the id of a particular virtual desktop, get the corresponding org_kde_plasma_virtual_desktop which represents only the desktop with that id."]
-            #[doc = ""]
-            #[doc = "Warning! The protocol described in this file is a desktop environment"]
-            #[doc = "implementation detail. Regular clients must not use this protocol."]
-            #[doc = "Backward incompatible changes may be added without bumping the major"]
-            #[doc = "version of the extension."]
-            async fn get_virtual_desktop(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: crate::wire::ObjectId,
-                desktop_id: String,
-            ) -> crate::server::Result<()>;
-            #[doc = "Ask the server to create a new virtual desktop, and position it at a specified position. If the position is zero or less, it will be positioned at the beginning, if the position is the count or more, it will be positioned at the end."]
-            async fn request_create_virtual_desktop(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                name: String,
-                position: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Ask the server to get rid of a virtual desktop, the server may or may not acconsent to the request."]
-            async fn request_remove_virtual_desktop(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                desktop_id: String,
-            ) -> crate::server::Result<()>;
-            async fn desktop_created(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                desktop_id: String,
-                position: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_created(\"{}\", {})",
-                    object.id,
-                    desktop_id,
-                    position
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(desktop_id))
-                    .put_uint(position)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            async fn desktop_removed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                desktop_id: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop_management#{}.desktop_removed(\"{}\")",
-                    object.id,
-                    desktop_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(desktop_id))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event is sent after all other properties has been"]
-            #[doc = "sent after binding to the desktop manager object and after any"]
-            #[doc = "other property changes done after that. This allows"]
-            #[doc = "changes to the org_kde_plasma_virtual_desktop_management properties to be seen as"]
-            #[doc = "atomic, even if they happen via multiple events."]
-            async fn done(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop_management#{}.done()",
-                    object.id,
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            async fn rows(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                rows: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop_management#{}.rows({})",
-                    object.id,
-                    rows
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(rows).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_plasma_virtual_desktop {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the org_kde_plasma_virtual_desktop interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaVirtualDesktop: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop";
-            const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!(
-                            "org_kde_plasma_virtual_desktop#{}.request_activate()",
-                            object.id,
-                        );
-                        self.request_activate(object, client).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Request the server to set the status of this desktop to active: The server is free to consent or deny the request. This will be the new \"current\" virtual desktop of the system."]
-            async fn request_activate(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "The format of the id is decided by the compositor implementation. A desktop id univocally identifies a virtual desktop and must be guaranteed to never exist two desktops with the same id. The format of the string id is up to the server implementation."]
-            async fn desktop_id(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                desktop_id: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop#{}.desktop_id(\"{}\")",
-                    object.id,
-                    desktop_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(desktop_id))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            async fn name(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                name: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop#{}.name(\"{}\")",
-                    object.id,
-                    name
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(name))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "The desktop will be the new \"current\" desktop of the system. The server may support either one virtual desktop active at a time, or other combinations such as one virtual desktop active per screen."]
-            #[doc = "Windows associated to this virtual desktop will be shown."]
-            async fn activated(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop#{}.activated()",
-                    object.id,
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "Windows that were associated only to this desktop will be hidden."]
-            async fn deactivated(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_virtual_desktop#{}.deactivated()",
-                    object.id,
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event is sent after all other properties has been"]
-            #[doc = "sent after binding to the desktop object and after any"]
-            #[doc = "other property changes done after that. This allows"]
-            #[doc = "changes to the org_kde_plasma_virtual_desktop properties to be seen as"]
-            #[doc = "atomic, even if they happen via multiple events."]
-            async fn done(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.done()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This virtual desktop has just been removed by the server:"]
-            #[doc = "All windows will lose the association to this desktop."]
-            async fn removed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.removed()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod plasma_shell {
-    #[doc = "This interface is used by KF5 powered Wayland shells to communicate with"]
-    #[doc = "the compositor and can only be bound one time."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is a desktop environment"]
-    #[doc = "implementation detail. Regular clients must not use this protocol."]
-    #[doc = "Backward incompatible changes may be added without bumping the major"]
-    #[doc = "version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_plasma_shell {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the org_kde_plasma_shell interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaShell: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_shell";
-            const VERSION: u32 = 8u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "org_kde_plasma_shell#{}.get_surface({}, {})",
-                            object.id,
-                            id,
-                            surface
-                        );
-                        self.get_surface(object, client, id, surface).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Create a shell surface for an existing surface."]
-            #[doc = ""]
-            #[doc = "Only one shell surface can be associated with a given"]
-            #[doc = "surface."]
-            async fn get_surface(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-        }
-    }
-    #[doc = "An interface that may be implemented by a wl_surface, for"]
-    #[doc = "implementations that provide the shell user interface."]
-    #[doc = ""]
-    #[doc = "It provides requests to set surface roles, assign an output"]
-    #[doc = "or set the position in output coordinates."]
-    #[doc = ""]
-    #[doc = "On the server side the object is automatically destroyed when"]
-    #[doc = "the related wl_surface is destroyed.  On client side,"]
-    #[doc = "org_kde_plasma_surface.destroy() must be called before"]
-    #[doc = "destroying the wl_surface object."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_plasma_surface {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Role {
-            Normal = 0u32,
-            Desktop = 1u32,
-            Panel = 2u32,
-            Onscreendisplay = 3u32,
-            Notification = 4u32,
-            Tooltip = 5u32,
-            Criticalnotification = 6u32,
-            Appletpopup = 7u32,
-        }
-        impl TryFrom<u32> for Role {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Normal),
-                    1u32 => Ok(Self::Desktop),
-                    2u32 => Ok(Self::Panel),
-                    3u32 => Ok(Self::Onscreendisplay),
-                    4u32 => Ok(Self::Notification),
-                    5u32 => Ok(Self::Tooltip),
-                    6u32 => Ok(Self::Criticalnotification),
-                    7u32 => Ok(Self::Appletpopup),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Role {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum PanelBehavior {
-            AlwaysVisible = 1u32,
-            AutoHide = 2u32,
-            WindowsCanCover = 3u32,
-            WindowsGoBelow = 4u32,
-        }
-        impl TryFrom<u32> for PanelBehavior {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    1u32 => Ok(Self::AlwaysVisible),
-                    2u32 => Ok(Self::AutoHide),
-                    3u32 => Ok(Self::WindowsCanCover),
-                    4u32 => Ok(Self::WindowsGoBelow),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for PanelBehavior {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "Request panel_auto_hide performed on a surface which does not correspond to an auto-hide panel."]
-            PanelNotAutoHide = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::PanelNotAutoHide),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the org_kde_plasma_surface interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaSurface: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_surface";
-            const VERSION: u32 = 8u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("org_kde_plasma_surface#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    1u16 => {
-                        let output = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "org_kde_plasma_surface#{}.set_output({})",
-                            object.id,
-                            output
-                        );
-                        self.set_output(object, client, output).await
-                    }
-                    2u16 => {
-                        let x = message.int()?;
-                        let y = message.int()?;
-                        tracing::debug!(
-                            "org_kde_plasma_surface#{}.set_position({}, {})",
-                            object.id,
-                            x,
-                            y
-                        );
-                        self.set_position(object, client, x, y).await
-                    }
-                    3u16 => {
-                        let role = message.uint()?;
-                        tracing::debug!("org_kde_plasma_surface#{}.set_role({})", object.id, role);
-                        self.set_role(object, client, role).await
-                    }
-                    4u16 => {
-                        let flag = message.uint()?;
-                        tracing::debug!(
-                            "org_kde_plasma_surface#{}.set_panel_behavior({})",
-                            object.id,
-                            flag
-                        );
-                        self.set_panel_behavior(object, client, flag).await
-                    }
-                    5u16 => {
-                        let skip = message.uint()?;
-                        tracing::debug!(
-                            "org_kde_plasma_surface#{}.set_skip_taskbar({})",
-                            object.id,
-                            skip
-                        );
-                        self.set_skip_taskbar(object, client, skip).await
-                    }
-                    6u16 => {
-                        tracing::debug!(
-                            "org_kde_plasma_surface#{}.panel_auto_hide_hide()",
-                            object.id,
-                        );
-                        self.panel_auto_hide_hide(object, client).await
-                    }
-                    7u16 => {
-                        tracing::debug!(
-                            "org_kde_plasma_surface#{}.panel_auto_hide_show()",
-                            object.id,
-                        );
-                        self.panel_auto_hide_show(object, client).await
-                    }
-                    8u16 => {
-                        let takes_focus = message.uint()?;
-                        tracing::debug!(
-                            "org_kde_plasma_surface#{}.set_panel_takes_focus({})",
-                            object.id,
-                            takes_focus
-                        );
-                        self.set_panel_takes_focus(object, client, takes_focus)
-                            .await
-                    }
-                    9u16 => {
-                        let skip = message.uint()?;
-                        tracing::debug!(
-                            "org_kde_plasma_surface#{}.set_skip_switcher({})",
-                            object.id,
-                            skip
-                        );
-                        self.set_skip_switcher(object, client, skip).await
-                    }
-                    10u16 => {
-                        tracing::debug!("org_kde_plasma_surface#{}.open_under_cursor()", object.id,);
-                        self.open_under_cursor(object, client).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "The org_kde_plasma_surface interface is removed from the"]
-            #[doc = "wl_surface object that was turned into a shell surface with the"]
-            #[doc = "org_kde_plasma_shell.get_surface request."]
-            #[doc = "The shell surface role is lost and wl_surface is unmapped."]
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Assign an output to this shell surface."]
-            #[doc = "The compositor will use this information to set the position"]
-            #[doc = "when org_kde_plasma_surface.set_position request is"]
-            #[doc = "called."]
-            async fn set_output(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                output: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "Move the surface to new coordinates."]
-            #[doc = ""]
-            #[doc = "Coordinates are global, for example 50,50 for a 1920,0+1920x1080 output"]
-            #[doc = "is 1970,50 in global coordinates space."]
-            #[doc = ""]
-            #[doc = "Use org_kde_plasma_surface.set_output to assign an output"]
-            #[doc = "to this surface."]
-            async fn set_position(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                x: i32,
-                y: i32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Assign a role to a shell surface."]
-            #[doc = ""]
-            #[doc = "The compositor handles surfaces depending on their role."]
-            #[doc = "See the explanation below."]
-            #[doc = ""]
-            #[doc = "This request fails if the surface already has a role, this means"]
-            #[doc = "the surface role may be assigned only once."]
-            #[doc = ""]
-            #[doc = "== Surfaces with splash role =="]
-            #[doc = ""]
-            #[doc = "Splash surfaces are placed above every other surface during the"]
-            #[doc = "shell startup phase."]
-            #[doc = ""]
-            #[doc = "The surfaces are placed according to the output coordinates."]
-            #[doc = "No size is imposed to those surfaces, the shell has to resize"]
-            #[doc = "them according to output size."]
-            #[doc = ""]
-            #[doc = "These surfaces are meant to hide the desktop during the startup"]
-            #[doc = "phase so that the user will always see a ready to work desktop."]
-            #[doc = ""]
-            #[doc = "A shell might not create splash surfaces if the compositor reveals"]
-            #[doc = "the desktop in an alternative fashion, for example with a fade"]
-            #[doc = "in effect."]
-            #[doc = ""]
-            #[doc = "That depends on how much time the desktop usually need to prepare"]
-            #[doc = "the workspace or specific design decisions."]
-            #[doc = "This specification doesn't impose any particular design."]
-            #[doc = ""]
-            #[doc = "When the startup phase is finished, the shell will send the"]
-            #[doc = "org_kde_plasma.desktop_ready request to the compositor."]
-            #[doc = ""]
-            #[doc = "== Surfaces with desktop role =="]
-            #[doc = ""]
-            #[doc = "Desktop surfaces are placed below all other surfaces and are used"]
-            #[doc = "to show the actual desktop view with icons, search results or"]
-            #[doc = "controls the user will interact with. What to show depends on the"]
-            #[doc = "shell implementation."]
-            #[doc = ""]
-            #[doc = "The surfaces are placed according to the output coordinates."]
-            #[doc = "No size is imposed to those surfaces, the shell has to resize"]
-            #[doc = "them according to output size."]
-            #[doc = ""]
-            #[doc = "Only one surface per output can have the desktop role."]
-            #[doc = ""]
-            #[doc = "== Surfaces with dashboard role =="]
-            #[doc = ""]
-            #[doc = "Dashboard surfaces are placed above desktop surfaces and are used to"]
-            #[doc = "show additional widgets and controls."]
-            #[doc = ""]
-            #[doc = "The surfaces are placed according to the output coordinates."]
-            #[doc = "No size is imposed to those surfaces, the shell has to resize"]
-            #[doc = "them according to output size."]
-            #[doc = ""]
-            #[doc = "Only one surface per output can have the dashboard role."]
-            #[doc = ""]
-            #[doc = "== Surfaces with config role =="]
-            #[doc = ""]
-            #[doc = "A configuration surface is shown when the user wants to configure"]
-            #[doc = "panel or desktop views."]
-            #[doc = ""]
-            #[doc = "Only one surface per output can have the config role."]
-            #[doc = ""]
-            #[doc = "TODO: This should grab the input like popup menus, right?"]
-            #[doc = ""]
-            #[doc = "== Surfaces with overlay role =="]
-            #[doc = ""]
-            #[doc = "Overlays are special surfaces that shows for a limited amount"]
-            #[doc = "of time.  Such surfaces are useful to display things like volume,"]
-            #[doc = "brightness and status changes."]
-            #[doc = ""]
-            #[doc = "Compositors may decide to show those surfaces in a layer above"]
-            #[doc = "all surfaces, even full screen ones if so is desired."]
-            #[doc = ""]
-            #[doc = "== Surfaces with notification role =="]
-            #[doc = ""]
-            #[doc = "Notification surfaces display informative content for a limited"]
-            #[doc = "amount of time.  The compositor may decide to show them in a corner"]
-            #[doc = "depending on the configuration."]
-            #[doc = ""]
-            #[doc = "These surfaces are shown in a layer above all other surfaces except"]
-            #[doc = "for full screen ones."]
-            #[doc = ""]
-            #[doc = "== Surfaces with lock role =="]
-            #[doc = ""]
-            #[doc = "The lock surface is shown by the compositor when the session is"]
-            #[doc = "locked, users interact with it to unlock the session."]
-            #[doc = ""]
-            #[doc = "Compositors should move lock surfaces to 0,0 in output"]
-            #[doc = "coordinates space and hide all other surfaces for security sake."]
-            #[doc = "For the same reason it is recommended that clients make the"]
-            #[doc = "lock surface as big as the screen."]
-            #[doc = ""]
-            #[doc = "Only one surface per output can have the lock role."]
-            async fn set_role(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                role: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Set flags bitmask as described by the flag enum."]
-            #[doc = "Pass 0 to unset any flag, the surface will adjust its behavior to"]
-            #[doc = "the default."]
-            #[doc = ""]
-            #[doc = "Deprecated in Plasma 6. Setting this flag will have no effect. Applications should use layer shell where appropriate."]
-            async fn set_panel_behavior(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                flag: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Setting this bit to the window, will make it say it prefers to not be listed in the taskbar. Taskbar implementations may or may not follow this hint."]
-            async fn set_skip_taskbar(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                skip: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "A panel surface with panel_behavior auto_hide can perform this request to hide the panel"]
-            #[doc = "on a screen edge without unmapping it. The compositor informs the client about the panel"]
-            #[doc = "being hidden with the event auto_hidden_panel_hidden."]
-            #[doc = ""]
-            #[doc = "The compositor will restore the visibility state of the"]
-            #[doc = "surface when the pointer touches the screen edge the panel borders. Once the compositor restores"]
-            #[doc = "the visibility the event auto_hidden_panel_shown will be sent. This event will also be sent"]
-            #[doc = "if the compositor is unable to hide the panel."]
-            #[doc = ""]
-            #[doc = "The client can also request to show the panel again with the request panel_auto_hide_show."]
-            async fn panel_auto_hide_hide(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "A panel surface with panel_behavior auto_hide can perform this request to show the panel"]
-            #[doc = "again which got hidden with panel_auto_hide_hide."]
-            async fn panel_auto_hide_show(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "By default various org_kde_plasma_surface roles do not take focus and cannot be"]
-            #[doc = "activated. With this request the compositor can be instructed to pass focus also to this"]
-            #[doc = "org_kde_plasma_surface."]
-            async fn set_panel_takes_focus(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                takes_focus: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Setting this bit will indicate that the window prefers not to be listed in a switcher."]
-            async fn set_skip_switcher(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                skip: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Request the initial position of this surface to be under the current"]
-            #[doc = "cursor position. Has to be called before attaching any buffer to this surface."]
-            async fn open_under_cursor(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "An auto-hiding panel got hidden by the compositor."]
-            async fn auto_hidden_panel_hidden(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_surface#{}.auto_hidden_panel_hidden()",
-                    object.id,
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "An auto-hiding panel got shown by the compositor."]
-            async fn auto_hidden_panel_shown(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_surface#{}.auto_hidden_panel_shown()",
-                    object.id,
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod plasma_window_management {
-    #[doc = "This interface manages application windows."]
-    #[doc = "It provides requests to show and hide the desktop and emits"]
-    #[doc = "an event every time a window is created so that the client can"]
-    #[doc = "use it to manage the window."]
-    #[doc = ""]
-    #[doc = "Only one client can bind this interface at a time."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is a desktop environment"]
-    #[doc = "implementation detail. Regular clients must not use this protocol."]
-    #[doc = "Backward incompatible changes may be added without bumping the major"]
-    #[doc = "version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_plasma_window_management {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum State {
-            Active = 1u32,
-            Minimized = 2u32,
-            Maximized = 4u32,
-            Fullscreen = 8u32,
-            KeepAbove = 16u32,
-            KeepBelow = 32u32,
-            OnAllDesktops = 64u32,
-            DemandsAttention = 128u32,
-            Closeable = 256u32,
-            Minimizable = 512u32,
-            Maximizable = 1024u32,
-            Fullscreenable = 2048u32,
-            Skiptaskbar = 4096u32,
-            Shadeable = 8192u32,
-            Shaded = 16384u32,
-            Movable = 32768u32,
-            Resizable = 65536u32,
-            VirtualDesktopChangeable = 131072u32,
-            Skipswitcher = 262144u32,
-        }
-        impl TryFrom<u32> for State {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    1u32 => Ok(Self::Active),
-                    2u32 => Ok(Self::Minimized),
-                    4u32 => Ok(Self::Maximized),
-                    8u32 => Ok(Self::Fullscreen),
-                    16u32 => Ok(Self::KeepAbove),
-                    32u32 => Ok(Self::KeepBelow),
-                    64u32 => Ok(Self::OnAllDesktops),
-                    128u32 => Ok(Self::DemandsAttention),
-                    256u32 => Ok(Self::Closeable),
-                    512u32 => Ok(Self::Minimizable),
-                    1024u32 => Ok(Self::Maximizable),
-                    2048u32 => Ok(Self::Fullscreenable),
-                    4096u32 => Ok(Self::Skiptaskbar),
-                    8192u32 => Ok(Self::Shadeable),
-                    16384u32 => Ok(Self::Shaded),
-                    32768u32 => Ok(Self::Movable),
-                    65536u32 => Ok(Self::Resizable),
-                    131072u32 => Ok(Self::VirtualDesktopChangeable),
-                    262144u32 => Ok(Self::Skipswitcher),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for State {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ShowDesktop {
-            Disabled = 0u32,
-            Enabled = 1u32,
-        }
-        impl TryFrom<u32> for ShowDesktop {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Disabled),
-                    1u32 => Ok(Self::Enabled),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for ShowDesktop {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the org_kde_plasma_window_management interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaWindowManagement: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_window_management";
-            const VERSION: u32 = 18u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let state = message.uint()?;
-                        tracing::debug!(
-                            "org_kde_plasma_window_management#{}.show_desktop({})",
-                            object.id,
-                            state
-                        );
-                        self.show_desktop(object, client, state).await
-                    }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let internal_window_id = message.uint()?;
-                        tracing::debug!(
-                            "org_kde_plasma_window_management#{}.get_window({}, {})",
-                            object.id,
-                            id,
-                            internal_window_id
-                        );
-                        self.get_window(object, client, id, internal_window_id)
-                            .await
-                    }
-                    2u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let internal_window_uuid = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "org_kde_plasma_window_management#{}.get_window_by_uuid({}, \"{}\")",
-                            object.id,
-                            id,
-                            internal_window_uuid
-                        );
-                        self.get_window_by_uuid(object, client, id, internal_window_uuid)
-                            .await
-                    }
-                    3u16 => {
-                        let stacking_order = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "org_kde_plasma_window_management#{}.get_stacking_order({})",
-                            object.id,
-                            stacking_order
-                        );
-                        self.get_stacking_order(object, client, stacking_order)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Tell the compositor to show/hide the desktop."]
-            async fn show_desktop(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                state: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Deprecated: use get_window_by_uuid"]
-            async fn get_window(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: crate::wire::ObjectId,
-                internal_window_id: u32,
-            ) -> crate::server::Result<()>;
-            async fn get_window_by_uuid(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: crate::wire::ObjectId,
-                internal_window_uuid: String,
-            ) -> crate::server::Result<()>;
-            async fn get_stacking_order(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                stacking_order: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "This event will be sent whenever the show desktop mode changes. E.g. when it is entered"]
-            #[doc = "or left."]
-            #[doc = ""]
-            #[doc = "On binding the interface the current state is sent."]
-            async fn show_desktop_changed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                state: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.show_desktop_changed({})",
-                    object.id,
-                    state
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(state).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent immediately after a window is mapped."]
-            async fn window(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.window({})",
-                    object.id,
-                    id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent when stacking order changed and on bind."]
-            #[doc = ""]
-            #[doc = "With version 17 this event is deprecated and will no longer be sent."]
-            async fn stacking_order_changed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                ids: Vec<u8>,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.stacking_order_changed(array[{}])",
-                    object.id,
-                    ids.len()
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(ids).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent when stacking order changed and on bind."]
-            #[doc = ""]
-            #[doc = "With version 17 this event is deprecated and will no longer be sent."]
-            async fn stacking_order_uuid_changed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                uuids: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.stacking_order_uuid_changed(\"{}\")",
-                    object.id,
-                    uuids
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(uuids))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent immediately after a window is mapped."]
-            async fn window_with_uuid(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: u32,
-                uuid: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.window_with_uuid({}, \"{}\")",
-                    object.id,
-                    id,
-                    uuid
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(id)
-                    .put_string(Some(uuid))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent when stacking order changed."]
-            async fn stacking_order_changed_2(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window_management#{}.stacking_order_changed_2()",
-                    object.id,
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-    #[doc = "Manages and control an application window."]
-    #[doc = ""]
-    #[doc = "Only one client can bind this interface at a time."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_plasma_window {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaWindow: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_window";
-            const VERSION: u32 = 18u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let flags = message.uint()?;
-                        let state = message.uint()?;
-                        tracing::debug!(
-                            "org_kde_plasma_window#{}.set_state({}, {})",
-                            object.id,
-                            flags,
-                            state
-                        );
-                        self.set_state(object, client, flags, state).await
-                    }
-                    1u16 => {
-                        let number = message.uint()?;
-                        tracing::debug!(
-                            "org_kde_plasma_window#{}.set_virtual_desktop({})",
-                            object.id,
-                            number
-                        );
-                        self.set_virtual_desktop(object, client, number).await
-                    }
-                    2u16 => {
-                        let panel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let x = message.uint()?;
-                        let y = message.uint()?;
-                        let width = message.uint()?;
-                        let height = message.uint()?;
-                        tracing::debug!(
-                            "org_kde_plasma_window#{}.set_minimized_geometry({}, {}, {}, {}, {})",
-                            object.id,
-                            panel,
-                            x,
-                            y,
-                            width,
-                            height
-                        );
-                        self.set_minimized_geometry(object, client, panel, x, y, width, height)
-                            .await
-                    }
-                    3u16 => {
-                        let panel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "org_kde_plasma_window#{}.unset_minimized_geometry({})",
-                            object.id,
-                            panel
-                        );
-                        self.unset_minimized_geometry(object, client, panel).await
-                    }
-                    4u16 => {
-                        tracing::debug!("org_kde_plasma_window#{}.close()", object.id,);
-                        self.close(object, client).await
-                    }
-                    5u16 => {
-                        tracing::debug!("org_kde_plasma_window#{}.request_move()", object.id,);
-                        self.request_move(object, client).await
-                    }
-                    6u16 => {
-                        tracing::debug!("org_kde_plasma_window#{}.request_resize()", object.id,);
-                        self.request_resize(object, client).await
-                    }
-                    7u16 => {
-                        tracing::debug!("org_kde_plasma_window#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    8u16 => {
-                        let fd = message.fd()?;
-                        tracing::debug!(
-                            "org_kde_plasma_window#{}.get_icon({})",
-                            object.id,
-                            fd.as_raw_fd()
-                        );
-                        self.get_icon(object, client, fd).await
-                    }
-                    9u16 => {
-                        let id = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "org_kde_plasma_window#{}.request_enter_virtual_desktop(\"{}\")",
-                            object.id,
-                            id
-                        );
-                        self.request_enter_virtual_desktop(object, client, id).await
-                    }
-                    10u16 => {
-                        tracing::debug!(
-                            "org_kde_plasma_window#{}.request_enter_new_virtual_desktop()",
-                            object.id,
-                        );
-                        self.request_enter_new_virtual_desktop(object, client).await
-                    }
-                    11u16 => {
-                        let id = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "org_kde_plasma_window#{}.request_leave_virtual_desktop(\"{}\")",
-                            object.id,
-                            id
-                        );
-                        self.request_leave_virtual_desktop(object, client, id).await
-                    }
-                    12u16 => {
-                        let id = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "org_kde_plasma_window#{}.request_enter_activity(\"{}\")",
-                            object.id,
-                            id
-                        );
-                        self.request_enter_activity(object, client, id).await
-                    }
-                    13u16 => {
-                        let id = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "org_kde_plasma_window#{}.request_leave_activity(\"{}\")",
-                            object.id,
-                            id
-                        );
-                        self.request_leave_activity(object, client, id).await
-                    }
-                    14u16 => {
-                        let output = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "org_kde_plasma_window#{}.send_to_output({})",
-                            object.id,
-                            output
-                        );
-                        self.send_to_output(object, client, output).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Set window state."]
-            #[doc = ""]
-            #[doc = "Values for state argument are described by org_kde_plasma_window_management.state"]
-            #[doc = "and can be used together in a bitfield. The flags bitfield describes which flags are"]
-            #[doc = "supposed to be set, the state bitfield the value for the set flags"]
-            async fn set_state(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                flags: u32,
-                state: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Deprecated: use enter_virtual_desktop"]
-            #[doc = "Maps the window to a different virtual desktop."]
-            #[doc = ""]
-            #[doc = "To show the window on all virtual desktops, call the"]
-            #[doc = "org_kde_plasma_window.set_state request and specify a on_all_desktops"]
-            #[doc = "state in the bitfield."]
-            async fn set_virtual_desktop(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                number: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Sets the geometry of the taskbar entry for this window."]
-            #[doc = "The geometry is relative to a panel in particular."]
-            async fn set_minimized_geometry(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                panel: crate::wire::ObjectId,
-                x: u32,
-                y: u32,
-                width: u32,
-                height: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Remove the task geometry information for a particular panel."]
-            async fn unset_minimized_geometry(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                panel: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "Close this window."]
-            async fn close(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Request an interactive move for this window."]
-            async fn request_move(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Request an interactive resize for this window."]
-            async fn request_resize(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Removes the resource bound for this org_kde_plasma_window."]
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "The compositor will write the window icon into the provided file descriptor."]
-            #[doc = "The data is a serialized QIcon with QDataStream."]
-            async fn get_icon(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                fd: rustix::fd::OwnedFd,
-            ) -> crate::server::Result<()>;
-            #[doc = "Make the window enter a virtual desktop. A window can enter more"]
-            #[doc = "than one virtual desktop. if the id is empty or invalid, no action will be performed."]
-            async fn request_enter_virtual_desktop(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: String,
-            ) -> crate::server::Result<()>;
-            #[doc = "RFC: do this with an empty id to request_enter_virtual_desktop?"]
-            #[doc = "Make the window enter a new virtual desktop. If the server consents the request,"]
-            #[doc = "it will create a new virtual desktop and assign the window to it."]
-            async fn request_enter_new_virtual_desktop(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Make the window exit a virtual desktop. If it exits all desktops it will be considered on all of them."]
-            async fn request_leave_virtual_desktop(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: String,
-            ) -> crate::server::Result<()>;
-            #[doc = "Make the window enter an activity. A window can enter more activity. If the id is empty or invalid, no action will be performed."]
-            async fn request_enter_activity(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: String,
-            ) -> crate::server::Result<()>;
-            #[doc = "Make the window exit a an activity. If it exits all activities it will be considered on all of them."]
-            async fn request_leave_activity(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: String,
-            ) -> crate::server::Result<()>;
-            #[doc = "Requests this window to be displayed in a specific output."]
-            async fn send_to_output(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                output: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "This event will be sent as soon as the window title is changed."]
-            async fn title_changed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                title: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window#{}.title_changed(\"{}\")",
-                    object.id,
-                    title
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(title))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent as soon as the application"]
-            #[doc = "identifier is changed."]
-            async fn app_id_changed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                app_id: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window#{}.app_id_changed(\"{}\")",
-                    object.id,
-                    app_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(app_id))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent as soon as the window state changes."]
-            #[doc = ""]
-            #[doc = "Values for state argument are described by org_kde_plasma_window_management.state."]
-            async fn state_changed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                flags: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window#{}.state_changed({})",
-                    object.id,
-                    flags
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(flags).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "DEPRECATED: use virtual_desktop_entered and virtual_desktop_left instead"]
-            #[doc = "This event will be sent when a window is moved to another"]
-            #[doc = "virtual desktop."]
-            #[doc = ""]
-            #[doc = "It is not sent if it becomes visible on all virtual desktops though."]
-            async fn virtual_desktop_changed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                number: i32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window#{}.virtual_desktop_changed({})",
-                    object.id,
-                    number
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(number).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent whenever the themed icon name changes. May be null."]
-            async fn themed_icon_name_changed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                name: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window#{}.themed_icon_name_changed(\"{}\")",
-                    object.id,
-                    name
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(name))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent immediately after the window is closed"]
-            #[doc = "and its surface is unmapped."]
-            async fn unmapped(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.unmapped()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent immediately after all initial state been sent to the client."]
-            #[doc = "If the Plasma window is already unmapped, the unmapped event will be sent before the"]
-            #[doc = "initial_state event."]
-            async fn initial_state(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.initial_state()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent whenever the parent window of this org_kde_plasma_window changes."]
-            #[doc = "The passed parent is another org_kde_plasma_window and this org_kde_plasma_window is a"]
-            #[doc = "transient window to the parent window. If the parent argument is null, this"]
-            #[doc = "org_kde_plasma_window does not have a parent window."]
-            async fn parent_window(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                parent: Option<crate::wire::ObjectId>,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window#{}.parent_window({})",
-                    object.id,
-                    parent
-                        .as_ref()
-                        .map_or("null".to_string(), |v| v.to_string())
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(parent)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
-            #[doc = "The coordinates are in absolute coordinates of the windowing system."]
-            async fn geometry(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                x: i32,
-                y: i32,
-                width: u32,
-                height: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window#{}.geometry({}, {}, {}, {})",
-                    object.id,
-                    x,
-                    y,
-                    width,
-                    height
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_int(x)
-                    .put_int(y)
-                    .put_uint(width)
-                    .put_uint(height)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent whenever the icon of the window changes, but there is no themed"]
-            #[doc = "icon name. Common examples are Xwayland windows which have a pixmap based icon."]
-            #[doc = ""]
-            #[doc = "The client can request the icon using get_icon."]
-            async fn icon_changed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_window#{}.icon_changed()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 9u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent when the compositor has set the process id this window belongs to."]
-            #[doc = "This should be set once before the initial_state is sent."]
-            async fn pid_changed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                pid: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window#{}.pid_changed({})",
-                    object.id,
-                    pid
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(pid).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 10u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent when the window has entered a new virtual desktop. The window can be on more than one desktop, or none: then is considered on all of them."]
-            async fn virtual_desktop_entered(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window#{}.virtual_desktop_entered(\"{}\")",
-                    object.id,
-                    id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(id))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 11u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent when the window left a virtual desktop. If the window leaves all desktops, it can be considered on all."]
-            #[doc = "If the window gets manually added on all desktops, the server has to send virtual_desktop_left for every previous desktop it was in for the window to be really considered on all desktops."]
-            async fn virtual_desktop_left(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                is: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window#{}.virtual_desktop_left(\"{}\")",
-                    object.id,
-                    is
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(is))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 12u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent after the application menu"]
-            #[doc = "for the window has changed."]
-            async fn application_menu(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                service_name: String,
-                object_path: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window#{}.application_menu(\"{}\", \"{}\")",
-                    object.id,
-                    service_name,
-                    object_path
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(service_name))
-                    .put_string(Some(object_path))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 13u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent when the window has entered an activity. The window can be on more than one activity, or none: then is considered on all of them."]
-            async fn activity_entered(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window#{}.activity_entered(\"{}\")",
-                    object.id,
-                    id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(id))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 14u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent when the window left an activity. If the window leaves all activities, it will be considered on all."]
-            #[doc = "If the window gets manually added on all activities, the server has to send activity_left for every previous activity it was in for the window to be really considered on all activities."]
-            async fn activity_left(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window#{}.activity_left(\"{}\")",
-                    object.id,
-                    id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(id))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 15u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent when the X11 resource name of the window has changed."]
-            #[doc = "This is only set for XWayland windows."]
-            async fn resource_name_changed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                resource_name: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window#{}.resource_name_changed(\"{}\")",
-                    object.id,
-                    resource_name
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(resource_name))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 16u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
-            #[doc = "The coordinates are in absolute coordinates of the windowing system."]
-            async fn client_geometry(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                x: i32,
-                y: i32,
-                width: u32,
-                height: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_window#{}.client_geometry({}, {}, {}, {})",
-                    object.id,
-                    x,
-                    y,
-                    width,
-                    height
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_int(x)
-                    .put_int(y)
-                    .put_uint(width)
-                    .put_uint(height)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 17u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-    #[doc = "The activation manager interface provides a way to get notified"]
-    #[doc = "when an application is about to be activated."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_plasma_activation_feedback {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the org_kde_plasma_activation_feedback interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaActivationFeedback: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_activation_feedback";
-            const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!(
-                            "org_kde_plasma_activation_feedback#{}.destroy()",
-                            object.id,
-                        );
-                        self.destroy(object, client).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy the activation manager object. The activation objects introduced"]
-            #[doc = "by this manager object will be unaffected."]
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Will be issued when an app is set to be activated. It offers"]
-            #[doc = "an instance of org_kde_plasma_activation that will tell us the app_id"]
-            #[doc = "and the extent of the activation."]
-            async fn activation(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_activation_feedback#{}.activation({})",
-                    object.id,
-                    id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(id))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_plasma_activation {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the org_kde_plasma_activation interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaActivation: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_activation";
-            const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("org_kde_plasma_activation#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Notify the compositor that the org_kde_plasma_activation object will no"]
-            #[doc = "longer be used."]
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            async fn app_id(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                app_id: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_activation#{}.app_id(\"{}\")",
-                    object.id,
-                    app_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(app_id))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            async fn finished(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_activation#{}.finished()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-    #[doc = "When this object is created, the compositor sends a window event for"]
-    #[doc = "each window in the stacking order, and afterwards sends the done event"]
-    #[doc = "and destroys this object."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_plasma_stacking_order {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the org_kde_plasma_stacking_order interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaStackingOrder: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_stacking_order";
-            const VERSION: u32 = 17u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                _object: &crate::server::Object,
-                _client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            async fn window(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                uuid: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> org_kde_plasma_stacking_order#{}.window(\"{}\")",
-                    object.id,
-                    uuid
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(uuid))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            async fn done(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> org_kde_plasma_stacking_order#{}.done()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
         }
     }
 }

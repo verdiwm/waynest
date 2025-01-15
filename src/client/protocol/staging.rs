@@ -6025,3 +6025,233 @@ pub mod xdg_toplevel_icon_v1 {
         }
     }
 }
+#[doc = "This protocol adds a xwayland_surface role which allows an Xwayland"]
+#[doc = "server to associate an X11 window to a wl_surface."]
+#[doc = ""]
+#[doc = "Before this protocol, this would be done via the Xwayland server"]
+#[doc = "providing the wl_surface's resource id via the a client message with"]
+#[doc = "the WL_SURFACE_ID atom on the X window."]
+#[doc = "This was problematic as a race could occur if the wl_surface"]
+#[doc = "associated with a WL_SURFACE_ID for a window was destroyed before the"]
+#[doc = "client message was processed by the compositor and another surface"]
+#[doc = "(or other object) had taken its id due to recycling."]
+#[doc = ""]
+#[doc = "This protocol solves the problem by moving the X11 window to wl_surface"]
+#[doc = "association step to the Wayland side, which means that the association"]
+#[doc = "cannot happen out-of-sync with the resource lifetime of the wl_surface."]
+#[doc = ""]
+#[doc = "This protocol avoids duplicating the race on the other side by adding a"]
+#[doc = "non-zero monotonic serial number which is entirely unique that is set on"]
+#[doc = "both the wl_surface (via. xwayland_surface_v1's set_serial method) and"]
+#[doc = "the X11 window (via. the `WL_SURFACE_SERIAL` client message) that can be"]
+#[doc = "used to associate them, and synchronize the two timelines."]
+#[doc = ""]
+#[doc = "The key words \"must\", \"must not\", \"required\", \"shall\", \"shall not\","]
+#[doc = "\"should\", \"should not\", \"recommended\",  \"may\", and \"optional\" in this"]
+#[doc = "document are to be interpreted as described in IETF RFC 2119."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is currently in the testing"]
+#[doc = "phase. Backward compatible changes may be added together with the"]
+#[doc = "corresponding interface version bump. Backward incompatible changes can"]
+#[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
+pub mod xwayland_shell_v1 {
+    #[doc = "xwayland_shell_v1 is a singleton global object that"]
+    #[doc = "provides the ability to create a xwayland_surface_v1 object"]
+    #[doc = "for a given wl_surface."]
+    #[doc = ""]
+    #[doc = "This interface is intended to be bound by the Xwayland server."]
+    #[doc = ""]
+    #[doc = "A compositor must not allow clients other than Xwayland to"]
+    #[doc = "bind to this interface. A compositor should hide this global"]
+    #[doc = "from other clients' wl_registry."]
+    #[doc = "A client the compositor does not consider to be an Xwayland"]
+    #[doc = "server attempting to bind this interface will result in"]
+    #[doc = "an implementation-defined error."]
+    #[doc = ""]
+    #[doc = "An Xwayland server that has bound this interface must not"]
+    #[doc = "set the `WL_SURFACE_ID` atom on a window."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xwayland_shell_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "given wl_surface has another role"]
+            Role = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Role),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the xwayland_shell_v1 interface. See the module level documentation for more info"]
+        pub trait XwaylandShellV1 {
+            const INTERFACE: &'static str = "xwayland_shell_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the xwayland_shell_v1 object."]
+            #[doc = ""]
+            #[doc = "The child objects created via this interface are unaffected."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xwayland_shell_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Create an xwayland_surface_v1 interface for a given wl_surface"]
+            #[doc = "object and gives it the xwayland_surface role."]
+            #[doc = ""]
+            #[doc = "It is illegal to create an xwayland_surface_v1 for a wl_surface"]
+            #[doc = "which already has an assigned role and this will result in the"]
+            #[doc = "`role` protocol error."]
+            #[doc = ""]
+            #[doc = "See the documentation of xwayland_surface_v1 for more details"]
+            #[doc = "about what an xwayland_surface_v1 is and how it is used."]
+            async fn get_xwayland_surface(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xwayland_shell_v1#{}.get_xwayland_surface()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .put_object(Some(surface))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "An Xwayland surface is a surface managed by an Xwayland server."]
+    #[doc = "It is used for associating surfaces to Xwayland windows."]
+    #[doc = ""]
+    #[doc = "The Xwayland server associated with actions in this interface is"]
+    #[doc = "determined by the Wayland client making the request."]
+    #[doc = ""]
+    #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
+    #[doc = "for the xwayland_surface_v1 state to take effect."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xwayland_surface_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "given wl_surface is already associated with an X11 window"]
+            AlreadyAssociated = 0u32,
+            #[doc = "serial was not valid"]
+            InvalidSerial = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::AlreadyAssociated),
+                    1u32 => Ok(Self::InvalidSerial),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the xwayland_surface_v1 interface. See the module level documentation for more info"]
+        pub trait XwaylandSurfaceV1 {
+            const INTERFACE: &'static str = "xwayland_surface_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Associates an Xwayland window to a wl_surface."]
+            #[doc = "The association state is double-buffered, see wl_surface.commit."]
+            #[doc = ""]
+            #[doc = "The `serial_lo` and `serial_hi` parameters specify a non-zero"]
+            #[doc = "monotonic serial number which is entirely unique and provided by the"]
+            #[doc = "Xwayland server equal to the serial value provided by a client message"]
+            #[doc = "with a message type of the `WL_SURFACE_SERIAL` atom on the X11 window"]
+            #[doc = "for this surface to be associated to."]
+            #[doc = ""]
+            #[doc = "The serial value in the `WL_SURFACE_SERIAL` client message is specified"]
+            #[doc = "as having the lo-bits specified in `l[0]` and the hi-bits specified"]
+            #[doc = "in `l[1]`."]
+            #[doc = ""]
+            #[doc = "If the serial value provided by `serial_lo` and `serial_hi` is not"]
+            #[doc = "valid, the `invalid_serial` protocol error will be raised."]
+            #[doc = ""]
+            #[doc = "An X11 window may be associated with multiple surfaces throughout its"]
+            #[doc = "lifespan. (eg. unmapping and remapping a window)."]
+            #[doc = ""]
+            #[doc = "For each wl_surface, this state must not be committed more than once,"]
+            #[doc = "otherwise the `already_associated` protocol error will be raised."]
+            async fn set_serial(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                serial_lo: u32,
+                serial_hi: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xwayland_surface_v1#{}.set_serial()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial_lo)
+                    .put_uint(serial_hi)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Destroy the xwayland_surface_v1 object."]
+            #[doc = ""]
+            #[doc = "Any already existing associations are unaffected by this action."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xwayland_surface_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}

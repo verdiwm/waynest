@@ -524,6 +524,184 @@ pub mod hyprland_global_shortcuts_v1 {
         }
     }
 }
+#[doc = "This protocol exposes hyprland-specific wl_surface properties."]
+#[allow(clippy::module_inception)]
+pub mod hyprland_surface_v1 {
+    #[doc = "This interface allows a client to create hyprland surface objects."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod hyprland_surface_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "wl_surface already has a hyprland surface object"]
+            AlreadyConstructed = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::AlreadyConstructed),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the hyprland_surface_manager_v1 interface. See the module level documentation for more info"]
+        pub trait HyprlandSurfaceManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "hyprland_surface_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "hyprland_surface_manager_v1#{}.get_hyprland_surface({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.get_hyprland_surface(object, client, id, surface).await
+                    }
+                    1u16 => {
+                        tracing::debug!("hyprland_surface_manager_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Create a hyprland surface object for the given wayland surface."]
+            #[doc = ""]
+            #[doc = "If the wl_surface already has an associated hyprland_surface_v1 object,"]
+            #[doc = "even from a different manager, creation is a protocol error."]
+            async fn get_hyprland_surface(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "Destroy the surface manager."]
+            #[doc = "This does not destroy existing surface objects."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+        }
+    }
+    #[doc = "This interface allows access to hyprland-specific properties of a wl_surface."]
+    #[doc = ""]
+    #[doc = "Once the wl_surface has been destroyed, the hyprland surface object must be"]
+    #[doc = "destroyed as well. All other operations are a protocol error."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod hyprland_surface_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "wl_surface was destroyed"]
+            NoSurface = 0u32,
+            #[doc = "given opacity was not in the range 0.0 - 1.0 (inclusive)"]
+            OutOfRange = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::NoSurface),
+                    1u32 => Ok(Self::OutOfRange),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the hyprland_surface_v1 interface. See the module level documentation for more info"]
+        pub trait HyprlandSurfaceV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "hyprland_surface_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let opacity = message.fixed()?;
+                        tracing::debug!(
+                            "hyprland_surface_v1#{}.set_opacity({})",
+                            object.id,
+                            opacity
+                        );
+                        self.set_opacity(object, client, opacity).await
+                    }
+                    1u16 => {
+                        tracing::debug!("hyprland_surface_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Sets a multiplier for the overall opacity of the surface."]
+            #[doc = "This multiplier applies to visual effects such as blur behind the surface"]
+            #[doc = "in addition to the surface's content."]
+            #[doc = ""]
+            #[doc = "The default value is 1.0."]
+            #[doc = "Setting a value outside of the range 0.0 - 1.0 (inclusive) is a protocol error."]
+            #[doc = "Does not take effect until wl_surface.commit is called."]
+            async fn set_opacity(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                opacity: crate::wire::Fixed,
+            ) -> crate::server::Result<()>;
+            #[doc = "Destroy the hyprland surface object, resetting properties provided"]
+            #[doc = "by this interface to their default values on the next wl_surface.commit."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+        }
+    }
+}
 #[doc = "This protocol allows clients to ask for exporting another toplevel's"]
 #[doc = "surface(s) to a buffer."]
 #[doc = ""]
