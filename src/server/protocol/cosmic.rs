@@ -1,20 +1,21 @@
 #![allow(async_fn_in_trait)]
+#[doc = "This protocol provides a relatively straightforward mapping of AtpsiDevice"]
+#[doc = "in the at-spi2-core library, so it's possible to add a Wayland backend for it."]
+#[doc = ""]
+#[doc = "This provides a way for screen reader key bindings to work."]
+#[doc = ""]
+#[doc = "This is a temporary solution until a better protocol is available for this purpose."]
 #[allow(clippy::module_inception)]
-pub mod cosmic_toplevel_info_unstable_v1 {
-    #[doc = "The purpose of this protocol is to enable clients such as taskbars"]
-    #[doc = "or docks to access a list of opened applications and basic properties"]
-    #[doc = "thereof."]
-    #[doc = ""]
-    #[doc = "It thus extends ext_foreign_toplevel_v1 to provide more information"]
-    #[doc = "and actions on foreign toplevels."]
+pub mod cosmic_atspi_v1 {
+    #[doc = "Manager for adding grabs and monitoring key input."]
     #[allow(clippy::too_many_arguments)]
-    pub mod zcosmic_toplevel_info_v1 {
+    pub mod cosmic_atspi_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the zcosmic_toplevel_info_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelInfoV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_toplevel_info_v1";
-            const VERSION: u32 = 2u32;
+        #[doc = "Trait to implement the cosmic_atspi_manager_v1 interface. See the module level documentation for more info"]
+        pub trait CosmicAtspiManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "cosmic_atspi_manager_v1";
+            const VERSION: u32 = 1u32;
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
             where
                 Self: Sized,
@@ -30,430 +31,99 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zcosmic_toplevel_info_v1#{}.stop()", object.id,);
-                        self.stop(object, client).await
-                    }
-                    1u16 => {
-                        let cosmic_toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let foreign_toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "zcosmic_toplevel_info_v1#{}.get_cosmic_toplevel({}, {})",
-                            object.id,
-                            cosmic_toplevel,
-                            foreign_toplevel
-                        );
-                        self.get_cosmic_toplevel(object, client, cosmic_toplevel, foreign_toplevel)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "This request indicates that the client no longer wishes to receive"]
-            #[doc = "events for new toplevels.  However, the compositor may emit further"]
-            #[doc = "toplevel_created events until the finished event is emitted."]
-            #[doc = ""]
-            #[doc = "The client must not send any more requests after this one."]
-            #[doc = ""]
-            #[doc = "Note: This request isn't necessary for clients binding version 2"]
-            #[doc = "of this protocol and will be ignored."]
-            async fn stop(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Request a zcosmic_toplevel_handle_v1 extension object for an existing"]
-            #[doc = "ext_foreign_toplevel_handle_v1."]
-            #[doc = ""]
-            #[doc = "All initial properties of the toplevel (states, etc.)"]
-            #[doc = "will be sent immediately after this event via the corresponding"]
-            #[doc = "events in zcosmic_toplevel_handle_v1."]
-            async fn get_cosmic_toplevel(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                cosmic_toplevel: crate::wire::ObjectId,
-                foreign_toplevel: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "This event is never emitted for clients binding version 2"]
-            #[doc = "of this protocol, they should use `get_cosmic_toplevel` instead."]
-            #[doc = ""]
-            #[doc = "This event is emitted for clients binding version 1 whenever a"]
-            #[doc = "new toplevel window is created. It is emitted for all toplevels,"]
-            #[doc = "regardless of the app that has created them."]
-            #[doc = ""]
-            #[doc = "All initial properties of the toplevel (title, app_id, states, etc.)"]
-            #[doc = "will be sent immediately after this event via the corresponding"]
-            #[doc = "events in zcosmic_toplevel_handle_v1."]
-            async fn toplevel(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                toplevel: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zcosmic_toplevel_info_v1#{}.toplevel({})",
-                    object.id,
-                    toplevel
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(toplevel))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event indicates that the compositor is done sending events"]
-            #[doc = "to the zcosmic_toplevel_info_v1. The server will destroy the"]
-            #[doc = "object immediately after sending this request, so it will become"]
-            #[doc = "invalid and the client should free any resources associated with it."]
-            #[doc = ""]
-            #[doc = "Note: This event is emitted immediately after calling `stop` for"]
-            #[doc = "clients binding version 2 of this protocol for backwards compatibility."]
-            async fn finished(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> zcosmic_toplevel_info_v1#{}.finished()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event is sent after all changes for currently active"]
-            #[doc = "zcosmic_toplevel_handle_v1 have been sent."]
-            #[doc = ""]
-            #[doc = "This allows changes to multiple zcosmic_toplevel_handle_v1 handles"]
-            #[doc = "and their properties to be seen as atomic, even if they happen via"]
-            #[doc = "multiple events."]
-            async fn done(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> zcosmic_toplevel_info_v1#{}.done()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-    #[doc = "A zcosmic_toplevel_handle_v1 object represents an open toplevel"]
-    #[doc = "window. A single app may have multiple open toplevels."]
-    #[doc = ""]
-    #[doc = "Each toplevel has a list of outputs it is visible on, exposed to the"]
-    #[doc = "client via the output_enter and output_leave events."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod zcosmic_toplevel_handle_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "The different states that a toplevel may have. These have the same"]
-        #[doc = "meaning as the states with the same names defined in xdg-toplevel"]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum State {
-            #[doc = "the toplevel is maximized"]
-            Maximized = 0u32,
-            #[doc = "the toplevel is minimized"]
-            Minimized = 1u32,
-            #[doc = "the toplevel is active"]
-            Activated = 2u32,
-            #[doc = "the toplevel is fullscreen"]
-            Fullscreen = 3u32,
-            #[doc = "the toplevel is sticky"]
-            Sticky = 4u32,
-        }
-        impl TryFrom<u32> for State {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Maximized),
-                    1u32 => Ok(Self::Minimized),
-                    2u32 => Ok(Self::Activated),
-                    3u32 => Ok(Self::Fullscreen),
-                    4u32 => Ok(Self::Sticky),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for State {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the zcosmic_toplevel_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelHandleV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_toplevel_handle_v1";
-            const VERSION: u32 = 2u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("zcosmic_toplevel_handle_v1#{}.destroy()", object.id,);
+                        tracing::debug!("cosmic_atspi_manager_v1#{}.destroy()", object.id,);
                         self.destroy(object, client).await
                     }
+                    1u16 => {
+                        let mods = message.uint()?;
+                        let virtual_mods = message.array()?;
+                        let key = message.uint()?;
+                        tracing::debug!(
+                            "cosmic_atspi_manager_v1#{}.add_key_grab({}, array[{}], {})",
+                            object.id,
+                            mods,
+                            virtual_mods.len(),
+                            key
+                        );
+                        self.add_key_grab(object, client, mods, virtual_mods, key)
+                            .await
+                    }
+                    2u16 => {
+                        let mods = message.uint()?;
+                        let virtual_mods = message.array()?;
+                        let key = message.uint()?;
+                        tracing::debug!(
+                            "cosmic_atspi_manager_v1#{}.remove_key_grab({}, array[{}], {})",
+                            object.id,
+                            mods,
+                            virtual_mods.len(),
+                            key
+                        );
+                        self.remove_key_grab(object, client, mods, virtual_mods, key)
+                            .await
+                    }
+                    3u16 => {
+                        tracing::debug!("cosmic_atspi_manager_v1#{}.grab_keyboard()", object.id,);
+                        self.grab_keyboard(object, client).await
+                    }
+                    4u16 => {
+                        tracing::debug!("cosmic_atspi_manager_v1#{}.ungrab_keyboard()", object.id,);
+                        self.ungrab_keyboard(object, client).await
+                    }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
-            #[doc = "This request should be called either when the client will no longer"]
-            #[doc = "use the zcosmic_toplevel_handle_v1."]
+            #[doc = "Any grabs that are still active will be disabled."]
             async fn destroy(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()>;
-            #[doc = "The server will emit no further events on the"]
-            #[doc = "zcosmic_toplevel_handle_v1 after this event. Any requests received"]
-            #[doc = "aside from the destroy request will be ignored. Upon receiving this"]
-            #[doc = "event, the client should make the destroy request to allow freeing"]
-            #[doc = "of resources."]
-            #[doc = ""]
-            #[doc = "Note: This event will not be emitted for clients binding version 2"]
-            #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.closed` is"]
-            #[doc = "equivalent."]
-            async fn closed(
+            #[doc = "Grab the given key combination, so it will not be sent to clients."]
+            async fn add_key_grab(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                mods: u32,
+                virtual_mods: Vec<u8>,
+                key: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Disables a grab added with add_key_grab."]
+            async fn remove_key_grab(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                mods: u32,
+                virtual_mods: Vec<u8>,
+                key: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Grab keyboard, so key input will not be sent to clients."]
+            async fn grab_keyboard(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Disables a grab added with grab_keyboard."]
+            async fn ungrab_keyboard(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Produces an fd that can be used with libei to monitor keyboard input."]
+            async fn key_events_eis(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zcosmic_toplevel_handle_v1#{}.closed()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                tracing::debug!(
+                    "-> cosmic_atspi_manager_v1#{}.key_events_eis({})",
+                    object.id,
+                    fd.as_raw_fd()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(fd).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event is sent after all changes in the toplevel state have"]
-            #[doc = "been sent."]
-            #[doc = ""]
-            #[doc = "This allows changes to the zcosmic_toplevel_handle_v1 properties"]
-            #[doc = "to be seen as atomic, even if they happen via multiple events."]
-            #[doc = ""]
-            #[doc = "Note: this is is not sent after the closed event."]
-            #[doc = ""]
-            #[doc = "Note: This event will not be emitted for clients binding version 2"]
-            #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.done` is"]
-            #[doc = "equivalent."]
-            async fn done(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> zcosmic_toplevel_handle_v1#{}.done()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event is emitted whenever the title of the toplevel changes."]
-            #[doc = ""]
-            #[doc = "Note: This event will not be emitted for clients binding version 2"]
-            #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.title` is"]
-            #[doc = "equivalent."]
-            async fn title(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                title: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zcosmic_toplevel_handle_v1#{}.title(\"{}\")",
-                    object.id,
-                    title
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(title))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event is emitted whenever the app_id of the toplevel changes."]
-            #[doc = ""]
-            #[doc = "Note: This event will not be emitted for clients binding version 2"]
-            #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.app_id` is"]
-            #[doc = "equivalent."]
-            async fn app_id(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                app_id: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zcosmic_toplevel_handle_v1#{}.app_id(\"{}\")",
-                    object.id,
-                    app_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(app_id))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event is emitted whenever the toplevel becomes visible on the"]
-            #[doc = "given output. A toplevel may be visible on multiple outputs."]
-            async fn output_enter(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                output: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zcosmic_toplevel_handle_v1#{}.output_enter({})",
-                    object.id,
-                    output
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(output))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event is emitted whenever the toplevel is no longer visible"]
-            #[doc = "on a given output. It is guaranteed that an output_enter event with"]
-            #[doc = "the same output has been emitted before this event."]
-            async fn output_leave(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                output: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zcosmic_toplevel_handle_v1#{}.output_leave({})",
-                    object.id,
-                    output
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(output))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event is emitted whenever the toplevel becomes visible on the"]
-            #[doc = "given workspace. A toplevel may be visible on multiple workspaces."]
-            async fn workspace_enter(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                workspace: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zcosmic_toplevel_handle_v1#{}.workspace_enter({})",
-                    object.id,
-                    workspace
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(workspace))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event is emitted whenever the toplevel is no longer visible"]
-            #[doc = "on a given workspace. It is guaranteed that an workspace_enter event with"]
-            #[doc = "the same workspace has been emitted before this event."]
-            async fn workspace_leave(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                workspace: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zcosmic_toplevel_handle_v1#{}.workspace_leave({})",
-                    object.id,
-                    workspace
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(workspace))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event is emitted once on creation of the"]
-            #[doc = "zcosmic_toplevel_handle_v1 and again whenever the state of the"]
-            #[doc = "toplevel changes."]
-            async fn state(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                state: Vec<u8>,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zcosmic_toplevel_handle_v1#{}.state(array[{}])",
-                    object.id,
-                    state.len()
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(state).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "Emitted when the geometry of a toplevel (it's position and/or size)"]
-            #[doc = "relative to the provided output has changed."]
-            #[doc = ""]
-            #[doc = "This event is emitted once on creation of the"]
-            #[doc = "zcosmic_toplevel_handle_v1 for every entered output and again"]
-            #[doc = "whenever the geometry of the toplevel changes relative to any output."]
-            async fn geometry(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                output: crate::wire::ObjectId,
-                x: i32,
-                y: i32,
-                width: i32,
-                height: i32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zcosmic_toplevel_handle_v1#{}.geometry({}, {}, {}, {}, {})",
-                    object.id,
-                    output,
-                    x,
-                    y,
-                    width,
-                    height
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(output))
-                    .put_int(x)
-                    .put_int(y)
-                    .put_int(width)
-                    .put_int(height)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 9u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -723,647 +393,6 @@ pub mod cosmic_image_source_unstable_v1 {
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()>;
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod cosmic_overlap_notify_unstable_v1 {
-    #[doc = "The purpose of this protocol is to enable layer-shell client to get"]
-    #[doc = "notifications if part of their surfaces are occluded other elements"]
-    #[doc = "(currently toplevels and other layer-surfaces)."]
-    #[doc = ""]
-    #[doc = "You can request a notification object for any of your zwlr_layer_surface_v1"]
-    #[doc = "surfaces, which will then emit overlap events."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod zcosmic_overlap_notify_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the zcosmic_overlap_notify_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOverlapNotifyV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_overlap_notify_v1";
-            const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let overlap_notification = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let layer_surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "zcosmic_overlap_notify_v1#{}.notify_on_overlap({}, {})",
-                            object.id,
-                            overlap_notification,
-                            layer_surface
-                        );
-                        self.notify_on_overlap(object, client, overlap_notification, layer_surface)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Requests notifications for toplevels and layer-surfaces entering and leaving the"]
-            #[doc = "surface-area of the given zwlr_layer_surface_v1. This can be used e.g. to"]
-            #[doc = "implement auto-hide functionality."]
-            #[doc = ""]
-            #[doc = "To stop receiving notifications, destroy the returned"]
-            #[doc = "zcosmic_overlap_notification_v1 object."]
-            async fn notify_on_overlap(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                overlap_notification: crate::wire::ObjectId,
-                layer_surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-        }
-    }
-    #[allow(clippy::too_many_arguments)]
-    pub mod zcosmic_overlap_notification_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the zcosmic_overlap_notification_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOverlapNotificationV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_overlap_notification_v1";
-            const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("zcosmic_overlap_notification_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "This request should be called when the client has no interest in overlap"]
-            #[doc = "notifications anymore."]
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "A ext_foreign_toplevel_handle_v1 has entered the surface area."]
-            #[doc = ""]
-            #[doc = "This event will be emitted once for every ext_foreign_toplevel_handle_v1"]
-            #[doc = "representing this toplevel."]
-            #[doc = ""]
-            #[doc = "Compositors are free to update the overlapping area by sending additional"]
-            #[doc = "`toplevel_enter` events for the same toplevel without sending `toplevel_leave`"]
-            #[doc = "in between."]
-            async fn toplevel_enter(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                toplevel: crate::wire::ObjectId,
-                x: i32,
-                y: i32,
-                width: i32,
-                height: i32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zcosmic_overlap_notification_v1#{}.toplevel_enter({}, {}, {}, {}, {})",
-                    object.id,
-                    toplevel,
-                    x,
-                    y,
-                    width,
-                    height
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(toplevel))
-                    .put_int(x)
-                    .put_int(y)
-                    .put_int(width)
-                    .put_int(height)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "A ext_foreign_toplevel_handle_v1 has left the surface area."]
-            #[doc = ""]
-            #[doc = "This event will be emitted once for every ext_foreign_toplevel_handle_v1"]
-            #[doc = "representing this toplevel."]
-            async fn toplevel_leave(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                toplevel: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zcosmic_overlap_notification_v1#{}.toplevel_leave({})",
-                    object.id,
-                    toplevel
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(toplevel))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "A zwlr_layer_surface_v1 has entered the surface area."]
-            #[doc = ""]
-            #[doc = "Compositors are free to update the overlapping area by sending additional"]
-            #[doc = "`layer_enter` events for the same surface without sending `layer_leave`"]
-            #[doc = "in between."]
-            #[doc = ""]
-            #[doc = "The overlapping region is given surface-relative to the zwlr_layer_surface_v1"]
-            #[doc = "used to create this notification object."]
-            async fn layer_enter(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                identifier: String,
-                exclusive: u32,
-                layer : super :: super :: super :: wlr :: wlr_layer_shell_unstable_v1 :: zwlr_layer_shell_v1 :: Layer,
-                x: i32,
-                y: i32,
-                width: i32,
-                height: i32,
-            ) -> crate::server::Result<()> {
-                tracing :: debug ! ("-> zcosmic_overlap_notification_v1#{}.layer_enter(\"{}\", {}, {}, {}, {}, {}, {})" , object . id , identifier , exclusive , layer , x , y , width , height);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(identifier))
-                    .put_uint(exclusive)
-                    .put_uint(layer as u32)
-                    .put_int(x)
-                    .put_int(y)
-                    .put_int(width)
-                    .put_int(height)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "A zwlr_layer_surface_v1 has left the surface area."]
-            async fn layer_leave(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                identifier: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zcosmic_overlap_notification_v1#{}.layer_leave(\"{}\")",
-                    object.id,
-                    identifier
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(identifier))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod cosmic_toplevel_management_unstable_v1 {
-    #[doc = "This protocol allows clients such as a taskbar to request the compositor"]
-    #[doc = "to preform typical actions on open toplevels. The compositor is in all"]
-    #[doc = "cases free to ignore the request."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod zcosmic_toplevel_manager_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ZcosmicToplelevelManagementCapabilitiesV1 {
-            #[doc = "close request is available"]
-            Close = 1u32,
-            #[doc = "activate request is available"]
-            Activate = 2u32,
-            #[doc = "set_maximized and unset_maximized requests are available"]
-            Maximize = 3u32,
-            #[doc = "set_minimized and unset_minimized requests are available"]
-            Minimize = 4u32,
-            #[doc = "set_fullscreen and unset_fullscreen requests are available"]
-            Fullscreen = 5u32,
-            #[doc = "move_to_workspace request is available"]
-            MoveToWorkspace = 6u32,
-            #[doc = "set_sticky and unset_sticky requests are available"]
-            Sticky = 7u32,
-        }
-        impl TryFrom<u32> for ZcosmicToplelevelManagementCapabilitiesV1 {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    1u32 => Ok(Self::Close),
-                    2u32 => Ok(Self::Activate),
-                    3u32 => Ok(Self::Maximize),
-                    4u32 => Ok(Self::Minimize),
-                    5u32 => Ok(Self::Fullscreen),
-                    6u32 => Ok(Self::MoveToWorkspace),
-                    7u32 => Ok(Self::Sticky),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for ZcosmicToplelevelManagementCapabilitiesV1 {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "the provided rectangle is invalid"]
-            InvalidRectangle = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::InvalidRectangle),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the zcosmic_toplevel_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_toplevel_manager_v1";
-            const VERSION: u32 = 3u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("zcosmic_toplevel_manager_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    1u16 => {
-                        let toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "zcosmic_toplevel_manager_v1#{}.close({})",
-                            object.id,
-                            toplevel
-                        );
-                        self.close(object, client, toplevel).await
-                    }
-                    2u16 => {
-                        let toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let seat = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "zcosmic_toplevel_manager_v1#{}.activate({}, {})",
-                            object.id,
-                            toplevel,
-                            seat
-                        );
-                        self.activate(object, client, toplevel, seat).await
-                    }
-                    3u16 => {
-                        let toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "zcosmic_toplevel_manager_v1#{}.set_maximized({})",
-                            object.id,
-                            toplevel
-                        );
-                        self.set_maximized(object, client, toplevel).await
-                    }
-                    4u16 => {
-                        let toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "zcosmic_toplevel_manager_v1#{}.unset_maximized({})",
-                            object.id,
-                            toplevel
-                        );
-                        self.unset_maximized(object, client, toplevel).await
-                    }
-                    5u16 => {
-                        let toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "zcosmic_toplevel_manager_v1#{}.set_minimized({})",
-                            object.id,
-                            toplevel
-                        );
-                        self.set_minimized(object, client, toplevel).await
-                    }
-                    6u16 => {
-                        let toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "zcosmic_toplevel_manager_v1#{}.unset_minimized({})",
-                            object.id,
-                            toplevel
-                        );
-                        self.unset_minimized(object, client, toplevel).await
-                    }
-                    7u16 => {
-                        let toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let output = message.object()?;
-                        tracing::debug!(
-                            "zcosmic_toplevel_manager_v1#{}.set_fullscreen({}, {})",
-                            object.id,
-                            toplevel,
-                            output
-                                .as_ref()
-                                .map_or("null".to_string(), |v| v.to_string())
-                        );
-                        self.set_fullscreen(object, client, toplevel, output).await
-                    }
-                    8u16 => {
-                        let toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "zcosmic_toplevel_manager_v1#{}.unset_fullscreen({})",
-                            object.id,
-                            toplevel
-                        );
-                        self.unset_fullscreen(object, client, toplevel).await
-                    }
-                    9u16 => {
-                        let toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let x = message.int()?;
-                        let y = message.int()?;
-                        let width = message.int()?;
-                        let height = message.int()?;
-                        tracing::debug!(
-                            "zcosmic_toplevel_manager_v1#{}.set_rectangle({}, {}, {}, {}, {}, {})",
-                            object.id,
-                            toplevel,
-                            surface,
-                            x,
-                            y,
-                            width,
-                            height
-                        );
-                        self.set_rectangle(object, client, toplevel, surface, x, y, width, height)
-                            .await
-                    }
-                    10u16 => {
-                        let toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let workspace = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let output = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "zcosmic_toplevel_manager_v1#{}.move_to_workspace({}, {}, {})",
-                            object.id,
-                            toplevel,
-                            workspace,
-                            output
-                        );
-                        self.move_to_workspace(object, client, toplevel, workspace, output)
-                            .await
-                    }
-                    11u16 => {
-                        let toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "zcosmic_toplevel_manager_v1#{}.set_sticky({})",
-                            object.id,
-                            toplevel
-                        );
-                        self.set_sticky(object, client, toplevel).await
-                    }
-                    12u16 => {
-                        let toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "zcosmic_toplevel_manager_v1#{}.unset_sticky({})",
-                            object.id,
-                            toplevel
-                        );
-                        self.unset_sticky(object, client, toplevel).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "This request indicates that the client has finished using the"]
-            #[doc = "zcosmic_toplevel_manager_v1 object and that it can be safely"]
-            #[doc = "destroyed."]
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "If the compositor honors this request, the"]
-            #[doc = "zcosmic_toplevel_handle_v1.closed event will be sent."]
-            async fn close(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                toplevel: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "If the compositor honors this request, the"]
-            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
-            async fn activate(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                toplevel: crate::wire::ObjectId,
-                seat: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "If the compositor honors this request, the"]
-            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
-            async fn set_maximized(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                toplevel: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "If the compositor honors this request, the"]
-            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
-            async fn unset_maximized(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                toplevel: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "If the compositor honors this request, the"]
-            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
-            async fn set_minimized(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                toplevel: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "If the compositor honors this request, the"]
-            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
-            async fn unset_minimized(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                toplevel: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "If the compositor honors this request, the"]
-            #[doc = "zcosmic_toplevel_handle_v1.state and potentially the"]
-            #[doc = "zcosmic_toplevel_handle_v1.output_enter/output_leave events will"]
-            #[doc = "be sent."]
-            #[doc = ""]
-            #[doc = "The output parameter a hint to the compositor and may be ignored. A"]
-            #[doc = "value of NULL indicates that the compositor should choose the target"]
-            #[doc = "output, if it honors the fullscreen request."]
-            async fn set_fullscreen(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                toplevel: crate::wire::ObjectId,
-                output: Option<crate::wire::ObjectId>,
-            ) -> crate::server::Result<()>;
-            #[doc = "If the compositor honors this request, the"]
-            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
-            async fn unset_fullscreen(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                toplevel: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "If a client using this protocol displays UI elements corresponding"]
-            #[doc = "to toplevels, it may use this request to inform the server about such"]
-            #[doc = "a relation. This information may be used by the server, for example as"]
-            #[doc = "the target for a minimize animation."]
-            #[doc = ""]
-            #[doc = "If the client sets more than one rectangle, only the most recently"]
-            #[doc = "set rectangle is considered."]
-            #[doc = ""]
-            #[doc = "The dimensions are given in surface-local coordinates."]
-            #[doc = ""]
-            #[doc = "Setting width=height=0 removes the current rectangle if one was set."]
-            async fn set_rectangle(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                toplevel: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-                x: i32,
-                y: i32,
-                width: i32,
-                height: i32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Move window to workspace, on given output."]
-            async fn move_to_workspace(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                toplevel: crate::wire::ObjectId,
-                workspace: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "If the compositor honors this request, the"]
-            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
-            async fn set_sticky(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                toplevel: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "If the compositor honors this request, the"]
-            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
-            async fn unset_sticky(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                toplevel: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "This event advertises the capabilities supported by the compositor. If"]
-            #[doc = "a capability isn't supported, clients should hide or disable the UI"]
-            #[doc = "elements that expose this functionality. For instance, if the"]
-            #[doc = "compositor doesn't advertise support for closing toplevels, a button"]
-            #[doc = "triggering the close request should not be displayed."]
-            #[doc = ""]
-            #[doc = "The compositor will ignore requests it doesn't support. For instance,"]
-            #[doc = "a compositor which doesn't advertise support for closing toplevels will ignore"]
-            #[doc = "close requests."]
-            #[doc = ""]
-            #[doc = "Compositors must send this event once after creation of an"]
-            #[doc = "zcosmic_toplevel_manager_v1 . When the capabilities change, compositors"]
-            #[doc = "must send this event again."]
-            #[doc = ""]
-            #[doc = "The capabilities are sent as an array of 32-bit unsigned integers in"]
-            #[doc = "native endianness."]
-            async fn capabilities(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                capabilities: Vec<u8>,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zcosmic_toplevel_manager_v1#{}.capabilities(array[{}])",
-                    object.id,
-                    capabilities.len()
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_array(capabilities)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
         }
     }
 }
@@ -1932,6 +961,228 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 state : super :: super :: super :: cosmic :: cosmic_output_management_unstable_v1 :: zcosmic_output_head_v1 :: AdaptiveSyncStateExt,
             ) -> crate::server::Result<()>;
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod cosmic_overlap_notify_unstable_v1 {
+    #[doc = "The purpose of this protocol is to enable layer-shell client to get"]
+    #[doc = "notifications if part of their surfaces are occluded other elements"]
+    #[doc = "(currently toplevels and other layer-surfaces)."]
+    #[doc = ""]
+    #[doc = "You can request a notification object for any of your zwlr_layer_surface_v1"]
+    #[doc = "surfaces, which will then emit overlap events."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod zcosmic_overlap_notify_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the zcosmic_overlap_notify_v1 interface. See the module level documentation for more info"]
+        pub trait ZcosmicOverlapNotifyV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "zcosmic_overlap_notify_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        let overlap_notification = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let layer_surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_overlap_notify_v1#{}.notify_on_overlap({}, {})",
+                            object.id,
+                            overlap_notification,
+                            layer_surface
+                        );
+                        self.notify_on_overlap(object, client, overlap_notification, layer_surface)
+                            .await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Requests notifications for toplevels and layer-surfaces entering and leaving the"]
+            #[doc = "surface-area of the given zwlr_layer_surface_v1. This can be used e.g. to"]
+            #[doc = "implement auto-hide functionality."]
+            #[doc = ""]
+            #[doc = "To stop receiving notifications, destroy the returned"]
+            #[doc = "zcosmic_overlap_notification_v1 object."]
+            async fn notify_on_overlap(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                overlap_notification: crate::wire::ObjectId,
+                layer_surface: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+        }
+    }
+    #[allow(clippy::too_many_arguments)]
+    pub mod zcosmic_overlap_notification_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the zcosmic_overlap_notification_v1 interface. See the module level documentation for more info"]
+        pub trait ZcosmicOverlapNotificationV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "zcosmic_overlap_notification_v1";
+            const VERSION: u32 = 1u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("zcosmic_overlap_notification_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This request should be called when the client has no interest in overlap"]
+            #[doc = "notifications anymore."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "A ext_foreign_toplevel_handle_v1 has entered the surface area."]
+            #[doc = ""]
+            #[doc = "This event will be emitted once for every ext_foreign_toplevel_handle_v1"]
+            #[doc = "representing this toplevel."]
+            #[doc = ""]
+            #[doc = "Compositors are free to update the overlapping area by sending additional"]
+            #[doc = "`toplevel_enter` events for the same toplevel without sending `toplevel_leave`"]
+            #[doc = "in between."]
+            async fn toplevel_enter(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zcosmic_overlap_notification_v1#{}.toplevel_enter({}, {}, {}, {}, {})",
+                    object.id,
+                    toplevel,
+                    x,
+                    y,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(toplevel))
+                    .put_int(x)
+                    .put_int(y)
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "A ext_foreign_toplevel_handle_v1 has left the surface area."]
+            #[doc = ""]
+            #[doc = "This event will be emitted once for every ext_foreign_toplevel_handle_v1"]
+            #[doc = "representing this toplevel."]
+            async fn toplevel_leave(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zcosmic_overlap_notification_v1#{}.toplevel_leave({})",
+                    object.id,
+                    toplevel
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(toplevel))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "A zwlr_layer_surface_v1 has entered the surface area."]
+            #[doc = ""]
+            #[doc = "Compositors are free to update the overlapping area by sending additional"]
+            #[doc = "`layer_enter` events for the same surface without sending `layer_leave`"]
+            #[doc = "in between."]
+            #[doc = ""]
+            #[doc = "The overlapping region is given surface-relative to the zwlr_layer_surface_v1"]
+            #[doc = "used to create this notification object."]
+            async fn layer_enter(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                identifier: String,
+                namespace: String,
+                exclusive: u32,
+                layer : super :: super :: super :: wlr :: wlr_layer_shell_unstable_v1 :: zwlr_layer_shell_v1 :: Layer,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::server::Result<()> {
+                tracing :: debug ! ("-> zcosmic_overlap_notification_v1#{}.layer_enter(\"{}\", \"{}\", {}, {}, {}, {}, {}, {})" , object . id , identifier , namespace , exclusive , layer , x , y , width , height);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(identifier))
+                    .put_string(Some(namespace))
+                    .put_uint(exclusive)
+                    .put_uint(layer as u32)
+                    .put_int(x)
+                    .put_int(y)
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "A zwlr_layer_surface_v1 has left the surface area."]
+            async fn layer_leave(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                identifier: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zcosmic_overlap_notification_v1#{}.layer_leave(\"{}\")",
+                    object.id,
+                    identifier
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(identifier))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
         }
     }
 }
@@ -2800,23 +2051,22 @@ pub mod cosmic_screencopy_unstable_v2 {
         }
     }
 }
-#[doc = "This protocol provides a relatively straightforward mapping of AtpsiDevice"]
-#[doc = "in the at-spi2-core library, so it's possible to add a Wayland backend for it."]
-#[doc = ""]
-#[doc = "This provides a way for screen reader key bindings to work."]
-#[doc = ""]
-#[doc = "This is a temporary solution until a better protocol is available for this purpose."]
 #[allow(clippy::module_inception)]
-pub mod cosmic_atspi_v1 {
-    #[doc = "Manager for adding grabs and monitoring key input."]
+pub mod cosmic_toplevel_info_unstable_v1 {
+    #[doc = "The purpose of this protocol is to enable clients such as taskbars"]
+    #[doc = "or docks to access a list of opened applications and basic properties"]
+    #[doc = "thereof."]
+    #[doc = ""]
+    #[doc = "It thus extends ext_foreign_toplevel_v1 to provide more information"]
+    #[doc = "and actions on foreign toplevels."]
     #[allow(clippy::too_many_arguments)]
-    pub mod cosmic_atspi_manager_v1 {
+    pub mod zcosmic_toplevel_info_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the cosmic_atspi_manager_v1 interface. See the module level documentation for more info"]
-        pub trait CosmicAtspiManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "cosmic_atspi_manager_v1";
-            const VERSION: u32 = 1u32;
+        #[doc = "Trait to implement the zcosmic_toplevel_info_v1 interface. See the module level documentation for more info"]
+        pub trait ZcosmicToplevelInfoV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "zcosmic_toplevel_info_v1";
+            const VERSION: u32 = 2u32;
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
             where
                 Self: Sized,
@@ -2832,97 +2082,849 @@ pub mod cosmic_atspi_v1 {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("cosmic_atspi_manager_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("zcosmic_toplevel_info_v1#{}.stop()", object.id,);
+                        self.stop(object, client).await
                     }
                     1u16 => {
-                        let mods = message.uint()?;
-                        let virtual_mods = message.array()?;
-                        let key = message.uint()?;
+                        let cosmic_toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let foreign_toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
-                            "cosmic_atspi_manager_v1#{}.add_key_grab({}, array[{}], {})",
+                            "zcosmic_toplevel_info_v1#{}.get_cosmic_toplevel({}, {})",
                             object.id,
-                            mods,
-                            virtual_mods.len(),
-                            key
+                            cosmic_toplevel,
+                            foreign_toplevel
                         );
-                        self.add_key_grab(object, client, mods, virtual_mods, key)
+                        self.get_cosmic_toplevel(object, client, cosmic_toplevel, foreign_toplevel)
                             .await
-                    }
-                    2u16 => {
-                        let mods = message.uint()?;
-                        let virtual_mods = message.array()?;
-                        let key = message.uint()?;
-                        tracing::debug!(
-                            "cosmic_atspi_manager_v1#{}.remove_key_grab({}, array[{}], {})",
-                            object.id,
-                            mods,
-                            virtual_mods.len(),
-                            key
-                        );
-                        self.remove_key_grab(object, client, mods, virtual_mods, key)
-                            .await
-                    }
-                    3u16 => {
-                        tracing::debug!("cosmic_atspi_manager_v1#{}.grab_keyboard()", object.id,);
-                        self.grab_keyboard(object, client).await
-                    }
-                    4u16 => {
-                        tracing::debug!("cosmic_atspi_manager_v1#{}.ungrab_keyboard()", object.id,);
-                        self.ungrab_keyboard(object, client).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
-            #[doc = "Any grabs that are still active will be disabled."]
+            #[doc = "This request indicates that the client no longer wishes to receive"]
+            #[doc = "events for new toplevels.  However, the compositor may emit further"]
+            #[doc = "toplevel_created events until the finished event is emitted."]
+            #[doc = ""]
+            #[doc = "The client must not send any more requests after this one."]
+            #[doc = ""]
+            #[doc = "Note: This request isn't necessary for clients binding version 2"]
+            #[doc = "of this protocol and will be ignored."]
+            async fn stop(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Request a zcosmic_toplevel_handle_v1 extension object for an existing"]
+            #[doc = "ext_foreign_toplevel_handle_v1."]
+            #[doc = ""]
+            #[doc = "All initial properties of the toplevel (states, etc.)"]
+            #[doc = "will be sent immediately after this event via the corresponding"]
+            #[doc = "events in zcosmic_toplevel_handle_v1."]
+            async fn get_cosmic_toplevel(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                cosmic_toplevel: crate::wire::ObjectId,
+                foreign_toplevel: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "This event is never emitted for clients binding version 2"]
+            #[doc = "of this protocol, they should use `get_cosmic_toplevel` instead."]
+            #[doc = ""]
+            #[doc = "This event is emitted for clients binding version 1 whenever a"]
+            #[doc = "new toplevel window is created. It is emitted for all toplevels,"]
+            #[doc = "regardless of the app that has created them."]
+            #[doc = ""]
+            #[doc = "All initial properties of the toplevel (title, app_id, states, etc.)"]
+            #[doc = "will be sent immediately after this event via the corresponding"]
+            #[doc = "events in zcosmic_toplevel_handle_v1."]
+            async fn toplevel(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zcosmic_toplevel_info_v1#{}.toplevel({})",
+                    object.id,
+                    toplevel
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(toplevel))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event indicates that the compositor is done sending events"]
+            #[doc = "to the zcosmic_toplevel_info_v1. The server will destroy the"]
+            #[doc = "object immediately after sending this request, so it will become"]
+            #[doc = "invalid and the client should free any resources associated with it."]
+            #[doc = ""]
+            #[doc = "Note: This event is emitted immediately after calling `stop` for"]
+            #[doc = "clients binding version 2 of this protocol for backwards compatibility."]
+            async fn finished(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> zcosmic_toplevel_info_v1#{}.finished()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is sent after all changes for currently active"]
+            #[doc = "zcosmic_toplevel_handle_v1 have been sent."]
+            #[doc = ""]
+            #[doc = "This allows changes to multiple zcosmic_toplevel_handle_v1 handles"]
+            #[doc = "and their properties to be seen as atomic, even if they happen via"]
+            #[doc = "multiple events."]
+            async fn done(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> zcosmic_toplevel_info_v1#{}.done()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[doc = "A zcosmic_toplevel_handle_v1 object represents an open toplevel"]
+    #[doc = "window. A single app may have multiple open toplevels."]
+    #[doc = ""]
+    #[doc = "Each toplevel has a list of outputs it is visible on, exposed to the"]
+    #[doc = "client via the output_enter and output_leave events."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod zcosmic_toplevel_handle_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "The different states that a toplevel may have. These have the same"]
+        #[doc = "meaning as the states with the same names defined in xdg-toplevel"]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum State {
+            #[doc = "the toplevel is maximized"]
+            Maximized = 0u32,
+            #[doc = "the toplevel is minimized"]
+            Minimized = 1u32,
+            #[doc = "the toplevel is active"]
+            Activated = 2u32,
+            #[doc = "the toplevel is fullscreen"]
+            Fullscreen = 3u32,
+            #[doc = "the toplevel is sticky"]
+            Sticky = 4u32,
+        }
+        impl TryFrom<u32> for State {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Maximized),
+                    1u32 => Ok(Self::Minimized),
+                    2u32 => Ok(Self::Activated),
+                    3u32 => Ok(Self::Fullscreen),
+                    4u32 => Ok(Self::Sticky),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for State {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the zcosmic_toplevel_handle_v1 interface. See the module level documentation for more info"]
+        pub trait ZcosmicToplevelHandleV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "zcosmic_toplevel_handle_v1";
+            const VERSION: u32 = 2u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("zcosmic_toplevel_handle_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This request should be called either when the client will no longer"]
+            #[doc = "use the zcosmic_toplevel_handle_v1."]
             async fn destroy(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
             ) -> crate::server::Result<()>;
-            #[doc = "Grab the given key combination, so it will not be sent to clients."]
-            async fn add_key_grab(
+            #[doc = "The server will emit no further events on the"]
+            #[doc = "zcosmic_toplevel_handle_v1 after this event. Any requests received"]
+            #[doc = "aside from the destroy request will be ignored. Upon receiving this"]
+            #[doc = "event, the client should make the destroy request to allow freeing"]
+            #[doc = "of resources."]
+            #[doc = ""]
+            #[doc = "Note: This event will not be emitted for clients binding version 2"]
+            #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.closed` is"]
+            #[doc = "equivalent."]
+            async fn closed(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                mods: u32,
-                virtual_mods: Vec<u8>,
-                key: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Disables a grab added with add_key_grab."]
-            async fn remove_key_grab(
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> zcosmic_toplevel_handle_v1#{}.closed()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is sent after all changes in the toplevel state have"]
+            #[doc = "been sent."]
+            #[doc = ""]
+            #[doc = "This allows changes to the zcosmic_toplevel_handle_v1 properties"]
+            #[doc = "to be seen as atomic, even if they happen via multiple events."]
+            #[doc = ""]
+            #[doc = "Note: this is is not sent after the closed event."]
+            #[doc = ""]
+            #[doc = "Note: This event will not be emitted for clients binding version 2"]
+            #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.done` is"]
+            #[doc = "equivalent."]
+            async fn done(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-                mods: u32,
-                virtual_mods: Vec<u8>,
-                key: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "Grab keyboard, so key input will not be sent to clients."]
-            async fn grab_keyboard(
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> zcosmic_toplevel_handle_v1#{}.done()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is emitted whenever the title of the toplevel changes."]
+            #[doc = ""]
+            #[doc = "Note: This event will not be emitted for clients binding version 2"]
+            #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.title` is"]
+            #[doc = "equivalent."]
+            async fn title(
                 &self,
                 object: &crate::server::Object,
                 client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Disables a grab added with grab_keyboard."]
-            async fn ungrab_keyboard(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Produces an fd that can be used with libei to monitor keyboard input."]
-            async fn key_events_eis(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                fd: rustix::fd::OwnedFd,
+                title: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
-                    "-> cosmic_atspi_manager_v1#{}.key_events_eis({})",
+                    "-> zcosmic_toplevel_handle_v1#{}.title(\"{}\")",
                     object.id,
-                    fd.as_raw_fd()
+                    title
                 );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(fd).build();
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(title))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is emitted whenever the app_id of the toplevel changes."]
+            #[doc = ""]
+            #[doc = "Note: This event will not be emitted for clients binding version 2"]
+            #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.app_id` is"]
+            #[doc = "equivalent."]
+            async fn app_id(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                app_id: String,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zcosmic_toplevel_handle_v1#{}.app_id(\"{}\")",
+                    object.id,
+                    app_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(app_id))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is emitted whenever the toplevel becomes visible on the"]
+            #[doc = "given output. A toplevel may be visible on multiple outputs."]
+            async fn output_enter(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                output: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zcosmic_toplevel_handle_v1#{}.output_enter({})",
+                    object.id,
+                    output
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is emitted whenever the toplevel is no longer visible"]
+            #[doc = "on a given output. It is guaranteed that an output_enter event with"]
+            #[doc = "the same output has been emitted before this event."]
+            async fn output_leave(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                output: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zcosmic_toplevel_handle_v1#{}.output_leave({})",
+                    object.id,
+                    output
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is emitted whenever the toplevel becomes visible on the"]
+            #[doc = "given workspace. A toplevel may be visible on multiple workspaces."]
+            async fn workspace_enter(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                workspace: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zcosmic_toplevel_handle_v1#{}.workspace_enter({})",
+                    object.id,
+                    workspace
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(workspace))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is emitted whenever the toplevel is no longer visible"]
+            #[doc = "on a given workspace. It is guaranteed that an workspace_enter event with"]
+            #[doc = "the same workspace has been emitted before this event."]
+            async fn workspace_leave(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                workspace: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zcosmic_toplevel_handle_v1#{}.workspace_leave({})",
+                    object.id,
+                    workspace
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(workspace))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event is emitted once on creation of the"]
+            #[doc = "zcosmic_toplevel_handle_v1 and again whenever the state of the"]
+            #[doc = "toplevel changes."]
+            async fn state(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                state: Vec<u8>,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zcosmic_toplevel_handle_v1#{}.state(array[{}])",
+                    object.id,
+                    state.len()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(state).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "Emitted when the geometry of a toplevel (it's position and/or size)"]
+            #[doc = "relative to the provided output has changed."]
+            #[doc = ""]
+            #[doc = "This event is emitted once on creation of the"]
+            #[doc = "zcosmic_toplevel_handle_v1 for every entered output and again"]
+            #[doc = "whenever the geometry of the toplevel changes relative to any output."]
+            async fn geometry(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                output: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zcosmic_toplevel_handle_v1#{}.geometry({}, {}, {}, {}, {})",
+                    object.id,
+                    output,
+                    x,
+                    y,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .put_int(x)
+                    .put_int(y)
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 9u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod cosmic_toplevel_management_unstable_v1 {
+    #[doc = "This protocol allows clients such as a taskbar to request the compositor"]
+    #[doc = "to preform typical actions on open toplevels. The compositor is in all"]
+    #[doc = "cases free to ignore the request."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod zcosmic_toplevel_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ZcosmicToplelevelManagementCapabilitiesV1 {
+            #[doc = "close request is available"]
+            Close = 1u32,
+            #[doc = "activate request is available"]
+            Activate = 2u32,
+            #[doc = "set_maximized and unset_maximized requests are available"]
+            Maximize = 3u32,
+            #[doc = "set_minimized and unset_minimized requests are available"]
+            Minimize = 4u32,
+            #[doc = "set_fullscreen and unset_fullscreen requests are available"]
+            Fullscreen = 5u32,
+            #[doc = "move_to_workspace request is available"]
+            MoveToWorkspace = 6u32,
+            #[doc = "set_sticky and unset_sticky requests are available"]
+            Sticky = 7u32,
+        }
+        impl TryFrom<u32> for ZcosmicToplelevelManagementCapabilitiesV1 {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::Close),
+                    2u32 => Ok(Self::Activate),
+                    3u32 => Ok(Self::Maximize),
+                    4u32 => Ok(Self::Minimize),
+                    5u32 => Ok(Self::Fullscreen),
+                    6u32 => Ok(Self::MoveToWorkspace),
+                    7u32 => Ok(Self::Sticky),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ZcosmicToplelevelManagementCapabilitiesV1 {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the provided rectangle is invalid"]
+            InvalidRectangle = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidRectangle),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the zcosmic_toplevel_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ZcosmicToplevelManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "zcosmic_toplevel_manager_v1";
+            const VERSION: u32 = 3u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("zcosmic_toplevel_manager_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_manager_v1#{}.close({})",
+                            object.id,
+                            toplevel
+                        );
+                        self.close(object, client, toplevel).await
+                    }
+                    2u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let seat = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_manager_v1#{}.activate({}, {})",
+                            object.id,
+                            toplevel,
+                            seat
+                        );
+                        self.activate(object, client, toplevel, seat).await
+                    }
+                    3u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_manager_v1#{}.set_maximized({})",
+                            object.id,
+                            toplevel
+                        );
+                        self.set_maximized(object, client, toplevel).await
+                    }
+                    4u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_manager_v1#{}.unset_maximized({})",
+                            object.id,
+                            toplevel
+                        );
+                        self.unset_maximized(object, client, toplevel).await
+                    }
+                    5u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_manager_v1#{}.set_minimized({})",
+                            object.id,
+                            toplevel
+                        );
+                        self.set_minimized(object, client, toplevel).await
+                    }
+                    6u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_manager_v1#{}.unset_minimized({})",
+                            object.id,
+                            toplevel
+                        );
+                        self.unset_minimized(object, client, toplevel).await
+                    }
+                    7u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let output = message.object()?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_manager_v1#{}.set_fullscreen({}, {})",
+                            object.id,
+                            toplevel,
+                            output
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.set_fullscreen(object, client, toplevel, output).await
+                    }
+                    8u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_manager_v1#{}.unset_fullscreen({})",
+                            object.id,
+                            toplevel
+                        );
+                        self.unset_fullscreen(object, client, toplevel).await
+                    }
+                    9u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_manager_v1#{}.set_rectangle({}, {}, {}, {}, {}, {})",
+                            object.id,
+                            toplevel,
+                            surface,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.set_rectangle(object, client, toplevel, surface, x, y, width, height)
+                            .await
+                    }
+                    10u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let workspace = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_manager_v1#{}.move_to_workspace({}, {}, {})",
+                            object.id,
+                            toplevel,
+                            workspace,
+                            output
+                        );
+                        self.move_to_workspace(object, client, toplevel, workspace, output)
+                            .await
+                    }
+                    11u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_manager_v1#{}.set_sticky({})",
+                            object.id,
+                            toplevel
+                        );
+                        self.set_sticky(object, client, toplevel).await
+                    }
+                    12u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_manager_v1#{}.unset_sticky({})",
+                            object.id,
+                            toplevel
+                        );
+                        self.unset_sticky(object, client, toplevel).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This request indicates that the client has finished using the"]
+            #[doc = "zcosmic_toplevel_manager_v1 object and that it can be safely"]
+            #[doc = "destroyed."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "If the compositor honors this request, the"]
+            #[doc = "zcosmic_toplevel_handle_v1.closed event will be sent."]
+            async fn close(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "If the compositor honors this request, the"]
+            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            async fn activate(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+                seat: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "If the compositor honors this request, the"]
+            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            async fn set_maximized(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "If the compositor honors this request, the"]
+            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            async fn unset_maximized(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "If the compositor honors this request, the"]
+            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            async fn set_minimized(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "If the compositor honors this request, the"]
+            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            async fn unset_minimized(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "If the compositor honors this request, the"]
+            #[doc = "zcosmic_toplevel_handle_v1.state and potentially the"]
+            #[doc = "zcosmic_toplevel_handle_v1.output_enter/output_leave events will"]
+            #[doc = "be sent."]
+            #[doc = ""]
+            #[doc = "The output parameter a hint to the compositor and may be ignored. A"]
+            #[doc = "value of NULL indicates that the compositor should choose the target"]
+            #[doc = "output, if it honors the fullscreen request."]
+            async fn set_fullscreen(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+                output: Option<crate::wire::ObjectId>,
+            ) -> crate::server::Result<()>;
+            #[doc = "If the compositor honors this request, the"]
+            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            async fn unset_fullscreen(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "If a client using this protocol displays UI elements corresponding"]
+            #[doc = "to toplevels, it may use this request to inform the server about such"]
+            #[doc = "a relation. This information may be used by the server, for example as"]
+            #[doc = "the target for a minimize animation."]
+            #[doc = ""]
+            #[doc = "If the client sets more than one rectangle, only the most recently"]
+            #[doc = "set rectangle is considered."]
+            #[doc = ""]
+            #[doc = "The dimensions are given in surface-local coordinates."]
+            #[doc = ""]
+            #[doc = "Setting width=height=0 removes the current rectangle if one was set."]
+            async fn set_rectangle(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> crate::server::Result<()>;
+            #[doc = "Move window to workspace, on given output."]
+            async fn move_to_workspace(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+                workspace: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "If the compositor honors this request, the"]
+            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            async fn set_sticky(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "If the compositor honors this request, the"]
+            #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            async fn unset_sticky(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                toplevel: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "This event advertises the capabilities supported by the compositor. If"]
+            #[doc = "a capability isn't supported, clients should hide or disable the UI"]
+            #[doc = "elements that expose this functionality. For instance, if the"]
+            #[doc = "compositor doesn't advertise support for closing toplevels, a button"]
+            #[doc = "triggering the close request should not be displayed."]
+            #[doc = ""]
+            #[doc = "The compositor will ignore requests it doesn't support. For instance,"]
+            #[doc = "a compositor which doesn't advertise support for closing toplevels will ignore"]
+            #[doc = "close requests."]
+            #[doc = ""]
+            #[doc = "Compositors must send this event once after creation of an"]
+            #[doc = "zcosmic_toplevel_manager_v1 . When the capabilities change, compositors"]
+            #[doc = "must send this event again."]
+            #[doc = ""]
+            #[doc = "The capabilities are sent as an array of 32-bit unsigned integers in"]
+            #[doc = "native endianness."]
+            async fn capabilities(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                capabilities: Vec<u8>,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zcosmic_toplevel_manager_v1#{}.capabilities(array[{}])",
+                    object.id,
+                    capabilities.len()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_array(capabilities)
+                    .build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
                     .await

@@ -1,1281 +1,4 @@
 #![allow(async_fn_in_trait)]
-#[allow(clippy::module_inception)]
-pub mod text_cursor_position {
-    #[allow(clippy::too_many_arguments)]
-    pub mod text_cursor_position {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the text_cursor_position interface. See the module level documentation for more info"]
-        pub trait TextCursorPosition {
-            const INTERFACE: &'static str = "text_cursor_position";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            async fn notify(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-                x: crate::wire::Fixed,
-                y: crate::wire::Fixed,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> text_cursor_position#{}.notify()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(surface))
-                    .put_fixed(x)
-                    .put_fixed(y)
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod weston_debug {
-    #[doc = "This is a generic debugging interface for Weston internals, the global"]
-    #[doc = "object advertized through wl_registry."]
-    #[doc = ""]
-    #[doc = "WARNING: This interface by design allows a denial-of-service attack. It"]
-    #[doc = "should not be offered in production, or proper authorization mechanisms"]
-    #[doc = "must be enforced."]
-    #[doc = ""]
-    #[doc = "The idea is for a client to provide a file descriptor that the server"]
-    #[doc = "uses for printing debug information. The server uses the file"]
-    #[doc = "descriptor in blocking writes mode, which exposes the denial-of-service"]
-    #[doc = "risk. The blocking mode is necessary to ensure all debug messages can"]
-    #[doc = "be easily printed in place. It also ensures message ordering if a"]
-    #[doc = "client subscribes to more than one debug stream."]
-    #[doc = ""]
-    #[doc = "The available debugging features depend on the server."]
-    #[doc = ""]
-    #[doc = "A debug stream can be one-shot where the server prints the requested"]
-    #[doc = "information and then closes it, or continuous where server keeps on"]
-    #[doc = "printing until the client stops it. Or anything in between."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod weston_debug_v1 {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the weston_debug_v1 interface. See the module level documentation for more info"]
-        pub trait WestonDebugV1 {
-            const INTERFACE: &'static str = "weston_debug_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroys the factory object, but does not affect any other objects."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_debug_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Subscribe to a named debug stream. The server will start printing"]
-            #[doc = "to the given file descriptor."]
-            #[doc = ""]
-            #[doc = "If the named debug stream is a one-shot dump, the server will send"]
-            #[doc = "weston_debug_stream_v1.complete event once all requested data has"]
-            #[doc = "been printed. Otherwise, the server will continue streaming debug"]
-            #[doc = "prints until the subscription object is destroyed."]
-            #[doc = ""]
-            #[doc = "If the debug stream name is unknown to the server, the server will"]
-            #[doc = "immediately respond with weston_debug_stream_v1.failure event."]
-            async fn subscribe(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                name: String,
-                streamfd: rustix::fd::OwnedFd,
-                stream: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_debug_v1#{}.subscribe()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(name))
-                    .put_fd(streamfd)
-                    .put_object(Some(stream))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Advertises an available debug scope which the client may be able to"]
-            #[doc = "bind to. No information is provided by the server about the content"]
-            #[doc = "contained within the debug streams provided by the scope, once a"]
-            #[doc = "client has subscribed."]
-            async fn available(
-                &self,
-                name: String,
-                description: Option<String>,
-            ) -> crate::client::Result<()>;
-        }
-    }
-    #[doc = "Represents one subscribed debug stream, created with"]
-    #[doc = "weston_debug_v1.subscribe. When the object is created, it is associated"]
-    #[doc = "with a given file descriptor. The server will continue writing to the"]
-    #[doc = "file descriptor until the object is destroyed or the server sends an"]
-    #[doc = "event through the object."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod weston_debug_stream_v1 {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the weston_debug_stream_v1 interface. See the module level documentation for more info"]
-        pub trait WestonDebugStreamV1 {
-            const INTERFACE: &'static str = "weston_debug_stream_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroys the object, which causes the server to stop writing into"]
-            #[doc = "and closes the associated file descriptor if it was not closed"]
-            #[doc = "already."]
-            #[doc = ""]
-            #[doc = "Use a wl_display.sync if the clients needs to guarantee the file"]
-            #[doc = "descriptor is closed before continuing."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_debug_stream_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "The server has successfully finished writing to and has closed the"]
-            #[doc = "associated file descriptor."]
-            #[doc = ""]
-            #[doc = "This event is delivered only for one-shot debug streams where the"]
-            #[doc = "server dumps some data and stop. This is never delivered for"]
-            #[doc = "continuous debbug streams because they by definition never complete."]
-            async fn complete(&self) -> crate::client::Result<()>;
-            #[doc = "The server has stopped writing to and has closed the"]
-            #[doc = "associated file descriptor. The data already written to the file"]
-            #[doc = "descriptor is correct, but it may be truncated."]
-            #[doc = ""]
-            #[doc = "This event may be delivered at any time and for any kind of debug"]
-            #[doc = "stream. It may be due to a failure in or shutdown of the server."]
-            #[doc = "The message argument may provide a hint of the reason."]
-            async fn failure(&self, message: Option<String>) -> crate::client::Result<()>;
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod weston_output_capture {
-    #[doc = "The global interface exposing Weston screenshooting functionality"]
-    #[doc = "intended for single shots."]
-    #[doc = ""]
-    #[doc = "This is a privileged inteface."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod weston_capture_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "invalid source enum value"]
-            InvalidSource = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::InvalidSource),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Source {
-            #[doc = "use hardware writeback"]
-            Writeback = 0u32,
-            #[doc = "copy from framebuffer, desktop area"]
-            Framebuffer = 1u32,
-            #[doc = "copy whole framebuffer, including borders"]
-            FullFramebuffer = 2u32,
-            #[doc = "copy from blending space"]
-            Blending = 3u32,
-        }
-        impl TryFrom<u32> for Source {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Writeback),
-                    1u32 => Ok(Self::Framebuffer),
-                    2u32 => Ok(Self::FullFramebuffer),
-                    3u32 => Ok(Self::Blending),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Source {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the weston_capture_v1 interface. See the module level documentation for more info"]
-        pub trait WestonCaptureV1 {
-            const INTERFACE: &'static str = "weston_capture_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Affects no other protocol objects in any way."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_capture_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This creates a weston_capture_source_v1 object corresponding to the"]
-            #[doc = "given wl_output. The object delivers information for allocating"]
-            #[doc = "suitable buffers, and exposes the capture function."]
-            #[doc = ""]
-            #[doc = "The object will be using the given pixel source for capturing images."]
-            #[doc = "If the source is not available, all attempts to capture will fail"]
-            #[doc = "gracefully."]
-            #[doc = ""]
-            #[doc = "'writeback' source will use hardware writeback feature of DRM KMS for"]
-            #[doc = "capturing. This may allow hardware planes to remain used"]
-            #[doc = "during the capture. This source is often not available."]
-            #[doc = ""]
-            #[doc = "'framebuffer' source copies the contents of the final framebuffer."]
-            #[doc = "Using this source temporarily disables all use of hardware planes and"]
-            #[doc = "DRM KMS color pipeline features. This source is always available."]
-            #[doc = ""]
-            #[doc = "'full_framebuffer' is otherwise the same as 'framebuffer' except it"]
-            #[doc = "will include also any borders (decorations) that the framebuffer may"]
-            #[doc = "contain."]
-            #[doc = ""]
-            #[doc = "'blending' source copies the contents of the intermediate blending"]
-            #[doc = "buffer, which should be in linear-light format.  Using this source"]
-            #[doc = "temporarily disables all use of hardware planes. This source is only"]
-            #[doc = "available when a blending buffer exists, e.g. when color management"]
-            #[doc = "is active on the output."]
-            #[doc = ""]
-            #[doc = "If the pixel source is not one of the defined enumeration values,"]
-            #[doc = "'invalid_source' protocol error is raised."]
-            async fn create(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
-                source: Source,
-                capture_source_new_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_capture_v1#{}.create()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(output))
-                    .put_uint(source as u32)
-                    .put_object(Some(capture_source_new_id))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-    #[doc = "An object representing image capturing functionality for a single"]
-    #[doc = "source. When created, it sends the initial events if and only if the"]
-    #[doc = "output still exists and the specified pixel source is available on"]
-    #[doc = "the output."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod weston_capture_source_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "the wl_buffer is not writable"]
-            BadBuffer = 0u32,
-            #[doc = "capture requested again before previous retired"]
-            Sequence = 1u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::BadBuffer),
-                    1u32 => Ok(Self::Sequence),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the weston_capture_source_v1 interface. See the module level documentation for more info"]
-        pub trait WestonCaptureSourceV1 {
-            const INTERFACE: &'static str = "weston_capture_source_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "If a capture is on-going on this object, this will cancel it and"]
-            #[doc = "make the image buffer contents undefined."]
-            #[doc = ""]
-            #[doc = "This object is destroyed."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_capture_source_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "If the given wl_buffer is compatible, the associated output will go"]
-            #[doc = "through a repaint some time after this request has been processed,"]
-            #[doc = "and that repaint will execute the capture."]
-            #[doc = "Once the capture is complete, 'complete' event is emitted."]
-            #[doc = ""]
-            #[doc = "If the given wl_buffer is incompatible, the event 'retry' is"]
-            #[doc = "emitted."]
-            #[doc = ""]
-            #[doc = "If the capture fails or the buffer type is unsupported, the event"]
-            #[doc = "'failed' is emitted."]
-            #[doc = ""]
-            #[doc = "The client must wait for one of these events before attempting"]
-            #[doc = "'capture' on this object again. If 'capture' is requested again before"]
-            #[doc = "any of those events, 'sequence' protocol error is raised."]
-            #[doc = ""]
-            #[doc = "The wl_buffer object will not emit wl_buffer.release event due to"]
-            #[doc = "this request."]
-            #[doc = ""]
-            #[doc = "The wl_buffer must refer to compositor-writable storage. If buffer"]
-            #[doc = "storage is not writable, either the protocol error bad_buffer or"]
-            #[doc = "wl_shm.error.invalid_fd is raised."]
-            #[doc = ""]
-            #[doc = "If the wl_buffer is destroyed before any event is emitted, the buffer"]
-            #[doc = "contents become undefined."]
-            #[doc = ""]
-            #[doc = "A compositor is required to implement capture into wl_shm buffers."]
-            #[doc = "Other buffer types may or may not be supported."]
-            async fn capture(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                buffer: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_capture_source_v1#{}.capture()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(buffer))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This event delivers the pixel format that should be used for the"]
-            #[doc = "image buffer. Any buffer is incompatible if it does not have"]
-            #[doc = "this pixel format."]
-            #[doc = ""]
-            #[doc = "The format modifier is linear (DRM_FORMAT_MOD_LINEAR)."]
-            #[doc = ""]
-            #[doc = "This is an initial event, and sent whenever the required format"]
-            #[doc = "changes."]
-            async fn format(&self, drm_format: u32) -> crate::client::Result<()>;
-            #[doc = "This event delivers the size that should be used for the"]
-            #[doc = "image buffer. Any buffer is incompatible if it does not have"]
-            #[doc = "this size."]
-            #[doc = ""]
-            #[doc = "Row alignment of the buffer must be 4 bytes, and it must not contain"]
-            #[doc = "further row padding. Otherwise the buffer is unsupported."]
-            #[doc = ""]
-            #[doc = "This is an initial event, and sent whenever the required size"]
-            #[doc = "changes."]
-            async fn size(&self, width: i32, height: i32) -> crate::client::Result<()>;
-            #[doc = "This event is emitted as a response to 'capture' request when it"]
-            #[doc = "has successfully completed."]
-            #[doc = ""]
-            #[doc = "If the buffer used in the shot is a dmabuf, the client also needs to"]
-            #[doc = "wait for any implicit fences on it before accessing the contents."]
-            async fn complete(&self) -> crate::client::Result<()>;
-            #[doc = "This event is emitted as a response to 'capture' request when it"]
-            #[doc = "cannot succeed due to an incompatible buffer. The client has already"]
-            #[doc = "received the events delivering the new buffer parameters. The client"]
-            #[doc = "should retry the capture with the new buffer parameters."]
-            async fn retry(&self) -> crate::client::Result<()>;
-            #[doc = "This event is emitted as a response to 'capture' request when it"]
-            #[doc = "has failed for reasons other than an incompatible buffer. The reasons"]
-            #[doc = "may include: unsupported buffer type, unsupported buffer stride,"]
-            #[doc = "unsupported image source, the image source (output) was removed, or"]
-            #[doc = "compositor policy denied the capture."]
-            #[doc = ""]
-            #[doc = "The string 'msg' may contain a human-readable explanation of the"]
-            #[doc = "failure to aid debugging."]
-            async fn failed(&self, msg: Option<String>) -> crate::client::Result<()>;
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod weston_touch_calibration {
-    #[doc = "This is the global interface for calibrating a touchscreen input"]
-    #[doc = "coordinate transformation. It is recommended to make this interface"]
-    #[doc = "privileged."]
-    #[doc = ""]
-    #[doc = "This interface can be used by a client to show a calibration pattern and"]
-    #[doc = "receive uncalibrated touch coordinates, facilitating the computation of"]
-    #[doc = "a calibration transformation that will align actual touch positions"]
-    #[doc = "on screen with their expected coordinates."]
-    #[doc = ""]
-    #[doc = "Immediately after being bound by a client, the compositor sends the"]
-    #[doc = "touch_device events."]
-    #[doc = ""]
-    #[doc = "The client chooses a touch device from the touch_device events, creates a"]
-    #[doc = "wl_surface and then a weston_touch_calibrator for the wl_surface and the"]
-    #[doc = "chosen touch device. The client waits for the compositor to send a"]
-    #[doc = "configure event before it starts drawing the first calibration pattern."]
-    #[doc = "After receiving the configure event, the client will iterate drawing a"]
-    #[doc = "pattern, getting touch input via weston_touch_calibrator, and converting"]
-    #[doc = "pixel coordinates to expected touch coordinates with"]
-    #[doc = "weston_touch_calibrator.convert until it has enough correspondences to"]
-    #[doc = "compute the calibration transformation or the compositor cancels the"]
-    #[doc = "calibration."]
-    #[doc = ""]
-    #[doc = "Once the client has successfully computed a new calibration, it can use"]
-    #[doc = "weston_touch_calibration.save request to load the new calibration into"]
-    #[doc = "the compositor. The compositor may take this new calibration into use and"]
-    #[doc = "may write it into persistent storage."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod weston_touch_calibration {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "the given wl_surface already has a role"]
-            InvalidSurface = 0u32,
-            #[doc = "the given device is not valid"]
-            InvalidDevice = 1u32,
-            #[doc = "a calibrator has already been created"]
-            AlreadyExists = 2u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::InvalidSurface),
-                    1u32 => Ok(Self::InvalidDevice),
-                    2u32 => Ok(Self::AlreadyExists),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the weston_touch_calibration interface. See the module level documentation for more info"]
-        pub trait WestonTouchCalibration {
-            const INTERFACE: &'static str = "weston_touch_calibration";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy the binding to the global interface, does not affect any"]
-            #[doc = "objects already created through this interface."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_touch_calibration#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This gives the calibrator role to the surface and ties it with the"]
-            #[doc = "given touch input device."]
-            #[doc = ""]
-            #[doc = "If the surface already has a role, then invalid_surface error is raised."]
-            #[doc = ""]
-            #[doc = "If the device string is not one advertised with touch_device event's"]
-            #[doc = "device argument, then invalid_device error is raised."]
-            #[doc = ""]
-            #[doc = "If a weston_touch_calibrator protocol object exists in the compositor"]
-            #[doc = "already, then already_exists error is raised. This limitation is"]
-            #[doc = "compositor-wide and not specific to any particular client."]
-            async fn create_calibrator(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-                device: String,
-                cal: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> weston_touch_calibration#{}.create_calibrator()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(surface))
-                    .put_string(Some(device))
-                    .put_object(Some(cal))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This request asks the compositor to save the calibration data for the"]
-            #[doc = "given touch input device. The compositor may ignore this request."]
-            #[doc = ""]
-            #[doc = "If the device string is not one advertised with touch_device event's"]
-            #[doc = "device argument, then invalid_device error is raised."]
-            #[doc = ""]
-            #[doc = "The array must contain exactly six 'float' (the 32-bit floating"]
-            #[doc = "point format used by the C language on the system) numbers. For a 3x3"]
-            #[doc = "calibration matrix in the form"]
-            #[doc = "@code"]
-            #[doc = "( a b c )"]
-            #[doc = "( d e f )"]
-            #[doc = "( 0 0 1 )"]
-            #[doc = "@endcode"]
-            #[doc = "the array must contain the values { a, b, c, d, e, f }. For the"]
-            #[doc = "definition of the coordinate spaces, see"]
-            #[doc = "libinput_device_config_calibration_set_matrix()."]
-            async fn save(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                device: String,
-                matrix: Vec<u8>,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_touch_calibration#{}.save()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(device))
-                    .put_array(matrix)
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "When a client binds to weston_touch_calibration, one touch_device event"]
-            #[doc = "is sent for each touchscreen that is available to be calibrated. This"]
-            #[doc = "is the only time the event is sent. Touch devices added in the"]
-            #[doc = "compositor will not generate events for existing"]
-            #[doc = "weston_touch_calibration objects."]
-            #[doc = ""]
-            #[doc = "An event carries the touch device identification and the associated"]
-            #[doc = "output or head (display connector) name."]
-            #[doc = ""]
-            #[doc = "On platforms using udev, the device identification is the udev sys"]
-            #[doc = "path. It is an absolute path and starts with the sys mount point."]
-            async fn touch_device(&self, device: String, head: String)
-                -> crate::client::Result<()>;
-        }
-    }
-    #[doc = "On creation, this object is tied to a specific touch device. The"]
-    #[doc = "compositor sends a configure event which the client must obey with the"]
-    #[doc = "associated wl_surface."]
-    #[doc = ""]
-    #[doc = "Once the client has committed content to the surface, the compositor can"]
-    #[doc = "grab the touch input device, prevent it from emitting normal touch"]
-    #[doc = "events, show the surface on the correct output, and relay input events"]
-    #[doc = "from the touch device via this protocol object."]
-    #[doc = ""]
-    #[doc = "Touch events from other touch devices than the one tied to this object"]
-    #[doc = "must generate wrong_touch events on at least touch-down and must not"]
-    #[doc = "generate normal or calibration touch events."]
-    #[doc = ""]
-    #[doc = "At any time, the compositor can choose to cancel the calibration"]
-    #[doc = "procedure by sending the cancel_calibration event. This should also be"]
-    #[doc = "used if the touch device disappears or anything else prevents the"]
-    #[doc = "calibration from continuing on the compositor side."]
-    #[doc = ""]
-    #[doc = "If the wl_surface is destroyed, the compositor must cancel the"]
-    #[doc = "calibration."]
-    #[doc = ""]
-    #[doc = "The touch event coordinates and conversion results are delivered in"]
-    #[doc = "calibration units. The calibration units cover the device coordinate"]
-    #[doc = "range exactly. Calibration units are in the closed interval [0.0, 1.0]"]
-    #[doc = "mapped into 32-bit unsigned integers. An integer can be converted into a"]
-    #[doc = "real value by dividing by 2^32-1. A calibration matrix must be computed"]
-    #[doc = "from the [0.0, 1.0] real values, but the matrix elements do not need to"]
-    #[doc = "fall into that range."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod weston_touch_calibrator {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "surface size does not match"]
-            BadSize = 0u32,
-            #[doc = "requested operation is not possible without mapping the surface"]
-            NotMapped = 1u32,
-            #[doc = "surface-local coordinates are out of bounds"]
-            BadCoordinates = 2u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::BadSize),
-                    1u32 => Ok(Self::NotMapped),
-                    2u32 => Ok(Self::BadCoordinates),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the weston_touch_calibrator interface. See the module level documentation for more info"]
-        pub trait WestonTouchCalibrator {
-            const INTERFACE: &'static str = "weston_touch_calibrator";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "This unmaps the surface if it was mapped. The input device grab"]
-            #[doc = "is dropped, if it was present. The surface loses its role as a"]
-            #[doc = "calibrator."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_touch_calibrator#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This request asks the compositor to convert the surface-local"]
-            #[doc = "coordinates into the expected touch input coordinates appropriate for"]
-            #[doc = "the associated touch device. The intention is that a client uses this"]
-            #[doc = "request to convert marker positions that the user is supposed to touch"]
-            #[doc = "during calibration."]
-            #[doc = ""]
-            #[doc = "If the compositor has cancelled the calibration, the conversion result"]
-            #[doc = "shall be zeroes and no errors will be raised."]
-            #[doc = ""]
-            #[doc = "The coordinates given as arguments to this request are relative to"]
-            #[doc = "the associated wl_surface."]
-            #[doc = ""]
-            #[doc = "If a client asks for conversion before it has committed valid"]
-            #[doc = "content to the wl_surface, the not_mapped error is raised."]
-            #[doc = ""]
-            #[doc = "If the coordinates x, y are outside of the wl_surface content, the"]
-            #[doc = "bad_coordinates error is raised."]
-            async fn convert(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                x: i32,
-                y: i32,
-                reply: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_touch_calibrator#{}.convert()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_int(x)
-                    .put_int(y)
-                    .put_object(Some(reply))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This event tells the client what size to make the surface. The client"]
-            #[doc = "must obey the size exactly on the next commit with a wl_buffer."]
-            #[doc = ""]
-            #[doc = "This event shall be sent once as a response to creating a"]
-            #[doc = "weston_touch_calibrator object."]
-            async fn configure(&self, width: i32, height: i32) -> crate::client::Result<()>;
-            #[doc = "This is sent when the compositor wants to cancel the calibration and"]
-            #[doc = "drop the touch device grab. The compositor unmaps the surface, if it"]
-            #[doc = "was mapped."]
-            #[doc = ""]
-            #[doc = "The weston_touch_calibrator object will not send any more events. The"]
-            #[doc = "client should destroy it."]
-            async fn cancel_calibration(&self) -> crate::client::Result<()>;
-            #[doc = "For whatever reason, a touch event resulting from a user action cannot"]
-            #[doc = "be used for calibration. The client should show feedback to the user"]
-            #[doc = "that the touch was rejected."]
-            #[doc = ""]
-            #[doc = "Possible causes for this event include the user touching a wrong"]
-            #[doc = "touchscreen when there are multiple ones present. This is particularly"]
-            #[doc = "useful when the touchscreens are cloned and there is no other way to"]
-            #[doc = "identify which screen the user should be touching."]
-            #[doc = ""]
-            #[doc = "Another cause could be a touch device that sends coordinates beyond its"]
-            #[doc = "declared range. If motion takes a touch point outside the range, the"]
-            #[doc = "compositor should also send 'cancel' event to undo the touch-down."]
-            async fn invalid_touch(&self) -> crate::client::Result<()>;
-            #[doc = "A new touch point has appeared on the surface. This touch point is"]
-            #[doc = "assigned a unique ID. Future events from this touch point reference"]
-            #[doc = "this ID. The ID ceases to be valid after a touch up event and may be"]
-            #[doc = "reused in the future."]
-            #[doc = ""]
-            #[doc = "For the coordinate units, see weston_touch_calibrator."]
-            async fn down(&self, time: u32, id: i32, x: u32, y: u32) -> crate::client::Result<()>;
-            #[doc = "The touch point has disappeared. No further events will be sent for"]
-            #[doc = "this touch point and the touch point's ID is released and may be"]
-            #[doc = "reused in a future touch down event."]
-            async fn up(&self, time: u32, id: i32) -> crate::client::Result<()>;
-            #[doc = "A touch point has changed coordinates."]
-            #[doc = ""]
-            #[doc = "For the coordinate units, see weston_touch_calibrator."]
-            async fn motion(&self, time: u32, id: i32, x: u32, y: u32)
-                -> crate::client::Result<()>;
-            #[doc = "Indicates the end of a set of events that logically belong together."]
-            #[doc = "A client is expected to accumulate the data in all events within the"]
-            #[doc = "frame before proceeding."]
-            #[doc = ""]
-            #[doc = "A wl_touch.frame terminates at least one event but otherwise no"]
-            #[doc = "guarantee is provided about the set of events within a frame. A client"]
-            #[doc = "must assume that any state not updated in a frame is unchanged from the"]
-            #[doc = "previously known state."]
-            async fn frame(&self) -> crate::client::Result<()>;
-            #[doc = "Sent if the compositor decides the touch stream is a global"]
-            #[doc = "gesture. No further events are sent to the clients from that"]
-            #[doc = "particular gesture. Touch cancellation applies to all touch points"]
-            #[doc = "currently active on this client's surface. The client is"]
-            #[doc = "responsible for finalizing the touch points, future touch points on"]
-            #[doc = "this surface may reuse the touch point ID."]
-            async fn cancel(&self) -> crate::client::Result<()>;
-        }
-    }
-    #[allow(clippy::too_many_arguments)]
-    pub mod weston_touch_coordinate {
-        #[doc = "Trait to implement the weston_touch_coordinate interface. See the module level documentation for more info"]
-        pub trait WestonTouchCoordinate {
-            const INTERFACE: &'static str = "weston_touch_coordinate";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "This event returns the conversion result from surface coordinates to"]
-            #[doc = "the expected touch device coordinates."]
-            #[doc = ""]
-            #[doc = "For details, see weston_touch_calibrator.convert. For the coordinate"]
-            #[doc = "units, see weston_touch_calibrator."]
-            #[doc = ""]
-            #[doc = "This event destroys the weston_touch_coordinate object."]
-            async fn result(&self, x: u32, y: u32) -> crate::client::Result<()>;
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod ivi_hmi_controller {
-    #[allow(clippy::too_many_arguments)]
-    pub mod ivi_hmi_controller {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum LayoutMode {
-            Tiling = 0u32,
-            SideBySide = 1u32,
-            FullScreen = 2u32,
-            Random = 3u32,
-        }
-        impl TryFrom<u32> for LayoutMode {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Tiling),
-                    1u32 => Ok(Self::SideBySide),
-                    2u32 => Ok(Self::FullScreen),
-                    3u32 => Ok(Self::Random),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for LayoutMode {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Home {
-            Off = 0u32,
-            On = 1u32,
-        }
-        impl TryFrom<u32> for Home {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Off),
-                    1u32 => Ok(Self::On),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Home {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the ivi_hmi_controller interface. See the module level documentation for more info"]
-        pub trait IviHmiController {
-            const INTERFACE: &'static str = "ivi_hmi_controller";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            async fn ui_ready(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ivi_hmi_controller#{}.ui_ready()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Reference protocol to control a surface by server."]
-            #[doc = "To control a surface by server, it gives seat to the server"]
-            #[doc = "to e.g. control Home screen. Home screen has several workspaces"]
-            #[doc = "to group launchers of wayland application. These workspaces"]
-            #[doc = "are drawn on a horizontally long surface to be controlled"]
-            #[doc = "by motion of input device. E.g. A motion from right to left"]
-            #[doc = "happens, the viewport of surface is controlled in the ivi-shell"]
-            #[doc = "by using ivi-layout. client can recognizes the end of controlling"]
-            #[doc = "by event \"workspace_end_control\"."]
-            async fn workspace_control(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                seat: crate::wire::ObjectId,
-                serial: u32,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ivi_hmi_controller#{}.workspace_control()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(seat))
-                    .put_uint(serial)
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "hmi-controller loaded to ivi-shall implements 4 types of layout"]
-            #[doc = "as a reference; tiling, side by side, full_screen, and random."]
-            async fn switch_mode(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                layout_mode: u32,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ivi_hmi_controller#{}.switch_mode()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(layout_mode)
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "home screen is a reference implementation of launcher to launch"]
-            #[doc = "wayland applications. The home screen has several workspaces to"]
-            #[doc = "group wayland applications. By defining the following keys in"]
-            #[doc = "weston.ini, user can add launcher icon to launch a wayland application"]
-            #[doc = "to a workspace."]
-            #[doc = "[ivi-launcher]"]
-            #[doc = "workspace-id=0"]
-            #[doc = ": id of workspace to add a launcher"]
-            #[doc = "icon-id=4001"]
-            #[doc = ": ivi id of ivi_surface to draw an icon"]
-            #[doc = "icon=/home/user/review/build-ivi-shell/data/icon_ivi_flower.png"]
-            #[doc = ": path to icon image"]
-            #[doc = "path=/home/user/review/build-ivi-shell/weston-dnd"]
-            #[doc = ": path to wayland application"]
-            async fn home(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                home: u32,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ivi_hmi_controller#{}.home()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(home).build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            async fn workspace_end_control(&self, is_controlled: i32) -> crate::client::Result<()>;
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod weston_desktop {
-    #[doc = "Traditional user interfaces can rely on this interface to define the"]
-    #[doc = "foundations of typical desktops. Currently it's possible to set up"]
-    #[doc = "background, panels and locking surfaces."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod weston_desktop_shell {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Cursor {
-            None = 0u32,
-            ResizeTop = 1u32,
-            ResizeBottom = 2u32,
-            Arrow = 3u32,
-            ResizeLeft = 4u32,
-            ResizeTopLeft = 5u32,
-            ResizeBottomLeft = 6u32,
-            Move = 7u32,
-            ResizeRight = 8u32,
-            ResizeTopRight = 9u32,
-            ResizeBottomRight = 10u32,
-            Busy = 11u32,
-        }
-        impl TryFrom<u32> for Cursor {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::None),
-                    1u32 => Ok(Self::ResizeTop),
-                    2u32 => Ok(Self::ResizeBottom),
-                    3u32 => Ok(Self::Arrow),
-                    4u32 => Ok(Self::ResizeLeft),
-                    5u32 => Ok(Self::ResizeTopLeft),
-                    6u32 => Ok(Self::ResizeBottomLeft),
-                    7u32 => Ok(Self::Move),
-                    8u32 => Ok(Self::ResizeRight),
-                    9u32 => Ok(Self::ResizeTopRight),
-                    10u32 => Ok(Self::ResizeBottomRight),
-                    11u32 => Ok(Self::Busy),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Cursor {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum PanelPosition {
-            Top = 0u32,
-            Bottom = 1u32,
-            Left = 2u32,
-            Right = 3u32,
-        }
-        impl TryFrom<u32> for PanelPosition {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Top),
-                    1u32 => Ok(Self::Bottom),
-                    2u32 => Ok(Self::Left),
-                    3u32 => Ok(Self::Right),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for PanelPosition {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "an invalid argument was provided in a request"]
-            InvalidArgument = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::InvalidArgument),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the weston_desktop_shell interface. See the module level documentation for more info"]
-        pub trait WestonDesktopShell {
-            const INTERFACE: &'static str = "weston_desktop_shell";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            async fn set_background(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_desktop_shell#{}.set_background()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(output))
-                    .put_object(Some(surface))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            async fn set_panel(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_desktop_shell#{}.set_panel()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(output))
-                    .put_object(Some(surface))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            async fn set_lock_surface(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_desktop_shell#{}.set_lock_surface()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(surface))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            async fn unlock(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_desktop_shell#{}.unlock()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "The surface set by this request will receive a fake"]
-            #[doc = "pointer.enter event during grabs at position 0, 0 and is"]
-            #[doc = "expected to set an appropriate cursor image as described by"]
-            #[doc = "the grab_cursor event sent just before the enter event."]
-            async fn set_grab_surface(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_desktop_shell#{}.set_grab_surface()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(surface))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Tell the server, that enough desktop elements have been drawn"]
-            #[doc = "to make the desktop look ready for use. During start-up, the"]
-            #[doc = "server can wait for this request with a black screen before"]
-            #[doc = "starting to fade in the desktop, for instance. If the client"]
-            #[doc = "parts of a desktop take a long time to initialize, we avoid"]
-            #[doc = "showing temporary garbage."]
-            async fn desktop_ready(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_desktop_shell#{}.desktop_ready()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Tell the shell which side of the screen the panel is"]
-            #[doc = "located. This is so that new windows do not overlap the panel"]
-            #[doc = "and maximized windows maximize properly."]
-            async fn set_panel_position(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                position: u32,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_desktop_shell#{}.set_panel_position()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(position)
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 6u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            async fn configure(
-                &self,
-                edges: u32,
-                surface: crate::wire::ObjectId,
-                width: i32,
-                height: i32,
-            ) -> crate::client::Result<()>;
-            #[doc = "Tell the client we want it to create and set the lock surface, which is"]
-            #[doc = "a GUI asking the user to unlock the screen. The lock surface is"]
-            #[doc = "announced with 'set_lock_surface'. Whether or not the client actually"]
-            #[doc = "implements locking, it MUST send 'unlock' request to let the normal"]
-            #[doc = "desktop resume."]
-            async fn prepare_lock_surface(&self) -> crate::client::Result<()>;
-            #[doc = "This event will be sent immediately before a fake enter event on the"]
-            #[doc = "grab surface."]
-            async fn grab_cursor(&self, cursor: u32) -> crate::client::Result<()>;
-        }
-    }
-    #[doc = "Only one client can bind this interface at a time."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod weston_screensaver {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the weston_screensaver interface. See the module level documentation for more info"]
-        pub trait WestonScreensaver {
-            const INTERFACE: &'static str = "weston_screensaver";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "A screensaver surface is normally hidden, and only visible after an"]
-            #[doc = "idle timeout."]
-            async fn set_surface(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_screensaver#{}.set_surface()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(surface))
-                    .put_object(Some(output))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-}
 #[doc = "The aim of the color management extension is to allow clients to know"]
 #[doc = "the color properties of outputs, and to tell the compositor about the color"]
 #[doc = "properties of their content on surfaces. Doing this enables a compositor"]
@@ -2979,6 +1702,330 @@ pub mod color_management_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
+pub mod ivi_application {
+    #[allow(clippy::too_many_arguments)]
+    pub mod ivi_surface {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
+        pub trait IviSurface {
+            const INTERFACE: &'static str = "ivi_surface";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This removes the link from ivi_id to wl_surface and destroys ivi_surface."]
+            #[doc = "The ID, ivi_id, is free and can be used for surface_create again."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ivi_surface#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "The configure event asks the client to resize its surface."]
+            #[doc = ""]
+            #[doc = "The size is a hint, in the sense that the client is free to"]
+            #[doc = "ignore it if it doesn't resize, pick a smaller size (to"]
+            #[doc = "satisfy aspect ratio or resize in steps of NxM pixels)."]
+            #[doc = ""]
+            #[doc = "The client is free to dismiss all but the last configure"]
+            #[doc = "event it received."]
+            #[doc = ""]
+            #[doc = "The width and height arguments specify the size of the window"]
+            #[doc = "in surface-local coordinates."]
+            async fn configure(&self, width: i32, height: i32) -> crate::client::Result<()>;
+        }
+    }
+    #[doc = "This interface is exposed as a global singleton."]
+    #[doc = "This interface is implemented by servers that provide IVI-style user interfaces."]
+    #[doc = "It allows clients to associate an ivi_surface with wl_surface."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ivi_application {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "given wl_surface has another role"]
+            Role = 0u32,
+            #[doc = "given ivi_id is assigned to another wl_surface"]
+            IviId = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Role),
+                    1u32 => Ok(Self::IviId),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
+        pub trait IviApplication {
+            const INTERFACE: &'static str = "ivi_application";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This request gives the wl_surface the role of an IVI Surface. Creating more than"]
+            #[doc = "one ivi_surface for a wl_surface is not allowed. Note, that this still allows the"]
+            #[doc = "following example:"]
+            #[doc = ""]
+            #[doc = "1. create a wl_surface"]
+            #[doc = "2. create ivi_surface for the wl_surface"]
+            #[doc = "3. destroy the ivi_surface"]
+            #[doc = "4. create ivi_surface for the wl_surface (with the same or another ivi_id as before)"]
+            #[doc = ""]
+            #[doc = "surface_create will create an interface:ivi_surface with numeric ID; ivi_id in"]
+            #[doc = "ivi compositor. These ivi_ids are defined as unique in the system to identify"]
+            #[doc = "it inside of ivi compositor. The ivi compositor implements business logic how to"]
+            #[doc = "set properties of the surface with ivi_id according to the status of the system."]
+            #[doc = "E.g. a unique ID for Car Navigation application is used for implementing special"]
+            #[doc = "logic of the application about where it shall be located."]
+            #[doc = "The server regards the following cases as protocol errors and disconnects the client."]
+            #[doc = "- wl_surface already has another role."]
+            #[doc = "- ivi_id is already assigned to another wl_surface."]
+            #[doc = ""]
+            #[doc = "If client destroys ivi_surface or wl_surface which is assigned to the ivi_surface,"]
+            #[doc = "ivi_id which is assigned to the ivi_surface is free for reuse."]
+            async fn surface_create(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                ivi_id: u32,
+                surface: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ivi_application#{}.surface_create()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(ivi_id)
+                    .put_object(Some(surface))
+                    .put_object(Some(id))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod ivi_hmi_controller {
+    #[allow(clippy::too_many_arguments)]
+    pub mod ivi_hmi_controller {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum LayoutMode {
+            Tiling = 0u32,
+            SideBySide = 1u32,
+            FullScreen = 2u32,
+            Random = 3u32,
+        }
+        impl TryFrom<u32> for LayoutMode {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Tiling),
+                    1u32 => Ok(Self::SideBySide),
+                    2u32 => Ok(Self::FullScreen),
+                    3u32 => Ok(Self::Random),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for LayoutMode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Home {
+            Off = 0u32,
+            On = 1u32,
+        }
+        impl TryFrom<u32> for Home {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Off),
+                    1u32 => Ok(Self::On),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Home {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the ivi_hmi_controller interface. See the module level documentation for more info"]
+        pub trait IviHmiController {
+            const INTERFACE: &'static str = "ivi_hmi_controller";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            async fn ui_ready(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ivi_hmi_controller#{}.ui_ready()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Reference protocol to control a surface by server."]
+            #[doc = "To control a surface by server, it gives seat to the server"]
+            #[doc = "to e.g. control Home screen. Home screen has several workspaces"]
+            #[doc = "to group launchers of wayland application. These workspaces"]
+            #[doc = "are drawn on a horizontally long surface to be controlled"]
+            #[doc = "by motion of input device. E.g. A motion from right to left"]
+            #[doc = "happens, the viewport of surface is controlled in the ivi-shell"]
+            #[doc = "by using ivi-layout. client can recognizes the end of controlling"]
+            #[doc = "by event \"workspace_end_control\"."]
+            async fn workspace_control(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                seat: crate::wire::ObjectId,
+                serial: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ivi_hmi_controller#{}.workspace_control()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(seat))
+                    .put_uint(serial)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "hmi-controller loaded to ivi-shall implements 4 types of layout"]
+            #[doc = "as a reference; tiling, side by side, full_screen, and random."]
+            async fn switch_mode(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                layout_mode: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ivi_hmi_controller#{}.switch_mode()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(layout_mode)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "home screen is a reference implementation of launcher to launch"]
+            #[doc = "wayland applications. The home screen has several workspaces to"]
+            #[doc = "group wayland applications. By defining the following keys in"]
+            #[doc = "weston.ini, user can add launcher icon to launch a wayland application"]
+            #[doc = "to a workspace."]
+            #[doc = "[ivi-launcher]"]
+            #[doc = "workspace-id=0"]
+            #[doc = ": id of workspace to add a launcher"]
+            #[doc = "icon-id=4001"]
+            #[doc = ": ivi id of ivi_surface to draw an icon"]
+            #[doc = "icon=/home/user/review/build-ivi-shell/data/icon_ivi_flower.png"]
+            #[doc = ": path to icon image"]
+            #[doc = "path=/home/user/review/build-ivi-shell/weston-dnd"]
+            #[doc = ": path to wayland application"]
+            async fn home(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                home: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ivi_hmi_controller#{}.home()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(home).build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            async fn workspace_end_control(&self, is_controlled: i32) -> crate::client::Result<()>;
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod text_cursor_position {
+    #[allow(clippy::too_many_arguments)]
+    pub mod text_cursor_position {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the text_cursor_position interface. See the module level documentation for more info"]
+        pub trait TextCursorPosition {
+            const INTERFACE: &'static str = "text_cursor_position";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            async fn notify(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> text_cursor_position#{}.notify()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(surface))
+                    .put_fixed(x)
+                    .put_fixed(y)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
 #[doc = "This protocol specifies a set of interfaces used to provide"]
 #[doc = "content-protection for e.g. HDCP, and protect surface contents on the"]
 #[doc = "secured outputs and prevent from appearing in screenshots or from being"]
@@ -3315,6 +2362,801 @@ pub mod weston_content_protection {
             #[doc = "If the mode is then changed to \"relax\", the client will receive the"]
             #[doc = "status event."]
             async fn status(&self, r#type: Type) -> crate::client::Result<()>;
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod weston_debug {
+    #[doc = "This is a generic debugging interface for Weston internals, the global"]
+    #[doc = "object advertized through wl_registry."]
+    #[doc = ""]
+    #[doc = "WARNING: This interface by design allows a denial-of-service attack. It"]
+    #[doc = "should not be offered in production, or proper authorization mechanisms"]
+    #[doc = "must be enforced."]
+    #[doc = ""]
+    #[doc = "The idea is for a client to provide a file descriptor that the server"]
+    #[doc = "uses for printing debug information. The server uses the file"]
+    #[doc = "descriptor in blocking writes mode, which exposes the denial-of-service"]
+    #[doc = "risk. The blocking mode is necessary to ensure all debug messages can"]
+    #[doc = "be easily printed in place. It also ensures message ordering if a"]
+    #[doc = "client subscribes to more than one debug stream."]
+    #[doc = ""]
+    #[doc = "The available debugging features depend on the server."]
+    #[doc = ""]
+    #[doc = "A debug stream can be one-shot where the server prints the requested"]
+    #[doc = "information and then closes it, or continuous where server keeps on"]
+    #[doc = "printing until the client stops it. Or anything in between."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod weston_debug_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the weston_debug_v1 interface. See the module level documentation for more info"]
+        pub trait WestonDebugV1 {
+            const INTERFACE: &'static str = "weston_debug_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroys the factory object, but does not affect any other objects."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_debug_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Subscribe to a named debug stream. The server will start printing"]
+            #[doc = "to the given file descriptor."]
+            #[doc = ""]
+            #[doc = "If the named debug stream is a one-shot dump, the server will send"]
+            #[doc = "weston_debug_stream_v1.complete event once all requested data has"]
+            #[doc = "been printed. Otherwise, the server will continue streaming debug"]
+            #[doc = "prints until the subscription object is destroyed."]
+            #[doc = ""]
+            #[doc = "If the debug stream name is unknown to the server, the server will"]
+            #[doc = "immediately respond with weston_debug_stream_v1.failure event."]
+            async fn subscribe(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                name: String,
+                streamfd: rustix::fd::OwnedFd,
+                stream: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_debug_v1#{}.subscribe()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .put_fd(streamfd)
+                    .put_object(Some(stream))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Advertises an available debug scope which the client may be able to"]
+            #[doc = "bind to. No information is provided by the server about the content"]
+            #[doc = "contained within the debug streams provided by the scope, once a"]
+            #[doc = "client has subscribed."]
+            async fn available(
+                &self,
+                name: String,
+                description: Option<String>,
+            ) -> crate::client::Result<()>;
+        }
+    }
+    #[doc = "Represents one subscribed debug stream, created with"]
+    #[doc = "weston_debug_v1.subscribe. When the object is created, it is associated"]
+    #[doc = "with a given file descriptor. The server will continue writing to the"]
+    #[doc = "file descriptor until the object is destroyed or the server sends an"]
+    #[doc = "event through the object."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod weston_debug_stream_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the weston_debug_stream_v1 interface. See the module level documentation for more info"]
+        pub trait WestonDebugStreamV1 {
+            const INTERFACE: &'static str = "weston_debug_stream_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroys the object, which causes the server to stop writing into"]
+            #[doc = "and closes the associated file descriptor if it was not closed"]
+            #[doc = "already."]
+            #[doc = ""]
+            #[doc = "Use a wl_display.sync if the clients needs to guarantee the file"]
+            #[doc = "descriptor is closed before continuing."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_debug_stream_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "The server has successfully finished writing to and has closed the"]
+            #[doc = "associated file descriptor."]
+            #[doc = ""]
+            #[doc = "This event is delivered only for one-shot debug streams where the"]
+            #[doc = "server dumps some data and stop. This is never delivered for"]
+            #[doc = "continuous debbug streams because they by definition never complete."]
+            async fn complete(&self) -> crate::client::Result<()>;
+            #[doc = "The server has stopped writing to and has closed the"]
+            #[doc = "associated file descriptor. The data already written to the file"]
+            #[doc = "descriptor is correct, but it may be truncated."]
+            #[doc = ""]
+            #[doc = "This event may be delivered at any time and for any kind of debug"]
+            #[doc = "stream. It may be due to a failure in or shutdown of the server."]
+            #[doc = "The message argument may provide a hint of the reason."]
+            async fn failure(&self, message: Option<String>) -> crate::client::Result<()>;
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod weston_desktop {
+    #[doc = "Traditional user interfaces can rely on this interface to define the"]
+    #[doc = "foundations of typical desktops. Currently it's possible to set up"]
+    #[doc = "background, panels and locking surfaces."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod weston_desktop_shell {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Cursor {
+            None = 0u32,
+            ResizeTop = 1u32,
+            ResizeBottom = 2u32,
+            Arrow = 3u32,
+            ResizeLeft = 4u32,
+            ResizeTopLeft = 5u32,
+            ResizeBottomLeft = 6u32,
+            Move = 7u32,
+            ResizeRight = 8u32,
+            ResizeTopRight = 9u32,
+            ResizeBottomRight = 10u32,
+            Busy = 11u32,
+        }
+        impl TryFrom<u32> for Cursor {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::None),
+                    1u32 => Ok(Self::ResizeTop),
+                    2u32 => Ok(Self::ResizeBottom),
+                    3u32 => Ok(Self::Arrow),
+                    4u32 => Ok(Self::ResizeLeft),
+                    5u32 => Ok(Self::ResizeTopLeft),
+                    6u32 => Ok(Self::ResizeBottomLeft),
+                    7u32 => Ok(Self::Move),
+                    8u32 => Ok(Self::ResizeRight),
+                    9u32 => Ok(Self::ResizeTopRight),
+                    10u32 => Ok(Self::ResizeBottomRight),
+                    11u32 => Ok(Self::Busy),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Cursor {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum PanelPosition {
+            Top = 0u32,
+            Bottom = 1u32,
+            Left = 2u32,
+            Right = 3u32,
+        }
+        impl TryFrom<u32> for PanelPosition {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Top),
+                    1u32 => Ok(Self::Bottom),
+                    2u32 => Ok(Self::Left),
+                    3u32 => Ok(Self::Right),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for PanelPosition {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "an invalid argument was provided in a request"]
+            InvalidArgument = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidArgument),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the weston_desktop_shell interface. See the module level documentation for more info"]
+        pub trait WestonDesktopShell {
+            const INTERFACE: &'static str = "weston_desktop_shell";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            async fn set_background(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_desktop_shell#{}.set_background()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .put_object(Some(surface))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            async fn set_panel(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_desktop_shell#{}.set_panel()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .put_object(Some(surface))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            async fn set_lock_surface(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_desktop_shell#{}.set_lock_surface()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(surface))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            async fn unlock(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_desktop_shell#{}.unlock()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "The surface set by this request will receive a fake"]
+            #[doc = "pointer.enter event during grabs at position 0, 0 and is"]
+            #[doc = "expected to set an appropriate cursor image as described by"]
+            #[doc = "the grab_cursor event sent just before the enter event."]
+            async fn set_grab_surface(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_desktop_shell#{}.set_grab_surface()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(surface))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Tell the server, that enough desktop elements have been drawn"]
+            #[doc = "to make the desktop look ready for use. During start-up, the"]
+            #[doc = "server can wait for this request with a black screen before"]
+            #[doc = "starting to fade in the desktop, for instance. If the client"]
+            #[doc = "parts of a desktop take a long time to initialize, we avoid"]
+            #[doc = "showing temporary garbage."]
+            async fn desktop_ready(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_desktop_shell#{}.desktop_ready()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Tell the shell which side of the screen the panel is"]
+            #[doc = "located. This is so that new windows do not overlap the panel"]
+            #[doc = "and maximized windows maximize properly."]
+            async fn set_panel_position(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                position: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_desktop_shell#{}.set_panel_position()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(position)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 6u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            async fn configure(
+                &self,
+                edges: u32,
+                surface: crate::wire::ObjectId,
+                width: i32,
+                height: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Tell the client we want it to create and set the lock surface, which is"]
+            #[doc = "a GUI asking the user to unlock the screen. The lock surface is"]
+            #[doc = "announced with 'set_lock_surface'. Whether or not the client actually"]
+            #[doc = "implements locking, it MUST send 'unlock' request to let the normal"]
+            #[doc = "desktop resume."]
+            async fn prepare_lock_surface(&self) -> crate::client::Result<()>;
+            #[doc = "This event will be sent immediately before a fake enter event on the"]
+            #[doc = "grab surface."]
+            async fn grab_cursor(&self, cursor: u32) -> crate::client::Result<()>;
+        }
+    }
+    #[doc = "Only one client can bind this interface at a time."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod weston_screensaver {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the weston_screensaver interface. See the module level documentation for more info"]
+        pub trait WestonScreensaver {
+            const INTERFACE: &'static str = "weston_screensaver";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "A screensaver surface is normally hidden, and only visible after an"]
+            #[doc = "idle timeout."]
+            async fn set_surface(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_screensaver#{}.set_surface()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(surface))
+                    .put_object(Some(output))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod weston_direct_display {
+    #[doc = "Weston extension to instruct the compositor to avoid any import"]
+    #[doc = "of the dmabuf created by 'linux-dmabuf' protocol other than the display"]
+    #[doc = "controller."]
+    #[doc = ""]
+    #[doc = "Compositors are already going to use direct scan-out as much as possible but"]
+    #[doc = "there's no assurance that while doing so, they won't first import the dmabuf"]
+    #[doc = "in to the GPU. This extension assures the client that the compositor will"]
+    #[doc = "never attempt to import in to the GPU and pass it directly to the display"]
+    #[doc = "controller."]
+    #[doc = ""]
+    #[doc = "Clients can make use of this extension to pass the dmabuf buffer to the"]
+    #[doc = "display controller, potentially increasing the performance and lowering the"]
+    #[doc = "bandwidth usage."]
+    #[doc = ""]
+    #[doc = "Lastly, clients can make use of this extension in tandem with content-protection"]
+    #[doc = "one thus avoiding any GPU interaction and providing a secure-content path."]
+    #[doc = "Also, in some cases, the memory where dmabuf are allocated are in specially"]
+    #[doc = "crafted memory zone which would be seen as an illegal memory access when the"]
+    #[doc = "GPU will attempt to read it."]
+    #[doc = ""]
+    #[doc = "WARNING: This interface by design might break screenshoting functionality"]
+    #[doc = "as compositing might be involved while doing that. Also, do note, that in"]
+    #[doc = "case the dmabufer provided can't be imported by KMS, the client connection"]
+    #[doc = "will be terminated."]
+    #[doc = ""]
+    #[doc = "WARNING: This extension requires 'linux-dmabuf' protocol and"]
+    #[doc = "'zwp_linux_buffer_params_v1' be already created by 'zwp_linux_buffer_v1'."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod weston_direct_display_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the weston_direct_display_v1 interface. See the module level documentation for more info"]
+        pub trait WestonDirectDisplayV1 {
+            const INTERFACE: &'static str = "weston_direct_display_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This request tells the compositor not to import the dmabuf to the GPU"]
+            #[doc = "in order to bypass it entirely, such that the buffer will be directly"]
+            #[doc = "scanned-out by the display controller. If HW is not capable/or there"]
+            #[doc = "aren't any available resources to directly scan-out the buffer, a"]
+            #[doc = "placeholder should be installed in-place by the compositor. The"]
+            #[doc = "compositor may perform checks on the dmabuf and refuse to create a"]
+            #[doc = "wl_buffer if the dmabuf seems unusable for being used directly."]
+            #[doc = ""]
+            #[doc = "Assumes that 'zwp_linux_buffer_params_v1' was already created"]
+            #[doc = "by 'zwp_linux_dmabuf_v1_create_params'."]
+            async fn enable(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                dmabuf: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_direct_display_v1#{}.enable()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(dmabuf))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Destroys the factory object, but does not affect any other objects."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_direct_display_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod weston_output_capture {
+    #[doc = "The global interface exposing Weston screenshooting functionality"]
+    #[doc = "intended for single shots."]
+    #[doc = ""]
+    #[doc = "This is a privileged inteface."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod weston_capture_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "invalid source enum value"]
+            InvalidSource = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidSource),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Source {
+            #[doc = "use hardware writeback"]
+            Writeback = 0u32,
+            #[doc = "copy from framebuffer, desktop area"]
+            Framebuffer = 1u32,
+            #[doc = "copy whole framebuffer, including borders"]
+            FullFramebuffer = 2u32,
+            #[doc = "copy from blending space"]
+            Blending = 3u32,
+        }
+        impl TryFrom<u32> for Source {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Writeback),
+                    1u32 => Ok(Self::Framebuffer),
+                    2u32 => Ok(Self::FullFramebuffer),
+                    3u32 => Ok(Self::Blending),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Source {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the weston_capture_v1 interface. See the module level documentation for more info"]
+        pub trait WestonCaptureV1 {
+            const INTERFACE: &'static str = "weston_capture_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Affects no other protocol objects in any way."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_capture_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This creates a weston_capture_source_v1 object corresponding to the"]
+            #[doc = "given wl_output. The object delivers information for allocating"]
+            #[doc = "suitable buffers, and exposes the capture function."]
+            #[doc = ""]
+            #[doc = "The object will be using the given pixel source for capturing images."]
+            #[doc = "If the source is not available, all attempts to capture will fail"]
+            #[doc = "gracefully."]
+            #[doc = ""]
+            #[doc = "'writeback' source will use hardware writeback feature of DRM KMS for"]
+            #[doc = "capturing. This may allow hardware planes to remain used"]
+            #[doc = "during the capture. This source is often not available."]
+            #[doc = ""]
+            #[doc = "'framebuffer' source copies the contents of the final framebuffer."]
+            #[doc = "Using this source temporarily disables all use of hardware planes and"]
+            #[doc = "DRM KMS color pipeline features. This source is always available."]
+            #[doc = ""]
+            #[doc = "'full_framebuffer' is otherwise the same as 'framebuffer' except it"]
+            #[doc = "will include also any borders (decorations) that the framebuffer may"]
+            #[doc = "contain."]
+            #[doc = ""]
+            #[doc = "'blending' source copies the contents of the intermediate blending"]
+            #[doc = "buffer, which should be in linear-light format.  Using this source"]
+            #[doc = "temporarily disables all use of hardware planes. This source is only"]
+            #[doc = "available when a blending buffer exists, e.g. when color management"]
+            #[doc = "is active on the output."]
+            #[doc = ""]
+            #[doc = "If the pixel source is not one of the defined enumeration values,"]
+            #[doc = "'invalid_source' protocol error is raised."]
+            async fn create(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
+                source: Source,
+                capture_source_new_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_capture_v1#{}.create()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .put_uint(source as u32)
+                    .put_object(Some(capture_source_new_id))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "An object representing image capturing functionality for a single"]
+    #[doc = "source. When created, it sends the initial events if and only if the"]
+    #[doc = "output still exists and the specified pixel source is available on"]
+    #[doc = "the output."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod weston_capture_source_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the wl_buffer is not writable"]
+            BadBuffer = 0u32,
+            #[doc = "capture requested again before previous retired"]
+            Sequence = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::BadBuffer),
+                    1u32 => Ok(Self::Sequence),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the weston_capture_source_v1 interface. See the module level documentation for more info"]
+        pub trait WestonCaptureSourceV1 {
+            const INTERFACE: &'static str = "weston_capture_source_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "If a capture is on-going on this object, this will cancel it and"]
+            #[doc = "make the image buffer contents undefined."]
+            #[doc = ""]
+            #[doc = "This object is destroyed."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_capture_source_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "If the given wl_buffer is compatible, the associated output will go"]
+            #[doc = "through a repaint some time after this request has been processed,"]
+            #[doc = "and that repaint will execute the capture."]
+            #[doc = "Once the capture is complete, 'complete' event is emitted."]
+            #[doc = ""]
+            #[doc = "If the given wl_buffer is incompatible, the event 'retry' is"]
+            #[doc = "emitted."]
+            #[doc = ""]
+            #[doc = "If the capture fails or the buffer type is unsupported, the event"]
+            #[doc = "'failed' is emitted."]
+            #[doc = ""]
+            #[doc = "The client must wait for one of these events before attempting"]
+            #[doc = "'capture' on this object again. If 'capture' is requested again before"]
+            #[doc = "any of those events, 'sequence' protocol error is raised."]
+            #[doc = ""]
+            #[doc = "The wl_buffer object will not emit wl_buffer.release event due to"]
+            #[doc = "this request."]
+            #[doc = ""]
+            #[doc = "The wl_buffer must refer to compositor-writable storage. If buffer"]
+            #[doc = "storage is not writable, either the protocol error bad_buffer or"]
+            #[doc = "wl_shm.error.invalid_fd is raised."]
+            #[doc = ""]
+            #[doc = "If the wl_buffer is destroyed before any event is emitted, the buffer"]
+            #[doc = "contents become undefined."]
+            #[doc = ""]
+            #[doc = "A compositor is required to implement capture into wl_shm buffers."]
+            #[doc = "Other buffer types may or may not be supported."]
+            async fn capture(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                buffer: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_capture_source_v1#{}.capture()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(buffer))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This event delivers the pixel format that should be used for the"]
+            #[doc = "image buffer. Any buffer is incompatible if it does not have"]
+            #[doc = "this pixel format."]
+            #[doc = ""]
+            #[doc = "The format modifier is linear (DRM_FORMAT_MOD_LINEAR)."]
+            #[doc = ""]
+            #[doc = "This is an initial event, and sent whenever the required format"]
+            #[doc = "changes."]
+            async fn format(&self, drm_format: u32) -> crate::client::Result<()>;
+            #[doc = "This event delivers the size that should be used for the"]
+            #[doc = "image buffer. Any buffer is incompatible if it does not have"]
+            #[doc = "this size."]
+            #[doc = ""]
+            #[doc = "Row alignment of the buffer must be 4 bytes, and it must not contain"]
+            #[doc = "further row padding. Otherwise the buffer is unsupported."]
+            #[doc = ""]
+            #[doc = "This is an initial event, and sent whenever the required size"]
+            #[doc = "changes."]
+            async fn size(&self, width: i32, height: i32) -> crate::client::Result<()>;
+            #[doc = "This event is emitted as a response to 'capture' request when it"]
+            #[doc = "has successfully completed."]
+            #[doc = ""]
+            #[doc = "If the buffer used in the shot is a dmabuf, the client also needs to"]
+            #[doc = "wait for any implicit fences on it before accessing the contents."]
+            async fn complete(&self) -> crate::client::Result<()>;
+            #[doc = "This event is emitted as a response to 'capture' request when it"]
+            #[doc = "cannot succeed due to an incompatible buffer. The client has already"]
+            #[doc = "received the events delivering the new buffer parameters. The client"]
+            #[doc = "should retry the capture with the new buffer parameters."]
+            async fn retry(&self) -> crate::client::Result<()>;
+            #[doc = "This event is emitted as a response to 'capture' request when it"]
+            #[doc = "has failed for reasons other than an incompatible buffer. The reasons"]
+            #[doc = "may include: unsupported buffer type, unsupported buffer stride,"]
+            #[doc = "unsupported image source, the image source (output) was removed, or"]
+            #[doc = "compositor policy denied the capture."]
+            #[doc = ""]
+            #[doc = "The string 'msg' may contain a human-readable explanation of the"]
+            #[doc = "failure to aid debugging."]
+            async fn failed(&self, msg: Option<String>) -> crate::client::Result<()>;
         }
     }
 }
@@ -3684,158 +3526,55 @@ pub mod weston_test {
     }
 }
 #[allow(clippy::module_inception)]
-pub mod weston_direct_display {
-    #[doc = "Weston extension to instruct the compositor to avoid any import"]
-    #[doc = "of the dmabuf created by 'linux-dmabuf' protocol other than the display"]
-    #[doc = "controller."]
+pub mod weston_touch_calibration {
+    #[doc = "This is the global interface for calibrating a touchscreen input"]
+    #[doc = "coordinate transformation. It is recommended to make this interface"]
+    #[doc = "privileged."]
     #[doc = ""]
-    #[doc = "Compositors are already going to use direct scan-out as much as possible but"]
-    #[doc = "there's no assurance that while doing so, they won't first import the dmabuf"]
-    #[doc = "in to the GPU. This extension assures the client that the compositor will"]
-    #[doc = "never attempt to import in to the GPU and pass it directly to the display"]
-    #[doc = "controller."]
+    #[doc = "This interface can be used by a client to show a calibration pattern and"]
+    #[doc = "receive uncalibrated touch coordinates, facilitating the computation of"]
+    #[doc = "a calibration transformation that will align actual touch positions"]
+    #[doc = "on screen with their expected coordinates."]
     #[doc = ""]
-    #[doc = "Clients can make use of this extension to pass the dmabuf buffer to the"]
-    #[doc = "display controller, potentially increasing the performance and lowering the"]
-    #[doc = "bandwidth usage."]
+    #[doc = "Immediately after being bound by a client, the compositor sends the"]
+    #[doc = "touch_device events."]
     #[doc = ""]
-    #[doc = "Lastly, clients can make use of this extension in tandem with content-protection"]
-    #[doc = "one thus avoiding any GPU interaction and providing a secure-content path."]
-    #[doc = "Also, in some cases, the memory where dmabuf are allocated are in specially"]
-    #[doc = "crafted memory zone which would be seen as an illegal memory access when the"]
-    #[doc = "GPU will attempt to read it."]
+    #[doc = "The client chooses a touch device from the touch_device events, creates a"]
+    #[doc = "wl_surface and then a weston_touch_calibrator for the wl_surface and the"]
+    #[doc = "chosen touch device. The client waits for the compositor to send a"]
+    #[doc = "configure event before it starts drawing the first calibration pattern."]
+    #[doc = "After receiving the configure event, the client will iterate drawing a"]
+    #[doc = "pattern, getting touch input via weston_touch_calibrator, and converting"]
+    #[doc = "pixel coordinates to expected touch coordinates with"]
+    #[doc = "weston_touch_calibrator.convert until it has enough correspondences to"]
+    #[doc = "compute the calibration transformation or the compositor cancels the"]
+    #[doc = "calibration."]
     #[doc = ""]
-    #[doc = "WARNING: This interface by design might break screenshoting functionality"]
-    #[doc = "as compositing might be involved while doing that. Also, do note, that in"]
-    #[doc = "case the dmabufer provided can't be imported by KMS, the client connection"]
-    #[doc = "will be terminated."]
-    #[doc = ""]
-    #[doc = "WARNING: This extension requires 'linux-dmabuf' protocol and"]
-    #[doc = "'zwp_linux_buffer_params_v1' be already created by 'zwp_linux_buffer_v1'."]
+    #[doc = "Once the client has successfully computed a new calibration, it can use"]
+    #[doc = "weston_touch_calibration.save request to load the new calibration into"]
+    #[doc = "the compositor. The compositor may take this new calibration into use and"]
+    #[doc = "may write it into persistent storage."]
     #[allow(clippy::too_many_arguments)]
-    pub mod weston_direct_display_v1 {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the weston_direct_display_v1 interface. See the module level documentation for more info"]
-        pub trait WestonDirectDisplayV1 {
-            const INTERFACE: &'static str = "weston_direct_display_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "This request tells the compositor not to import the dmabuf to the GPU"]
-            #[doc = "in order to bypass it entirely, such that the buffer will be directly"]
-            #[doc = "scanned-out by the display controller. If HW is not capable/or there"]
-            #[doc = "aren't any available resources to directly scan-out the buffer, a"]
-            #[doc = "placeholder should be installed in-place by the compositor. The"]
-            #[doc = "compositor may perform checks on the dmabuf and refuse to create a"]
-            #[doc = "wl_buffer if the dmabuf seems unusable for being used directly."]
-            #[doc = ""]
-            #[doc = "Assumes that 'zwp_linux_buffer_params_v1' was already created"]
-            #[doc = "by 'zwp_linux_dmabuf_v1_create_params'."]
-            async fn enable(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                dmabuf: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_direct_display_v1#{}.enable()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(dmabuf))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Destroys the factory object, but does not affect any other objects."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> weston_direct_display_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod ivi_application {
-    #[allow(clippy::too_many_arguments)]
-    pub mod ivi_surface {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
-        pub trait IviSurface {
-            const INTERFACE: &'static str = "ivi_surface";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "This removes the link from ivi_id to wl_surface and destroys ivi_surface."]
-            #[doc = "The ID, ivi_id, is free and can be used for surface_create again."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ivi_surface#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "The configure event asks the client to resize its surface."]
-            #[doc = ""]
-            #[doc = "The size is a hint, in the sense that the client is free to"]
-            #[doc = "ignore it if it doesn't resize, pick a smaller size (to"]
-            #[doc = "satisfy aspect ratio or resize in steps of NxM pixels)."]
-            #[doc = ""]
-            #[doc = "The client is free to dismiss all but the last configure"]
-            #[doc = "event it received."]
-            #[doc = ""]
-            #[doc = "The width and height arguments specify the size of the window"]
-            #[doc = "in surface-local coordinates."]
-            async fn configure(&self, width: i32, height: i32) -> crate::client::Result<()>;
-        }
-    }
-    #[doc = "This interface is exposed as a global singleton."]
-    #[doc = "This interface is implemented by servers that provide IVI-style user interfaces."]
-    #[doc = "It allows clients to associate an ivi_surface with wl_surface."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod ivi_application {
+    pub mod weston_touch_calibration {
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            #[doc = "given wl_surface has another role"]
-            Role = 0u32,
-            #[doc = "given ivi_id is assigned to another wl_surface"]
-            IviId = 1u32,
+            #[doc = "the given wl_surface already has a role"]
+            InvalidSurface = 0u32,
+            #[doc = "the given device is not valid"]
+            InvalidDevice = 1u32,
+            #[doc = "a calibrator has already been created"]
+            AlreadyExists = 2u32,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::Role),
-                    1u32 => Ok(Self::IviId),
+                    0u32 => Ok(Self::InvalidSurface),
+                    1u32 => Ok(Self::InvalidDevice),
+                    2u32 => Ok(Self::AlreadyExists),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -3845,9 +3584,9 @@ pub mod ivi_application {
                 (*self as u32).fmt(f)
             }
         }
-        #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
-        pub trait IviApplication {
-            const INTERFACE: &'static str = "ivi_application";
+        #[doc = "Trait to implement the weston_touch_calibration interface. See the module level documentation for more info"]
+        pub trait WestonTouchCalibration {
+            const INTERFACE: &'static str = "weston_touch_calibration";
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
@@ -3858,46 +3597,307 @@ pub mod ivi_application {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
-            #[doc = "This request gives the wl_surface the role of an IVI Surface. Creating more than"]
-            #[doc = "one ivi_surface for a wl_surface is not allowed. Note, that this still allows the"]
-            #[doc = "following example:"]
-            #[doc = ""]
-            #[doc = "1. create a wl_surface"]
-            #[doc = "2. create ivi_surface for the wl_surface"]
-            #[doc = "3. destroy the ivi_surface"]
-            #[doc = "4. create ivi_surface for the wl_surface (with the same or another ivi_id as before)"]
-            #[doc = ""]
-            #[doc = "surface_create will create an interface:ivi_surface with numeric ID; ivi_id in"]
-            #[doc = "ivi compositor. These ivi_ids are defined as unique in the system to identify"]
-            #[doc = "it inside of ivi compositor. The ivi compositor implements business logic how to"]
-            #[doc = "set properties of the surface with ivi_id according to the status of the system."]
-            #[doc = "E.g. a unique ID for Car Navigation application is used for implementing special"]
-            #[doc = "logic of the application about where it shall be located."]
-            #[doc = "The server regards the following cases as protocol errors and disconnects the client."]
-            #[doc = "- wl_surface already has another role."]
-            #[doc = "- ivi_id is already assigned to another wl_surface."]
-            #[doc = ""]
-            #[doc = "If client destroys ivi_surface or wl_surface which is assigned to the ivi_surface,"]
-            #[doc = "ivi_id which is assigned to the ivi_surface is free for reuse."]
-            async fn surface_create(
+            #[doc = "Destroy the binding to the global interface, does not affect any"]
+            #[doc = "objects already created through this interface."]
+            async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
-                ivi_id: u32,
-                surface: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ivi_application#{}.surface_create()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(ivi_id)
-                    .put_object(Some(surface))
-                    .put_object(Some(id))
-                    .build();
+                tracing::debug!("-> weston_touch_calibration#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
                     .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "This gives the calibrator role to the surface and ties it with the"]
+            #[doc = "given touch input device."]
+            #[doc = ""]
+            #[doc = "If the surface already has a role, then invalid_surface error is raised."]
+            #[doc = ""]
+            #[doc = "If the device string is not one advertised with touch_device event's"]
+            #[doc = "device argument, then invalid_device error is raised."]
+            #[doc = ""]
+            #[doc = "If a weston_touch_calibrator protocol object exists in the compositor"]
+            #[doc = "already, then already_exists error is raised. This limitation is"]
+            #[doc = "compositor-wide and not specific to any particular client."]
+            async fn create_calibrator(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+                device: String,
+                cal: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> weston_touch_calibration#{}.create_calibrator()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(surface))
+                    .put_string(Some(device))
+                    .put_object(Some(cal))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This request asks the compositor to save the calibration data for the"]
+            #[doc = "given touch input device. The compositor may ignore this request."]
+            #[doc = ""]
+            #[doc = "If the device string is not one advertised with touch_device event's"]
+            #[doc = "device argument, then invalid_device error is raised."]
+            #[doc = ""]
+            #[doc = "The array must contain exactly six 'float' (the 32-bit floating"]
+            #[doc = "point format used by the C language on the system) numbers. For a 3x3"]
+            #[doc = "calibration matrix in the form"]
+            #[doc = "@code"]
+            #[doc = "( a b c )"]
+            #[doc = "( d e f )"]
+            #[doc = "( 0 0 1 )"]
+            #[doc = "@endcode"]
+            #[doc = "the array must contain the values { a, b, c, d, e, f }. For the"]
+            #[doc = "definition of the coordinate spaces, see"]
+            #[doc = "libinput_device_config_calibration_set_matrix()."]
+            async fn save(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                device: String,
+                matrix: Vec<u8>,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_touch_calibration#{}.save()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(device))
+                    .put_array(matrix)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "When a client binds to weston_touch_calibration, one touch_device event"]
+            #[doc = "is sent for each touchscreen that is available to be calibrated. This"]
+            #[doc = "is the only time the event is sent. Touch devices added in the"]
+            #[doc = "compositor will not generate events for existing"]
+            #[doc = "weston_touch_calibration objects."]
+            #[doc = ""]
+            #[doc = "An event carries the touch device identification and the associated"]
+            #[doc = "output or head (display connector) name."]
+            #[doc = ""]
+            #[doc = "On platforms using udev, the device identification is the udev sys"]
+            #[doc = "path. It is an absolute path and starts with the sys mount point."]
+            async fn touch_device(&self, device: String, head: String)
+                -> crate::client::Result<()>;
+        }
+    }
+    #[doc = "On creation, this object is tied to a specific touch device. The"]
+    #[doc = "compositor sends a configure event which the client must obey with the"]
+    #[doc = "associated wl_surface."]
+    #[doc = ""]
+    #[doc = "Once the client has committed content to the surface, the compositor can"]
+    #[doc = "grab the touch input device, prevent it from emitting normal touch"]
+    #[doc = "events, show the surface on the correct output, and relay input events"]
+    #[doc = "from the touch device via this protocol object."]
+    #[doc = ""]
+    #[doc = "Touch events from other touch devices than the one tied to this object"]
+    #[doc = "must generate wrong_touch events on at least touch-down and must not"]
+    #[doc = "generate normal or calibration touch events."]
+    #[doc = ""]
+    #[doc = "At any time, the compositor can choose to cancel the calibration"]
+    #[doc = "procedure by sending the cancel_calibration event. This should also be"]
+    #[doc = "used if the touch device disappears or anything else prevents the"]
+    #[doc = "calibration from continuing on the compositor side."]
+    #[doc = ""]
+    #[doc = "If the wl_surface is destroyed, the compositor must cancel the"]
+    #[doc = "calibration."]
+    #[doc = ""]
+    #[doc = "The touch event coordinates and conversion results are delivered in"]
+    #[doc = "calibration units. The calibration units cover the device coordinate"]
+    #[doc = "range exactly. Calibration units are in the closed interval [0.0, 1.0]"]
+    #[doc = "mapped into 32-bit unsigned integers. An integer can be converted into a"]
+    #[doc = "real value by dividing by 2^32-1. A calibration matrix must be computed"]
+    #[doc = "from the [0.0, 1.0] real values, but the matrix elements do not need to"]
+    #[doc = "fall into that range."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod weston_touch_calibrator {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "surface size does not match"]
+            BadSize = 0u32,
+            #[doc = "requested operation is not possible without mapping the surface"]
+            NotMapped = 1u32,
+            #[doc = "surface-local coordinates are out of bounds"]
+            BadCoordinates = 2u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::BadSize),
+                    1u32 => Ok(Self::NotMapped),
+                    2u32 => Ok(Self::BadCoordinates),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the weston_touch_calibrator interface. See the module level documentation for more info"]
+        pub trait WestonTouchCalibrator {
+            const INTERFACE: &'static str = "weston_touch_calibrator";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This unmaps the surface if it was mapped. The input device grab"]
+            #[doc = "is dropped, if it was present. The surface loses its role as a"]
+            #[doc = "calibrator."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_touch_calibrator#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This request asks the compositor to convert the surface-local"]
+            #[doc = "coordinates into the expected touch input coordinates appropriate for"]
+            #[doc = "the associated touch device. The intention is that a client uses this"]
+            #[doc = "request to convert marker positions that the user is supposed to touch"]
+            #[doc = "during calibration."]
+            #[doc = ""]
+            #[doc = "If the compositor has cancelled the calibration, the conversion result"]
+            #[doc = "shall be zeroes and no errors will be raised."]
+            #[doc = ""]
+            #[doc = "The coordinates given as arguments to this request are relative to"]
+            #[doc = "the associated wl_surface."]
+            #[doc = ""]
+            #[doc = "If a client asks for conversion before it has committed valid"]
+            #[doc = "content to the wl_surface, the not_mapped error is raised."]
+            #[doc = ""]
+            #[doc = "If the coordinates x, y are outside of the wl_surface content, the"]
+            #[doc = "bad_coordinates error is raised."]
+            async fn convert(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+                reply: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> weston_touch_calibrator#{}.convert()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .put_object(Some(reply))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This event tells the client what size to make the surface. The client"]
+            #[doc = "must obey the size exactly on the next commit with a wl_buffer."]
+            #[doc = ""]
+            #[doc = "This event shall be sent once as a response to creating a"]
+            #[doc = "weston_touch_calibrator object."]
+            async fn configure(&self, width: i32, height: i32) -> crate::client::Result<()>;
+            #[doc = "This is sent when the compositor wants to cancel the calibration and"]
+            #[doc = "drop the touch device grab. The compositor unmaps the surface, if it"]
+            #[doc = "was mapped."]
+            #[doc = ""]
+            #[doc = "The weston_touch_calibrator object will not send any more events. The"]
+            #[doc = "client should destroy it."]
+            async fn cancel_calibration(&self) -> crate::client::Result<()>;
+            #[doc = "For whatever reason, a touch event resulting from a user action cannot"]
+            #[doc = "be used for calibration. The client should show feedback to the user"]
+            #[doc = "that the touch was rejected."]
+            #[doc = ""]
+            #[doc = "Possible causes for this event include the user touching a wrong"]
+            #[doc = "touchscreen when there are multiple ones present. This is particularly"]
+            #[doc = "useful when the touchscreens are cloned and there is no other way to"]
+            #[doc = "identify which screen the user should be touching."]
+            #[doc = ""]
+            #[doc = "Another cause could be a touch device that sends coordinates beyond its"]
+            #[doc = "declared range. If motion takes a touch point outside the range, the"]
+            #[doc = "compositor should also send 'cancel' event to undo the touch-down."]
+            async fn invalid_touch(&self) -> crate::client::Result<()>;
+            #[doc = "A new touch point has appeared on the surface. This touch point is"]
+            #[doc = "assigned a unique ID. Future events from this touch point reference"]
+            #[doc = "this ID. The ID ceases to be valid after a touch up event and may be"]
+            #[doc = "reused in the future."]
+            #[doc = ""]
+            #[doc = "For the coordinate units, see weston_touch_calibrator."]
+            async fn down(&self, time: u32, id: i32, x: u32, y: u32) -> crate::client::Result<()>;
+            #[doc = "The touch point has disappeared. No further events will be sent for"]
+            #[doc = "this touch point and the touch point's ID is released and may be"]
+            #[doc = "reused in a future touch down event."]
+            async fn up(&self, time: u32, id: i32) -> crate::client::Result<()>;
+            #[doc = "A touch point has changed coordinates."]
+            #[doc = ""]
+            #[doc = "For the coordinate units, see weston_touch_calibrator."]
+            async fn motion(&self, time: u32, id: i32, x: u32, y: u32)
+                -> crate::client::Result<()>;
+            #[doc = "Indicates the end of a set of events that logically belong together."]
+            #[doc = "A client is expected to accumulate the data in all events within the"]
+            #[doc = "frame before proceeding."]
+            #[doc = ""]
+            #[doc = "A wl_touch.frame terminates at least one event but otherwise no"]
+            #[doc = "guarantee is provided about the set of events within a frame. A client"]
+            #[doc = "must assume that any state not updated in a frame is unchanged from the"]
+            #[doc = "previously known state."]
+            async fn frame(&self) -> crate::client::Result<()>;
+            #[doc = "Sent if the compositor decides the touch stream is a global"]
+            #[doc = "gesture. No further events are sent to the clients from that"]
+            #[doc = "particular gesture. Touch cancellation applies to all touch points"]
+            #[doc = "currently active on this client's surface. The client is"]
+            #[doc = "responsible for finalizing the touch points, future touch points on"]
+            #[doc = "this surface may reuse the touch point ID."]
+            async fn cancel(&self) -> crate::client::Result<()>;
+        }
+    }
+    #[allow(clippy::too_many_arguments)]
+    pub mod weston_touch_coordinate {
+        #[doc = "Trait to implement the weston_touch_coordinate interface. See the module level documentation for more info"]
+        pub trait WestonTouchCoordinate {
+            const INTERFACE: &'static str = "weston_touch_coordinate";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This event returns the conversion result from surface coordinates to"]
+            #[doc = "the expected touch device coordinates."]
+            #[doc = ""]
+            #[doc = "For details, see weston_touch_calibrator.convert. For the coordinate"]
+            #[doc = "units, see weston_touch_calibrator."]
+            #[doc = ""]
+            #[doc = "This event destroys the weston_touch_coordinate object."]
+            async fn result(&self, x: u32, y: u32) -> crate::client::Result<()>;
         }
     }
 }

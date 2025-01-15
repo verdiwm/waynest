@@ -11,7 +11,13 @@ repository = "https://github.com/verdiwm/waynest"
 include = ["src/**/*.rs", "../README.md", "../LICENSE"]
 
 [features]
-bin = ["dep:anyhow", "dep:clap", "dep:tracing-subscriber", "dep:rayon"]
+bin = [
+    "dep:anyhow",
+    "dep:clap",
+    "dep:tracing-subscriber",
+    "dep:rayon",
+    "dep:indexmap",
+]
 
 [dependencies]
 thiserror = "2.0.7"
@@ -30,6 +36,7 @@ tracing-subscriber = { version = "0.3.19", optional = true, features = [
     "env-filter",
 ] }
 rayon = { version = "1.10.0", optional = true }
+indexmap = { version = "2.7.0", optional = true, features = ["serde"] }
 
 [[bin]]
 name = "waynest-gen"

@@ -1,4 +1,1233 @@
 #![allow(async_fn_in_trait)]
+#[allow(clippy::module_inception)]
+pub mod linux_dmabuf_v1 {
+    #[doc = "Following the interfaces from:"]
+    #[doc = "https://www.khronos.org/registry/egl/extensions/EXT/EGL_EXT_image_dma_buf_import.txt"]
+    #[doc = "https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_image_dma_buf_import_modifiers.txt"]
+    #[doc = "and the Linux DRM sub-system's AddFb2 ioctl."]
+    #[doc = ""]
+    #[doc = "This interface offers ways to create generic dmabuf-based wl_buffers."]
+    #[doc = ""]
+    #[doc = "Clients can use the get_surface_feedback request to get dmabuf feedback"]
+    #[doc = "for a particular surface. If the client wants to retrieve feedback not"]
+    #[doc = "tied to a surface, they can use the get_default_feedback request."]
+    #[doc = ""]
+    #[doc = "The following are required from clients:"]
+    #[doc = ""]
+    #[doc = "- Clients must ensure that either all data in the dma-buf is"]
+    #[doc = "coherent for all subsequent read access or that coherency is"]
+    #[doc = "correctly handled by the underlying kernel-side dma-buf"]
+    #[doc = "implementation."]
+    #[doc = ""]
+    #[doc = "- Don't make any more attachments after sending the buffer to the"]
+    #[doc = "compositor. Making more attachments later increases the risk of"]
+    #[doc = "the compositor not being able to use (re-import) an existing"]
+    #[doc = "dmabuf-based wl_buffer."]
+    #[doc = ""]
+    #[doc = "The underlying graphics stack must ensure the following:"]
+    #[doc = ""]
+    #[doc = "- The dmabuf file descriptors relayed to the server will stay valid"]
+    #[doc = "for the whole lifetime of the wl_buffer. This means the server may"]
+    #[doc = "at any time use those fds to import the dmabuf into any kernel"]
+    #[doc = "sub-system that might accept it."]
+    #[doc = ""]
+    #[doc = "However, when the underlying graphics stack fails to deliver the"]
+    #[doc = "promise, because of e.g. a device hot-unplug which raises internal"]
+    #[doc = "errors, after the wl_buffer has been successfully created the"]
+    #[doc = "compositor must not raise protocol errors to the client when dmabuf"]
+    #[doc = "import later fails."]
+    #[doc = ""]
+    #[doc = "To create a wl_buffer from one or more dmabufs, a client creates a"]
+    #[doc = "zwp_linux_dmabuf_params_v1 object with a zwp_linux_dmabuf_v1.create_params"]
+    #[doc = "request. All planes required by the intended format are added with"]
+    #[doc = "the 'add' request. Finally, a 'create' or 'create_immed' request is"]
+    #[doc = "issued, which has the following outcome depending on the import success."]
+    #[doc = ""]
+    #[doc = "The 'create' request,"]
+    #[doc = "- on success, triggers a 'created' event which provides the final"]
+    #[doc = "wl_buffer to the client."]
+    #[doc = "- on failure, triggers a 'failed' event to convey that the server"]
+    #[doc = "cannot use the dmabufs received from the client."]
+    #[doc = ""]
+    #[doc = "For the 'create_immed' request,"]
+    #[doc = "- on success, the server immediately imports the added dmabufs to"]
+    #[doc = "create a wl_buffer. No event is sent from the server in this case."]
+    #[doc = "- on failure, the server can choose to either:"]
+    #[doc = "- terminate the client by raising a fatal error."]
+    #[doc = "- mark the wl_buffer as failed, and send a 'failed' event to the"]
+    #[doc = "client. If the client uses a failed wl_buffer as an argument to any"]
+    #[doc = "request, the behaviour is compositor implementation-defined."]
+    #[doc = ""]
+    #[doc = "For all DRM formats and unless specified in another protocol extension,"]
+    #[doc = "pre-multiplied alpha is used for pixel values."]
+    #[doc = ""]
+    #[doc = "Unless specified otherwise in another protocol extension, implicit"]
+    #[doc = "synchronization is used. In other words, compositors and clients must"]
+    #[doc = "wait and signal fences implicitly passed via the DMA-BUF's reservation"]
+    #[doc = "mechanism."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod zwp_linux_dmabuf_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
+        pub trait ZwpLinuxDmabufV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "zwp_linux_dmabuf_v1";
+            const VERSION: u32 = 5u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("zwp_linux_dmabuf_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        let params_id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwp_linux_dmabuf_v1#{}.create_params({})",
+                            object.id,
+                            params_id
+                        );
+                        self.create_params(object, client, params_id).await
+                    }
+                    2u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwp_linux_dmabuf_v1#{}.get_default_feedback({})",
+                            object.id,
+                            id
+                        );
+                        self.get_default_feedback(object, client, id).await
+                    }
+                    3u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwp_linux_dmabuf_v1#{}.get_surface_feedback({}, {})",
+                            object.id,
+                            id,
+                            surface
+                        );
+                        self.get_surface_feedback(object, client, id, surface).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Objects created through this interface, especially wl_buffers, will"]
+            #[doc = "remain valid."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "This temporary object is used to collect multiple dmabuf handles into"]
+            #[doc = "a single batch to create a wl_buffer. It can only be used once and"]
+            #[doc = "should be destroyed after a 'created' or 'failed' event has been"]
+            #[doc = "received."]
+            async fn create_params(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                params_id: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "This request creates a new wp_linux_dmabuf_feedback object not bound"]
+            #[doc = "to a particular surface. This object will deliver feedback about dmabuf"]
+            #[doc = "parameters to use if the client doesn't support per-surface feedback"]
+            #[doc = "(see get_surface_feedback)."]
+            async fn get_default_feedback(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "This request creates a new wp_linux_dmabuf_feedback object for the"]
+            #[doc = "specified wl_surface. This object will deliver feedback about dmabuf"]
+            #[doc = "parameters to use for buffers attached to this surface."]
+            #[doc = ""]
+            #[doc = "If the surface is destroyed before the wp_linux_dmabuf_feedback object,"]
+            #[doc = "the feedback object becomes inert."]
+            async fn get_surface_feedback(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "This event advertises one buffer format that the server supports."]
+            #[doc = "All the supported formats are advertised once when the client"]
+            #[doc = "binds to this interface. A roundtrip after binding guarantees"]
+            #[doc = "that the client has received all supported formats."]
+            #[doc = ""]
+            #[doc = "For the definition of the format codes, see the"]
+            #[doc = "zwp_linux_buffer_params_v1::create request."]
+            #[doc = ""]
+            #[doc = "Starting version 4, the format event is deprecated and must not be"]
+            #[doc = "sent by compositors. Instead, use get_default_feedback or"]
+            #[doc = "get_surface_feedback."]
+            async fn format(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                format: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> zwp_linux_dmabuf_v1#{}.format({})", object.id, format);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(format).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event advertises the formats that the server supports, along with"]
+            #[doc = "the modifiers supported for each format. All the supported modifiers"]
+            #[doc = "for all the supported formats are advertised once when the client"]
+            #[doc = "binds to this interface. A roundtrip after binding guarantees that"]
+            #[doc = "the client has received all supported format-modifier pairs."]
+            #[doc = ""]
+            #[doc = "For legacy support, DRM_FORMAT_MOD_INVALID (that is, modifier_hi =="]
+            #[doc = "0x00ffffff and modifier_lo == 0xffffffff) is allowed in this event."]
+            #[doc = "It indicates that the server can support the format with an implicit"]
+            #[doc = "modifier. When a plane has DRM_FORMAT_MOD_INVALID as its modifier, it"]
+            #[doc = "is as if no explicit modifier is specified. The effective modifier"]
+            #[doc = "will be derived from the dmabuf."]
+            #[doc = ""]
+            #[doc = "A compositor that sends valid modifiers and DRM_FORMAT_MOD_INVALID for"]
+            #[doc = "a given format supports both explicit modifiers and implicit modifiers."]
+            #[doc = ""]
+            #[doc = "For the definition of the format and modifier codes, see the"]
+            #[doc = "zwp_linux_buffer_params_v1::create and zwp_linux_buffer_params_v1::add"]
+            #[doc = "requests."]
+            #[doc = ""]
+            #[doc = "Starting version 4, the modifier event is deprecated and must not be"]
+            #[doc = "sent by compositors. Instead, use get_default_feedback or"]
+            #[doc = "get_surface_feedback."]
+            async fn modifier(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                format: u32,
+                modifier_hi: u32,
+                modifier_lo: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zwp_linux_dmabuf_v1#{}.modifier({}, {}, {})",
+                    object.id,
+                    format,
+                    modifier_hi,
+                    modifier_lo
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(format)
+                    .put_uint(modifier_hi)
+                    .put_uint(modifier_lo)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[doc = "This temporary object is a collection of dmabufs and other"]
+    #[doc = "parameters that together form a single logical buffer. The temporary"]
+    #[doc = "object may eventually create one wl_buffer unless cancelled by"]
+    #[doc = "destroying it before requesting 'create'."]
+    #[doc = ""]
+    #[doc = "Single-planar formats only require one dmabuf, however"]
+    #[doc = "multi-planar formats may require more than one dmabuf. For all"]
+    #[doc = "formats, an 'add' request must be called once per plane (even if the"]
+    #[doc = "underlying dmabuf fd is identical)."]
+    #[doc = ""]
+    #[doc = "You must use consecutive plane indices ('plane_idx' argument for 'add')"]
+    #[doc = "from zero to the number of planes used by the drm_fourcc format code."]
+    #[doc = "All planes required by the format must be given exactly once, but can"]
+    #[doc = "be given in any order. Each plane index can be set only once."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod zwp_linux_buffer_params_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the dmabuf_batch object has already been used to create a wl_buffer"]
+            AlreadyUsed = 0u32,
+            #[doc = "plane index out of bounds"]
+            PlaneIdx = 1u32,
+            #[doc = "the plane index was already set"]
+            PlaneSet = 2u32,
+            #[doc = "missing or too many planes to create a buffer"]
+            Incomplete = 3u32,
+            #[doc = "format not supported"]
+            InvalidFormat = 4u32,
+            #[doc = "invalid width or height"]
+            InvalidDimensions = 5u32,
+            #[doc = "offset + stride * height goes out of dmabuf bounds"]
+            OutOfBounds = 6u32,
+            #[doc = "invalid wl_buffer resulted from importing dmabufs via"]
+            #[doc = "the create_immed request on given buffer_params"]
+            InvalidWlBuffer = 7u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::AlreadyUsed),
+                    1u32 => Ok(Self::PlaneIdx),
+                    2u32 => Ok(Self::PlaneSet),
+                    3u32 => Ok(Self::Incomplete),
+                    4u32 => Ok(Self::InvalidFormat),
+                    5u32 => Ok(Self::InvalidDimensions),
+                    6u32 => Ok(Self::OutOfBounds),
+                    7u32 => Ok(Self::InvalidWlBuffer),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInvert = 1u32 ; # [doc = "content is interlaced"] const Interlaced = 2u32 ; # [doc = "bottom field first"] const BottomFirst = 4u32 ; } }
+        impl TryFrom<u32> for Flags {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Flags {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the zwp_linux_buffer_params_v1 interface. See the module level documentation for more info"]
+        pub trait ZwpLinuxBufferParamsV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "zwp_linux_buffer_params_v1";
+            const VERSION: u32 = 5u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("zwp_linux_buffer_params_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        let fd = message.fd()?;
+                        let plane_idx = message.uint()?;
+                        let offset = message.uint()?;
+                        let stride = message.uint()?;
+                        let modifier_hi = message.uint()?;
+                        let modifier_lo = message.uint()?;
+                        tracing::debug!(
+                            "zwp_linux_buffer_params_v1#{}.add({}, {}, {}, {}, {}, {})",
+                            object.id,
+                            fd.as_raw_fd(),
+                            plane_idx,
+                            offset,
+                            stride,
+                            modifier_hi,
+                            modifier_lo
+                        );
+                        self.add(
+                            object,
+                            client,
+                            fd,
+                            plane_idx,
+                            offset,
+                            stride,
+                            modifier_hi,
+                            modifier_lo,
+                        )
+                        .await
+                    }
+                    2u16 => {
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        let format = message.uint()?;
+                        let flags = message.uint()?;
+                        tracing::debug!(
+                            "zwp_linux_buffer_params_v1#{}.create({}, {}, {}, {})",
+                            object.id,
+                            width,
+                            height,
+                            format,
+                            flags
+                        );
+                        self.create(object, client, width, height, format, flags.try_into()?)
+                            .await
+                    }
+                    3u16 => {
+                        let buffer_id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        let format = message.uint()?;
+                        let flags = message.uint()?;
+                        tracing::debug!(
+                            "zwp_linux_buffer_params_v1#{}.create_immed({}, {}, {}, {}, {})",
+                            object.id,
+                            buffer_id,
+                            width,
+                            height,
+                            format,
+                            flags
+                        );
+                        self.create_immed(
+                            object,
+                            client,
+                            buffer_id,
+                            width,
+                            height,
+                            format,
+                            flags.try_into()?,
+                        )
+                        .await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Cleans up the temporary data sent to the server for dmabuf-based"]
+            #[doc = "wl_buffer creation."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "This request adds one dmabuf to the set in this"]
+            #[doc = "zwp_linux_buffer_params_v1."]
+            #[doc = ""]
+            #[doc = "The 64-bit unsigned value combined from modifier_hi and modifier_lo"]
+            #[doc = "is the dmabuf layout modifier. DRM AddFB2 ioctl calls this the"]
+            #[doc = "fb modifier, which is defined in drm_mode.h of Linux UAPI."]
+            #[doc = "This is an opaque token. Drivers use this token to express tiling,"]
+            #[doc = "compression, etc. driver-specific modifications to the base format"]
+            #[doc = "defined by the DRM fourcc code."]
+            #[doc = ""]
+            #[doc = "Starting from version 4, the invalid_format protocol error is sent if"]
+            #[doc = "the format + modifier pair was not advertised as supported."]
+            #[doc = ""]
+            #[doc = "Starting from version 5, the invalid_format protocol error is sent if"]
+            #[doc = "all planes don't use the same modifier."]
+            #[doc = ""]
+            #[doc = "This request raises the PLANE_IDX error if plane_idx is too large."]
+            #[doc = "The error PLANE_SET is raised if attempting to set a plane that"]
+            #[doc = "was already set."]
+            async fn add(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                fd: rustix::fd::OwnedFd,
+                plane_idx: u32,
+                offset: u32,
+                stride: u32,
+                modifier_hi: u32,
+                modifier_lo: u32,
+            ) -> crate::server::Result<()>;
+            #[doc = "This asks for creation of a wl_buffer from the added dmabuf"]
+            #[doc = "buffers. The wl_buffer is not created immediately but returned via"]
+            #[doc = "the 'created' event if the dmabuf sharing succeeds. The sharing"]
+            #[doc = "may fail at runtime for reasons a client cannot predict, in"]
+            #[doc = "which case the 'failed' event is triggered."]
+            #[doc = ""]
+            #[doc = "The 'format' argument is a DRM_FORMAT code, as defined by the"]
+            #[doc = "libdrm's drm_fourcc.h. The Linux kernel's DRM sub-system is the"]
+            #[doc = "authoritative source on how the format codes should work."]
+            #[doc = ""]
+            #[doc = "The 'flags' is a bitfield of the flags defined in enum \"flags\"."]
+            #[doc = "'y_invert' means the that the image needs to be y-flipped."]
+            #[doc = ""]
+            #[doc = "Flag 'interlaced' means that the frame in the buffer is not"]
+            #[doc = "progressive as usual, but interlaced. An interlaced buffer as"]
+            #[doc = "supported here must always contain both top and bottom fields."]
+            #[doc = "The top field always begins on the first pixel row. The temporal"]
+            #[doc = "ordering between the two fields is top field first, unless"]
+            #[doc = "'bottom_first' is specified. It is undefined whether 'bottom_first'"]
+            #[doc = "is ignored if 'interlaced' is not set."]
+            #[doc = ""]
+            #[doc = "This protocol does not convey any information about field rate,"]
+            #[doc = "duration, or timing, other than the relative ordering between the"]
+            #[doc = "two fields in one buffer. A compositor may have to estimate the"]
+            #[doc = "intended field rate from the incoming buffer rate. It is undefined"]
+            #[doc = "whether the time of receiving wl_surface.commit with a new buffer"]
+            #[doc = "attached, applying the wl_surface state, wl_surface.frame callback"]
+            #[doc = "trigger, presentation, or any other point in the compositor cycle"]
+            #[doc = "is used to measure the frame or field times. There is no support"]
+            #[doc = "for detecting missed or late frames/fields/buffers either, and"]
+            #[doc = "there is no support whatsoever for cooperating with interlaced"]
+            #[doc = "compositor output."]
+            #[doc = ""]
+            #[doc = "The composited image quality resulting from the use of interlaced"]
+            #[doc = "buffers is explicitly undefined. A compositor may use elaborate"]
+            #[doc = "hardware features or software to deinterlace and create progressive"]
+            #[doc = "output frames from a sequence of interlaced input buffers, or it"]
+            #[doc = "may produce substandard image quality. However, compositors that"]
+            #[doc = "cannot guarantee reasonable image quality in all cases are recommended"]
+            #[doc = "to just reject all interlaced buffers."]
+            #[doc = ""]
+            #[doc = "Any argument errors, including non-positive width or height,"]
+            #[doc = "mismatch between the number of planes and the format, bad"]
+            #[doc = "format, bad offset or stride, may be indicated by fatal protocol"]
+            #[doc = "errors: INCOMPLETE, INVALID_FORMAT, INVALID_DIMENSIONS,"]
+            #[doc = "OUT_OF_BOUNDS."]
+            #[doc = ""]
+            #[doc = "Dmabuf import errors in the server that are not obvious client"]
+            #[doc = "bugs are returned via the 'failed' event as non-fatal. This"]
+            #[doc = "allows attempting dmabuf sharing and falling back in the client"]
+            #[doc = "if it fails."]
+            #[doc = ""]
+            #[doc = "This request can be sent only once in the object's lifetime, after"]
+            #[doc = "which the only legal request is destroy. This object should be"]
+            #[doc = "destroyed after issuing a 'create' request. Attempting to use this"]
+            #[doc = "object after issuing 'create' raises ALREADY_USED protocol error."]
+            #[doc = ""]
+            #[doc = "It is not mandatory to issue 'create'. If a client wants to"]
+            #[doc = "cancel the buffer creation, it can just destroy this object."]
+            async fn create(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                width: i32,
+                height: i32,
+                format: u32,
+                flags: Flags,
+            ) -> crate::server::Result<()>;
+            #[doc = "This asks for immediate creation of a wl_buffer by importing the"]
+            #[doc = "added dmabufs."]
+            #[doc = ""]
+            #[doc = "In case of import success, no event is sent from the server, and the"]
+            #[doc = "wl_buffer is ready to be used by the client."]
+            #[doc = ""]
+            #[doc = "Upon import failure, either of the following may happen, as seen fit"]
+            #[doc = "by the implementation:"]
+            #[doc = "- the client is terminated with one of the following fatal protocol"]
+            #[doc = "errors:"]
+            #[doc = "- INCOMPLETE, INVALID_FORMAT, INVALID_DIMENSIONS, OUT_OF_BOUNDS,"]
+            #[doc = "in case of argument errors such as mismatch between the number"]
+            #[doc = "of planes and the format, bad format, non-positive width or"]
+            #[doc = "height, or bad offset or stride."]
+            #[doc = "- INVALID_WL_BUFFER, in case the cause for failure is unknown or"]
+            #[doc = "platform specific."]
+            #[doc = "- the server creates an invalid wl_buffer, marks it as failed and"]
+            #[doc = "sends a 'failed' event to the client. The result of using this"]
+            #[doc = "invalid wl_buffer as an argument in any request by the client is"]
+            #[doc = "defined by the compositor implementation."]
+            #[doc = ""]
+            #[doc = "This takes the same arguments as a 'create' request, and obeys the"]
+            #[doc = "same restrictions."]
+            async fn create_immed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                buffer_id: crate::wire::ObjectId,
+                width: i32,
+                height: i32,
+                format: u32,
+                flags: Flags,
+            ) -> crate::server::Result<()>;
+            #[doc = "This event indicates that the attempted buffer creation was"]
+            #[doc = "successful. It provides the new wl_buffer referencing the dmabuf(s)."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy the"]
+            #[doc = "zwp_linux_buffer_params_v1 object."]
+            async fn created(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                buffer: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zwp_linux_buffer_params_v1#{}.created({})",
+                    object.id,
+                    buffer
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(buffer))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event indicates that the attempted buffer creation has"]
+            #[doc = "failed. It usually means that one of the dmabuf constraints"]
+            #[doc = "has not been fulfilled."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should destroy the"]
+            #[doc = "zwp_linux_buffer_params_v1 object."]
+            async fn failed(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> zwp_linux_buffer_params_v1#{}.failed()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[doc = "This object advertises dmabuf parameters feedback. This includes the"]
+    #[doc = "preferred devices and the supported formats/modifiers."]
+    #[doc = ""]
+    #[doc = "The parameters are sent once when this object is created and whenever they"]
+    #[doc = "change. The done event is always sent once after all parameters have been"]
+    #[doc = "sent. When a single parameter changes, all parameters are re-sent by the"]
+    #[doc = "compositor."]
+    #[doc = ""]
+    #[doc = "Compositors can re-send the parameters when the current client buffer"]
+    #[doc = "allocations are sub-optimal. Compositors should not re-send the"]
+    #[doc = "parameters if re-allocating the buffers would not result in a more optimal"]
+    #[doc = "configuration. In particular, compositors should avoid sending the exact"]
+    #[doc = "same parameters multiple times in a row."]
+    #[doc = ""]
+    #[doc = "The tranche_target_device and tranche_formats events are grouped by"]
+    #[doc = "tranches of preference. For each tranche, a tranche_target_device, one"]
+    #[doc = "tranche_flags and one or more tranche_formats events are sent, followed"]
+    #[doc = "by a tranche_done event finishing the list. The tranches are sent in"]
+    #[doc = "descending order of preference. All formats and modifiers in the same"]
+    #[doc = "tranche have the same preference."]
+    #[doc = ""]
+    #[doc = "To send parameters, the compositor sends one main_device event, tranches"]
+    #[doc = "(each consisting of one tranche_target_device event, one tranche_flags"]
+    #[doc = "event, tranche_formats events and then a tranche_done event), then one"]
+    #[doc = "done event."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod zwp_linux_dmabuf_feedback_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { # [doc = "direct scan-out tranche"] const Scanout = 1u32 ; } }
+        impl TryFrom<u32> for TrancheFlags {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for TrancheFlags {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the zwp_linux_dmabuf_feedback_v1 interface. See the module level documentation for more info"]
+        pub trait ZwpLinuxDmabufFeedbackV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "zwp_linux_dmabuf_feedback_v1";
+            const VERSION: u32 = 5u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("zwp_linux_dmabuf_feedback_v1#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Using this request a client can tell the server that it is not going to"]
+            #[doc = "use the wp_linux_dmabuf_feedback object anymore."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "This event is sent after all parameters of a wp_linux_dmabuf_feedback"]
+            #[doc = "object have been sent."]
+            #[doc = ""]
+            #[doc = "This allows changes to the wp_linux_dmabuf_feedback parameters to be"]
+            #[doc = "seen as atomic, even if they happen via multiple events."]
+            async fn done(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> zwp_linux_dmabuf_feedback_v1#{}.done()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event provides a file descriptor which can be memory-mapped to"]
+            #[doc = "access the format and modifier table."]
+            #[doc = ""]
+            #[doc = "The table contains a tightly packed array of consecutive format +"]
+            #[doc = "modifier pairs. Each pair is 16 bytes wide. It contains a format as a"]
+            #[doc = "32-bit unsigned integer, followed by 4 bytes of unused padding, and a"]
+            #[doc = "modifier as a 64-bit unsigned integer. The native endianness is used."]
+            #[doc = ""]
+            #[doc = "The client must map the file descriptor in read-only private mode."]
+            #[doc = ""]
+            #[doc = "Compositors are not allowed to mutate the table file contents once this"]
+            #[doc = "event has been sent. Instead, compositors must create a new, separate"]
+            #[doc = "table file and re-send feedback parameters. Compositors are allowed to"]
+            #[doc = "store duplicate format + modifier pairs in the table."]
+            async fn format_table(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                fd: rustix::fd::OwnedFd,
+                size: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zwp_linux_dmabuf_feedback_v1#{}.format_table({}, {})",
+                    object.id,
+                    fd.as_raw_fd(),
+                    size
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fd(fd)
+                    .put_uint(size)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event advertises the main device that the server prefers to use"]
+            #[doc = "when direct scan-out to the target device isn't possible. The"]
+            #[doc = "advertised main device may be different for each"]
+            #[doc = "wp_linux_dmabuf_feedback object, and may change over time."]
+            #[doc = ""]
+            #[doc = "There is exactly one main device. The compositor must send at least"]
+            #[doc = "one preference tranche with tranche_target_device equal to main_device."]
+            #[doc = ""]
+            #[doc = "Clients need to create buffers that the main device can import and"]
+            #[doc = "read from, otherwise creating the dmabuf wl_buffer will fail (see the"]
+            #[doc = "wp_linux_buffer_params.create and create_immed requests for details)."]
+            #[doc = "The main device will also likely be kept active by the compositor,"]
+            #[doc = "so clients can use it instead of waking up another device for power"]
+            #[doc = "savings."]
+            #[doc = ""]
+            #[doc = "In general the device is a DRM node. The DRM node type (primary vs."]
+            #[doc = "render) is unspecified. Clients must not rely on the compositor sending"]
+            #[doc = "a particular node type. Clients cannot check two devices for equality"]
+            #[doc = "by comparing the dev_t value."]
+            #[doc = ""]
+            #[doc = "If explicit modifiers are not supported and the client performs buffer"]
+            #[doc = "allocations on a different device than the main device, then the client"]
+            #[doc = "must force the buffer to have a linear layout."]
+            async fn main_device(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                device: Vec<u8>,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zwp_linux_dmabuf_feedback_v1#{}.main_device(array[{}])",
+                    object.id,
+                    device.len()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event splits tranche_target_device and tranche_formats events in"]
+            #[doc = "preference tranches. It is sent after a set of tranche_target_device"]
+            #[doc = "and tranche_formats events; it represents the end of a tranche. The"]
+            #[doc = "next tranche will have a lower preference."]
+            async fn tranche_done(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_done()",
+                    object.id,
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event advertises the target device that the server prefers to use"]
+            #[doc = "for a buffer created given this tranche. The advertised target device"]
+            #[doc = "may be different for each preference tranche, and may change over time."]
+            #[doc = ""]
+            #[doc = "There is exactly one target device per tranche."]
+            #[doc = ""]
+            #[doc = "The target device may be a scan-out device, for example if the"]
+            #[doc = "compositor prefers to directly scan-out a buffer created given this"]
+            #[doc = "tranche. The target device may be a rendering device, for example if"]
+            #[doc = "the compositor prefers to texture from said buffer."]
+            #[doc = ""]
+            #[doc = "The client can use this hint to allocate the buffer in a way that makes"]
+            #[doc = "it accessible from the target device, ideally directly. The buffer must"]
+            #[doc = "still be accessible from the main device, either through direct import"]
+            #[doc = "or through a potentially more expensive fallback path. If the buffer"]
+            #[doc = "can't be directly imported from the main device then clients must be"]
+            #[doc = "prepared for the compositor changing the tranche priority or making"]
+            #[doc = "wl_buffer creation fail (see the wp_linux_buffer_params.create and"]
+            #[doc = "create_immed requests for details)."]
+            #[doc = ""]
+            #[doc = "If the device is a DRM node, the DRM node type (primary vs. render) is"]
+            #[doc = "unspecified. Clients must not rely on the compositor sending a"]
+            #[doc = "particular node type. Clients cannot check two devices for equality by"]
+            #[doc = "comparing the dev_t value."]
+            #[doc = ""]
+            #[doc = "This event is tied to a preference tranche, see the tranche_done event."]
+            async fn tranche_target_device(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                device: Vec<u8>,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_target_device(array[{}])",
+                    object.id,
+                    device.len()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event advertises the format + modifier combinations that the"]
+            #[doc = "compositor supports."]
+            #[doc = ""]
+            #[doc = "It carries an array of indices, each referring to a format + modifier"]
+            #[doc = "pair in the last received format table (see the format_table event)."]
+            #[doc = "Each index is a 16-bit unsigned integer in native endianness."]
+            #[doc = ""]
+            #[doc = "For legacy support, DRM_FORMAT_MOD_INVALID is an allowed modifier."]
+            #[doc = "It indicates that the server can support the format with an implicit"]
+            #[doc = "modifier. When a buffer has DRM_FORMAT_MOD_INVALID as its modifier, it"]
+            #[doc = "is as if no explicit modifier is specified. The effective modifier"]
+            #[doc = "will be derived from the dmabuf."]
+            #[doc = ""]
+            #[doc = "A compositor that sends valid modifiers and DRM_FORMAT_MOD_INVALID for"]
+            #[doc = "a given format supports both explicit modifiers and implicit modifiers."]
+            #[doc = ""]
+            #[doc = "Compositors must not send duplicate format + modifier pairs within the"]
+            #[doc = "same tranche or across two different tranches with the same target"]
+            #[doc = "device and flags."]
+            #[doc = ""]
+            #[doc = "This event is tied to a preference tranche, see the tranche_done event."]
+            #[doc = ""]
+            #[doc = "For the definition of the format and modifier codes, see the"]
+            #[doc = "wp_linux_buffer_params.create request."]
+            async fn tranche_formats(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                indices: Vec<u8>,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_formats(array[{}])",
+                    object.id,
+                    indices.len()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_array(indices)
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "This event sets tranche-specific flags."]
+            #[doc = ""]
+            #[doc = "The scanout flag is a hint that direct scan-out may be attempted by the"]
+            #[doc = "compositor on the target device if the client appropriately allocates a"]
+            #[doc = "buffer. How to allocate a buffer that can be scanned out on the target"]
+            #[doc = "device is implementation-defined."]
+            #[doc = ""]
+            #[doc = "This event is tied to a preference tranche, see the tranche_done event."]
+            async fn tranche_flags(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                flags: TrancheFlags,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_flags({})",
+                    object.id,
+                    flags
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(flags.bits())
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod presentation_time {
+    #[doc = "The main feature of this interface is accurate presentation"]
+    #[doc = "timing feedback to ensure smooth video playback while maintaining"]
+    #[doc = "audio/video synchronization. Some features use the concept of a"]
+    #[doc = "presentation clock, which is defined in the"]
+    #[doc = "presentation.clock_id event."]
+    #[doc = ""]
+    #[doc = "A content update for a wl_surface is submitted by a"]
+    #[doc = "wl_surface.commit request. Request 'feedback' associates with"]
+    #[doc = "the wl_surface.commit and provides feedback on the content"]
+    #[doc = "update, particularly the final realized presentation time."]
+    #[doc = ""]
+    #[doc = ""]
+    #[doc = ""]
+    #[doc = "When the final realized presentation time is available, e.g."]
+    #[doc = "after a framebuffer flip completes, the requested"]
+    #[doc = "presentation_feedback.presented events are sent. The final"]
+    #[doc = "presentation time can differ from the compositor's predicted"]
+    #[doc = "display update time and the update's target time, especially"]
+    #[doc = "when the compositor misses its target vertical blanking period."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_presentation {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "These fatal protocol errors may be emitted in response to"]
+        #[doc = "illegal presentation requests."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "invalid value in tv_nsec"]
+            InvalidTimestamp = 0u32,
+            #[doc = "invalid flag"]
+            InvalidFlag = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidTimestamp),
+                    1u32 => Ok(Self::InvalidFlag),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_presentation interface. See the module level documentation for more info"]
+        pub trait WpPresentation: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "wp_presentation";
+            const VERSION: u32 = 2u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    0u16 => {
+                        tracing::debug!("wp_presentation#{}.destroy()", object.id,);
+                        self.destroy(object, client).await
+                    }
+                    1u16 => {
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let callback = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wp_presentation#{}.feedback({}, {})",
+                            object.id,
+                            surface,
+                            callback
+                        );
+                        self.feedback(object, client, surface, callback).await
+                    }
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Informs the server that the client will no longer be using"]
+            #[doc = "this protocol object. Existing objects created by this object"]
+            #[doc = "are not affected."]
+            async fn destroy(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()>;
+            #[doc = "Request presentation feedback for the current content submission"]
+            #[doc = "on the given surface. This creates a new presentation_feedback"]
+            #[doc = "object, which will deliver the feedback information once. If"]
+            #[doc = "multiple presentation_feedback objects are created for the same"]
+            #[doc = "submission, they will all deliver the same information."]
+            #[doc = ""]
+            #[doc = "For details on what information is returned, see the"]
+            #[doc = "presentation_feedback interface."]
+            async fn feedback(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                surface: crate::wire::ObjectId,
+                callback: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
+            #[doc = "This event tells the client in which clock domain the"]
+            #[doc = "compositor interprets the timestamps used by the presentation"]
+            #[doc = "extension. This clock is called the presentation clock."]
+            #[doc = ""]
+            #[doc = "The compositor sends this event when the client binds to the"]
+            #[doc = "presentation interface. The presentation clock does not change"]
+            #[doc = "during the lifetime of the client connection."]
+            #[doc = ""]
+            #[doc = "The clock identifier is platform dependent. On POSIX platforms, the"]
+            #[doc = "identifier value is one of the clockid_t values accepted by"]
+            #[doc = "clock_gettime(). clock_gettime() is defined by POSIX.1-2001."]
+            #[doc = ""]
+            #[doc = "Timestamps in this clock domain are expressed as tv_sec_hi,"]
+            #[doc = "tv_sec_lo, tv_nsec triples, each component being an unsigned"]
+            #[doc = "32-bit value. Whole seconds are in tv_sec which is a 64-bit"]
+            #[doc = "value combined from tv_sec_hi and tv_sec_lo, and the"]
+            #[doc = "additional fractional part in tv_nsec as nanoseconds. Hence,"]
+            #[doc = "for valid timestamps tv_nsec must be in [0, 999999999]."]
+            #[doc = ""]
+            #[doc = "Note that clock_id applies only to the presentation clock,"]
+            #[doc = "and implies nothing about e.g. the timestamps used in the"]
+            #[doc = "Wayland core protocol input events."]
+            #[doc = ""]
+            #[doc = "Compositors should prefer a clock which does not jump and is"]
+            #[doc = "not slewed e.g. by NTP. The absolute value of the clock is"]
+            #[doc = "irrelevant. Precision of one millisecond or better is"]
+            #[doc = "recommended. Clients must be able to query the current clock"]
+            #[doc = "value directly, not by asking the compositor."]
+            async fn clock_id(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                clk_id: u32,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> wp_presentation#{}.clock_id({})", object.id, clk_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(clk_id).build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+    #[doc = "A presentation_feedback object returns an indication that a"]
+    #[doc = "wl_surface content update has become visible to the user."]
+    #[doc = "One object corresponds to one content update submission"]
+    #[doc = "(wl_surface.commit). There are two possible outcomes: the"]
+    #[doc = "content update is presented to the user, and a presentation"]
+    #[doc = "timestamp delivered; or, the user did not see the content"]
+    #[doc = "update because it was superseded or its surface destroyed,"]
+    #[doc = "and the content update is discarded."]
+    #[doc = ""]
+    #[doc = "Once a presentation_feedback object has delivered a 'presented'"]
+    #[doc = "or 'discarded' event it is automatically destroyed."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_presentation_feedback {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        bitflags::bitflags! { # [doc = "These flags provide information about how the presentation of"] # [doc = "the related content update was done. The intent is to help"] # [doc = "clients assess the reliability of the feedback and the visual"] # [doc = "quality with respect to possible tearing and timings."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Kind : u32 { const Vsync = 1u32 ; const HwClock = 2u32 ; const HwCompletion = 4u32 ; const ZeroCopy = 8u32 ; } }
+        impl TryFrom<u32> for Kind {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Kind {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_presentation_feedback interface. See the module level documentation for more info"]
+        pub trait WpPresentationFeedback: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "wp_presentation_feedback";
+            const VERSION: u32 = 2u32;
+            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
+            where
+                Self: Sized,
+            {
+                crate::server::Object::new(id, self)
+            }
+            async fn handle_request(
+                &self,
+                _object: &crate::server::Object,
+                _client: &mut crate::server::Client,
+                message: &mut crate::wire::Message,
+            ) -> crate::server::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "As presentation can be synchronized to only one output at a"]
+            #[doc = "time, this event tells which output it was. This event is only"]
+            #[doc = "sent prior to the presented event."]
+            #[doc = ""]
+            #[doc = "As clients may bind to the same global wl_output multiple"]
+            #[doc = "times, this event is sent for each bound instance that matches"]
+            #[doc = "the synchronized output. If a client has not bound to the"]
+            #[doc = "right wl_output global at all, this event is not sent."]
+            async fn sync_output(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                output: crate::wire::ObjectId,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> wp_presentation_feedback#{}.sync_output({})",
+                    object.id,
+                    output
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "The associated content update was displayed to the user at the"]
+            #[doc = "indicated time (tv_sec_hi/lo, tv_nsec). For the interpretation of"]
+            #[doc = "the timestamp, see presentation.clock_id event."]
+            #[doc = ""]
+            #[doc = "The timestamp corresponds to the time when the content update"]
+            #[doc = "turned into light the first time on the surface's main output."]
+            #[doc = "Compositors may approximate this from the framebuffer flip"]
+            #[doc = "completion events from the system, and the latency of the"]
+            #[doc = "physical display path if known."]
+            #[doc = ""]
+            #[doc = "This event is preceded by all related sync_output events"]
+            #[doc = "telling which output's refresh cycle the feedback corresponds"]
+            #[doc = "to, i.e. the main output for the surface. Compositors are"]
+            #[doc = "recommended to choose the output containing the largest part"]
+            #[doc = "of the wl_surface, or keeping the output they previously"]
+            #[doc = "chose. Having a stable presentation output association helps"]
+            #[doc = "clients predict future output refreshes (vblank)."]
+            #[doc = ""]
+            #[doc = "The 'refresh' argument gives the compositor's prediction of how"]
+            #[doc = "many nanoseconds after tv_sec, tv_nsec the very next output"]
+            #[doc = "refresh may occur. This is to further aid clients in"]
+            #[doc = "predicting future refreshes, i.e., estimating the timestamps"]
+            #[doc = "targeting the next few vblanks. If such prediction cannot"]
+            #[doc = "usefully be done, the argument is zero."]
+            #[doc = ""]
+            #[doc = "For version 2 and later, if the output does not have a constant"]
+            #[doc = "refresh rate, explicit video mode switches excluded, then the"]
+            #[doc = "refresh argument must be either an appropriate rate picked by the"]
+            #[doc = "compositor (e.g. fastest rate), or 0 if no such rate exists."]
+            #[doc = "For version 1, if the output does not have a constant refresh rate,"]
+            #[doc = "the refresh argument must be zero."]
+            #[doc = ""]
+            #[doc = "The 64-bit value combined from seq_hi and seq_lo is the value"]
+            #[doc = "of the output's vertical retrace counter when the content"]
+            #[doc = "update was first scanned out to the display. This value must"]
+            #[doc = "be compatible with the definition of MSC in"]
+            #[doc = "GLX_OML_sync_control specification. Note, that if the display"]
+            #[doc = "path has a non-zero latency, the time instant specified by"]
+            #[doc = "this counter may differ from the timestamp's."]
+            #[doc = ""]
+            #[doc = "If the output does not have a concept of vertical retrace or a"]
+            #[doc = "refresh cycle, or the output device is self-refreshing without"]
+            #[doc = "a way to query the refresh count, then the arguments seq_hi"]
+            #[doc = "and seq_lo must be zero."]
+            async fn presented(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
+                refresh: u32,
+                seq_hi: u32,
+                seq_lo: u32,
+                flags: Kind,
+            ) -> crate::server::Result<()> {
+                tracing::debug!(
+                    "-> wp_presentation_feedback#{}.presented({}, {}, {}, {}, {}, {}, {})",
+                    object.id,
+                    tv_sec_hi,
+                    tv_sec_lo,
+                    tv_nsec,
+                    refresh,
+                    seq_hi,
+                    seq_lo,
+                    flags
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(tv_sec_hi)
+                    .put_uint(tv_sec_lo)
+                    .put_uint(tv_nsec)
+                    .put_uint(refresh)
+                    .put_uint(seq_hi)
+                    .put_uint(seq_lo)
+                    .put_uint(flags.bits())
+                    .build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+            #[doc = "The content update was never displayed to the user."]
+            async fn discarded(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+            ) -> crate::server::Result<()> {
+                tracing::debug!("-> wp_presentation_feedback#{}.discarded()", object.id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                client
+                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::server::error::Error::IoError)
+            }
+        }
+    }
+}
 #[doc = "This description provides a high-level overview of the interplay between"]
 #[doc = "the interfaces defined this protocol. For details, see the protocol"]
 #[doc = "specification."]
@@ -4259,1235 +5488,6 @@ pub mod xdg_shell {
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(token).build();
                 client
                     .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod presentation_time {
-    #[doc = "The main feature of this interface is accurate presentation"]
-    #[doc = "timing feedback to ensure smooth video playback while maintaining"]
-    #[doc = "audio/video synchronization. Some features use the concept of a"]
-    #[doc = "presentation clock, which is defined in the"]
-    #[doc = "presentation.clock_id event."]
-    #[doc = ""]
-    #[doc = "A content update for a wl_surface is submitted by a"]
-    #[doc = "wl_surface.commit request. Request 'feedback' associates with"]
-    #[doc = "the wl_surface.commit and provides feedback on the content"]
-    #[doc = "update, particularly the final realized presentation time."]
-    #[doc = ""]
-    #[doc = ""]
-    #[doc = ""]
-    #[doc = "When the final realized presentation time is available, e.g."]
-    #[doc = "after a framebuffer flip completes, the requested"]
-    #[doc = "presentation_feedback.presented events are sent. The final"]
-    #[doc = "presentation time can differ from the compositor's predicted"]
-    #[doc = "display update time and the update's target time, especially"]
-    #[doc = "when the compositor misses its target vertical blanking period."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_presentation {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "These fatal protocol errors may be emitted in response to"]
-        #[doc = "illegal presentation requests."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "invalid value in tv_nsec"]
-            InvalidTimestamp = 0u32,
-            #[doc = "invalid flag"]
-            InvalidFlag = 1u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::InvalidTimestamp),
-                    1u32 => Ok(Self::InvalidFlag),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the wp_presentation interface. See the module level documentation for more info"]
-        pub trait WpPresentation: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_presentation";
-            const VERSION: u32 = 2u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_presentation#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    1u16 => {
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let callback = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_presentation#{}.feedback({}, {})",
-                            object.id,
-                            surface,
-                            callback
-                        );
-                        self.feedback(object, client, surface, callback).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Informs the server that the client will no longer be using"]
-            #[doc = "this protocol object. Existing objects created by this object"]
-            #[doc = "are not affected."]
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "Request presentation feedback for the current content submission"]
-            #[doc = "on the given surface. This creates a new presentation_feedback"]
-            #[doc = "object, which will deliver the feedback information once. If"]
-            #[doc = "multiple presentation_feedback objects are created for the same"]
-            #[doc = "submission, they will all deliver the same information."]
-            #[doc = ""]
-            #[doc = "For details on what information is returned, see the"]
-            #[doc = "presentation_feedback interface."]
-            async fn feedback(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                surface: crate::wire::ObjectId,
-                callback: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "This event tells the client in which clock domain the"]
-            #[doc = "compositor interprets the timestamps used by the presentation"]
-            #[doc = "extension. This clock is called the presentation clock."]
-            #[doc = ""]
-            #[doc = "The compositor sends this event when the client binds to the"]
-            #[doc = "presentation interface. The presentation clock does not change"]
-            #[doc = "during the lifetime of the client connection."]
-            #[doc = ""]
-            #[doc = "The clock identifier is platform dependent. On POSIX platforms, the"]
-            #[doc = "identifier value is one of the clockid_t values accepted by"]
-            #[doc = "clock_gettime(). clock_gettime() is defined by POSIX.1-2001."]
-            #[doc = ""]
-            #[doc = "Timestamps in this clock domain are expressed as tv_sec_hi,"]
-            #[doc = "tv_sec_lo, tv_nsec triples, each component being an unsigned"]
-            #[doc = "32-bit value. Whole seconds are in tv_sec which is a 64-bit"]
-            #[doc = "value combined from tv_sec_hi and tv_sec_lo, and the"]
-            #[doc = "additional fractional part in tv_nsec as nanoseconds. Hence,"]
-            #[doc = "for valid timestamps tv_nsec must be in [0, 999999999]."]
-            #[doc = ""]
-            #[doc = "Note that clock_id applies only to the presentation clock,"]
-            #[doc = "and implies nothing about e.g. the timestamps used in the"]
-            #[doc = "Wayland core protocol input events."]
-            #[doc = ""]
-            #[doc = "Compositors should prefer a clock which does not jump and is"]
-            #[doc = "not slewed e.g. by NTP. The absolute value of the clock is"]
-            #[doc = "irrelevant. Precision of one millisecond or better is"]
-            #[doc = "recommended. Clients must be able to query the current clock"]
-            #[doc = "value directly, not by asking the compositor."]
-            async fn clock_id(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                clk_id: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_presentation#{}.clock_id({})", object.id, clk_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(clk_id).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-    #[doc = "A presentation_feedback object returns an indication that a"]
-    #[doc = "wl_surface content update has become visible to the user."]
-    #[doc = "One object corresponds to one content update submission"]
-    #[doc = "(wl_surface.commit). There are two possible outcomes: the"]
-    #[doc = "content update is presented to the user, and a presentation"]
-    #[doc = "timestamp delivered; or, the user did not see the content"]
-    #[doc = "update because it was superseded or its surface destroyed,"]
-    #[doc = "and the content update is discarded."]
-    #[doc = ""]
-    #[doc = "Once a presentation_feedback object has delivered a 'presented'"]
-    #[doc = "or 'discarded' event it is automatically destroyed."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_presentation_feedback {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        bitflags::bitflags! { # [doc = "These flags provide information about how the presentation of"] # [doc = "the related content update was done. The intent is to help"] # [doc = "clients assess the reliability of the feedback and the visual"] # [doc = "quality with respect to possible tearing and timings."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Kind : u32 { const Vsync = 1u32 ; const HwClock = 2u32 ; const HwCompletion = 4u32 ; const ZeroCopy = 8u32 ; } }
-        impl TryFrom<u32> for Kind {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
-        impl std::fmt::Display for Kind {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                self.bits().fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the wp_presentation_feedback interface. See the module level documentation for more info"]
-        pub trait WpPresentationFeedback: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_presentation_feedback";
-            const VERSION: u32 = 2u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                _object: &crate::server::Object,
-                _client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "As presentation can be synchronized to only one output at a"]
-            #[doc = "time, this event tells which output it was. This event is only"]
-            #[doc = "sent prior to the presented event."]
-            #[doc = ""]
-            #[doc = "As clients may bind to the same global wl_output multiple"]
-            #[doc = "times, this event is sent for each bound instance that matches"]
-            #[doc = "the synchronized output. If a client has not bound to the"]
-            #[doc = "right wl_output global at all, this event is not sent."]
-            async fn sync_output(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                output: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_presentation_feedback#{}.sync_output({})",
-                    object.id,
-                    output
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(output))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "The associated content update was displayed to the user at the"]
-            #[doc = "indicated time (tv_sec_hi/lo, tv_nsec). For the interpretation of"]
-            #[doc = "the timestamp, see presentation.clock_id event."]
-            #[doc = ""]
-            #[doc = "The timestamp corresponds to the time when the content update"]
-            #[doc = "turned into light the first time on the surface's main output."]
-            #[doc = "Compositors may approximate this from the framebuffer flip"]
-            #[doc = "completion events from the system, and the latency of the"]
-            #[doc = "physical display path if known."]
-            #[doc = ""]
-            #[doc = "This event is preceded by all related sync_output events"]
-            #[doc = "telling which output's refresh cycle the feedback corresponds"]
-            #[doc = "to, i.e. the main output for the surface. Compositors are"]
-            #[doc = "recommended to choose the output containing the largest part"]
-            #[doc = "of the wl_surface, or keeping the output they previously"]
-            #[doc = "chose. Having a stable presentation output association helps"]
-            #[doc = "clients predict future output refreshes (vblank)."]
-            #[doc = ""]
-            #[doc = "The 'refresh' argument gives the compositor's prediction of how"]
-            #[doc = "many nanoseconds after tv_sec, tv_nsec the very next output"]
-            #[doc = "refresh may occur. This is to further aid clients in"]
-            #[doc = "predicting future refreshes, i.e., estimating the timestamps"]
-            #[doc = "targeting the next few vblanks. If such prediction cannot"]
-            #[doc = "usefully be done, the argument is zero."]
-            #[doc = ""]
-            #[doc = "For version 2 and later, if the output does not have a constant"]
-            #[doc = "refresh rate, explicit video mode switches excluded, then the"]
-            #[doc = "refresh argument must be either an appropriate rate picked by the"]
-            #[doc = "compositor (e.g. fastest rate), or 0 if no such rate exists."]
-            #[doc = "For version 1, if the output does not have a constant refresh rate,"]
-            #[doc = "the refresh argument must be zero."]
-            #[doc = ""]
-            #[doc = "The 64-bit value combined from seq_hi and seq_lo is the value"]
-            #[doc = "of the output's vertical retrace counter when the content"]
-            #[doc = "update was first scanned out to the display. This value must"]
-            #[doc = "be compatible with the definition of MSC in"]
-            #[doc = "GLX_OML_sync_control specification. Note, that if the display"]
-            #[doc = "path has a non-zero latency, the time instant specified by"]
-            #[doc = "this counter may differ from the timestamp's."]
-            #[doc = ""]
-            #[doc = "If the output does not have a concept of vertical retrace or a"]
-            #[doc = "refresh cycle, or the output device is self-refreshing without"]
-            #[doc = "a way to query the refresh count, then the arguments seq_hi"]
-            #[doc = "and seq_lo must be zero."]
-            async fn presented(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                tv_sec_hi: u32,
-                tv_sec_lo: u32,
-                tv_nsec: u32,
-                refresh: u32,
-                seq_hi: u32,
-                seq_lo: u32,
-                flags: Kind,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_presentation_feedback#{}.presented({}, {}, {}, {}, {}, {}, {})",
-                    object.id,
-                    tv_sec_hi,
-                    tv_sec_lo,
-                    tv_nsec,
-                    refresh,
-                    seq_hi,
-                    seq_lo,
-                    flags
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(tv_sec_hi)
-                    .put_uint(tv_sec_lo)
-                    .put_uint(tv_nsec)
-                    .put_uint(refresh)
-                    .put_uint(seq_hi)
-                    .put_uint(seq_lo)
-                    .put_uint(flags.bits())
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "The content update was never displayed to the user."]
-            async fn discarded(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_presentation_feedback#{}.discarded()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod linux_dmabuf_v1 {
-    #[doc = "Following the interfaces from:"]
-    #[doc = "https://www.khronos.org/registry/egl/extensions/EXT/EGL_EXT_image_dma_buf_import.txt"]
-    #[doc = "https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_image_dma_buf_import_modifiers.txt"]
-    #[doc = "and the Linux DRM sub-system's AddFb2 ioctl."]
-    #[doc = ""]
-    #[doc = "This interface offers ways to create generic dmabuf-based wl_buffers."]
-    #[doc = ""]
-    #[doc = "Clients can use the get_surface_feedback request to get dmabuf feedback"]
-    #[doc = "for a particular surface. If the client wants to retrieve feedback not"]
-    #[doc = "tied to a surface, they can use the get_default_feedback request."]
-    #[doc = ""]
-    #[doc = "The following are required from clients:"]
-    #[doc = ""]
-    #[doc = "- Clients must ensure that either all data in the dma-buf is"]
-    #[doc = "coherent for all subsequent read access or that coherency is"]
-    #[doc = "correctly handled by the underlying kernel-side dma-buf"]
-    #[doc = "implementation."]
-    #[doc = ""]
-    #[doc = "- Don't make any more attachments after sending the buffer to the"]
-    #[doc = "compositor. Making more attachments later increases the risk of"]
-    #[doc = "the compositor not being able to use (re-import) an existing"]
-    #[doc = "dmabuf-based wl_buffer."]
-    #[doc = ""]
-    #[doc = "The underlying graphics stack must ensure the following:"]
-    #[doc = ""]
-    #[doc = "- The dmabuf file descriptors relayed to the server will stay valid"]
-    #[doc = "for the whole lifetime of the wl_buffer. This means the server may"]
-    #[doc = "at any time use those fds to import the dmabuf into any kernel"]
-    #[doc = "sub-system that might accept it."]
-    #[doc = ""]
-    #[doc = "However, when the underlying graphics stack fails to deliver the"]
-    #[doc = "promise, because of e.g. a device hot-unplug which raises internal"]
-    #[doc = "errors, after the wl_buffer has been successfully created the"]
-    #[doc = "compositor must not raise protocol errors to the client when dmabuf"]
-    #[doc = "import later fails."]
-    #[doc = ""]
-    #[doc = "To create a wl_buffer from one or more dmabufs, a client creates a"]
-    #[doc = "zwp_linux_dmabuf_params_v1 object with a zwp_linux_dmabuf_v1.create_params"]
-    #[doc = "request. All planes required by the intended format are added with"]
-    #[doc = "the 'add' request. Finally, a 'create' or 'create_immed' request is"]
-    #[doc = "issued, which has the following outcome depending on the import success."]
-    #[doc = ""]
-    #[doc = "The 'create' request,"]
-    #[doc = "- on success, triggers a 'created' event which provides the final"]
-    #[doc = "wl_buffer to the client."]
-    #[doc = "- on failure, triggers a 'failed' event to convey that the server"]
-    #[doc = "cannot use the dmabufs received from the client."]
-    #[doc = ""]
-    #[doc = "For the 'create_immed' request,"]
-    #[doc = "- on success, the server immediately imports the added dmabufs to"]
-    #[doc = "create a wl_buffer. No event is sent from the server in this case."]
-    #[doc = "- on failure, the server can choose to either:"]
-    #[doc = "- terminate the client by raising a fatal error."]
-    #[doc = "- mark the wl_buffer as failed, and send a 'failed' event to the"]
-    #[doc = "client. If the client uses a failed wl_buffer as an argument to any"]
-    #[doc = "request, the behaviour is compositor implementation-defined."]
-    #[doc = ""]
-    #[doc = "For all DRM formats and unless specified in another protocol extension,"]
-    #[doc = "pre-multiplied alpha is used for pixel values."]
-    #[doc = ""]
-    #[doc = "Unless specified otherwise in another protocol extension, implicit"]
-    #[doc = "synchronization is used. In other words, compositors and clients must"]
-    #[doc = "wait and signal fences implicitly passed via the DMA-BUF's reservation"]
-    #[doc = "mechanism."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod zwp_linux_dmabuf_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxDmabufV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_linux_dmabuf_v1";
-            const VERSION: u32 = 5u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("zwp_linux_dmabuf_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    1u16 => {
-                        let params_id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "zwp_linux_dmabuf_v1#{}.create_params({})",
-                            object.id,
-                            params_id
-                        );
-                        self.create_params(object, client, params_id).await
-                    }
-                    2u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "zwp_linux_dmabuf_v1#{}.get_default_feedback({})",
-                            object.id,
-                            id
-                        );
-                        self.get_default_feedback(object, client, id).await
-                    }
-                    3u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "zwp_linux_dmabuf_v1#{}.get_surface_feedback({}, {})",
-                            object.id,
-                            id,
-                            surface
-                        );
-                        self.get_surface_feedback(object, client, id, surface).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Objects created through this interface, especially wl_buffers, will"]
-            #[doc = "remain valid."]
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "This temporary object is used to collect multiple dmabuf handles into"]
-            #[doc = "a single batch to create a wl_buffer. It can only be used once and"]
-            #[doc = "should be destroyed after a 'created' or 'failed' event has been"]
-            #[doc = "received."]
-            async fn create_params(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                params_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "This request creates a new wp_linux_dmabuf_feedback object not bound"]
-            #[doc = "to a particular surface. This object will deliver feedback about dmabuf"]
-            #[doc = "parameters to use if the client doesn't support per-surface feedback"]
-            #[doc = "(see get_surface_feedback)."]
-            async fn get_default_feedback(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "This request creates a new wp_linux_dmabuf_feedback object for the"]
-            #[doc = "specified wl_surface. This object will deliver feedback about dmabuf"]
-            #[doc = "parameters to use for buffers attached to this surface."]
-            #[doc = ""]
-            #[doc = "If the surface is destroyed before the wp_linux_dmabuf_feedback object,"]
-            #[doc = "the feedback object becomes inert."]
-            async fn get_surface_feedback(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
-            #[doc = "This event advertises one buffer format that the server supports."]
-            #[doc = "All the supported formats are advertised once when the client"]
-            #[doc = "binds to this interface. A roundtrip after binding guarantees"]
-            #[doc = "that the client has received all supported formats."]
-            #[doc = ""]
-            #[doc = "For the definition of the format codes, see the"]
-            #[doc = "zwp_linux_buffer_params_v1::create request."]
-            #[doc = ""]
-            #[doc = "Starting version 4, the format event is deprecated and must not be"]
-            #[doc = "sent by compositors. Instead, use get_default_feedback or"]
-            #[doc = "get_surface_feedback."]
-            async fn format(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                format: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_dmabuf_v1#{}.format({})", object.id, format);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(format).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event advertises the formats that the server supports, along with"]
-            #[doc = "the modifiers supported for each format. All the supported modifiers"]
-            #[doc = "for all the supported formats are advertised once when the client"]
-            #[doc = "binds to this interface. A roundtrip after binding guarantees that"]
-            #[doc = "the client has received all supported format-modifier pairs."]
-            #[doc = ""]
-            #[doc = "For legacy support, DRM_FORMAT_MOD_INVALID (that is, modifier_hi =="]
-            #[doc = "0x00ffffff and modifier_lo == 0xffffffff) is allowed in this event."]
-            #[doc = "It indicates that the server can support the format with an implicit"]
-            #[doc = "modifier. When a plane has DRM_FORMAT_MOD_INVALID as its modifier, it"]
-            #[doc = "is as if no explicit modifier is specified. The effective modifier"]
-            #[doc = "will be derived from the dmabuf."]
-            #[doc = ""]
-            #[doc = "A compositor that sends valid modifiers and DRM_FORMAT_MOD_INVALID for"]
-            #[doc = "a given format supports both explicit modifiers and implicit modifiers."]
-            #[doc = ""]
-            #[doc = "For the definition of the format and modifier codes, see the"]
-            #[doc = "zwp_linux_buffer_params_v1::create and zwp_linux_buffer_params_v1::add"]
-            #[doc = "requests."]
-            #[doc = ""]
-            #[doc = "Starting version 4, the modifier event is deprecated and must not be"]
-            #[doc = "sent by compositors. Instead, use get_default_feedback or"]
-            #[doc = "get_surface_feedback."]
-            async fn modifier(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                format: u32,
-                modifier_hi: u32,
-                modifier_lo: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_v1#{}.modifier({}, {}, {})",
-                    object.id,
-                    format,
-                    modifier_hi,
-                    modifier_lo
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(format)
-                    .put_uint(modifier_hi)
-                    .put_uint(modifier_lo)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-    #[doc = "This temporary object is a collection of dmabufs and other"]
-    #[doc = "parameters that together form a single logical buffer. The temporary"]
-    #[doc = "object may eventually create one wl_buffer unless cancelled by"]
-    #[doc = "destroying it before requesting 'create'."]
-    #[doc = ""]
-    #[doc = "Single-planar formats only require one dmabuf, however"]
-    #[doc = "multi-planar formats may require more than one dmabuf. For all"]
-    #[doc = "formats, an 'add' request must be called once per plane (even if the"]
-    #[doc = "underlying dmabuf fd is identical)."]
-    #[doc = ""]
-    #[doc = "You must use consecutive plane indices ('plane_idx' argument for 'add')"]
-    #[doc = "from zero to the number of planes used by the drm_fourcc format code."]
-    #[doc = "All planes required by the format must be given exactly once, but can"]
-    #[doc = "be given in any order. Each plane index can be set only once."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod zwp_linux_buffer_params_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "the dmabuf_batch object has already been used to create a wl_buffer"]
-            AlreadyUsed = 0u32,
-            #[doc = "plane index out of bounds"]
-            PlaneIdx = 1u32,
-            #[doc = "the plane index was already set"]
-            PlaneSet = 2u32,
-            #[doc = "missing or too many planes to create a buffer"]
-            Incomplete = 3u32,
-            #[doc = "format not supported"]
-            InvalidFormat = 4u32,
-            #[doc = "invalid width or height"]
-            InvalidDimensions = 5u32,
-            #[doc = "offset + stride * height goes out of dmabuf bounds"]
-            OutOfBounds = 6u32,
-            #[doc = "invalid wl_buffer resulted from importing dmabufs via"]
-            #[doc = "the create_immed request on given buffer_params"]
-            InvalidWlBuffer = 7u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::AlreadyUsed),
-                    1u32 => Ok(Self::PlaneIdx),
-                    2u32 => Ok(Self::PlaneSet),
-                    3u32 => Ok(Self::Incomplete),
-                    4u32 => Ok(Self::InvalidFormat),
-                    5u32 => Ok(Self::InvalidDimensions),
-                    6u32 => Ok(Self::OutOfBounds),
-                    7u32 => Ok(Self::InvalidWlBuffer),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInvert = 1u32 ; # [doc = "content is interlaced"] const Interlaced = 2u32 ; # [doc = "bottom field first"] const BottomFirst = 4u32 ; } }
-        impl TryFrom<u32> for Flags {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
-        impl std::fmt::Display for Flags {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                self.bits().fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the zwp_linux_buffer_params_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxBufferParamsV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_linux_buffer_params_v1";
-            const VERSION: u32 = 5u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("zwp_linux_buffer_params_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    1u16 => {
-                        let fd = message.fd()?;
-                        let plane_idx = message.uint()?;
-                        let offset = message.uint()?;
-                        let stride = message.uint()?;
-                        let modifier_hi = message.uint()?;
-                        let modifier_lo = message.uint()?;
-                        tracing::debug!(
-                            "zwp_linux_buffer_params_v1#{}.add({}, {}, {}, {}, {}, {})",
-                            object.id,
-                            fd.as_raw_fd(),
-                            plane_idx,
-                            offset,
-                            stride,
-                            modifier_hi,
-                            modifier_lo
-                        );
-                        self.add(
-                            object,
-                            client,
-                            fd,
-                            plane_idx,
-                            offset,
-                            stride,
-                            modifier_hi,
-                            modifier_lo,
-                        )
-                        .await
-                    }
-                    2u16 => {
-                        let width = message.int()?;
-                        let height = message.int()?;
-                        let format = message.uint()?;
-                        let flags = message.uint()?;
-                        tracing::debug!(
-                            "zwp_linux_buffer_params_v1#{}.create({}, {}, {}, {})",
-                            object.id,
-                            width,
-                            height,
-                            format,
-                            flags
-                        );
-                        self.create(object, client, width, height, format, flags.try_into()?)
-                            .await
-                    }
-                    3u16 => {
-                        let buffer_id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let width = message.int()?;
-                        let height = message.int()?;
-                        let format = message.uint()?;
-                        let flags = message.uint()?;
-                        tracing::debug!(
-                            "zwp_linux_buffer_params_v1#{}.create_immed({}, {}, {}, {}, {})",
-                            object.id,
-                            buffer_id,
-                            width,
-                            height,
-                            format,
-                            flags
-                        );
-                        self.create_immed(
-                            object,
-                            client,
-                            buffer_id,
-                            width,
-                            height,
-                            format,
-                            flags.try_into()?,
-                        )
-                        .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Cleans up the temporary data sent to the server for dmabuf-based"]
-            #[doc = "wl_buffer creation."]
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "This request adds one dmabuf to the set in this"]
-            #[doc = "zwp_linux_buffer_params_v1."]
-            #[doc = ""]
-            #[doc = "The 64-bit unsigned value combined from modifier_hi and modifier_lo"]
-            #[doc = "is the dmabuf layout modifier. DRM AddFB2 ioctl calls this the"]
-            #[doc = "fb modifier, which is defined in drm_mode.h of Linux UAPI."]
-            #[doc = "This is an opaque token. Drivers use this token to express tiling,"]
-            #[doc = "compression, etc. driver-specific modifications to the base format"]
-            #[doc = "defined by the DRM fourcc code."]
-            #[doc = ""]
-            #[doc = "Starting from version 4, the invalid_format protocol error is sent if"]
-            #[doc = "the format + modifier pair was not advertised as supported."]
-            #[doc = ""]
-            #[doc = "Starting from version 5, the invalid_format protocol error is sent if"]
-            #[doc = "all planes don't use the same modifier."]
-            #[doc = ""]
-            #[doc = "This request raises the PLANE_IDX error if plane_idx is too large."]
-            #[doc = "The error PLANE_SET is raised if attempting to set a plane that"]
-            #[doc = "was already set."]
-            async fn add(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                fd: rustix::fd::OwnedFd,
-                plane_idx: u32,
-                offset: u32,
-                stride: u32,
-                modifier_hi: u32,
-                modifier_lo: u32,
-            ) -> crate::server::Result<()>;
-            #[doc = "This asks for creation of a wl_buffer from the added dmabuf"]
-            #[doc = "buffers. The wl_buffer is not created immediately but returned via"]
-            #[doc = "the 'created' event if the dmabuf sharing succeeds. The sharing"]
-            #[doc = "may fail at runtime for reasons a client cannot predict, in"]
-            #[doc = "which case the 'failed' event is triggered."]
-            #[doc = ""]
-            #[doc = "The 'format' argument is a DRM_FORMAT code, as defined by the"]
-            #[doc = "libdrm's drm_fourcc.h. The Linux kernel's DRM sub-system is the"]
-            #[doc = "authoritative source on how the format codes should work."]
-            #[doc = ""]
-            #[doc = "The 'flags' is a bitfield of the flags defined in enum \"flags\"."]
-            #[doc = "'y_invert' means the that the image needs to be y-flipped."]
-            #[doc = ""]
-            #[doc = "Flag 'interlaced' means that the frame in the buffer is not"]
-            #[doc = "progressive as usual, but interlaced. An interlaced buffer as"]
-            #[doc = "supported here must always contain both top and bottom fields."]
-            #[doc = "The top field always begins on the first pixel row. The temporal"]
-            #[doc = "ordering between the two fields is top field first, unless"]
-            #[doc = "'bottom_first' is specified. It is undefined whether 'bottom_first'"]
-            #[doc = "is ignored if 'interlaced' is not set."]
-            #[doc = ""]
-            #[doc = "This protocol does not convey any information about field rate,"]
-            #[doc = "duration, or timing, other than the relative ordering between the"]
-            #[doc = "two fields in one buffer. A compositor may have to estimate the"]
-            #[doc = "intended field rate from the incoming buffer rate. It is undefined"]
-            #[doc = "whether the time of receiving wl_surface.commit with a new buffer"]
-            #[doc = "attached, applying the wl_surface state, wl_surface.frame callback"]
-            #[doc = "trigger, presentation, or any other point in the compositor cycle"]
-            #[doc = "is used to measure the frame or field times. There is no support"]
-            #[doc = "for detecting missed or late frames/fields/buffers either, and"]
-            #[doc = "there is no support whatsoever for cooperating with interlaced"]
-            #[doc = "compositor output."]
-            #[doc = ""]
-            #[doc = "The composited image quality resulting from the use of interlaced"]
-            #[doc = "buffers is explicitly undefined. A compositor may use elaborate"]
-            #[doc = "hardware features or software to deinterlace and create progressive"]
-            #[doc = "output frames from a sequence of interlaced input buffers, or it"]
-            #[doc = "may produce substandard image quality. However, compositors that"]
-            #[doc = "cannot guarantee reasonable image quality in all cases are recommended"]
-            #[doc = "to just reject all interlaced buffers."]
-            #[doc = ""]
-            #[doc = "Any argument errors, including non-positive width or height,"]
-            #[doc = "mismatch between the number of planes and the format, bad"]
-            #[doc = "format, bad offset or stride, may be indicated by fatal protocol"]
-            #[doc = "errors: INCOMPLETE, INVALID_FORMAT, INVALID_DIMENSIONS,"]
-            #[doc = "OUT_OF_BOUNDS."]
-            #[doc = ""]
-            #[doc = "Dmabuf import errors in the server that are not obvious client"]
-            #[doc = "bugs are returned via the 'failed' event as non-fatal. This"]
-            #[doc = "allows attempting dmabuf sharing and falling back in the client"]
-            #[doc = "if it fails."]
-            #[doc = ""]
-            #[doc = "This request can be sent only once in the object's lifetime, after"]
-            #[doc = "which the only legal request is destroy. This object should be"]
-            #[doc = "destroyed after issuing a 'create' request. Attempting to use this"]
-            #[doc = "object after issuing 'create' raises ALREADY_USED protocol error."]
-            #[doc = ""]
-            #[doc = "It is not mandatory to issue 'create'. If a client wants to"]
-            #[doc = "cancel the buffer creation, it can just destroy this object."]
-            async fn create(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                width: i32,
-                height: i32,
-                format: u32,
-                flags: Flags,
-            ) -> crate::server::Result<()>;
-            #[doc = "This asks for immediate creation of a wl_buffer by importing the"]
-            #[doc = "added dmabufs."]
-            #[doc = ""]
-            #[doc = "In case of import success, no event is sent from the server, and the"]
-            #[doc = "wl_buffer is ready to be used by the client."]
-            #[doc = ""]
-            #[doc = "Upon import failure, either of the following may happen, as seen fit"]
-            #[doc = "by the implementation:"]
-            #[doc = "- the client is terminated with one of the following fatal protocol"]
-            #[doc = "errors:"]
-            #[doc = "- INCOMPLETE, INVALID_FORMAT, INVALID_DIMENSIONS, OUT_OF_BOUNDS,"]
-            #[doc = "in case of argument errors such as mismatch between the number"]
-            #[doc = "of planes and the format, bad format, non-positive width or"]
-            #[doc = "height, or bad offset or stride."]
-            #[doc = "- INVALID_WL_BUFFER, in case the cause for failure is unknown or"]
-            #[doc = "platform specific."]
-            #[doc = "- the server creates an invalid wl_buffer, marks it as failed and"]
-            #[doc = "sends a 'failed' event to the client. The result of using this"]
-            #[doc = "invalid wl_buffer as an argument in any request by the client is"]
-            #[doc = "defined by the compositor implementation."]
-            #[doc = ""]
-            #[doc = "This takes the same arguments as a 'create' request, and obeys the"]
-            #[doc = "same restrictions."]
-            async fn create_immed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                buffer_id: crate::wire::ObjectId,
-                width: i32,
-                height: i32,
-                format: u32,
-                flags: Flags,
-            ) -> crate::server::Result<()>;
-            #[doc = "This event indicates that the attempted buffer creation was"]
-            #[doc = "successful. It provides the new wl_buffer referencing the dmabuf(s)."]
-            #[doc = ""]
-            #[doc = "Upon receiving this event, the client should destroy the"]
-            #[doc = "zwp_linux_buffer_params_v1 object."]
-            async fn created(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                buffer: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_buffer_params_v1#{}.created({})",
-                    object.id,
-                    buffer
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(buffer))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event indicates that the attempted buffer creation has"]
-            #[doc = "failed. It usually means that one of the dmabuf constraints"]
-            #[doc = "has not been fulfilled."]
-            #[doc = ""]
-            #[doc = "Upon receiving this event, the client should destroy the"]
-            #[doc = "zwp_linux_buffer_params_v1 object."]
-            async fn failed(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_buffer_params_v1#{}.failed()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-        }
-    }
-    #[doc = "This object advertises dmabuf parameters feedback. This includes the"]
-    #[doc = "preferred devices and the supported formats/modifiers."]
-    #[doc = ""]
-    #[doc = "The parameters are sent once when this object is created and whenever they"]
-    #[doc = "change. The done event is always sent once after all parameters have been"]
-    #[doc = "sent. When a single parameter changes, all parameters are re-sent by the"]
-    #[doc = "compositor."]
-    #[doc = ""]
-    #[doc = "Compositors can re-send the parameters when the current client buffer"]
-    #[doc = "allocations are sub-optimal. Compositors should not re-send the"]
-    #[doc = "parameters if re-allocating the buffers would not result in a more optimal"]
-    #[doc = "configuration. In particular, compositors should avoid sending the exact"]
-    #[doc = "same parameters multiple times in a row."]
-    #[doc = ""]
-    #[doc = "The tranche_target_device and tranche_formats events are grouped by"]
-    #[doc = "tranches of preference. For each tranche, a tranche_target_device, one"]
-    #[doc = "tranche_flags and one or more tranche_formats events are sent, followed"]
-    #[doc = "by a tranche_done event finishing the list. The tranches are sent in"]
-    #[doc = "descending order of preference. All formats and modifiers in the same"]
-    #[doc = "tranche have the same preference."]
-    #[doc = ""]
-    #[doc = "To send parameters, the compositor sends one main_device event, tranches"]
-    #[doc = "(each consisting of one tranche_target_device event, one tranche_flags"]
-    #[doc = "event, tranche_formats events and then a tranche_done event), then one"]
-    #[doc = "done event."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod zwp_linux_dmabuf_feedback_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { # [doc = "direct scan-out tranche"] const Scanout = 1u32 ; } }
-        impl TryFrom<u32> for TrancheFlags {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
-        impl std::fmt::Display for TrancheFlags {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                self.bits().fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the zwp_linux_dmabuf_feedback_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxDmabufFeedbackV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_linux_dmabuf_feedback_v1";
-            const VERSION: u32 = 5u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
-            async fn handle_request(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("zwp_linux_dmabuf_feedback_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Using this request a client can tell the server that it is not going to"]
-            #[doc = "use the wp_linux_dmabuf_feedback object anymore."]
-            async fn destroy(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()>;
-            #[doc = "This event is sent after all parameters of a wp_linux_dmabuf_feedback"]
-            #[doc = "object have been sent."]
-            #[doc = ""]
-            #[doc = "This allows changes to the wp_linux_dmabuf_feedback parameters to be"]
-            #[doc = "seen as atomic, even if they happen via multiple events."]
-            async fn done(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> zwp_linux_dmabuf_feedback_v1#{}.done()", object.id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event provides a file descriptor which can be memory-mapped to"]
-            #[doc = "access the format and modifier table."]
-            #[doc = ""]
-            #[doc = "The table contains a tightly packed array of consecutive format +"]
-            #[doc = "modifier pairs. Each pair is 16 bytes wide. It contains a format as a"]
-            #[doc = "32-bit unsigned integer, followed by 4 bytes of unused padding, and a"]
-            #[doc = "modifier as a 64-bit unsigned integer. The native endianness is used."]
-            #[doc = ""]
-            #[doc = "The client must map the file descriptor in read-only private mode."]
-            #[doc = ""]
-            #[doc = "Compositors are not allowed to mutate the table file contents once this"]
-            #[doc = "event has been sent. Instead, compositors must create a new, separate"]
-            #[doc = "table file and re-send feedback parameters. Compositors are allowed to"]
-            #[doc = "store duplicate format + modifier pairs in the table."]
-            async fn format_table(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                fd: rustix::fd::OwnedFd,
-                size: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.format_table({}, {})",
-                    object.id,
-                    fd.as_raw_fd(),
-                    size
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_fd(fd)
-                    .put_uint(size)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event advertises the main device that the server prefers to use"]
-            #[doc = "when direct scan-out to the target device isn't possible. The"]
-            #[doc = "advertised main device may be different for each"]
-            #[doc = "wp_linux_dmabuf_feedback object, and may change over time."]
-            #[doc = ""]
-            #[doc = "There is exactly one main device. The compositor must send at least"]
-            #[doc = "one preference tranche with tranche_target_device equal to main_device."]
-            #[doc = ""]
-            #[doc = "Clients need to create buffers that the main device can import and"]
-            #[doc = "read from, otherwise creating the dmabuf wl_buffer will fail (see the"]
-            #[doc = "wp_linux_buffer_params.create and create_immed requests for details)."]
-            #[doc = "The main device will also likely be kept active by the compositor,"]
-            #[doc = "so clients can use it instead of waking up another device for power"]
-            #[doc = "savings."]
-            #[doc = ""]
-            #[doc = "In general the device is a DRM node. The DRM node type (primary vs."]
-            #[doc = "render) is unspecified. Clients must not rely on the compositor sending"]
-            #[doc = "a particular node type. Clients cannot check two devices for equality"]
-            #[doc = "by comparing the dev_t value."]
-            #[doc = ""]
-            #[doc = "If explicit modifiers are not supported and the client performs buffer"]
-            #[doc = "allocations on a different device than the main device, then the client"]
-            #[doc = "must force the buffer to have a linear layout."]
-            async fn main_device(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                device: Vec<u8>,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.main_device(array[{}])",
-                    object.id,
-                    device.len()
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event splits tranche_target_device and tranche_formats events in"]
-            #[doc = "preference tranches. It is sent after a set of tranche_target_device"]
-            #[doc = "and tranche_formats events; it represents the end of a tranche. The"]
-            #[doc = "next tranche will have a lower preference."]
-            async fn tranche_done(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_done()",
-                    object.id,
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event advertises the target device that the server prefers to use"]
-            #[doc = "for a buffer created given this tranche. The advertised target device"]
-            #[doc = "may be different for each preference tranche, and may change over time."]
-            #[doc = ""]
-            #[doc = "There is exactly one target device per tranche."]
-            #[doc = ""]
-            #[doc = "The target device may be a scan-out device, for example if the"]
-            #[doc = "compositor prefers to directly scan-out a buffer created given this"]
-            #[doc = "tranche. The target device may be a rendering device, for example if"]
-            #[doc = "the compositor prefers to texture from said buffer."]
-            #[doc = ""]
-            #[doc = "The client can use this hint to allocate the buffer in a way that makes"]
-            #[doc = "it accessible from the target device, ideally directly. The buffer must"]
-            #[doc = "still be accessible from the main device, either through direct import"]
-            #[doc = "or through a potentially more expensive fallback path. If the buffer"]
-            #[doc = "can't be directly imported from the main device then clients must be"]
-            #[doc = "prepared for the compositor changing the tranche priority or making"]
-            #[doc = "wl_buffer creation fail (see the wp_linux_buffer_params.create and"]
-            #[doc = "create_immed requests for details)."]
-            #[doc = ""]
-            #[doc = "If the device is a DRM node, the DRM node type (primary vs. render) is"]
-            #[doc = "unspecified. Clients must not rely on the compositor sending a"]
-            #[doc = "particular node type. Clients cannot check two devices for equality by"]
-            #[doc = "comparing the dev_t value."]
-            #[doc = ""]
-            #[doc = "This event is tied to a preference tranche, see the tranche_done event."]
-            async fn tranche_target_device(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                device: Vec<u8>,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_target_device(array[{}])",
-                    object.id,
-                    device.len()
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event advertises the format + modifier combinations that the"]
-            #[doc = "compositor supports."]
-            #[doc = ""]
-            #[doc = "It carries an array of indices, each referring to a format + modifier"]
-            #[doc = "pair in the last received format table (see the format_table event)."]
-            #[doc = "Each index is a 16-bit unsigned integer in native endianness."]
-            #[doc = ""]
-            #[doc = "For legacy support, DRM_FORMAT_MOD_INVALID is an allowed modifier."]
-            #[doc = "It indicates that the server can support the format with an implicit"]
-            #[doc = "modifier. When a buffer has DRM_FORMAT_MOD_INVALID as its modifier, it"]
-            #[doc = "is as if no explicit modifier is specified. The effective modifier"]
-            #[doc = "will be derived from the dmabuf."]
-            #[doc = ""]
-            #[doc = "A compositor that sends valid modifiers and DRM_FORMAT_MOD_INVALID for"]
-            #[doc = "a given format supports both explicit modifiers and implicit modifiers."]
-            #[doc = ""]
-            #[doc = "Compositors must not send duplicate format + modifier pairs within the"]
-            #[doc = "same tranche or across two different tranches with the same target"]
-            #[doc = "device and flags."]
-            #[doc = ""]
-            #[doc = "This event is tied to a preference tranche, see the tranche_done event."]
-            #[doc = ""]
-            #[doc = "For the definition of the format and modifier codes, see the"]
-            #[doc = "wp_linux_buffer_params.create request."]
-            async fn tranche_formats(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                indices: Vec<u8>,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_formats(array[{}])",
-                    object.id,
-                    indices.len()
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_array(indices)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
-            }
-            #[doc = "This event sets tranche-specific flags."]
-            #[doc = ""]
-            #[doc = "The scanout flag is a hint that direct scan-out may be attempted by the"]
-            #[doc = "compositor on the target device if the client appropriately allocates a"]
-            #[doc = "buffer. How to allocate a buffer that can be scanned out on the target"]
-            #[doc = "device is implementation-defined."]
-            #[doc = ""]
-            #[doc = "This event is tied to a preference tranche, see the tranche_done event."]
-            async fn tranche_flags(
-                &self,
-                object: &crate::server::Object,
-                client: &mut crate::server::Client,
-                flags: TrancheFlags,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> zwp_linux_dmabuf_feedback_v1#{}.tranche_flags({})",
-                    object.id,
-                    flags
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(flags.bits())
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
