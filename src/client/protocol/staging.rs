@@ -1,41 +1,29 @@
 #![allow(async_fn_in_trait)]
+#[doc = "This protocol allows clients to set icons for their toplevel surfaces"]
+#[doc = "either via the XDG icon stock (using an icon name), or from pixel data."]
+#[doc = ""]
+#[doc = "A toplevel icon represents the individual toplevel (unlike the application"]
+#[doc = "or launcher icon, which represents the application as a whole), and may be"]
+#[doc = "shown in window switchers, window overviews and taskbars that list"]
+#[doc = "individual windows."]
+#[doc = ""]
+#[doc = "This document adheres to RFC 2119 when using words like \"must\","]
+#[doc = "\"should\", \"may\", etc."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is currently in the testing"]
+#[doc = "phase. Backward compatible changes may be added together with the"]
+#[doc = "corresponding interface version bump. Backward incompatible changes can"]
+#[doc = "only be done by creating a new major version of the extension."]
 #[allow(clippy::module_inception)]
-pub mod alpha_modifier_v1 {
-    #[doc = "This interface allows a client to set a factor for the alpha values on a"]
-    #[doc = "surface, which can be used to offload such operations to the compositor,"]
-    #[doc = "which can in turn for example offload them to KMS."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
+pub mod xdg_toplevel_icon_v1 {
+    #[doc = "This interface allows clients to create toplevel window icons and set"]
+    #[doc = "them on toplevel windows to be displayed to the user."]
     #[allow(clippy::too_many_arguments)]
-    pub mod wp_alpha_modifier_v1 {
+    pub mod xdg_toplevel_icon_manager_v1 {
         use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "wl_surface already has a alpha modifier object"]
-            AlreadyConstructed = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::AlreadyConstructed),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the wp_alpha_modifier_v1 interface. See the module level documentation for more info"]
-        pub trait WpAlphaModifierV1 {
-            const INTERFACE: &'static str = "wp_alpha_modifier_v1";
+        #[doc = "Trait to implement the xdg_toplevel_icon_manager_v1 interface. See the module level documentation for more info"]
+        pub trait XdgToplevelIconManagerV1 {
+            const INTERFACE: &'static str = "xdg_toplevel_icon_manager_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
@@ -46,23 +34,331 @@ pub mod alpha_modifier_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
-            #[doc = "Destroy the alpha modifier manager. This doesn't destroy objects"]
-            #[doc = "created with the manager."]
+            #[doc = "Destroy the toplevel icon manager."]
+            #[doc = "This does not destroy objects created with the manager."]
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_alpha_modifier_v1#{}.destroy()", object_id);
+                tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
                     .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
-            #[doc = "Create a new alpha modifier surface object associated with the"]
-            #[doc = "given wl_surface. If there is already such an object associated with"]
-            #[doc = "the wl_surface, the already_constructed error will be raised."]
+            #[doc = "Creates a new icon object. This icon can then be attached to a"]
+            #[doc = "xdg_toplevel via the 'set_icon' request."]
+            async fn create_icon(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> xdg_toplevel_icon_manager_v1#{}.create_icon()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This request assigns the icon 'icon' to 'toplevel', or clears the"]
+            #[doc = "toplevel icon if 'icon' was null."]
+            #[doc = "This state is double-buffered and is applied on the next"]
+            #[doc = "wl_surface.commit of the toplevel."]
+            #[doc = ""]
+            #[doc = "After making this call, the xdg_toplevel_icon_v1 provided as 'icon'"]
+            #[doc = "can be destroyed by the client without 'toplevel' losing its icon."]
+            #[doc = "The xdg_toplevel_icon_v1 is immutable from this point, and any"]
+            #[doc = "future attempts to change it must raise the"]
+            #[doc = "'xdg_toplevel_icon_v1.immutable' protocol error."]
+            #[doc = ""]
+            #[doc = "The compositor must set the toplevel icon from either the pixel data"]
+            #[doc = "the icon provides, or by loading a stock icon using the icon name."]
+            #[doc = "See the description of 'xdg_toplevel_icon_v1' for details."]
+            #[doc = ""]
+            #[doc = "If 'icon' is set to null, the icon of the respective toplevel is reset"]
+            #[doc = "to its default icon (usually the icon of the application, derived from"]
+            #[doc = "its desktop-entry file, or a placeholder icon)."]
+            #[doc = "If this request is passed an icon with no pixel buffers or icon name"]
+            #[doc = "assigned, the icon must be reset just like if 'icon' was null."]
+            async fn set_icon(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                toplevel: crate::wire::ObjectId,
+                icon: Option<crate::wire::ObjectId>,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.set_icon()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(toplevel))
+                    .put_object(icon)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This event indicates an icon size the compositor prefers to be"]
+            #[doc = "available if the client has scalable icons and can render to any size."]
+            #[doc = ""]
+            #[doc = "When the 'xdg_toplevel_icon_manager_v1' object is created, the"]
+            #[doc = "compositor may send one or more 'icon_size' events to describe the list"]
+            #[doc = "of preferred icon sizes. If the compositor has no size preference, it"]
+            #[doc = "may not send any 'icon_size' event, and it is up to the client to"]
+            #[doc = "decide a suitable icon size."]
+            #[doc = ""]
+            #[doc = "A sequence of 'icon_size' events must be finished with a 'done' event."]
+            #[doc = "If the compositor has no size preferences, it must still send the"]
+            #[doc = "'done' event, without any preceding 'icon_size' events."]
+            async fn icon_size(&self, size: i32) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all 'icon_size' events have been sent."]
+            async fn done(&self) -> crate::client::Result<()>;
+        }
+    }
+    #[doc = "This interface defines a toplevel icon."]
+    #[doc = "An icon can have a name, and multiple buffers."]
+    #[doc = "In order to be applied, the icon must have either a name, or at least"]
+    #[doc = "one buffer assigned. Applying an empty icon (with no buffer or name) to"]
+    #[doc = "a toplevel should reset its icon to the default icon."]
+    #[doc = ""]
+    #[doc = "It is up to compositor policy whether to prefer using a buffer or loading"]
+    #[doc = "an icon via its name. See 'set_name' and 'add_buffer' for details."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xdg_toplevel_icon_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the provided buffer does not satisfy requirements"]
+            InvalidBuffer = 1u32,
+            #[doc = "the icon has already been assigned to a toplevel and must not be changed"]
+            Immutable = 2u32,
+            #[doc = "the provided buffer has been destroyed before the toplevel icon"]
+            NoBuffer = 3u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::InvalidBuffer),
+                    2u32 => Ok(Self::Immutable),
+                    3u32 => Ok(Self::NoBuffer),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the xdg_toplevel_icon_v1 interface. See the module level documentation for more info"]
+        pub trait XdgToplevelIconV1 {
+            const INTERFACE: &'static str = "xdg_toplevel_icon_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroys the 'xdg_toplevel_icon_v1' object."]
+            #[doc = "The icon must still remain set on every toplevel it was assigned to,"]
+            #[doc = "until the toplevel icon is reset explicitly."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xdg_toplevel_icon_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This request assigns an icon name to this icon."]
+            #[doc = "Any previously set name is overridden."]
+            #[doc = ""]
+            #[doc = "The compositor must resolve 'icon_name' according to the lookup rules"]
+            #[doc = "described in the XDG icon theme specification[1] using the"]
+            #[doc = "environment's current icon theme."]
+            #[doc = ""]
+            #[doc = "If the compositor does not support icon names or cannot resolve"]
+            #[doc = "'icon_name' according to the XDG icon theme specification it must"]
+            #[doc = "fall back to using pixel buffer data instead."]
+            #[doc = ""]
+            #[doc = "If this request is made after the icon has been assigned to a toplevel"]
+            #[doc = "via 'set_icon', a 'immutable' error must be raised."]
+            #[doc = ""]
+            #[doc = "[1]: https://specifications.freedesktop.org/icon-theme-spec/icon-theme-spec-latest.html"]
+            async fn set_name(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                icon_name: String,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xdg_toplevel_icon_v1#{}.set_name()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(icon_name))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This request adds pixel data supplied as wl_buffer to the icon."]
+            #[doc = ""]
+            #[doc = "The client should add pixel data for all icon sizes and scales that"]
+            #[doc = "it can provide, or which are explicitly requested by the compositor"]
+            #[doc = "via 'icon_size' events on xdg_toplevel_icon_manager_v1."]
+            #[doc = ""]
+            #[doc = "The wl_buffer supplying pixel data as 'buffer' must be backed by wl_shm"]
+            #[doc = "and must be a square (width and height being equal)."]
+            #[doc = "If any of these buffer requirements are not fulfilled, a 'invalid_buffer'"]
+            #[doc = "error must be raised."]
+            #[doc = ""]
+            #[doc = "If this icon instance already has a buffer of the same size and scale"]
+            #[doc = "from a previous 'add_buffer' request, data from the last request"]
+            #[doc = "overrides the preexisting pixel data."]
+            #[doc = ""]
+            #[doc = "The wl_buffer must be kept alive for as long as the xdg_toplevel_icon"]
+            #[doc = "it is associated with is not destroyed, otherwise a 'no_buffer' error"]
+            #[doc = "is raised. The buffer contents must not be modified after it was"]
+            #[doc = "assigned to the icon. As a result, the region of the wl_shm_pool's"]
+            #[doc = "backing storage used for the wl_buffer must not be modified after this"]
+            #[doc = "request is sent. The wl_buffer.release event is unused."]
+            #[doc = ""]
+            #[doc = "If this request is made after the icon has been assigned to a toplevel"]
+            #[doc = "via 'set_icon', a 'immutable' error must be raised."]
+            async fn add_buffer(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                buffer: crate::wire::ObjectId,
+                scale: i32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xdg_toplevel_icon_v1#{}.add_buffer()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(buffer))
+                    .put_int(scale)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
+#[doc = "This protocol allows clients to request explicit synchronization for"]
+#[doc = "buffers. It is tied to the Linux DRM synchronization object framework."]
+#[doc = ""]
+#[doc = "Synchronization refers to co-ordination of pipelined operations performed"]
+#[doc = "on buffers. Most GPU clients will schedule an asynchronous operation to"]
+#[doc = "render to the buffer, then immediately send the buffer to the compositor"]
+#[doc = "to be attached to a surface."]
+#[doc = ""]
+#[doc = "With implicit synchronization, ensuring that the rendering operation is"]
+#[doc = "complete before the compositor displays the buffer is an implementation"]
+#[doc = "detail handled by either the kernel or userspace graphics driver."]
+#[doc = ""]
+#[doc = "By contrast, with explicit synchronization, DRM synchronization object"]
+#[doc = "timeline points mark when the asynchronous operations are complete. When"]
+#[doc = "submitting a buffer, the client provides a timeline point which will be"]
+#[doc = "waited on before the compositor accesses the buffer, and another timeline"]
+#[doc = "point that the compositor will signal when it no longer needs to access the"]
+#[doc = "buffer contents for the purposes of the surface commit."]
+#[doc = ""]
+#[doc = "Linux DRM synchronization objects are documented at:"]
+#[doc = "https://dri.freedesktop.org/docs/drm/gpu/drm-mm.html#drm-sync-objects"]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is currently in the testing"]
+#[doc = "phase. Backward compatible changes may be added together with the"]
+#[doc = "corresponding interface version bump. Backward incompatible changes can"]
+#[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
+pub mod linux_drm_syncobj_v1 {
+    #[doc = "This global is a factory interface, allowing clients to request"]
+    #[doc = "explicit synchronization for buffers on a per-surface basis."]
+    #[doc = ""]
+    #[doc = "See wp_linux_drm_syncobj_surface_v1 for more information."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_linux_drm_syncobj_manager_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the surface already has a synchronization object associated"]
+            SurfaceExists = 0u32,
+            #[doc = "the timeline object could not be imported"]
+            InvalidTimeline = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::SurfaceExists),
+                    1u32 => Ok(Self::InvalidTimeline),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_linux_drm_syncobj_manager_v1 interface. See the module level documentation for more info"]
+        pub trait WpLinuxDrmSyncobjManagerV1 {
+            const INTERFACE: &'static str = "wp_linux_drm_syncobj_manager_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy this explicit synchronization factory object. Other objects"]
+            #[doc = "shall not be affected by this request."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_linux_drm_syncobj_manager_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Instantiate an interface extension for the given wl_surface to provide"]
+            #[doc = "explicit synchronization."]
+            #[doc = ""]
+            #[doc = "If the given wl_surface already has an explicit synchronization object"]
+            #[doc = "associated, the surface_exists protocol error is raised."]
+            #[doc = ""]
+            #[doc = "Graphics APIs, like EGL or Vulkan, that manage the buffer queue and"]
+            #[doc = "commits of a wl_surface themselves, are likely to be using this"]
+            #[doc = "extension internally. If a client is using such an API for a"]
+            #[doc = "wl_surface, it should not directly use this extension on that surface,"]
+            #[doc = "to avoid raising a surface_exists protocol error."]
             async fn get_surface(
                 &self,
                 socket: &mut crate::wire::Socket,
@@ -70,376 +366,8 @@ pub mod alpha_modifier_v1 {
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_alpha_modifier_v1#{}.get_surface()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(id))
-                    .put_object(Some(surface))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-    #[doc = "This interface allows the client to set a factor for the alpha values on"]
-    #[doc = "a surface, which can be used to offload such operations to the compositor."]
-    #[doc = "The default factor is UINT32_MAX."]
-    #[doc = ""]
-    #[doc = "This object has to be destroyed before the associated wl_surface. Once the"]
-    #[doc = "wl_surface is destroyed, all request on this object will raise the"]
-    #[doc = "no_surface error."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_alpha_modifier_surface_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "wl_surface was destroyed"]
-            NoSurface = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::NoSurface),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the wp_alpha_modifier_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpAlphaModifierSurfaceV1 {
-            const INTERFACE: &'static str = "wp_alpha_modifier_surface_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "This destroys the object, and is equivalent to set_multiplier with"]
-            #[doc = "a value of UINT32_MAX, with the same double-buffered semantics as"]
-            #[doc = "set_multiplier."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_alpha_modifier_surface_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Sets the alpha multiplier for the surface. The alpha multiplier is"]
-            #[doc = "double-buffered state, see wl_surface.commit for details."]
-            #[doc = ""]
-            #[doc = "This factor is applied in the compositor's blending space, as an"]
-            #[doc = "additional step after the processing of per-pixel alpha values for the"]
-            #[doc = "wl_surface. The exact meaning of the factor is thus undefined, unless"]
-            #[doc = "the blending space is specified in a different extension."]
-            #[doc = ""]
-            #[doc = "This multiplier is applied even if the buffer attached to the"]
-            #[doc = "wl_surface doesn't have an alpha channel; in that case an alpha value"]
-            #[doc = "of one is used instead."]
-            #[doc = ""]
-            #[doc = "Zero means completely transparent, UINT32_MAX means completely opaque."]
-            async fn set_multiplier(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                factor: u32,
-            ) -> crate::client::Result<()> {
                 tracing::debug!(
-                    "-> wp_alpha_modifier_surface_v1#{}.set_multiplier()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(factor).build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod commit_timing_v1 {
-    #[doc = "When a compositor latches on to new content updates it will check for"]
-    #[doc = "any number of requirements of the available content updates (such as"]
-    #[doc = "fences of all buffers being signalled) to consider the update ready."]
-    #[doc = ""]
-    #[doc = "This protocol provides a method for adding a time constraint to surface"]
-    #[doc = "content. This constraint indicates to the compositor that a content"]
-    #[doc = "update should be presented as closely as possible to, but not before,"]
-    #[doc = "a specified time."]
-    #[doc = ""]
-    #[doc = "This protocol does not change the Wayland property that content"]
-    #[doc = "updates are applied in the order they are received, even when some"]
-    #[doc = "content updates contain timestamps and others do not."]
-    #[doc = ""]
-    #[doc = "To provide timestamps, this global factory interface must be used to"]
-    #[doc = "acquire a wp_commit_timing_v1 object for a surface, which may then be"]
-    #[doc = "used to provide timestamp information for commits."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_commit_timing_manager_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "commit timer already exists for surface"]
-            CommitTimerExists = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::CommitTimerExists),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the wp_commit_timing_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpCommitTimingManagerV1 {
-            const INTERFACE: &'static str = "wp_commit_timing_manager_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Informs the server that the client will no longer be using"]
-            #[doc = "this protocol object. Existing objects created by this object"]
-            #[doc = "are not affected."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_commit_timing_manager_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Establish a timing controller for a surface."]
-            #[doc = ""]
-            #[doc = "Only one commit timer can be created for a surface, or a"]
-            #[doc = "commit_timer_exists protocol error will be generated."]
-            async fn get_timer(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_commit_timing_manager_v1#{}.get_timer()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(id))
-                    .put_object(Some(surface))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-    #[doc = "An object to set a time constraint for a content update on a surface."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_commit_timer_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "timestamp contains an invalid value"]
-            InvalidTimestamp = 0u32,
-            #[doc = "timestamp exists"]
-            TimestampExists = 1u32,
-            #[doc = "the associated surface no longer exists"]
-            SurfaceDestroyed = 2u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::InvalidTimestamp),
-                    1u32 => Ok(Self::TimestampExists),
-                    2u32 => Ok(Self::SurfaceDestroyed),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the wp_commit_timer_v1 interface. See the module level documentation for more info"]
-        pub trait WpCommitTimerV1 {
-            const INTERFACE: &'static str = "wp_commit_timer_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Provide a timing constraint for a surface content update."]
-            #[doc = ""]
-            #[doc = "A set_timestamp request may be made before a wl_surface.commit to"]
-            #[doc = "tell the compositor that the content is intended to be presented"]
-            #[doc = "as closely as possible to, but not before, the specified time."]
-            #[doc = "The time is in the domain of the compositor's presentation clock."]
-            #[doc = ""]
-            #[doc = "An invalid_timestamp error will be generated for invalid tv_nsec."]
-            #[doc = ""]
-            #[doc = "If a timestamp already exists on the surface, a timestamp_exists"]
-            #[doc = "error is generated."]
-            #[doc = ""]
-            #[doc = "Requesting set_timestamp after the commit_timer object's surface is"]
-            #[doc = "destroyed will generate a \"surface_destroyed\" error."]
-            async fn set_timestamp(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                tv_sec_hi: u32,
-                tv_sec_lo: u32,
-                tv_nsec: u32,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_commit_timer_v1#{}.set_timestamp()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(tv_sec_hi)
-                    .put_uint(tv_sec_lo)
-                    .put_uint(tv_nsec)
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Informs the server that the client will no longer be using"]
-            #[doc = "this protocol object."]
-            #[doc = ""]
-            #[doc = "Existing timing constraints are not affected by the destruction."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_commit_timer_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod content_type_v1 {
-    #[doc = "This interface allows a client to describe the kind of content a surface"]
-    #[doc = "will display, to allow the compositor to optimize its behavior for it."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_content_type_manager_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "wl_surface already has a content type object"]
-            AlreadyConstructed = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::AlreadyConstructed),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the wp_content_type_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpContentTypeManagerV1 {
-            const INTERFACE: &'static str = "wp_content_type_manager_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy the content type manager. This doesn't destroy objects created"]
-            #[doc = "with the manager."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_content_type_manager_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Create a new content type object associated with the given surface."]
-            #[doc = ""]
-            #[doc = "Creating a wp_content_type_v1 from a wl_surface which already has one"]
-            #[doc = "attached is a client error: already_constructed."]
-            async fn get_surface_content_type(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> wp_content_type_manager_v1#{}.get_surface_content_type()",
+                    "-> wp_linux_drm_syncobj_manager_v1#{}.get_surface()",
                     object_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -451,48 +379,39 @@ pub mod content_type_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Import a DRM synchronization object timeline."]
+            #[doc = ""]
+            #[doc = "If the FD cannot be imported, the invalid_timeline error is raised."]
+            async fn import_timeline(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                fd: rustix::fd::OwnedFd,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_linux_drm_syncobj_manager_v1#{}.import_timeline()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .put_fd(fd)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
         }
     }
-    #[doc = "The content type object allows the compositor to optimize for the kind"]
-    #[doc = "of content shown on the surface. A compositor may for example use it to"]
-    #[doc = "set relevant drm properties like \"content type\"."]
-    #[doc = ""]
-    #[doc = "The client may request to switch to another content type at any time."]
-    #[doc = "When the associated surface gets destroyed, this object becomes inert and"]
-    #[doc = "the client should destroy it."]
+    #[doc = "This object represents an explicit synchronization object timeline"]
+    #[doc = "imported by the client to the compositor."]
     #[allow(clippy::too_many_arguments)]
-    pub mod wp_content_type_v1 {
+    pub mod wp_linux_drm_syncobj_timeline_v1 {
         use futures_util::SinkExt;
-        #[doc = "These values describe the available content types for a surface."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Type {
-            None = 0u32,
-            Photo = 1u32,
-            Video = 2u32,
-            Game = 3u32,
-        }
-        impl TryFrom<u32> for Type {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::None),
-                    1u32 => Ok(Self::Photo),
-                    2u32 => Ok(Self::Video),
-                    3u32 => Ok(Self::Game),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Type {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the wp_content_type_v1 interface. See the module level documentation for more info"]
-        pub trait WpContentTypeV1 {
-            const INTERFACE: &'static str = "wp_content_type_v1";
+        #[doc = "Trait to implement the wp_linux_drm_syncobj_timeline_v1 interface. See the module level documentation for more info"]
+        pub trait WpLinuxDrmSyncobjTimelineV1 {
+            const INTERFACE: &'static str = "wp_linux_drm_syncobj_timeline_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
@@ -503,44 +422,434 @@ pub mod content_type_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
-            #[doc = "Switch back to not specifying the content type of this surface. This is"]
-            #[doc = "equivalent to setting the content type to none, including double"]
-            #[doc = "buffering semantics. See set_content_type for details."]
+            #[doc = "Destroy the synchronization object timeline. Other objects are not"]
+            #[doc = "affected by this request, in particular timeline points set by"]
+            #[doc = "set_acquire_point and set_release_point are not unset."]
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_content_type_v1#{}.destroy()", object_id);
+                tracing::debug!(
+                    "-> wp_linux_drm_syncobj_timeline_v1#{}.destroy()",
+                    object_id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
                     .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
-            #[doc = "Set the surface content type. This informs the compositor that the"]
-            #[doc = "client believes it is displaying buffers matching this content type."]
+        }
+    }
+    #[doc = "This object is an add-on interface for wl_surface to enable explicit"]
+    #[doc = "synchronization."]
+    #[doc = ""]
+    #[doc = "Each surface can be associated with only one object of this interface at"]
+    #[doc = "any time."]
+    #[doc = ""]
+    #[doc = "Explicit synchronization is guaranteed to be supported for buffers"]
+    #[doc = "created with any version of the linux-dmabuf protocol. Compositors are"]
+    #[doc = "free to support explicit synchronization for additional buffer types."]
+    #[doc = "If at surface commit time the attached buffer does not support explicit"]
+    #[doc = "synchronization, an unsupported_buffer error is raised."]
+    #[doc = ""]
+    #[doc = "As long as the wp_linux_drm_syncobj_surface_v1 object is alive, the"]
+    #[doc = "compositor may ignore implicit synchronization for buffers attached and"]
+    #[doc = "committed to the wl_surface. The delivery of wl_buffer.release events"]
+    #[doc = "for buffers attached to the surface becomes undefined."]
+    #[doc = ""]
+    #[doc = "Clients must set both acquire and release points if and only if a"]
+    #[doc = "non-null buffer is attached in the same surface commit. See the"]
+    #[doc = "no_buffer, no_acquire_point and no_release_point protocol errors."]
+    #[doc = ""]
+    #[doc = "If at surface commit time the acquire and release DRM syncobj timelines"]
+    #[doc = "are identical, the acquire point value must be strictly less than the"]
+    #[doc = "release point value, or else the conflicting_points protocol error is"]
+    #[doc = "raised."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_linux_drm_syncobj_surface_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the associated wl_surface was destroyed"]
+            NoSurface = 1u32,
+            #[doc = "the buffer does not support explicit synchronization"]
+            UnsupportedBuffer = 2u32,
+            #[doc = "no buffer was attached"]
+            NoBuffer = 3u32,
+            #[doc = "no acquire timeline point was set"]
+            NoAcquirePoint = 4u32,
+            #[doc = "no release timeline point was set"]
+            NoReleasePoint = 5u32,
+            #[doc = "acquire and release timeline points are in conflict"]
+            ConflictingPoints = 6u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::NoSurface),
+                    2u32 => Ok(Self::UnsupportedBuffer),
+                    3u32 => Ok(Self::NoBuffer),
+                    4u32 => Ok(Self::NoAcquirePoint),
+                    5u32 => Ok(Self::NoReleasePoint),
+                    6u32 => Ok(Self::ConflictingPoints),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_linux_drm_syncobj_surface_v1 interface. See the module level documentation for more info"]
+        pub trait WpLinuxDrmSyncobjSurfaceV1 {
+            const INTERFACE: &'static str = "wp_linux_drm_syncobj_surface_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy this surface synchronization object."]
             #[doc = ""]
-            #[doc = "This is purely a hint for the compositor, which can be used to adjust"]
-            #[doc = "its behavior or hardware settings to fit the presented content best."]
-            #[doc = ""]
-            #[doc = "The content type is double-buffered state, see wl_surface.commit for"]
-            #[doc = "details."]
-            async fn set_content_type(
+            #[doc = "Any timeline point set by this object with set_acquire_point or"]
+            #[doc = "set_release_point since the last commit may be discarded by the"]
+            #[doc = "compositor. Any timeline point set by this object before the last"]
+            #[doc = "commit will not be affected."]
+            async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
-                content_type: Type,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_content_type_v1#{}.set_content_type()", object_id);
+                tracing::debug!("-> wp_linux_drm_syncobj_surface_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Set the timeline point that must be signalled before the compositor may"]
+            #[doc = "sample from the buffer attached with wl_surface.attach."]
+            #[doc = ""]
+            #[doc = "The 64-bit unsigned value combined from point_hi and point_lo is the"]
+            #[doc = "point value."]
+            #[doc = ""]
+            #[doc = "The acquire point is double-buffered state, and will be applied on the"]
+            #[doc = "next wl_surface.commit request for the associated surface. Thus, it"]
+            #[doc = "applies only to the buffer that is attached to the surface at commit"]
+            #[doc = "time."]
+            #[doc = ""]
+            #[doc = "If an acquire point has already been attached during the same commit"]
+            #[doc = "cycle, the new point replaces the old one."]
+            #[doc = ""]
+            #[doc = "If the associated wl_surface was destroyed, a no_surface error is"]
+            #[doc = "raised."]
+            #[doc = ""]
+            #[doc = "If at surface commit time there is a pending acquire timeline point set"]
+            #[doc = "but no pending buffer attached, a no_buffer error is raised. If at"]
+            #[doc = "surface commit time there is a pending buffer attached but no pending"]
+            #[doc = "acquire timeline point set, the no_acquire_point protocol error is"]
+            #[doc = "raised."]
+            async fn set_acquire_point(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                timeline: crate::wire::ObjectId,
+                point_hi: u32,
+                point_lo: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_linux_drm_syncobj_surface_v1#{}.set_acquire_point()",
+                    object_id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(content_type as u32)
+                    .put_object(Some(timeline))
+                    .put_uint(point_hi)
+                    .put_uint(point_lo)
                     .build();
                 socket
                     .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Set the timeline point that must be signalled by the compositor when it"]
+            #[doc = "has finished its usage of the buffer attached with wl_surface.attach"]
+            #[doc = "for the relevant commit."]
+            #[doc = ""]
+            #[doc = "Once the timeline point is signaled, and assuming the associated buffer"]
+            #[doc = "is not pending release from other wl_surface.commit requests, no"]
+            #[doc = "additional explicit or implicit synchronization with the compositor is"]
+            #[doc = "required to safely re-use the buffer."]
+            #[doc = ""]
+            #[doc = "Note that clients cannot rely on the release point being always"]
+            #[doc = "signaled after the acquire point: compositors may release buffers"]
+            #[doc = "without ever reading from them. In addition, the compositor may use"]
+            #[doc = "different presentation paths for different commits, which may have"]
+            #[doc = "different release behavior. As a result, the compositor may signal the"]
+            #[doc = "release points in a different order than the client committed them."]
+            #[doc = ""]
+            #[doc = "Because signaling a timeline point also signals every previous point,"]
+            #[doc = "it is generally not safe to use the same timeline object for the"]
+            #[doc = "release points of multiple buffers. The out-of-order signaling"]
+            #[doc = "described above may lead to a release point being signaled before the"]
+            #[doc = "compositor has finished reading. To avoid this, it is strongly"]
+            #[doc = "recommended that each buffer should use a separate timeline for its"]
+            #[doc = "release points."]
+            #[doc = ""]
+            #[doc = "The 64-bit unsigned value combined from point_hi and point_lo is the"]
+            #[doc = "point value."]
+            #[doc = ""]
+            #[doc = "The release point is double-buffered state, and will be applied on the"]
+            #[doc = "next wl_surface.commit request for the associated surface. Thus, it"]
+            #[doc = "applies only to the buffer that is attached to the surface at commit"]
+            #[doc = "time."]
+            #[doc = ""]
+            #[doc = "If a release point has already been attached during the same commit"]
+            #[doc = "cycle, the new point replaces the old one."]
+            #[doc = ""]
+            #[doc = "If the associated wl_surface was destroyed, a no_surface error is"]
+            #[doc = "raised."]
+            #[doc = ""]
+            #[doc = "If at surface commit time there is a pending release timeline point set"]
+            #[doc = "but no pending buffer attached, a no_buffer error is raised. If at"]
+            #[doc = "surface commit time there is a pending buffer attached but no pending"]
+            #[doc = "release timeline point set, the no_release_point protocol error is"]
+            #[doc = "raised."]
+            async fn set_release_point(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                timeline: crate::wire::ObjectId,
+                point_hi: u32,
+                point_lo: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_linux_drm_syncobj_surface_v1#{}.set_release_point()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(timeline))
+                    .put_uint(point_hi)
+                    .put_uint(point_lo)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
+#[doc = "The purpose of this protocol is to provide protocol object handles for"]
+#[doc = "toplevels, possibly originating from another client."]
+#[doc = ""]
+#[doc = "This protocol is intentionally minimalistic and expects additional"]
+#[doc = "functionality (e.g. creating a screencopy source from a toplevel handle,"]
+#[doc = "getting information about the state of the toplevel) to be implemented"]
+#[doc = "in extension protocols."]
+#[doc = ""]
+#[doc = "The compositor may choose to restrict this protocol to a special client"]
+#[doc = "launched by the compositor itself or expose it to all clients,"]
+#[doc = "this is compositor policy."]
+#[doc = ""]
+#[doc = "The key words \"must\", \"must not\", \"required\", \"shall\", \"shall not\","]
+#[doc = "\"should\", \"should not\", \"recommended\",  \"may\", and \"optional\" in this"]
+#[doc = "document are to be interpreted as described in IETF RFC 2119."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is currently in the testing"]
+#[doc = "phase. Backward compatible changes may be added together with the"]
+#[doc = "corresponding interface version bump. Backward incompatible changes can"]
+#[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
+pub mod ext_foreign_toplevel_list_v1 {
+    #[doc = "A toplevel is defined as a surface with a role similar to xdg_toplevel."]
+    #[doc = "XWayland surfaces may be treated like toplevels in this protocol."]
+    #[doc = ""]
+    #[doc = "After a client binds the ext_foreign_toplevel_list_v1, each mapped"]
+    #[doc = "toplevel window will be sent using the ext_foreign_toplevel_list_v1.toplevel"]
+    #[doc = "event."]
+    #[doc = ""]
+    #[doc = "Clients which only care about the current state can perform a roundtrip after"]
+    #[doc = "binding this global."]
+    #[doc = ""]
+    #[doc = "For each instance of ext_foreign_toplevel_list_v1, the compositor must"]
+    #[doc = "create a new ext_foreign_toplevel_handle_v1 object for each mapped toplevel."]
+    #[doc = ""]
+    #[doc = "If a compositor implementation sends the ext_foreign_toplevel_list_v1.finished"]
+    #[doc = "event after the global is bound, the compositor must not send any"]
+    #[doc = "ext_foreign_toplevel_list_v1.toplevel events."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_foreign_toplevel_list_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the ext_foreign_toplevel_list_v1 interface. See the module level documentation for more info"]
+        pub trait ExtForeignToplevelListV1 {
+            const INTERFACE: &'static str = "ext_foreign_toplevel_list_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This request indicates that the client no longer wishes to receive"]
+            #[doc = "events for new toplevels."]
+            #[doc = ""]
+            #[doc = "The Wayland protocol is asynchronous, meaning the compositor may send"]
+            #[doc = "further toplevel events until the stop request is processed."]
+            #[doc = "The client should wait for a ext_foreign_toplevel_list_v1.finished"]
+            #[doc = "event before destroying this object."]
+            async fn stop(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.stop()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This request should be called either when the client will no longer"]
+            #[doc = "use the ext_foreign_toplevel_list_v1 or after the finished event"]
+            #[doc = "has been received to allow destruction of the object."]
+            #[doc = ""]
+            #[doc = "If a client wishes to destroy this object it should send a"]
+            #[doc = "ext_foreign_toplevel_list_v1.stop request and wait for a ext_foreign_toplevel_list_v1.finished"]
+            #[doc = "event, then destroy the handles and then this object."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This event is emitted whenever a new toplevel window is created. It is"]
+            #[doc = "emitted for all toplevels, regardless of the app that has created them."]
+            #[doc = ""]
+            #[doc = "All initial properties of the toplevel (identifier, title, app_id) will be sent"]
+            #[doc = "immediately after this event using the corresponding events for"]
+            #[doc = "ext_foreign_toplevel_handle_v1. The compositor will use the"]
+            #[doc = "ext_foreign_toplevel_handle_v1.done event to indicate when all data has"]
+            #[doc = "been sent."]
+            async fn toplevel(&self, toplevel: crate::wire::ObjectId) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the compositor is done sending events"]
+            #[doc = "to this object. The client should destroy the object."]
+            #[doc = "See ext_foreign_toplevel_list_v1.destroy for more information."]
+            #[doc = ""]
+            #[doc = "The compositor must not send any more toplevel events after this event."]
+            async fn finished(&self) -> crate::client::Result<()>;
+        }
+    }
+    #[doc = "A ext_foreign_toplevel_handle_v1 object represents a mapped toplevel"]
+    #[doc = "window. A single app may have multiple mapped toplevels."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_foreign_toplevel_handle_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the ext_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
+        pub trait ExtForeignToplevelHandleV1 {
+            const INTERFACE: &'static str = "ext_foreign_toplevel_handle_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This request should be used when the client will no longer use the handle"]
+            #[doc = "or after the closed event has been received to allow destruction of the"]
+            #[doc = "object."]
+            #[doc = ""]
+            #[doc = "When a handle is destroyed, a new handle may not be created by the server"]
+            #[doc = "until the toplevel is unmapped and then remapped. Destroying a toplevel handle"]
+            #[doc = "is not recommended unless the client is cleaning up child objects"]
+            #[doc = "before destroying the ext_foreign_toplevel_list_v1 object, the toplevel"]
+            #[doc = "was closed or the toplevel handle will not be used in the future."]
+            #[doc = ""]
+            #[doc = "Other protocols which extend the ext_foreign_toplevel_handle_v1"]
+            #[doc = "interface should require destructors for extension interfaces be"]
+            #[doc = "called before allowing the toplevel handle to be destroyed."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "The server will emit no further events on the ext_foreign_toplevel_handle_v1"]
+            #[doc = "after this event. Any requests received aside from the destroy request must"]
+            #[doc = "be ignored. Upon receiving this event, the client should destroy the handle."]
+            #[doc = ""]
+            #[doc = "Other protocols which extend the ext_foreign_toplevel_handle_v1"]
+            #[doc = "interface must also ignore requests other than destructors."]
+            async fn closed(&self) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all changes in the toplevel state have"]
+            #[doc = "been sent."]
+            #[doc = ""]
+            #[doc = "This allows changes to the ext_foreign_toplevel_handle_v1 properties"]
+            #[doc = "to be atomically applied. Other protocols which extend the"]
+            #[doc = "ext_foreign_toplevel_handle_v1 interface may use this event to also"]
+            #[doc = "atomically apply any pending state."]
+            #[doc = ""]
+            #[doc = "This event must not be sent after the ext_foreign_toplevel_handle_v1.closed"]
+            #[doc = "event."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "The title of the toplevel has changed."]
+            #[doc = ""]
+            #[doc = "The configured state must not be applied immediately. See"]
+            #[doc = "ext_foreign_toplevel_handle_v1.done for details."]
+            async fn title(&self, title: String) -> crate::client::Result<()>;
+            #[doc = "The app id of the toplevel has changed."]
+            #[doc = ""]
+            #[doc = "The configured state must not be applied immediately. See"]
+            #[doc = "ext_foreign_toplevel_handle_v1.done for details."]
+            async fn app_id(&self, app_id: String) -> crate::client::Result<()>;
+            #[doc = "This identifier is used to check if two or more toplevel handles belong"]
+            #[doc = "to the same toplevel."]
+            #[doc = ""]
+            #[doc = "The identifier is useful for command line tools or privileged clients"]
+            #[doc = "which may need to reference an exact toplevel across processes or"]
+            #[doc = "instances of the ext_foreign_toplevel_list_v1 global."]
+            #[doc = ""]
+            #[doc = "The compositor must only send this event when the handle is created."]
+            #[doc = ""]
+            #[doc = "The identifier must be unique per toplevel and it's handles. Two different"]
+            #[doc = "toplevels must not have the same identifier. The identifier is only valid"]
+            #[doc = "as long as the toplevel is mapped. If the toplevel is unmapped the identifier"]
+            #[doc = "must not be reused. An identifier must not be reused by the compositor to"]
+            #[doc = "ensure there are no races when sharing identifiers between processes."]
+            #[doc = ""]
+            #[doc = "An identifier is a string that contains up to 32 printable ASCII bytes."]
+            #[doc = "An identifier must not be an empty string. It is recommended that a"]
+            #[doc = "compositor includes an opaque generation value in identifiers. How the"]
+            #[doc = "generation value is used when generating the identifier is implementation"]
+            #[doc = "dependent."]
+            async fn identifier(&self, identifier: String) -> crate::client::Result<()>;
         }
     }
 }
@@ -839,6 +1148,711 @@ pub mod cursor_shape_v1 {
                     .build();
                 socket
                     .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod ext_idle_notify_v1 {
+    #[doc = "This interface allows clients to monitor user idle status."]
+    #[doc = ""]
+    #[doc = "After binding to this global, clients can create ext_idle_notification_v1"]
+    #[doc = "objects to get notified when the user is idle for a given amount of time."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_idle_notifier_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the ext_idle_notifier_v1 interface. See the module level documentation for more info"]
+        pub trait ExtIdleNotifierV1 {
+            const INTERFACE: &'static str = "ext_idle_notifier_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the manager object. All objects created via this interface"]
+            #[doc = "remain valid."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_idle_notifier_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Create a new idle notification object."]
+            #[doc = ""]
+            #[doc = "The notification object has a minimum timeout duration and is tied to a"]
+            #[doc = "seat. The client will be notified if the seat is inactive for at least"]
+            #[doc = "the provided timeout. See ext_idle_notification_v1 for more details."]
+            #[doc = ""]
+            #[doc = "A zero timeout is valid and means the client wants to be notified as"]
+            #[doc = "soon as possible when the seat is inactive."]
+            async fn get_idle_notification(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                timeout: u32,
+                seat: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> ext_idle_notifier_v1#{}.get_idle_notification()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .put_uint(timeout)
+                    .put_object(Some(seat))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "This interface is used by the compositor to send idle notification events"]
+    #[doc = "to clients."]
+    #[doc = ""]
+    #[doc = "Initially the notification object is not idle. The notification object"]
+    #[doc = "becomes idle when no user activity has happened for at least the timeout"]
+    #[doc = "duration, starting from the creation of the notification object. User"]
+    #[doc = "activity may include input events or a presence sensor, but is"]
+    #[doc = "compositor-specific. If an idle inhibitor is active (e.g. another client"]
+    #[doc = "has created a zwp_idle_inhibitor_v1 on a visible surface), the compositor"]
+    #[doc = "must not make the notification object idle."]
+    #[doc = ""]
+    #[doc = "When the notification object becomes idle, an idled event is sent. When"]
+    #[doc = "user activity starts again, the notification object stops being idle,"]
+    #[doc = "a resumed event is sent and the timeout is restarted."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_idle_notification_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the ext_idle_notification_v1 interface. See the module level documentation for more info"]
+        pub trait ExtIdleNotificationV1 {
+            const INTERFACE: &'static str = "ext_idle_notification_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the notification object."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_idle_notification_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This event is sent when the notification object becomes idle."]
+            #[doc = ""]
+            #[doc = "It's a compositor protocol error to send this event twice without a"]
+            #[doc = "resumed event in-between."]
+            async fn idled(&self) -> crate::client::Result<()>;
+            #[doc = "This event is sent when the notification object stops being idle."]
+            #[doc = ""]
+            #[doc = "It's a compositor protocol error to send this event twice without an"]
+            #[doc = "idled event in-between. It's a compositor protocol error to send this"]
+            #[doc = "event prior to any idled event."]
+            async fn resumed(&self) -> crate::client::Result<()>;
+        }
+    }
+}
+#[doc = "This protocol extension allows clients to create single-pixel buffers."]
+#[doc = ""]
+#[doc = "Compositors supporting this protocol extension should also support the"]
+#[doc = "viewporter protocol extension. Clients may use viewporter to scale a"]
+#[doc = "single-pixel buffer to a desired size."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is currently in the testing"]
+#[doc = "phase. Backward compatible changes may be added together with the"]
+#[doc = "corresponding interface version bump. Backward incompatible changes can"]
+#[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
+pub mod single_pixel_buffer_v1 {
+    #[doc = "The wp_single_pixel_buffer_manager_v1 interface is a factory for"]
+    #[doc = "single-pixel buffers."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_single_pixel_buffer_manager_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the wp_single_pixel_buffer_manager_v1 interface. See the module level documentation for more info"]
+        pub trait WpSinglePixelBufferManagerV1 {
+            const INTERFACE: &'static str = "wp_single_pixel_buffer_manager_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the wp_single_pixel_buffer_manager_v1 object."]
+            #[doc = ""]
+            #[doc = "The child objects created via this interface are unaffected."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_single_pixel_buffer_manager_v1#{}.destroy()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Create a single-pixel buffer from four 32-bit RGBA values."]
+            #[doc = ""]
+            #[doc = "Unless specified in another protocol extension, the RGBA values use"]
+            #[doc = "pre-multiplied alpha."]
+            #[doc = ""]
+            #[doc = "The width and height of the buffer are 1."]
+            async fn create_u32_rgba_buffer(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                r: u32,
+                g: u32,
+                b: u32,
+                a: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_single_pixel_buffer_manager_v1#{}.create_u32_rgba_buffer()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .put_uint(r)
+                    .put_uint(g)
+                    .put_uint(b)
+                    .put_uint(a)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod security_context_v1 {
+    #[doc = "This interface allows a client to register a new Wayland connection to"]
+    #[doc = "the compositor and attach a security context to it."]
+    #[doc = ""]
+    #[doc = "This is intended to be used by sandboxes. Sandbox engines attach a"]
+    #[doc = "security context to all connections coming from inside the sandbox. The"]
+    #[doc = "compositor can then restrict the features that the sandboxed connections"]
+    #[doc = "can use."]
+    #[doc = ""]
+    #[doc = "Compositors should forbid nesting multiple security contexts by not"]
+    #[doc = "exposing wp_security_context_manager_v1 global to clients with a security"]
+    #[doc = "context attached, or by sending the nested protocol error. Nested"]
+    #[doc = "security contexts are dangerous because they can potentially allow"]
+    #[doc = "privilege escalation of a sandboxed client."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_security_context_manager_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "listening socket FD is invalid"]
+            InvalidListenFd = 1u32,
+            #[doc = "nested security contexts are forbidden"]
+            Nested = 2u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::InvalidListenFd),
+                    2u32 => Ok(Self::Nested),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_security_context_manager_v1 interface. See the module level documentation for more info"]
+        pub trait WpSecurityContextManagerV1 {
+            const INTERFACE: &'static str = "wp_security_context_manager_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the manager. This doesn't destroy objects created with the"]
+            #[doc = "manager."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_security_context_manager_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Creates a new security context with a socket listening FD."]
+            #[doc = ""]
+            #[doc = "The compositor will accept new client connections on listen_fd."]
+            #[doc = "listen_fd must be ready to accept new connections when this request is"]
+            #[doc = "sent by the client. In other words, the client must call bind(2) and"]
+            #[doc = "listen(2) before sending the FD."]
+            #[doc = ""]
+            #[doc = "close_fd is a FD that will signal hangup when the compositor should stop"]
+            #[doc = "accepting new connections on listen_fd."]
+            #[doc = ""]
+            #[doc = "The compositor must continue to accept connections on listen_fd when"]
+            #[doc = "the Wayland client which created the security context disconnects."]
+            #[doc = ""]
+            #[doc = "After sending this request, closing listen_fd and close_fd remains the"]
+            #[doc = "only valid operation on them."]
+            async fn create_listener(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                listen_fd: rustix::fd::OwnedFd,
+                close_fd: rustix::fd::OwnedFd,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_security_context_manager_v1#{}.create_listener()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .put_fd(listen_fd)
+                    .put_fd(close_fd)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "The security context allows a client to register a new client and attach"]
+    #[doc = "security context metadata to the connections."]
+    #[doc = ""]
+    #[doc = "When both are set, the combination of the application ID and the sandbox"]
+    #[doc = "engine must uniquely identify an application. The same application ID"]
+    #[doc = "will be used across instances (e.g. if the application is restarted, or"]
+    #[doc = "if the application is started multiple times)."]
+    #[doc = ""]
+    #[doc = "When both are set, the combination of the instance ID and the sandbox"]
+    #[doc = "engine must uniquely identify a running instance of an application."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_security_context_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "security context has already been committed"]
+            AlreadyUsed = 1u32,
+            #[doc = "metadata has already been set"]
+            AlreadySet = 2u32,
+            #[doc = "metadata is invalid"]
+            InvalidMetadata = 3u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::AlreadyUsed),
+                    2u32 => Ok(Self::AlreadySet),
+                    3u32 => Ok(Self::InvalidMetadata),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_security_context_v1 interface. See the module level documentation for more info"]
+        pub trait WpSecurityContextV1 {
+            const INTERFACE: &'static str = "wp_security_context_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the security context object."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_security_context_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Attach a unique sandbox engine name to the security context. The name"]
+            #[doc = "should follow the reverse-DNS style (e.g. \"org.flatpak\")."]
+            #[doc = ""]
+            #[doc = "A list of well-known engines is maintained at:"]
+            #[doc = "https://gitlab.freedesktop.org/wayland/wayland-protocols/-/blob/main/staging/security-context/engines.md"]
+            #[doc = ""]
+            #[doc = "It is a protocol error to call this request twice. The already_set"]
+            #[doc = "error is sent in this case."]
+            async fn set_sandbox_engine(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                name: String,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_security_context_v1#{}.set_sandbox_engine()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Attach an application ID to the security context."]
+            #[doc = ""]
+            #[doc = "The application ID is an opaque, sandbox-specific identifier for an"]
+            #[doc = "application. See the well-known engines document for more details:"]
+            #[doc = "https://gitlab.freedesktop.org/wayland/wayland-protocols/-/blob/main/staging/security-context/engines.md"]
+            #[doc = ""]
+            #[doc = "The compositor may use the application ID to group clients belonging to"]
+            #[doc = "the same security context application."]
+            #[doc = ""]
+            #[doc = "Whether this request is optional or not depends on the sandbox engine used."]
+            #[doc = ""]
+            #[doc = "It is a protocol error to call this request twice. The already_set"]
+            #[doc = "error is sent in this case."]
+            async fn set_app_id(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                app_id: String,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_security_context_v1#{}.set_app_id()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(app_id))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Attach an instance ID to the security context."]
+            #[doc = ""]
+            #[doc = "The instance ID is an opaque, sandbox-specific identifier for a running"]
+            #[doc = "instance of an application. See the well-known engines document for"]
+            #[doc = "more details:"]
+            #[doc = "https://gitlab.freedesktop.org/wayland/wayland-protocols/-/blob/main/staging/security-context/engines.md"]
+            #[doc = ""]
+            #[doc = "Whether this request is optional or not depends on the sandbox engine used."]
+            #[doc = ""]
+            #[doc = "It is a protocol error to call this request twice. The already_set"]
+            #[doc = "error is sent in this case."]
+            async fn set_instance_id(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                instance_id: String,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_security_context_v1#{}.set_instance_id()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(instance_id))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Atomically register the new client and attach the security context"]
+            #[doc = "metadata."]
+            #[doc = ""]
+            #[doc = "If the provided metadata is inconsistent or does not match with out of"]
+            #[doc = "band metadata (see"]
+            #[doc = "https://gitlab.freedesktop.org/wayland/wayland-protocols/-/blob/main/staging/security-context/engines.md),"]
+            #[doc = "the invalid_metadata error may be sent eventually."]
+            #[doc = ""]
+            #[doc = "It's a protocol error to send any request other than \"destroy\" after"]
+            #[doc = "this request. In this case, the already_used error is sent."]
+            async fn commit(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_security_context_v1#{}.commit()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod fifo_v1 {
+    #[doc = "When a Wayland compositor considers applying a content update,"]
+    #[doc = "it must ensure all the update's readiness constraints (fences, etc)"]
+    #[doc = "are met."]
+    #[doc = ""]
+    #[doc = "This protocol provides a way to use the completion of a display refresh"]
+    #[doc = "cycle as an additional readiness constraint."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_fifo_manager_v1 {
+        use futures_util::SinkExt;
+        #[doc = "These fatal protocol errors may be emitted in response to"]
+        #[doc = "illegal requests."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "fifo manager already exists for surface"]
+            AlreadyExists = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::AlreadyExists),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_fifo_manager_v1 interface. See the module level documentation for more info"]
+        pub trait WpFifoManagerV1 {
+            const INTERFACE: &'static str = "wp_fifo_manager_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Informs the server that the client will no longer be using"]
+            #[doc = "this protocol object. Existing objects created by this object"]
+            #[doc = "are not affected."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_fifo_manager_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Establish a fifo object for a surface that may be used to add"]
+            #[doc = "display refresh constraints to content updates."]
+            #[doc = ""]
+            #[doc = "Only one such object may exist for a surface and attempting"]
+            #[doc = "to create more than one will result in an already_exists"]
+            #[doc = "protocol error. If a surface is acted on by multiple software"]
+            #[doc = "components, general best practice is that only the component"]
+            #[doc = "performing wl_surface.attach operations should use this protocol."]
+            async fn get_fifo(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_fifo_manager_v1#{}.get_fifo()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .put_object(Some(surface))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "A fifo object for a surface that may be used to add"]
+    #[doc = "display refresh constraints to content updates."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_fifo_v1 {
+        use futures_util::SinkExt;
+        #[doc = "These fatal protocol errors may be emitted in response to"]
+        #[doc = "illegal requests."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the associated surface no longer exists"]
+            SurfaceDestroyed = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::SurfaceDestroyed),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_fifo_v1 interface. See the module level documentation for more info"]
+        pub trait WpFifoV1 {
+            const INTERFACE: &'static str = "wp_fifo_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "When the content update containing the \"set_barrier\" is applied,"]
+            #[doc = "it sets a \"fifo_barrier\" condition on the surface associated with"]
+            #[doc = "the fifo object. The condition is cleared immediately after the"]
+            #[doc = "following latching deadline for non-tearing presentation."]
+            #[doc = ""]
+            #[doc = "The compositor may clear the condition early if it must do so to"]
+            #[doc = "ensure client forward progress assumptions."]
+            #[doc = ""]
+            #[doc = "To wait for this condition to clear, use the \"wait_barrier\" request."]
+            #[doc = ""]
+            #[doc = "\"set_barrier\" is double-buffered state, see wl_surface.commit."]
+            #[doc = ""]
+            #[doc = "Requesting set_barrier after the fifo object's surface is"]
+            #[doc = "destroyed will generate a \"surface_destroyed\" error."]
+            async fn set_barrier(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_fifo_v1#{}.set_barrier()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Indicate that this content update is not ready while a"]
+            #[doc = "\"fifo_barrier\" condition is present on the surface."]
+            #[doc = ""]
+            #[doc = "This means that when the content update containing \"set_barrier\""]
+            #[doc = "was made active at a latching deadline, it will be active for"]
+            #[doc = "at least one refresh cycle. A content update which is allowed to"]
+            #[doc = "tear might become active after a latching deadline if no content"]
+            #[doc = "update became active at the deadline."]
+            #[doc = ""]
+            #[doc = "The constraint must be ignored if the surface is a subsurface in"]
+            #[doc = "synchronized mode. If the surface is not being updated by the"]
+            #[doc = "compositor (off-screen, occluded) the compositor may ignore the"]
+            #[doc = "constraint. Clients must use an additional mechanism such as"]
+            #[doc = "frame callbacks or timestamps to ensure throttling occurs under"]
+            #[doc = "all conditions."]
+            #[doc = ""]
+            #[doc = "\"wait_barrier\" is double-buffered state, see wl_surface.commit."]
+            #[doc = ""]
+            #[doc = "Requesting \"wait_barrier\" after the fifo object's surface is"]
+            #[doc = "destroyed will generate a \"surface_destroyed\" error."]
+            async fn wait_barrier(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_fifo_v1#{}.wait_barrier()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Informs the server that the client will no longer be using"]
+            #[doc = "this protocol object."]
+            #[doc = ""]
+            #[doc = "Surface state changes previously made by this protocol are"]
+            #[doc = "unaffected by this object's destruction."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_fifo_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1208,6 +2222,685 @@ pub mod drm_lease_v1 {
             #[doc = "for leasing again, if the resource is available, by sending the"]
             #[doc = "connector event through the wp_drm_lease_device_v1 interface."]
             async fn finished(&self) -> crate::client::Result<()>;
+        }
+    }
+}
+#[doc = "The transient seat protocol can be used by privileged clients to create"]
+#[doc = "independent seats that will be removed from the compositor when the client"]
+#[doc = "destroys its transient seat."]
+#[doc = ""]
+#[doc = "This protocol is intended for use with virtual input protocols such as"]
+#[doc = "\"virtual_keyboard_unstable_v1\" or \"wlr_virtual_pointer_unstable_v1\", both"]
+#[doc = "of which allow the user to select a seat."]
+#[doc = ""]
+#[doc = "The \"wl_seat\" global created by this protocol does not generate input events"]
+#[doc = "on its own, or have any capabilities except those assigned to it by other"]
+#[doc = "protocol extensions, such as the ones mentioned above."]
+#[doc = ""]
+#[doc = "For example, a remote desktop server can create a seat with virtual inputs"]
+#[doc = "for each remote user by following these steps for each new connection:"]
+#[doc = "* Create a transient seat"]
+#[doc = "* Wait for the transient seat to be created"]
+#[doc = "* Locate a \"wl_seat\" global with a matching name"]
+#[doc = "* Create virtual inputs using the resulting \"wl_seat\" global"]
+#[allow(clippy::module_inception)]
+pub mod ext_transient_seat_v1 {
+    #[doc = "The transient seat manager creates short-lived seats."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_transient_seat_manager_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the ext_transient_seat_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ExtTransientSeatManagerV1 {
+            const INTERFACE: &'static str = "ext_transient_seat_manager_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Create a new seat that is removed when the client side transient seat"]
+            #[doc = "object is destroyed."]
+            #[doc = ""]
+            #[doc = "The actual seat may be removed sooner, in which case the transient seat"]
+            #[doc = "object shall become inert."]
+            async fn create(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                seat: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_transient_seat_manager_v1#{}.create()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(seat))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Destroy the manager."]
+            #[doc = ""]
+            #[doc = "All objects created by the manager will remain valid until they are"]
+            #[doc = "destroyed themselves."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_transient_seat_manager_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "When the transient seat handle is destroyed, the seat itself will also be"]
+    #[doc = "destroyed."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_transient_seat_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the ext_transient_seat_v1 interface. See the module level documentation for more info"]
+        pub trait ExtTransientSeatV1 {
+            const INTERFACE: &'static str = "ext_transient_seat_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "When the transient seat object is destroyed by the client, the"]
+            #[doc = "associated seat created by the compositor is also destroyed."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_transient_seat_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This event advertises the global name for the wl_seat to be used with"]
+            #[doc = "wl_registry_bind."]
+            #[doc = ""]
+            #[doc = "It is sent exactly once, immediately after the transient seat is created"]
+            #[doc = "and the new \"wl_seat\" global is advertised, if and only if the creation"]
+            #[doc = "of the transient seat was allowed."]
+            async fn ready(&self, global_name: u32) -> crate::client::Result<()>;
+            #[doc = "The event informs the client that the compositor denied its request to"]
+            #[doc = "create a transient seat."]
+            #[doc = ""]
+            #[doc = "It is sent exactly once, immediately after the transient seat object is"]
+            #[doc = "created, if and only if the creation of the transient seat was denied."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client should destroy the object."]
+            async fn denied(&self) -> crate::client::Result<()>;
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod xdg_toplevel_drag_v1 {
+    #[doc = "This protocol enhances normal drag and drop with the ability to move a"]
+    #[doc = "window at the same time. This allows having detachable parts of a window"]
+    #[doc = "that when dragged out of it become a new window and can be dragged over"]
+    #[doc = "an existing window to be reattached."]
+    #[doc = ""]
+    #[doc = "A typical workflow would be when the user starts dragging on top of a"]
+    #[doc = "detachable part of a window, the client would create a wl_data_source and"]
+    #[doc = "a xdg_toplevel_drag_v1 object and start the drag as normal via"]
+    #[doc = "wl_data_device.start_drag. Once the client determines that the detachable"]
+    #[doc = "window contents should be detached from the originating window, it creates"]
+    #[doc = "a new xdg_toplevel with these contents and issues a"]
+    #[doc = "xdg_toplevel_drag_v1.attach request before mapping it. From now on the new"]
+    #[doc = "window is moved by the compositor during the drag as if the client called"]
+    #[doc = "xdg_toplevel.move."]
+    #[doc = ""]
+    #[doc = "Dragging an existing window is similar. The client creates a"]
+    #[doc = "xdg_toplevel_drag_v1 object and attaches the existing toplevel before"]
+    #[doc = "starting the drag."]
+    #[doc = ""]
+    #[doc = "Clients use the existing drag and drop mechanism to detect when a window"]
+    #[doc = "can be docked or undocked. If the client wants to snap a window into a"]
+    #[doc = "parent window it should delete or unmap the dragged top-level. If the"]
+    #[doc = "contents should be detached again it attaches a new toplevel as described"]
+    #[doc = "above. If a drag operation is cancelled without being dropped, clients"]
+    #[doc = "should revert to the previous state, deleting any newly created windows"]
+    #[doc = "as appropriate. When a drag operation ends as indicated by"]
+    #[doc = "wl_data_source.dnd_drop_performed the dragged toplevel window's final"]
+    #[doc = "position is determined as if a xdg_toplevel_move operation ended."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xdg_toplevel_drag_manager_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "data_source already used for toplevel drag"]
+            InvalidSource = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidSource),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the xdg_toplevel_drag_manager_v1 interface. See the module level documentation for more info"]
+        pub trait XdgToplevelDragManagerV1 {
+            const INTERFACE: &'static str = "xdg_toplevel_drag_manager_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy this xdg_toplevel_drag_manager_v1 object. Other objects,"]
+            #[doc = "including xdg_toplevel_drag_v1 objects created by this factory, are not"]
+            #[doc = "affected by this request."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xdg_toplevel_drag_manager_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Create an xdg_toplevel_drag for a drag and drop operation that is going"]
+            #[doc = "to be started with data_source."]
+            #[doc = ""]
+            #[doc = "This request can only be made on sources used in drag-and-drop, so it"]
+            #[doc = "must be performed before wl_data_device.start_drag. Attempting to use"]
+            #[doc = "the source other than for drag-and-drop such as in"]
+            #[doc = "wl_data_device.set_selection will raise an invalid_source error."]
+            #[doc = ""]
+            #[doc = "Destroying data_source while a toplevel is attached to the"]
+            #[doc = "xdg_toplevel_drag is undefined."]
+            async fn get_xdg_toplevel_drag(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                data_source: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> xdg_toplevel_drag_manager_v1#{}.get_xdg_toplevel_drag()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .put_object(Some(data_source))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[allow(clippy::too_many_arguments)]
+    pub mod xdg_toplevel_drag_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "valid toplevel already attached"]
+            ToplevelAttached = 0u32,
+            #[doc = "drag has not ended"]
+            OngoingDrag = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::ToplevelAttached),
+                    1u32 => Ok(Self::OngoingDrag),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the xdg_toplevel_drag_v1 interface. See the module level documentation for more info"]
+        pub trait XdgToplevelDragV1 {
+            const INTERFACE: &'static str = "xdg_toplevel_drag_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy this xdg_toplevel_drag_v1 object. This request must only be"]
+            #[doc = "called after the underlying wl_data_source drag has ended, as indicated"]
+            #[doc = "by the dnd_drop_performed or cancelled events. In any other case an"]
+            #[doc = "ongoing_drag error is raised."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xdg_toplevel_drag_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Request that the window will be moved with the cursor during the drag"]
+            #[doc = "operation. The offset is a hint to the compositor how the toplevel"]
+            #[doc = "should be positioned relative to the cursor hotspot in surface local"]
+            #[doc = "coordinates and relative to the geometry of the toplevel being attached."]
+            #[doc = "See xdg_surface.set_window_geometry. For example it might only"]
+            #[doc = "be used when an unmapped window is attached. The attached window"]
+            #[doc = "does not participate in the selection of the drag target."]
+            #[doc = ""]
+            #[doc = "If the toplevel is unmapped while it is attached, it is automatically"]
+            #[doc = "detached from the drag. In this case this request has to be called again"]
+            #[doc = "if the window should be attached after it is remapped."]
+            #[doc = ""]
+            #[doc = "This request can be called multiple times but issuing it while a"]
+            #[doc = "toplevel with an active role is attached raises a toplevel_attached"]
+            #[doc = "error."]
+            async fn attach(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                toplevel: crate::wire::ObjectId,
+                x_offset: i32,
+                y_offset: i32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xdg_toplevel_drag_v1#{}.attach()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(toplevel))
+                    .put_int(x_offset)
+                    .put_int(y_offset)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod alpha_modifier_v1 {
+    #[doc = "This interface allows a client to set a factor for the alpha values on a"]
+    #[doc = "surface, which can be used to offload such operations to the compositor,"]
+    #[doc = "which can in turn for example offload them to KMS."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_alpha_modifier_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "wl_surface already has a alpha modifier object"]
+            AlreadyConstructed = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::AlreadyConstructed),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_alpha_modifier_v1 interface. See the module level documentation for more info"]
+        pub trait WpAlphaModifierV1 {
+            const INTERFACE: &'static str = "wp_alpha_modifier_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the alpha modifier manager. This doesn't destroy objects"]
+            #[doc = "created with the manager."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_alpha_modifier_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Create a new alpha modifier surface object associated with the"]
+            #[doc = "given wl_surface. If there is already such an object associated with"]
+            #[doc = "the wl_surface, the already_constructed error will be raised."]
+            async fn get_surface(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_alpha_modifier_v1#{}.get_surface()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .put_object(Some(surface))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "This interface allows the client to set a factor for the alpha values on"]
+    #[doc = "a surface, which can be used to offload such operations to the compositor."]
+    #[doc = "The default factor is UINT32_MAX."]
+    #[doc = ""]
+    #[doc = "This object has to be destroyed before the associated wl_surface. Once the"]
+    #[doc = "wl_surface is destroyed, all request on this object will raise the"]
+    #[doc = "no_surface error."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_alpha_modifier_surface_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "wl_surface was destroyed"]
+            NoSurface = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::NoSurface),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_alpha_modifier_surface_v1 interface. See the module level documentation for more info"]
+        pub trait WpAlphaModifierSurfaceV1 {
+            const INTERFACE: &'static str = "wp_alpha_modifier_surface_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This destroys the object, and is equivalent to set_multiplier with"]
+            #[doc = "a value of UINT32_MAX, with the same double-buffered semantics as"]
+            #[doc = "set_multiplier."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_alpha_modifier_surface_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Sets the alpha multiplier for the surface. The alpha multiplier is"]
+            #[doc = "double-buffered state, see wl_surface.commit for details."]
+            #[doc = ""]
+            #[doc = "This factor is applied in the compositor's blending space, as an"]
+            #[doc = "additional step after the processing of per-pixel alpha values for the"]
+            #[doc = "wl_surface. The exact meaning of the factor is thus undefined, unless"]
+            #[doc = "the blending space is specified in a different extension."]
+            #[doc = ""]
+            #[doc = "This multiplier is applied even if the buffer attached to the"]
+            #[doc = "wl_surface doesn't have an alpha channel; in that case an alpha value"]
+            #[doc = "of one is used instead."]
+            #[doc = ""]
+            #[doc = "Zero means completely transparent, UINT32_MAX means completely opaque."]
+            async fn set_multiplier(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                factor: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_alpha_modifier_surface_v1#{}.set_multiplier()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(factor).build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod xdg_dialog_v1 {
+    #[doc = "The xdg_wm_dialog_v1 interface is exposed as a global object allowing"]
+    #[doc = "to register surfaces with a xdg_toplevel role as \"dialogs\" relative to"]
+    #[doc = "another toplevel."]
+    #[doc = ""]
+    #[doc = "The compositor may let this relation influence how the surface is"]
+    #[doc = "placed, displayed or interacted with."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xdg_wm_dialog_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the xdg_toplevel object has already been used to create a xdg_dialog_v1"]
+            AlreadyUsed = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::AlreadyUsed),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the xdg_wm_dialog_v1 interface. See the module level documentation for more info"]
+        pub trait XdgWmDialogV1 {
+            const INTERFACE: &'static str = "xdg_wm_dialog_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroys the xdg_wm_dialog_v1 object. This does not affect"]
+            #[doc = "the xdg_dialog_v1 objects generated through it."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xdg_wm_dialog_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Creates a xdg_dialog_v1 object for the given toplevel. See the interface"]
+            #[doc = "description for more details."]
+            #[doc = ""]
+            #[doc = "Compositors must raise an already_used error if clients attempt to"]
+            #[doc = "create multiple xdg_dialog_v1 objects for the same xdg_toplevel."]
+            async fn get_xdg_dialog(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                toplevel: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xdg_wm_dialog_v1#{}.get_xdg_dialog()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .put_object(Some(toplevel))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "A xdg_dialog_v1 object is an ancillary object tied to a xdg_toplevel. Its"]
+    #[doc = "purpose is hinting the compositor that the toplevel is a \"dialog\" (e.g. a"]
+    #[doc = "temporary window) relative to another toplevel (see"]
+    #[doc = "xdg_toplevel.set_parent). If the xdg_toplevel is destroyed, the xdg_dialog_v1"]
+    #[doc = "becomes inert."]
+    #[doc = ""]
+    #[doc = "Through this object, the client may provide additional hints about"]
+    #[doc = "the purpose of the secondary toplevel. This interface has no effect"]
+    #[doc = "on toplevels that are not attached to a parent toplevel."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xdg_dialog_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the xdg_dialog_v1 interface. See the module level documentation for more info"]
+        pub trait XdgDialogV1 {
+            const INTERFACE: &'static str = "xdg_dialog_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroys the xdg_dialog_v1 object. If this object is destroyed"]
+            #[doc = "before the related xdg_toplevel, the compositor should unapply its"]
+            #[doc = "effects."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xdg_dialog_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Hints that the dialog has \"modal\" behavior. Modal dialogs typically"]
+            #[doc = "require to be fully addressed by the user (i.e. closed) before resuming"]
+            #[doc = "interaction with the parent toplevel, and may require a distinct"]
+            #[doc = "presentation."]
+            #[doc = ""]
+            #[doc = "Clients must implement the logic to filter events in the parent"]
+            #[doc = "toplevel on their own."]
+            #[doc = ""]
+            #[doc = "Compositors may choose any policy in event delivery to the parent"]
+            #[doc = "toplevel, from delivering all events unfiltered to using them for"]
+            #[doc = "internal consumption."]
+            async fn set_modal(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xdg_dialog_v1#{}.set_modal()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Drops the hint that this dialog has \"modal\" behavior. See"]
+            #[doc = "xdg_dialog_v1.set_modal for more details."]
+            async fn unset_modal(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xdg_dialog_v1#{}.unset_modal()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
         }
     }
 }
@@ -1607,50 +3300,42 @@ pub mod ext_data_control_v1 {
         }
     }
 }
-#[doc = "The purpose of this protocol is to provide protocol object handles for"]
-#[doc = "toplevels, possibly originating from another client."]
-#[doc = ""]
-#[doc = "This protocol is intentionally minimalistic and expects additional"]
-#[doc = "functionality (e.g. creating a screencopy source from a toplevel handle,"]
-#[doc = "getting information about the state of the toplevel) to be implemented"]
-#[doc = "in extension protocols."]
-#[doc = ""]
-#[doc = "The compositor may choose to restrict this protocol to a special client"]
-#[doc = "launched by the compositor itself or expose it to all clients,"]
-#[doc = "this is compositor policy."]
-#[doc = ""]
-#[doc = "The key words \"must\", \"must not\", \"required\", \"shall\", \"shall not\","]
-#[doc = "\"should\", \"should not\", \"recommended\",  \"may\", and \"optional\" in this"]
-#[doc = "document are to be interpreted as described in IETF RFC 2119."]
-#[doc = ""]
-#[doc = "Warning! The protocol described in this file is currently in the testing"]
-#[doc = "phase. Backward compatible changes may be added together with the"]
-#[doc = "corresponding interface version bump. Backward incompatible changes can"]
-#[doc = "only be done by creating a new major version of the extension."]
 #[allow(clippy::module_inception)]
-pub mod ext_foreign_toplevel_list_v1 {
-    #[doc = "A toplevel is defined as a surface with a role similar to xdg_toplevel."]
-    #[doc = "XWayland surfaces may be treated like toplevels in this protocol."]
+pub mod content_type_v1 {
+    #[doc = "This interface allows a client to describe the kind of content a surface"]
+    #[doc = "will display, to allow the compositor to optimize its behavior for it."]
     #[doc = ""]
-    #[doc = "After a client binds the ext_foreign_toplevel_list_v1, each mapped"]
-    #[doc = "toplevel window will be sent using the ext_foreign_toplevel_list_v1.toplevel"]
-    #[doc = "event."]
-    #[doc = ""]
-    #[doc = "Clients which only care about the current state can perform a roundtrip after"]
-    #[doc = "binding this global."]
-    #[doc = ""]
-    #[doc = "For each instance of ext_foreign_toplevel_list_v1, the compositor must"]
-    #[doc = "create a new ext_foreign_toplevel_handle_v1 object for each mapped toplevel."]
-    #[doc = ""]
-    #[doc = "If a compositor implementation sends the ext_foreign_toplevel_list_v1.finished"]
-    #[doc = "event after the global is bound, the compositor must not send any"]
-    #[doc = "ext_foreign_toplevel_list_v1.toplevel events."]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
-    pub mod ext_foreign_toplevel_list_v1 {
+    pub mod wp_content_type_manager_v1 {
         use futures_util::SinkExt;
-        #[doc = "Trait to implement the ext_foreign_toplevel_list_v1 interface. See the module level documentation for more info"]
-        pub trait ExtForeignToplevelListV1 {
-            const INTERFACE: &'static str = "ext_foreign_toplevel_list_v1";
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "wl_surface already has a content type object"]
+            AlreadyConstructed = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::AlreadyConstructed),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_content_type_manager_v1 interface. See the module level documentation for more info"]
+        pub trait WpContentTypeManagerV1 {
+            const INTERFACE: &'static str = "wp_content_type_manager_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
@@ -1661,69 +3346,419 @@ pub mod ext_foreign_toplevel_list_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
-            #[doc = "This request indicates that the client no longer wishes to receive"]
-            #[doc = "events for new toplevels."]
+            #[doc = "Destroy the content type manager. This doesn't destroy objects created"]
+            #[doc = "with the manager."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_content_type_manager_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Create a new content type object associated with the given surface."]
             #[doc = ""]
-            #[doc = "The Wayland protocol is asynchronous, meaning the compositor may send"]
-            #[doc = "further toplevel events until the stop request is processed."]
-            #[doc = "The client should wait for a ext_foreign_toplevel_list_v1.finished"]
-            #[doc = "event before destroying this object."]
+            #[doc = "Creating a wp_content_type_v1 from a wl_surface which already has one"]
+            #[doc = "attached is a client error: already_constructed."]
+            async fn get_surface_content_type(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_content_type_manager_v1#{}.get_surface_content_type()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .put_object(Some(surface))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "The content type object allows the compositor to optimize for the kind"]
+    #[doc = "of content shown on the surface. A compositor may for example use it to"]
+    #[doc = "set relevant drm properties like \"content type\"."]
+    #[doc = ""]
+    #[doc = "The client may request to switch to another content type at any time."]
+    #[doc = "When the associated surface gets destroyed, this object becomes inert and"]
+    #[doc = "the client should destroy it."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_content_type_v1 {
+        use futures_util::SinkExt;
+        #[doc = "These values describe the available content types for a surface."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Type {
+            None = 0u32,
+            Photo = 1u32,
+            Video = 2u32,
+            Game = 3u32,
+        }
+        impl TryFrom<u32> for Type {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::None),
+                    1u32 => Ok(Self::Photo),
+                    2u32 => Ok(Self::Video),
+                    3u32 => Ok(Self::Game),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Type {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_content_type_v1 interface. See the module level documentation for more info"]
+        pub trait WpContentTypeV1 {
+            const INTERFACE: &'static str = "wp_content_type_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Switch back to not specifying the content type of this surface. This is"]
+            #[doc = "equivalent to setting the content type to none, including double"]
+            #[doc = "buffering semantics. See set_content_type for details."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_content_type_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Set the surface content type. This informs the compositor that the"]
+            #[doc = "client believes it is displaying buffers matching this content type."]
+            #[doc = ""]
+            #[doc = "This is purely a hint for the compositor, which can be used to adjust"]
+            #[doc = "its behavior or hardware settings to fit the presented content best."]
+            #[doc = ""]
+            #[doc = "The content type is double-buffered state, see wl_surface.commit for"]
+            #[doc = "details."]
+            async fn set_content_type(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                content_type: Type,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_content_type_v1#{}.set_content_type()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(content_type as u32)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
+#[doc = "This protocol allows a compositor to suggest for surfaces to render at"]
+#[doc = "fractional scales."]
+#[doc = ""]
+#[doc = "A client can submit scaled content by utilizing wp_viewport. This is done by"]
+#[doc = "creating a wp_viewport object for the surface and setting the destination"]
+#[doc = "rectangle to the surface size before the scale factor is applied."]
+#[doc = ""]
+#[doc = "The buffer size is calculated by multiplying the surface size by the"]
+#[doc = "intended scale."]
+#[doc = ""]
+#[doc = "The wl_surface buffer scale should remain set to 1."]
+#[doc = ""]
+#[doc = "If a surface has a surface-local size of 100 px by 50 px and wishes to"]
+#[doc = "submit buffers with a scale of 1.5, then a buffer of 150px by 75 px should"]
+#[doc = "be used and the wp_viewport destination rectangle should be 100 px by 50 px."]
+#[doc = ""]
+#[doc = "For toplevel surfaces, the size is rounded halfway away from zero. The"]
+#[doc = "rounding algorithm for subsurface position and size is not defined."]
+#[allow(clippy::module_inception)]
+pub mod fractional_scale_v1 {
+    #[doc = "A global interface for requesting surfaces to use fractional scales."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_fractional_scale_manager_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the surface already has a fractional_scale object associated"]
+            FractionalScaleExists = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::FractionalScaleExists),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_fractional_scale_manager_v1 interface. See the module level documentation for more info"]
+        pub trait WpFractionalScaleManagerV1 {
+            const INTERFACE: &'static str = "wp_fractional_scale_manager_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Informs the server that the client will not be using this protocol"]
+            #[doc = "object anymore. This does not affect any other objects,"]
+            #[doc = "wp_fractional_scale_v1 objects included."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_fractional_scale_manager_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Create an add-on object for the the wl_surface to let the compositor"]
+            #[doc = "request fractional scales. If the given wl_surface already has a"]
+            #[doc = "wp_fractional_scale_v1 object associated, the fractional_scale_exists"]
+            #[doc = "protocol error is raised."]
+            async fn get_fractional_scale(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_fractional_scale_manager_v1#{}.get_fractional_scale()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .put_object(Some(surface))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "An additional interface to a wl_surface object which allows the compositor"]
+    #[doc = "to inform the client of the preferred scale."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_fractional_scale_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the wp_fractional_scale_v1 interface. See the module level documentation for more info"]
+        pub trait WpFractionalScaleV1 {
+            const INTERFACE: &'static str = "wp_fractional_scale_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the fractional scale object. When this object is destroyed,"]
+            #[doc = "preferred_scale events will no longer be sent."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_fractional_scale_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Notification of a new preferred scale for this surface that the"]
+            #[doc = "compositor suggests that the client should use."]
+            #[doc = ""]
+            #[doc = "The sent scale is the numerator of a fraction with a denominator of 120."]
+            async fn preferred_scale(&self, scale: u32) -> crate::client::Result<()>;
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod ext_workspace_v1 {
+    #[doc = "Workspaces, also called virtual desktops, are groups of surfaces. A"]
+    #[doc = "compositor with a concept of workspaces may only show some such groups of"]
+    #[doc = "surfaces (those of 'active' workspaces) at a time.\u{a0}'Activating' a"]
+    #[doc = "workspace is a request for the compositor to display that workspace's"]
+    #[doc = "surfaces as normal, whereas the compositor may hide or otherwise"]
+    #[doc = "de-emphasise surfaces that are associated only with 'inactive' workspaces."]
+    #[doc = "Workspaces are grouped by which sets of outputs they correspond to, and"]
+    #[doc = "may contain surfaces only from those outputs. In this way, it is possible"]
+    #[doc = "for each output to have its own set of workspaces, or for all outputs (or"]
+    #[doc = "any other arbitrary grouping) to share workspaces. Compositors may"]
+    #[doc = "optionally conceptually arrange each group of workspaces in an"]
+    #[doc = "N-dimensional grid."]
+    #[doc = ""]
+    #[doc = "The purpose of this protocol is to enable the creation of taskbars and"]
+    #[doc = "docks by providing them with a list of workspaces and their properties,"]
+    #[doc = "and allowing them to activate and deactivate workspaces."]
+    #[doc = ""]
+    #[doc = "After a client binds the ext_workspace_manager_v1, each workspace will be"]
+    #[doc = "sent via the workspace event."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_workspace_manager_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the ext_workspace_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ExtWorkspaceManagerV1 {
+            const INTERFACE: &'static str = "ext_workspace_manager_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "The client must send this request after it has finished sending other"]
+            #[doc = "requests. The compositor must process a series of requests preceding a"]
+            #[doc = "commit request atomically."]
+            #[doc = ""]
+            #[doc = "This allows changes to the workspace properties to be seen as atomic,"]
+            #[doc = "even if they happen via multiple events, and even if they involve"]
+            #[doc = "multiple ext_workspace_handle_v1 objects, for example, deactivating one"]
+            #[doc = "workspace and activating another."]
+            async fn commit(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_workspace_manager_v1#{}.commit()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Indicates the client no longer wishes to receive events for new"]
+            #[doc = "workspace groups. However the compositor may emit further workspace"]
+            #[doc = "events, until the finished event is emitted. The compositor is expected"]
+            #[doc = "to send the finished event eventually once the stop request has been processed."]
+            #[doc = ""]
+            #[doc = "The client must not send any requests after this one, doing so will raise a wl_display"]
+            #[doc = "invalid_object error."]
             async fn stop(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.stop()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This request should be called either when the client will no longer"]
-            #[doc = "use the ext_foreign_toplevel_list_v1 or after the finished event"]
-            #[doc = "has been received to allow destruction of the object."]
-            #[doc = ""]
-            #[doc = "If a client wishes to destroy this object it should send a"]
-            #[doc = "ext_foreign_toplevel_list_v1.stop request and wait for a ext_foreign_toplevel_list_v1.finished"]
-            #[doc = "event, then destroy the handles and then this object."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_workspace_manager_v1#{}.stop()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
                     .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
-            #[doc = "This event is emitted whenever a new toplevel window is created. It is"]
-            #[doc = "emitted for all toplevels, regardless of the app that has created them."]
+            #[doc = "This event is emitted whenever a new workspace group has been created."]
             #[doc = ""]
-            #[doc = "All initial properties of the toplevel (identifier, title, app_id) will be sent"]
-            #[doc = "immediately after this event using the corresponding events for"]
-            #[doc = "ext_foreign_toplevel_handle_v1. The compositor will use the"]
-            #[doc = "ext_foreign_toplevel_handle_v1.done event to indicate when all data has"]
-            #[doc = "been sent."]
-            async fn toplevel(&self, toplevel: crate::wire::ObjectId) -> crate::client::Result<()>;
-            #[doc = "This event indicates that the compositor is done sending events"]
-            #[doc = "to this object. The client should destroy the object."]
-            #[doc = "See ext_foreign_toplevel_list_v1.destroy for more information."]
+            #[doc = "All initial details of the workspace group (outputs) will be"]
+            #[doc = "sent immediately after this event via the corresponding events in"]
+            #[doc = "ext_workspace_group_handle_v1 and ext_workspace_handle_v1."]
+            async fn workspace_group(
+                &self,
+                workspace_group: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is emitted whenever a new workspace has been created."]
             #[doc = ""]
-            #[doc = "The compositor must not send any more toplevel events after this event."]
+            #[doc = "All initial details of the workspace (name, coordinates, state) will"]
+            #[doc = "be sent immediately after this event via the corresponding events in"]
+            #[doc = "ext_workspace_handle_v1."]
+            #[doc = ""]
+            #[doc = "Workspaces start off unassigned to any workspace group."]
+            async fn workspace(
+                &self,
+                workspace: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all changes in all workspaces and workspace groups have been"]
+            #[doc = "sent."]
+            #[doc = ""]
+            #[doc = "This allows changes to one or more ext_workspace_group_handle_v1"]
+            #[doc = "properties and ext_workspace_handle_v1 properties"]
+            #[doc = "to be seen as atomic, even if they happen via multiple events."]
+            #[doc = "In particular, an output moving from one workspace group to"]
+            #[doc = "another sends an output_enter event and an output_leave event to the two"]
+            #[doc = "ext_workspace_group_handle_v1 objects in question. The compositor sends"]
+            #[doc = "the done event only after updating the output information in both"]
+            #[doc = "workspace groups."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "This event indicates that the compositor is done sending events to the"]
+            #[doc = "ext_workspace_manager_v1. The server will destroy the object"]
+            #[doc = "immediately after sending this request."]
             async fn finished(&self) -> crate::client::Result<()>;
         }
     }
-    #[doc = "A ext_foreign_toplevel_handle_v1 object represents a mapped toplevel"]
-    #[doc = "window. A single app may have multiple mapped toplevels."]
+    #[doc = "A ext_workspace_group_handle_v1 object represents a workspace group"]
+    #[doc = "that is assigned a set of outputs and contains a number of workspaces."]
+    #[doc = ""]
+    #[doc = "The set of outputs assigned to the workspace group is conveyed to the client via"]
+    #[doc = "output_enter and output_leave events, and its workspaces are conveyed with"]
+    #[doc = "workspace events."]
+    #[doc = ""]
+    #[doc = "For example, a compositor which has a set of workspaces for each output may"]
+    #[doc = "advertise a workspace group (and its workspaces) per output, whereas a compositor"]
+    #[doc = "where a workspace spans all outputs may advertise a single workspace group for all"]
+    #[doc = "outputs."]
     #[allow(clippy::too_many_arguments)]
-    pub mod ext_foreign_toplevel_handle_v1 {
+    pub mod ext_workspace_group_handle_v1 {
         use futures_util::SinkExt;
-        #[doc = "Trait to implement the ext_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ExtForeignToplevelHandleV1 {
-            const INTERFACE: &'static str = "ext_foreign_toplevel_handle_v1";
+        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct GroupCapabilities : u32 { # [doc = "create_workspace request is available"] const CreateWorkspace = 1u32 ; } }
+        impl TryFrom<u32> for GroupCapabilities {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for GroupCapabilities {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the ext_workspace_group_handle_v1 interface. See the module level documentation for more info"]
+        pub trait ExtWorkspaceGroupHandleV1 {
+            const INTERFACE: &'static str = "ext_workspace_group_handle_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
@@ -1734,95 +3769,364 @@ pub mod ext_foreign_toplevel_list_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
-            #[doc = "This request should be used when the client will no longer use the handle"]
-            #[doc = "or after the closed event has been received to allow destruction of the"]
-            #[doc = "object."]
+            #[doc = "Request that the compositor create a new workspace with the given name"]
+            #[doc = "and assign it to this group."]
             #[doc = ""]
-            #[doc = "When a handle is destroyed, a new handle may not be created by the server"]
-            #[doc = "until the toplevel is unmapped and then remapped. Destroying a toplevel handle"]
-            #[doc = "is not recommended unless the client is cleaning up child objects"]
-            #[doc = "before destroying the ext_foreign_toplevel_list_v1 object, the toplevel"]
-            #[doc = "was closed or the toplevel handle will not be used in the future."]
+            #[doc = "There is no guarantee that the compositor will create a new workspace,"]
+            #[doc = "or that the created workspace will have the provided name."]
+            async fn create_workspace(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                workspace: String,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> ext_workspace_group_handle_v1#{}.create_workspace()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(workspace))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Destroys the ext_workspace_group_handle_v1 object."]
             #[doc = ""]
-            #[doc = "Other protocols which extend the ext_foreign_toplevel_handle_v1"]
-            #[doc = "interface should require destructors for extension interfaces be"]
-            #[doc = "called before allowing the toplevel handle to be destroyed."]
+            #[doc = "This request should be send either when the client does not want to"]
+            #[doc = "use the workspace group object any more or after the removed event to finalize"]
+            #[doc = "the destruction of the object."]
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_workspace_group_handle_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This event advertises the capabilities supported by the compositor. If"]
+            #[doc = "a capability isn't supported, clients should hide or disable the UI"]
+            #[doc = "elements that expose this functionality. For instance, if the"]
+            #[doc = "compositor doesn't advertise support for creating workspaces, a button"]
+            #[doc = "triggering the create_workspace request should not be displayed."]
+            #[doc = ""]
+            #[doc = "The compositor will ignore requests it doesn't support. For instance,"]
+            #[doc = "a compositor which doesn't advertise support for creating workspaces will ignore"]
+            #[doc = "create_workspace requests."]
+            #[doc = ""]
+            #[doc = "Compositors must send this event once after creation of an"]
+            #[doc = "ext_workspace_group_handle_v1. When the capabilities change, compositors"]
+            #[doc = "must send this event again."]
+            async fn capabilities(
+                &self,
+                capabilities: GroupCapabilities,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is emitted whenever an output is assigned to the workspace"]
+            #[doc = "group or a new `wl_output` object is bound by the client, which was already"]
+            #[doc = "assigned to this workspace_group."]
+            async fn output_enter(
+                &self,
+                output: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is emitted whenever an output is removed from the workspace"]
+            #[doc = "group."]
+            async fn output_leave(
+                &self,
+                output: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is emitted whenever a workspace is assigned to this group."]
+            #[doc = "A workspace may only ever be assigned to a single group at a single point"]
+            #[doc = "in time, but can be re-assigned during it's lifetime."]
+            async fn workspace_enter(
+                &self,
+                workspace: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is emitted whenever a workspace is removed from this group."]
+            async fn workspace_leave(
+                &self,
+                workspace: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is send when the group associated with the ext_workspace_group_handle_v1"]
+            #[doc = "has been removed. After sending this request the compositor will immediately consider"]
+            #[doc = "the object inert. Any requests will be ignored except the destroy request."]
+            #[doc = "It is guaranteed there won't be any more events referencing this"]
+            #[doc = "ext_workspace_group_handle_v1."]
+            #[doc = ""]
+            #[doc = "The compositor must remove all workspaces belonging to a workspace group"]
+            #[doc = "via a workspace_leave event before removing the workspace group."]
+            async fn removed(&self) -> crate::client::Result<()>;
+        }
+    }
+    #[doc = "A ext_workspace_handle_v1 object represents a workspace that handles a"]
+    #[doc = "group of surfaces."]
+    #[doc = ""]
+    #[doc = "Each workspace has:"]
+    #[doc = "- a name, conveyed to the client with the name event"]
+    #[doc = "- potentially an id conveyed with the id event"]
+    #[doc = "- a list of states, conveyed to the client with the state event"]
+    #[doc = "- and optionally a set of coordinates, conveyed to the client with the"]
+    #[doc = "coordinates event"]
+    #[doc = ""]
+    #[doc = "The client may request that the compositor activate or deactivate the workspace."]
+    #[doc = ""]
+    #[doc = "Each workspace can belong to only a single workspace group."]
+    #[doc = "Depepending on the compositor policy, there might be workspaces with"]
+    #[doc = "the same name in different workspace groups, but these workspaces are still"]
+    #[doc = "separate (e.g. one of them might be active while the other is not)."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_workspace_handle_v1 {
+        use futures_util::SinkExt;
+        bitflags::bitflags! { # [doc = "The different states that a workspace can have."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct State : u32 { # [doc = "the workspace is active"] const Active = 1u32 ; # [doc = "the workspace requests attention"] const Urgent = 2u32 ; const Hidden = 4u32 ; } }
+        impl TryFrom<u32> for State {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for State {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct WorkspaceCapabilities : u32 { # [doc = "activate request is available"] const Activate = 1u32 ; # [doc = "deactivate request is available"] const Deactivate = 2u32 ; # [doc = "remove request is available"] const Remove = 4u32 ; # [doc = "assign request is available"] const Assign = 8u32 ; } }
+        impl TryFrom<u32> for WorkspaceCapabilities {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for WorkspaceCapabilities {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the ext_workspace_handle_v1 interface. See the module level documentation for more info"]
+        pub trait ExtWorkspaceHandleV1 {
+            const INTERFACE: &'static str = "ext_workspace_handle_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroys the ext_workspace_handle_v1 object."]
+            #[doc = ""]
+            #[doc = "This request should be made either when the client does not want to"]
+            #[doc = "use the workspace object any more or after the remove event to finalize"]
+            #[doc = "the destruction of the object."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_workspace_handle_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
                     .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
-            #[doc = "The server will emit no further events on the ext_foreign_toplevel_handle_v1"]
-            #[doc = "after this event. Any requests received aside from the destroy request must"]
-            #[doc = "be ignored. Upon receiving this event, the client should destroy the handle."]
+            #[doc = "Request that this workspace be activated."]
             #[doc = ""]
-            #[doc = "Other protocols which extend the ext_foreign_toplevel_handle_v1"]
-            #[doc = "interface must also ignore requests other than destructors."]
-            async fn closed(&self) -> crate::client::Result<()>;
-            #[doc = "This event is sent after all changes in the toplevel state have"]
-            #[doc = "been sent."]
+            #[doc = "There is no guarantee the workspace will be actually activated, and"]
+            #[doc = "behaviour may be compositor-dependent. For example, activating a"]
+            #[doc = "workspace may or may not deactivate all other workspaces in the same"]
+            #[doc = "group."]
+            async fn activate(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_workspace_handle_v1#{}.activate()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Request that this workspace be deactivated."]
             #[doc = ""]
-            #[doc = "This allows changes to the ext_foreign_toplevel_handle_v1 properties"]
-            #[doc = "to be atomically applied. Other protocols which extend the"]
-            #[doc = "ext_foreign_toplevel_handle_v1 interface may use this event to also"]
-            #[doc = "atomically apply any pending state."]
+            #[doc = "There is no guarantee the workspace will be actually deactivated."]
+            async fn deactivate(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_workspace_handle_v1#{}.deactivate()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Requests that this workspace is assigned to the given workspace group."]
             #[doc = ""]
-            #[doc = "This event must not be sent after the ext_foreign_toplevel_handle_v1.closed"]
-            #[doc = "event."]
-            async fn done(&self) -> crate::client::Result<()>;
-            #[doc = "The title of the toplevel has changed."]
+            #[doc = "There is no guarantee the workspace will be assigned."]
+            async fn assign(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                workspace_group: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_workspace_handle_v1#{}.assign()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(workspace_group))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Request that this workspace be removed."]
             #[doc = ""]
-            #[doc = "The configured state must not be applied immediately. See"]
-            #[doc = "ext_foreign_toplevel_handle_v1.done for details."]
-            async fn title(&self, title: String) -> crate::client::Result<()>;
-            #[doc = "The app id of the toplevel has changed."]
+            #[doc = "There is no guarantee the workspace will be actually removed."]
+            async fn remove(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_workspace_handle_v1#{}.remove()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "If this event is emitted, it will be send immediately after the"]
+            #[doc = "ext_workspace_handle_v1 is created or when an id is assigned to"]
+            #[doc = "a workspace (at most once during it's lifetime)."]
             #[doc = ""]
-            #[doc = "The configured state must not be applied immediately. See"]
-            #[doc = "ext_foreign_toplevel_handle_v1.done for details."]
-            async fn app_id(&self, app_id: String) -> crate::client::Result<()>;
-            #[doc = "This identifier is used to check if two or more toplevel handles belong"]
-            #[doc = "to the same toplevel."]
+            #[doc = "An id will never change during the lifetime of the `ext_workspace_handle_v1`"]
+            #[doc = "and is guaranteed to be unique during it's lifetime."]
             #[doc = ""]
-            #[doc = "The identifier is useful for command line tools or privileged clients"]
-            #[doc = "which may need to reference an exact toplevel across processes or"]
-            #[doc = "instances of the ext_foreign_toplevel_list_v1 global."]
+            #[doc = "Ids are not human-readable and shouldn't be displayed, use `name` for that purpose."]
             #[doc = ""]
-            #[doc = "The compositor must only send this event when the handle is created."]
+            #[doc = "Compositors are expected to only send ids for workspaces likely stable across multiple"]
+            #[doc = "sessions and can be used by clients to store preferences for workspaces. Workspaces without"]
+            #[doc = "ids should be considered temporary and any data associated with them should be deleted once"]
+            #[doc = "the respective object is lost."]
+            async fn id(&self, id: String) -> crate::client::Result<()>;
+            #[doc = "This event is emitted immediately after the ext_workspace_handle_v1 is"]
+            #[doc = "created and whenever the name of the workspace changes."]
             #[doc = ""]
-            #[doc = "The identifier must be unique per toplevel and it's handles. Two different"]
-            #[doc = "toplevels must not have the same identifier. The identifier is only valid"]
-            #[doc = "as long as the toplevel is mapped. If the toplevel is unmapped the identifier"]
-            #[doc = "must not be reused. An identifier must not be reused by the compositor to"]
-            #[doc = "ensure there are no races when sharing identifiers between processes."]
+            #[doc = "A name is meant to be human-readable and can be displayed to a user."]
+            #[doc = "Unlike the id it is neither stable nor unique."]
+            async fn name(&self, name: String) -> crate::client::Result<()>;
+            #[doc = "This event is used to organize workspaces into an N-dimensional grid"]
+            #[doc = "within a workspace group, and if supported, is emitted immediately after"]
+            #[doc = "the ext_workspace_handle_v1 is created and whenever the coordinates of"]
+            #[doc = "the workspace change. Compositors may not send this event if they do not"]
+            #[doc = "conceptually arrange workspaces in this way. If compositors simply"]
+            #[doc = "number workspaces, without any geometric interpretation, they may send"]
+            #[doc = "1D coordinates, which clients should not interpret as implying any"]
+            #[doc = "geometry. Sending an empty array means that the compositor no longer"]
+            #[doc = "orders the workspace geometrically."]
             #[doc = ""]
-            #[doc = "An identifier is a string that contains up to 32 printable ASCII bytes."]
-            #[doc = "An identifier must not be an empty string. It is recommended that a"]
-            #[doc = "compositor includes an opaque generation value in identifiers. How the"]
-            #[doc = "generation value is used when generating the identifier is implementation"]
-            #[doc = "dependent."]
-            async fn identifier(&self, identifier: String) -> crate::client::Result<()>;
+            #[doc = "Coordinates have an arbitrary number of dimensions N with an uint32"]
+            #[doc = "position along each dimension. By convention if N > 1, the first"]
+            #[doc = "dimension is X, the second Y, the third Z, and so on. The compositor may"]
+            #[doc = "chose to utilize these events for a more novel workspace layout"]
+            #[doc = "convention, however. No guarantee is made about the grid being filled or"]
+            #[doc = "bounded; there may be a workspace at coordinate 1 and another at"]
+            #[doc = "coordinate 1000 and none in between. Within a workspace group, however,"]
+            #[doc = "workspaces must have unique coordinates of equal dimensionality."]
+            async fn coordinates(&self, coordinates: Vec<u8>) -> crate::client::Result<()>;
+            #[doc = "This event is emitted immediately after the ext_workspace_handle_v1 is"]
+            #[doc = "created and each time the workspace state changes, either because of a"]
+            #[doc = "compositor action or because of a request in this protocol."]
+            #[doc = ""]
+            #[doc = "Missing states convey the opposite meaning, e.g. an unset active bit"]
+            #[doc = "means the workspace is currently inactive."]
+            async fn state(&self, state: State) -> crate::client::Result<()>;
+            #[doc = "This event advertises the capabilities supported by the compositor. If"]
+            #[doc = "a capability isn't supported, clients should hide or disable the UI"]
+            #[doc = "elements that expose this functionality. For instance, if the"]
+            #[doc = "compositor doesn't advertise support for removing workspaces, a button"]
+            #[doc = "triggering the remove request should not be displayed."]
+            #[doc = ""]
+            #[doc = "The compositor will ignore requests it doesn't support. For instance,"]
+            #[doc = "a compositor which doesn't advertise support for remove will ignore"]
+            #[doc = "remove requests."]
+            #[doc = ""]
+            #[doc = "Compositors must send this event once after creation of an"]
+            #[doc = "ext_workspace_handle_v1 . When the capabilities change, compositors"]
+            #[doc = "must send this event again."]
+            async fn capabilities(
+                &self,
+                capabilities: WorkspaceCapabilities,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is send when the workspace associated with the ext_workspace_handle_v1"]
+            #[doc = "has been removed. After sending this request, the compositor will immediately consider"]
+            #[doc = "the object inert. Any requests will be ignored except the destroy request."]
+            #[doc = ""]
+            #[doc = "It is guaranteed there won't be any more events referencing this"]
+            #[doc = "ext_workspace_handle_v1."]
+            #[doc = ""]
+            #[doc = "The compositor must only remove a workspaces not currently belonging to any"]
+            #[doc = "workspace_group."]
+            async fn removed(&self) -> crate::client::Result<()>;
         }
     }
 }
 #[allow(clippy::module_inception)]
-pub mod ext_idle_notify_v1 {
-    #[doc = "This interface allows clients to monitor user idle status."]
+pub mod commit_timing_v1 {
+    #[doc = "When a compositor latches on to new content updates it will check for"]
+    #[doc = "any number of requirements of the available content updates (such as"]
+    #[doc = "fences of all buffers being signalled) to consider the update ready."]
     #[doc = ""]
-    #[doc = "After binding to this global, clients can create ext_idle_notification_v1"]
-    #[doc = "objects to get notified when the user is idle for a given amount of time."]
+    #[doc = "This protocol provides a method for adding a time constraint to surface"]
+    #[doc = "content. This constraint indicates to the compositor that a content"]
+    #[doc = "update should be presented as closely as possible to, but not before,"]
+    #[doc = "a specified time."]
+    #[doc = ""]
+    #[doc = "This protocol does not change the Wayland property that content"]
+    #[doc = "updates are applied in the order they are received, even when some"]
+    #[doc = "content updates contain timestamps and others do not."]
+    #[doc = ""]
+    #[doc = "To provide timestamps, this global factory interface must be used to"]
+    #[doc = "acquire a wp_commit_timing_v1 object for a surface, which may then be"]
+    #[doc = "used to provide timestamp information for commits."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
-    pub mod ext_idle_notifier_v1 {
+    pub mod wp_commit_timing_manager_v1 {
         use futures_util::SinkExt;
-        #[doc = "Trait to implement the ext_idle_notifier_v1 interface. See the module level documentation for more info"]
-        pub trait ExtIdleNotifierV1 {
-            const INTERFACE: &'static str = "ext_idle_notifier_v1";
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "commit timer already exists for surface"]
+            CommitTimerExists = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::CommitTimerExists),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_commit_timing_manager_v1 interface. See the module level documentation for more info"]
+        pub trait WpCommitTimingManagerV1 {
+            const INTERFACE: &'static str = "wp_commit_timing_manager_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
@@ -1833,44 +4137,36 @@ pub mod ext_idle_notify_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
-            #[doc = "Destroy the manager object. All objects created via this interface"]
-            #[doc = "remain valid."]
+            #[doc = "Informs the server that the client will no longer be using"]
+            #[doc = "this protocol object. Existing objects created by this object"]
+            #[doc = "are not affected."]
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_idle_notifier_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_commit_timing_manager_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
                     .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
-            #[doc = "Create a new idle notification object."]
+            #[doc = "Establish a timing controller for a surface."]
             #[doc = ""]
-            #[doc = "The notification object has a minimum timeout duration and is tied to a"]
-            #[doc = "seat. The client will be notified if the seat is inactive for at least"]
-            #[doc = "the provided timeout. See ext_idle_notification_v1 for more details."]
-            #[doc = ""]
-            #[doc = "A zero timeout is valid and means the client wants to be notified as"]
-            #[doc = "soon as possible when the seat is inactive."]
-            async fn get_idle_notification(
+            #[doc = "Only one commit timer can be created for a surface, or a"]
+            #[doc = "commit_timer_exists protocol error will be generated."]
+            async fn get_timer(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-                timeout: u32,
-                seat: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> ext_idle_notifier_v1#{}.get_idle_notification()",
-                    object_id
-                );
+                tracing::debug!("-> wp_commit_timing_manager_v1#{}.get_timer()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
-                    .put_uint(timeout)
-                    .put_object(Some(seat))
+                    .put_object(Some(surface))
                     .build();
                 socket
                     .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
@@ -1879,123 +4175,40 @@ pub mod ext_idle_notify_v1 {
             }
         }
     }
-    #[doc = "This interface is used by the compositor to send idle notification events"]
-    #[doc = "to clients."]
-    #[doc = ""]
-    #[doc = "Initially the notification object is not idle. The notification object"]
-    #[doc = "becomes idle when no user activity has happened for at least the timeout"]
-    #[doc = "duration, starting from the creation of the notification object. User"]
-    #[doc = "activity may include input events or a presence sensor, but is"]
-    #[doc = "compositor-specific. If an idle inhibitor is active (e.g. another client"]
-    #[doc = "has created a zwp_idle_inhibitor_v1 on a visible surface), the compositor"]
-    #[doc = "must not make the notification object idle."]
-    #[doc = ""]
-    #[doc = "When the notification object becomes idle, an idled event is sent. When"]
-    #[doc = "user activity starts again, the notification object stops being idle,"]
-    #[doc = "a resumed event is sent and the timeout is restarted."]
+    #[doc = "An object to set a time constraint for a content update on a surface."]
     #[allow(clippy::too_many_arguments)]
-    pub mod ext_idle_notification_v1 {
+    pub mod wp_commit_timer_v1 {
         use futures_util::SinkExt;
-        #[doc = "Trait to implement the ext_idle_notification_v1 interface. See the module level documentation for more info"]
-        pub trait ExtIdleNotificationV1 {
-            const INTERFACE: &'static str = "ext_idle_notification_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy the notification object."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_idle_notification_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This event is sent when the notification object becomes idle."]
-            #[doc = ""]
-            #[doc = "It's a compositor protocol error to send this event twice without a"]
-            #[doc = "resumed event in-between."]
-            async fn idled(&self) -> crate::client::Result<()>;
-            #[doc = "This event is sent when the notification object stops being idle."]
-            #[doc = ""]
-            #[doc = "It's a compositor protocol error to send this event twice without an"]
-            #[doc = "idled event in-between. It's a compositor protocol error to send this"]
-            #[doc = "event prior to any idled event."]
-            async fn resumed(&self) -> crate::client::Result<()>;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "timestamp contains an invalid value"]
+            InvalidTimestamp = 0u32,
+            #[doc = "timestamp exists"]
+            TimestampExists = 1u32,
+            #[doc = "the associated surface no longer exists"]
+            SurfaceDestroyed = 2u32,
         }
-    }
-}
-#[doc = "This protocol serves as an intermediary between capturing protocols and"]
-#[doc = "potential image capture sources such as outputs and toplevels."]
-#[doc = ""]
-#[doc = "This protocol may be extended to support more image capture sources in the"]
-#[doc = "future, thereby adding those image capture sources to other protocols that"]
-#[doc = "use the image capture source object without having to modify those"]
-#[doc = "protocols."]
-#[doc = ""]
-#[doc = "Warning! The protocol described in this file is currently in the testing"]
-#[doc = "phase. Backward compatible changes may be added together with the"]
-#[doc = "corresponding interface version bump. Backward incompatible changes can"]
-#[doc = "only be done by creating a new major version of the extension."]
-#[allow(clippy::module_inception)]
-pub mod ext_image_capture_source_v1 {
-    #[doc = "The image capture source object is an opaque descriptor for a capturable"]
-    #[doc = "resource.  This resource may be any sort of entity from which an image"]
-    #[doc = "may be derived."]
-    #[doc = ""]
-    #[doc = "Note, because ext_image_capture_source_v1 objects are created from multiple"]
-    #[doc = "independent factory interfaces, the ext_image_capture_source_v1 interface is"]
-    #[doc = "frozen at version 1."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod ext_image_capture_source_v1 {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the ext_image_capture_source_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCaptureSourceV1 {
-            const INTERFACE: &'static str = "ext_image_capture_source_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidTimestamp),
+                    1u32 => Ok(Self::TimestampExists),
+                    2u32 => Ok(Self::SurfaceDestroyed),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
-            }
-            #[doc = "Destroys the image capture source. This request may be sent at any time"]
-            #[doc = "by the client."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_image_capture_source_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
             }
         }
-    }
-    #[doc = "A manager for creating image capture source objects for wl_output objects."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod ext_output_image_capture_source_manager_v1 {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the ext_output_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtOutputImageCaptureSourceManagerV1 {
-            const INTERFACE: &'static str = "ext_output_image_capture_source_manager_v1";
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_commit_timer_v1 interface. See the module level documentation for more info"]
+        pub trait WpCommitTimerV1 {
+            const INTERFACE: &'static str = "wp_commit_timer_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
@@ -2006,102 +4219,49 @@ pub mod ext_image_capture_source_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
-            #[doc = "Creates a source object for an output. Images captured from this source"]
-            #[doc = "will show the same content as the output. Some elements may be omitted,"]
-            #[doc = "such as cursors and overlays that have been marked as transparent to"]
-            #[doc = "capturing."]
-            async fn create_source(
+            #[doc = "Provide a timing constraint for a surface content update."]
+            #[doc = ""]
+            #[doc = "A set_timestamp request may be made before a wl_surface.commit to"]
+            #[doc = "tell the compositor that the content is intended to be presented"]
+            #[doc = "as closely as possible to, but not before, the specified time."]
+            #[doc = "The time is in the domain of the compositor's presentation clock."]
+            #[doc = ""]
+            #[doc = "An invalid_timestamp error will be generated for invalid tv_nsec."]
+            #[doc = ""]
+            #[doc = "If a timestamp already exists on the surface, a timestamp_exists"]
+            #[doc = "error is generated."]
+            #[doc = ""]
+            #[doc = "Requesting set_timestamp after the commit_timer object's surface is"]
+            #[doc = "destroyed will generate a \"surface_destroyed\" error."]
+            async fn set_timestamp(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
-                source: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
             ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> ext_output_image_capture_source_manager_v1#{}.create_source()",
-                    object_id
-                );
+                tracing::debug!("-> wp_commit_timer_v1#{}.set_timestamp()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(source))
-                    .put_object(Some(output))
+                    .put_uint(tv_sec_hi)
+                    .put_uint(tv_sec_lo)
+                    .put_uint(tv_nsec)
                     .build();
                 socket
                     .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
-            #[doc = "Destroys the manager. This request may be sent at any time by the client"]
-            #[doc = "and objects created by the manager will remain valid after its"]
-            #[doc = "destruction."]
+            #[doc = "Informs the server that the client will no longer be using"]
+            #[doc = "this protocol object."]
+            #[doc = ""]
+            #[doc = "Existing timing constraints are not affected by the destruction."]
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> ext_output_image_capture_source_manager_v1#{}.destroy()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-    #[doc = "A manager for creating image capture source objects for"]
-    #[doc = "ext_foreign_toplevel_handle_v1 objects."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod ext_foreign_toplevel_image_capture_source_manager_v1 {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the ext_foreign_toplevel_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtForeignToplevelImageCaptureSourceManagerV1 {
-            const INTERFACE: &'static str = "ext_foreign_toplevel_image_capture_source_manager_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Creates a source object for a foreign toplevel handle. Images captured"]
-            #[doc = "from this source will show the same content as the toplevel."]
-            async fn create_source(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                source: crate::wire::ObjectId,
-                toplevel_handle: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> ext_foreign_toplevel_image_capture_source_manager_v1#{}.create_source()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(source))
-                    .put_object(Some(toplevel_handle))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Destroys the manager. This request may be sent at any time by the client"]
-            #[doc = "and objects created by the manager will remain valid after its"]
-            #[doc = "destruction."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> ext_foreign_toplevel_image_capture_source_manager_v1#{}.destroy()",
-                    object_id
-                );
+                tracing::debug!("-> wp_commit_timer_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
                     .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
@@ -2739,2128 +4899,6 @@ pub mod ext_image_copy_capture_v1 {
         }
     }
 }
-#[doc = "This protocol allows for a privileged Wayland client to lock the session"]
-#[doc = "and display arbitrary graphics while the session is locked."]
-#[doc = ""]
-#[doc = "The compositor may choose to restrict this protocol to a special client"]
-#[doc = "launched by the compositor itself or expose it to all privileged clients,"]
-#[doc = "this is compositor policy."]
-#[doc = ""]
-#[doc = "The client is responsible for performing authentication and informing the"]
-#[doc = "compositor when the session should be unlocked. If the client dies while"]
-#[doc = "the session is locked the session remains locked, possibly permanently"]
-#[doc = "depending on compositor policy."]
-#[doc = ""]
-#[doc = "The key words \"must\", \"must not\", \"required\", \"shall\", \"shall not\","]
-#[doc = "\"should\", \"should not\", \"recommended\",  \"may\", and \"optional\" in this"]
-#[doc = "document are to be interpreted as described in IETF RFC 2119."]
-#[doc = ""]
-#[doc = "Warning! The protocol described in this file is currently in the"]
-#[doc = "testing phase. Backward compatible changes may be added together with"]
-#[doc = "the corresponding interface version bump. Backward incompatible changes"]
-#[doc = "can only be done by creating a new major version of the extension."]
-#[allow(clippy::module_inception)]
-pub mod ext_session_lock_v1 {
-    #[doc = "This interface is used to request that the session be locked."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod ext_session_lock_manager_v1 {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the ext_session_lock_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtSessionLockManagerV1 {
-            const INTERFACE: &'static str = "ext_session_lock_manager_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "This informs the compositor that the session lock manager object will"]
-            #[doc = "no longer be used. Existing objects created through this interface"]
-            #[doc = "remain valid."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_session_lock_manager_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This request creates a session lock and asks the compositor to lock the"]
-            #[doc = "session. The compositor will send either the ext_session_lock_v1.locked"]
-            #[doc = "or ext_session_lock_v1.finished event on the created object in"]
-            #[doc = "response to this request."]
-            async fn lock(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_session_lock_manager_v1#{}.lock()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(id))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-    #[doc = "In response to the creation of this object the compositor must send"]
-    #[doc = "either the locked or finished event."]
-    #[doc = ""]
-    #[doc = "The locked event indicates that the session is locked. This means"]
-    #[doc = "that the compositor must stop rendering and providing input to normal"]
-    #[doc = "clients. Instead the compositor must blank all outputs with an opaque"]
-    #[doc = "color such that their normal content is fully hidden."]
-    #[doc = ""]
-    #[doc = "The only surfaces that should be rendered while the session is locked"]
-    #[doc = "are the lock surfaces created through this interface and optionally,"]
-    #[doc = "at the compositor's discretion, special privileged surfaces such as"]
-    #[doc = "input methods or portions of desktop shell UIs."]
-    #[doc = ""]
-    #[doc = "The locked event must not be sent until a new \"locked\" frame (either"]
-    #[doc = "from a session lock surface or the compositor blanking the output) has"]
-    #[doc = "been presented on all outputs and no security sensitive normal/unlocked"]
-    #[doc = "content is possibly visible."]
-    #[doc = ""]
-    #[doc = "The finished event should be sent immediately on creation of this"]
-    #[doc = "object if the compositor decides that the locked event will not be sent."]
-    #[doc = ""]
-    #[doc = "The compositor may wait for the client to create and render session lock"]
-    #[doc = "surfaces before sending the locked event to avoid displaying intermediate"]
-    #[doc = "blank frames. However, it must impose a reasonable time limit if"]
-    #[doc = "waiting and send the locked event as soon as the hard requirements"]
-    #[doc = "described above can be met if the time limit expires. Clients should"]
-    #[doc = "immediately create lock surfaces for all outputs on creation of this"]
-    #[doc = "object to make this possible."]
-    #[doc = ""]
-    #[doc = "This behavior of the locked event is required in order to prevent"]
-    #[doc = "possible race conditions with clients that wish to suspend the system"]
-    #[doc = "or similar after locking the session. Without these semantics, clients"]
-    #[doc = "triggering a suspend after receiving the locked event would race with"]
-    #[doc = "the first \"locked\" frame being presented and normal/unlocked frames"]
-    #[doc = "might be briefly visible as the system is resumed if the suspend"]
-    #[doc = "operation wins the race."]
-    #[doc = ""]
-    #[doc = "If the client dies while the session is locked, the compositor must not"]
-    #[doc = "unlock the session in response. It is acceptable for the session to be"]
-    #[doc = "permanently locked if this happens. The compositor may choose to continue"]
-    #[doc = "to display the lock surfaces the client had mapped before it died or"]
-    #[doc = "alternatively fall back to a solid color, this is compositor policy."]
-    #[doc = ""]
-    #[doc = "Compositors may also allow a secure way to recover the session, the"]
-    #[doc = "details of this are compositor policy. Compositors may allow a new"]
-    #[doc = "client to create a ext_session_lock_v1 object and take responsibility"]
-    #[doc = "for unlocking the session, they may even start a new lock client"]
-    #[doc = "instance automatically."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod ext_session_lock_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "attempted to destroy session lock while locked"]
-            InvalidDestroy = 0u32,
-            #[doc = "unlock requested but locked event was never sent"]
-            InvalidUnlock = 1u32,
-            #[doc = "given wl_surface already has a role"]
-            Role = 2u32,
-            #[doc = "given output already has a lock surface"]
-            DuplicateOutput = 3u32,
-            #[doc = "given wl_surface has a buffer attached or committed"]
-            AlreadyConstructed = 4u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::InvalidDestroy),
-                    1u32 => Ok(Self::InvalidUnlock),
-                    2u32 => Ok(Self::Role),
-                    3u32 => Ok(Self::DuplicateOutput),
-                    4u32 => Ok(Self::AlreadyConstructed),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the ext_session_lock_v1 interface. See the module level documentation for more info"]
-        pub trait ExtSessionLockV1 {
-            const INTERFACE: &'static str = "ext_session_lock_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "This informs the compositor that the lock object will no longer be"]
-            #[doc = "used. Existing objects created through this interface remain valid."]
-            #[doc = ""]
-            #[doc = "After this request is made, lock surfaces created through this object"]
-            #[doc = "should be destroyed by the client as they will no longer be used by"]
-            #[doc = "the compositor."]
-            #[doc = ""]
-            #[doc = "It is a protocol error to make this request if the locked event was"]
-            #[doc = "sent, the unlock_and_destroy request must be used instead."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_session_lock_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "The client is expected to create lock surfaces for all outputs"]
-            #[doc = "currently present and any new outputs as they are advertised. These"]
-            #[doc = "won't be displayed by the compositor unless the lock is successful"]
-            #[doc = "and the locked event is sent."]
-            #[doc = ""]
-            #[doc = "Providing a wl_surface which already has a role or already has a buffer"]
-            #[doc = "attached or committed is a protocol error, as is attaching/committing"]
-            #[doc = "a buffer before the first ext_session_lock_surface_v1.configure event."]
-            #[doc = ""]
-            #[doc = "Attempting to create more than one lock surface for a given output"]
-            #[doc = "is a duplicate_output protocol error."]
-            async fn get_lock_surface(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_session_lock_v1#{}.get_lock_surface()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(id))
-                    .put_object(Some(surface))
-                    .put_object(Some(output))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This request indicates that the session should be unlocked, for"]
-            #[doc = "example because the user has entered their password and it has been"]
-            #[doc = "verified by the client."]
-            #[doc = ""]
-            #[doc = "This request also informs the compositor that the lock object will"]
-            #[doc = "no longer be used and should be destroyed. Existing objects created"]
-            #[doc = "through this interface remain valid."]
-            #[doc = ""]
-            #[doc = "After this request is made, lock surfaces created through this object"]
-            #[doc = "should be destroyed by the client as they will no longer be used by"]
-            #[doc = "the compositor."]
-            #[doc = ""]
-            #[doc = "It is a protocol error to make this request if the locked event has"]
-            #[doc = "not been sent. In that case, the lock object must be destroyed using"]
-            #[doc = "the destroy request."]
-            #[doc = ""]
-            #[doc = "Note that a correct client that wishes to exit directly after unlocking"]
-            #[doc = "the session must use the wl_display.sync request to ensure the server"]
-            #[doc = "receives and processes the unlock_and_destroy request. Otherwise"]
-            #[doc = "there is no guarantee that the server has unlocked the session due"]
-            #[doc = "to the asynchronous nature of the Wayland protocol. For example,"]
-            #[doc = "the server might terminate the client with a protocol error before"]
-            #[doc = "it processes the unlock_and_destroy request."]
-            async fn unlock_and_destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_session_lock_v1#{}.unlock_and_destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This client is now responsible for displaying graphics while the"]
-            #[doc = "session is locked and deciding when to unlock the session."]
-            #[doc = ""]
-            #[doc = "The locked event must not be sent until a new \"locked\" frame has been"]
-            #[doc = "presented on all outputs and no security sensitive normal/unlocked"]
-            #[doc = "content is possibly visible."]
-            #[doc = ""]
-            #[doc = "If this event is sent, making the destroy request is a protocol error,"]
-            #[doc = "the lock object must be destroyed using the unlock_and_destroy request."]
-            async fn locked(&self) -> crate::client::Result<()>;
-            #[doc = "The compositor has decided that the session lock should be destroyed"]
-            #[doc = "as it will no longer be used by the compositor. Exactly when this"]
-            #[doc = "event is sent is compositor policy, but it must never be sent more"]
-            #[doc = "than once for a given session lock object."]
-            #[doc = ""]
-            #[doc = "This might be sent because there is already another ext_session_lock_v1"]
-            #[doc = "object held by a client, or the compositor has decided to deny the"]
-            #[doc = "request to lock the session for some other reason. This might also"]
-            #[doc = "be sent because the compositor implements some alternative, secure"]
-            #[doc = "way to authenticate and unlock the session."]
-            #[doc = ""]
-            #[doc = "The finished event should be sent immediately on creation of this"]
-            #[doc = "object if the compositor decides that the locked event will not"]
-            #[doc = "be sent."]
-            #[doc = ""]
-            #[doc = "If the locked event is sent on creation of this object the finished"]
-            #[doc = "event may still be sent at some later time in this object's"]
-            #[doc = "lifetime. This is compositor policy."]
-            #[doc = ""]
-            #[doc = "Upon receiving this event, the client should make either the destroy"]
-            #[doc = "request or the unlock_and_destroy request, depending on whether or"]
-            #[doc = "not the locked event was received on this object."]
-            async fn finished(&self) -> crate::client::Result<()>;
-        }
-    }
-    #[doc = "The client may use lock surfaces to display a screensaver, render a"]
-    #[doc = "dialog to enter a password and unlock the session, or however else it"]
-    #[doc = "sees fit."]
-    #[doc = ""]
-    #[doc = "On binding this interface the compositor will immediately send the"]
-    #[doc = "first configure event. After making the ack_configure request in"]
-    #[doc = "response to this event the client should attach and commit the first"]
-    #[doc = "buffer. Committing the surface before acking the first configure is a"]
-    #[doc = "protocol error. Committing the surface with a null buffer at any time"]
-    #[doc = "is a protocol error."]
-    #[doc = ""]
-    #[doc = "The compositor is free to handle keyboard/pointer focus for lock"]
-    #[doc = "surfaces however it chooses. A reasonable way to do this would be to"]
-    #[doc = "give the first lock surface created keyboard focus and change keyboard"]
-    #[doc = "focus if the user clicks on other surfaces."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod ext_session_lock_surface_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "surface committed before first ack_configure request"]
-            CommitBeforeFirstAck = 0u32,
-            #[doc = "surface committed with a null buffer"]
-            NullBuffer = 1u32,
-            #[doc = "failed to match ack'd width/height"]
-            DimensionsMismatch = 2u32,
-            #[doc = "serial provided in ack_configure is invalid"]
-            InvalidSerial = 3u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::CommitBeforeFirstAck),
-                    1u32 => Ok(Self::NullBuffer),
-                    2u32 => Ok(Self::DimensionsMismatch),
-                    3u32 => Ok(Self::InvalidSerial),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the ext_session_lock_surface_v1 interface. See the module level documentation for more info"]
-        pub trait ExtSessionLockSurfaceV1 {
-            const INTERFACE: &'static str = "ext_session_lock_surface_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "This informs the compositor that the lock surface object will no"]
-            #[doc = "longer be used."]
-            #[doc = ""]
-            #[doc = "It is recommended for a lock client to destroy lock surfaces if"]
-            #[doc = "their corresponding wl_output global is removed."]
-            #[doc = ""]
-            #[doc = "If a lock surface on an active output is destroyed before the"]
-            #[doc = "ext_session_lock_v1.unlock_and_destroy event is sent, the compositor"]
-            #[doc = "must fall back to rendering a solid color."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_session_lock_surface_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "When a configure event is received, if a client commits the surface"]
-            #[doc = "in response to the configure event, then the client must make an"]
-            #[doc = "ack_configure request sometime before the commit request, passing"]
-            #[doc = "along the serial of the configure event."]
-            #[doc = ""]
-            #[doc = "If the client receives multiple configure events before it can"]
-            #[doc = "respond to one, it only has to ack the last configure event."]
-            #[doc = ""]
-            #[doc = "A client is not required to commit immediately after sending an"]
-            #[doc = "ack_configure request - it may even ack_configure several times"]
-            #[doc = "before its next surface commit."]
-            #[doc = ""]
-            #[doc = "A client may send multiple ack_configure requests before committing,"]
-            #[doc = "but only the last request sent before a commit indicates which"]
-            #[doc = "configure event the client really is responding to."]
-            #[doc = ""]
-            #[doc = "Sending an ack_configure request consumes the configure event"]
-            #[doc = "referenced by the given serial, as well as all older configure events"]
-            #[doc = "sent on this object."]
-            #[doc = ""]
-            #[doc = "It is a protocol error to issue multiple ack_configure requests"]
-            #[doc = "referencing the same configure event or to issue an ack_configure"]
-            #[doc = "request referencing a configure event older than the last configure"]
-            #[doc = "event acked for a given lock surface."]
-            async fn ack_configure(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                serial: u32,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> ext_session_lock_surface_v1#{}.ack_configure()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This event is sent once on binding the interface and may be sent again"]
-            #[doc = "at the compositor's discretion, for example if output geometry changes."]
-            #[doc = ""]
-            #[doc = "The width and height are in surface-local coordinates and are exact"]
-            #[doc = "requirements. Failing to match these surface dimensions in the next"]
-            #[doc = "commit after acking a configure is a protocol error."]
-            async fn configure(
-                &self,
-                serial: u32,
-                width: u32,
-                height: u32,
-            ) -> crate::client::Result<()>;
-        }
-    }
-}
-#[doc = "The transient seat protocol can be used by privileged clients to create"]
-#[doc = "independent seats that will be removed from the compositor when the client"]
-#[doc = "destroys its transient seat."]
-#[doc = ""]
-#[doc = "This protocol is intended for use with virtual input protocols such as"]
-#[doc = "\"virtual_keyboard_unstable_v1\" or \"wlr_virtual_pointer_unstable_v1\", both"]
-#[doc = "of which allow the user to select a seat."]
-#[doc = ""]
-#[doc = "The \"wl_seat\" global created by this protocol does not generate input events"]
-#[doc = "on its own, or have any capabilities except those assigned to it by other"]
-#[doc = "protocol extensions, such as the ones mentioned above."]
-#[doc = ""]
-#[doc = "For example, a remote desktop server can create a seat with virtual inputs"]
-#[doc = "for each remote user by following these steps for each new connection:"]
-#[doc = "* Create a transient seat"]
-#[doc = "* Wait for the transient seat to be created"]
-#[doc = "* Locate a \"wl_seat\" global with a matching name"]
-#[doc = "* Create virtual inputs using the resulting \"wl_seat\" global"]
-#[allow(clippy::module_inception)]
-pub mod ext_transient_seat_v1 {
-    #[doc = "The transient seat manager creates short-lived seats."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod ext_transient_seat_manager_v1 {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the ext_transient_seat_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtTransientSeatManagerV1 {
-            const INTERFACE: &'static str = "ext_transient_seat_manager_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Create a new seat that is removed when the client side transient seat"]
-            #[doc = "object is destroyed."]
-            #[doc = ""]
-            #[doc = "The actual seat may be removed sooner, in which case the transient seat"]
-            #[doc = "object shall become inert."]
-            async fn create(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                seat: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_transient_seat_manager_v1#{}.create()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(seat))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Destroy the manager."]
-            #[doc = ""]
-            #[doc = "All objects created by the manager will remain valid until they are"]
-            #[doc = "destroyed themselves."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_transient_seat_manager_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-    #[doc = "When the transient seat handle is destroyed, the seat itself will also be"]
-    #[doc = "destroyed."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod ext_transient_seat_v1 {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the ext_transient_seat_v1 interface. See the module level documentation for more info"]
-        pub trait ExtTransientSeatV1 {
-            const INTERFACE: &'static str = "ext_transient_seat_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "When the transient seat object is destroyed by the client, the"]
-            #[doc = "associated seat created by the compositor is also destroyed."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_transient_seat_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This event advertises the global name for the wl_seat to be used with"]
-            #[doc = "wl_registry_bind."]
-            #[doc = ""]
-            #[doc = "It is sent exactly once, immediately after the transient seat is created"]
-            #[doc = "and the new \"wl_seat\" global is advertised, if and only if the creation"]
-            #[doc = "of the transient seat was allowed."]
-            async fn ready(&self, global_name: u32) -> crate::client::Result<()>;
-            #[doc = "The event informs the client that the compositor denied its request to"]
-            #[doc = "create a transient seat."]
-            #[doc = ""]
-            #[doc = "It is sent exactly once, immediately after the transient seat object is"]
-            #[doc = "created, if and only if the creation of the transient seat was denied."]
-            #[doc = ""]
-            #[doc = "After receiving this event, the client should destroy the object."]
-            async fn denied(&self) -> crate::client::Result<()>;
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod ext_workspace_v1 {
-    #[doc = "Workspaces, also called virtual desktops, are groups of surfaces. A"]
-    #[doc = "compositor with a concept of workspaces may only show some such groups of"]
-    #[doc = "surfaces (those of 'active' workspaces) at a time.\u{a0}'Activating' a"]
-    #[doc = "workspace is a request for the compositor to display that workspace's"]
-    #[doc = "surfaces as normal, whereas the compositor may hide or otherwise"]
-    #[doc = "de-emphasise surfaces that are associated only with 'inactive' workspaces."]
-    #[doc = "Workspaces are grouped by which sets of outputs they correspond to, and"]
-    #[doc = "may contain surfaces only from those outputs. In this way, it is possible"]
-    #[doc = "for each output to have its own set of workspaces, or for all outputs (or"]
-    #[doc = "any other arbitrary grouping) to share workspaces. Compositors may"]
-    #[doc = "optionally conceptually arrange each group of workspaces in an"]
-    #[doc = "N-dimensional grid."]
-    #[doc = ""]
-    #[doc = "The purpose of this protocol is to enable the creation of taskbars and"]
-    #[doc = "docks by providing them with a list of workspaces and their properties,"]
-    #[doc = "and allowing them to activate and deactivate workspaces."]
-    #[doc = ""]
-    #[doc = "After a client binds the ext_workspace_manager_v1, each workspace will be"]
-    #[doc = "sent via the workspace event."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod ext_workspace_manager_v1 {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the ext_workspace_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtWorkspaceManagerV1 {
-            const INTERFACE: &'static str = "ext_workspace_manager_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "The client must send this request after it has finished sending other"]
-            #[doc = "requests. The compositor must process a series of requests preceding a"]
-            #[doc = "commit request atomically."]
-            #[doc = ""]
-            #[doc = "This allows changes to the workspace properties to be seen as atomic,"]
-            #[doc = "even if they happen via multiple events, and even if they involve"]
-            #[doc = "multiple ext_workspace_handle_v1 objects, for example, deactivating one"]
-            #[doc = "workspace and activating another."]
-            async fn commit(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_manager_v1#{}.commit()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Indicates the client no longer wishes to receive events for new"]
-            #[doc = "workspace groups. However the compositor may emit further workspace"]
-            #[doc = "events, until the finished event is emitted. The compositor is expected"]
-            #[doc = "to send the finished event eventually once the stop request has been processed."]
-            #[doc = ""]
-            #[doc = "The client must not send any requests after this one, doing so will raise a wl_display"]
-            #[doc = "invalid_object error."]
-            async fn stop(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_manager_v1#{}.stop()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This event is emitted whenever a new workspace group has been created."]
-            #[doc = ""]
-            #[doc = "All initial details of the workspace group (outputs) will be"]
-            #[doc = "sent immediately after this event via the corresponding events in"]
-            #[doc = "ext_workspace_group_handle_v1 and ext_workspace_handle_v1."]
-            async fn workspace_group(
-                &self,
-                workspace_group: crate::wire::ObjectId,
-            ) -> crate::client::Result<()>;
-            #[doc = "This event is emitted whenever a new workspace has been created."]
-            #[doc = ""]
-            #[doc = "All initial details of the workspace (name, coordinates, state) will"]
-            #[doc = "be sent immediately after this event via the corresponding events in"]
-            #[doc = "ext_workspace_handle_v1."]
-            #[doc = ""]
-            #[doc = "Workspaces start off unassigned to any workspace group."]
-            async fn workspace(
-                &self,
-                workspace: crate::wire::ObjectId,
-            ) -> crate::client::Result<()>;
-            #[doc = "This event is sent after all changes in all workspaces and workspace groups have been"]
-            #[doc = "sent."]
-            #[doc = ""]
-            #[doc = "This allows changes to one or more ext_workspace_group_handle_v1"]
-            #[doc = "properties and ext_workspace_handle_v1 properties"]
-            #[doc = "to be seen as atomic, even if they happen via multiple events."]
-            #[doc = "In particular, an output moving from one workspace group to"]
-            #[doc = "another sends an output_enter event and an output_leave event to the two"]
-            #[doc = "ext_workspace_group_handle_v1 objects in question. The compositor sends"]
-            #[doc = "the done event only after updating the output information in both"]
-            #[doc = "workspace groups."]
-            async fn done(&self) -> crate::client::Result<()>;
-            #[doc = "This event indicates that the compositor is done sending events to the"]
-            #[doc = "ext_workspace_manager_v1. The server will destroy the object"]
-            #[doc = "immediately after sending this request."]
-            async fn finished(&self) -> crate::client::Result<()>;
-        }
-    }
-    #[doc = "A ext_workspace_group_handle_v1 object represents a workspace group"]
-    #[doc = "that is assigned a set of outputs and contains a number of workspaces."]
-    #[doc = ""]
-    #[doc = "The set of outputs assigned to the workspace group is conveyed to the client via"]
-    #[doc = "output_enter and output_leave events, and its workspaces are conveyed with"]
-    #[doc = "workspace events."]
-    #[doc = ""]
-    #[doc = "For example, a compositor which has a set of workspaces for each output may"]
-    #[doc = "advertise a workspace group (and its workspaces) per output, whereas a compositor"]
-    #[doc = "where a workspace spans all outputs may advertise a single workspace group for all"]
-    #[doc = "outputs."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod ext_workspace_group_handle_v1 {
-        use futures_util::SinkExt;
-        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct GroupCapabilities : u32 { # [doc = "create_workspace request is available"] const CreateWorkspace = 1u32 ; } }
-        impl TryFrom<u32> for GroupCapabilities {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
-        impl std::fmt::Display for GroupCapabilities {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                self.bits().fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the ext_workspace_group_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ExtWorkspaceGroupHandleV1 {
-            const INTERFACE: &'static str = "ext_workspace_group_handle_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Request that the compositor create a new workspace with the given name"]
-            #[doc = "and assign it to this group."]
-            #[doc = ""]
-            #[doc = "There is no guarantee that the compositor will create a new workspace,"]
-            #[doc = "or that the created workspace will have the provided name."]
-            async fn create_workspace(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                workspace: String,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> ext_workspace_group_handle_v1#{}.create_workspace()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(workspace))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Destroys the ext_workspace_group_handle_v1 object."]
-            #[doc = ""]
-            #[doc = "This request should be send either when the client does not want to"]
-            #[doc = "use the workspace group object any more or after the removed event to finalize"]
-            #[doc = "the destruction of the object."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_group_handle_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This event advertises the capabilities supported by the compositor. If"]
-            #[doc = "a capability isn't supported, clients should hide or disable the UI"]
-            #[doc = "elements that expose this functionality. For instance, if the"]
-            #[doc = "compositor doesn't advertise support for creating workspaces, a button"]
-            #[doc = "triggering the create_workspace request should not be displayed."]
-            #[doc = ""]
-            #[doc = "The compositor will ignore requests it doesn't support. For instance,"]
-            #[doc = "a compositor which doesn't advertise support for creating workspaces will ignore"]
-            #[doc = "create_workspace requests."]
-            #[doc = ""]
-            #[doc = "Compositors must send this event once after creation of an"]
-            #[doc = "ext_workspace_group_handle_v1. When the capabilities change, compositors"]
-            #[doc = "must send this event again."]
-            async fn capabilities(
-                &self,
-                capabilities: GroupCapabilities,
-            ) -> crate::client::Result<()>;
-            #[doc = "This event is emitted whenever an output is assigned to the workspace"]
-            #[doc = "group or a new `wl_output` object is bound by the client, which was already"]
-            #[doc = "assigned to this workspace_group."]
-            async fn output_enter(
-                &self,
-                output: crate::wire::ObjectId,
-            ) -> crate::client::Result<()>;
-            #[doc = "This event is emitted whenever an output is removed from the workspace"]
-            #[doc = "group."]
-            async fn output_leave(
-                &self,
-                output: crate::wire::ObjectId,
-            ) -> crate::client::Result<()>;
-            #[doc = "This event is emitted whenever a workspace is assigned to this group."]
-            #[doc = "A workspace may only ever be assigned to a single group at a single point"]
-            #[doc = "in time, but can be re-assigned during it's lifetime."]
-            async fn workspace_enter(
-                &self,
-                workspace: crate::wire::ObjectId,
-            ) -> crate::client::Result<()>;
-            #[doc = "This event is emitted whenever a workspace is removed from this group."]
-            async fn workspace_leave(
-                &self,
-                workspace: crate::wire::ObjectId,
-            ) -> crate::client::Result<()>;
-            #[doc = "This event is send when the group associated with the ext_workspace_group_handle_v1"]
-            #[doc = "has been removed. After sending this request the compositor will immediately consider"]
-            #[doc = "the object inert. Any requests will be ignored except the destroy request."]
-            #[doc = "It is guaranteed there won't be any more events referencing this"]
-            #[doc = "ext_workspace_group_handle_v1."]
-            #[doc = ""]
-            #[doc = "The compositor must remove all workspaces belonging to a workspace group"]
-            #[doc = "via a workspace_leave event before removing the workspace group."]
-            async fn removed(&self) -> crate::client::Result<()>;
-        }
-    }
-    #[doc = "A ext_workspace_handle_v1 object represents a workspace that handles a"]
-    #[doc = "group of surfaces."]
-    #[doc = ""]
-    #[doc = "Each workspace has:"]
-    #[doc = "- a name, conveyed to the client with the name event"]
-    #[doc = "- potentially an id conveyed with the id event"]
-    #[doc = "- a list of states, conveyed to the client with the state event"]
-    #[doc = "- and optionally a set of coordinates, conveyed to the client with the"]
-    #[doc = "coordinates event"]
-    #[doc = ""]
-    #[doc = "The client may request that the compositor activate or deactivate the workspace."]
-    #[doc = ""]
-    #[doc = "Each workspace can belong to only a single workspace group."]
-    #[doc = "Depepending on the compositor policy, there might be workspaces with"]
-    #[doc = "the same name in different workspace groups, but these workspaces are still"]
-    #[doc = "separate (e.g. one of them might be active while the other is not)."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod ext_workspace_handle_v1 {
-        use futures_util::SinkExt;
-        bitflags::bitflags! { # [doc = "The different states that a workspace can have."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct State : u32 { # [doc = "the workspace is active"] const Active = 1u32 ; # [doc = "the workspace requests attention"] const Urgent = 2u32 ; const Hidden = 4u32 ; } }
-        impl TryFrom<u32> for State {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
-        impl std::fmt::Display for State {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                self.bits().fmt(f)
-            }
-        }
-        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct WorkspaceCapabilities : u32 { # [doc = "activate request is available"] const Activate = 1u32 ; # [doc = "deactivate request is available"] const Deactivate = 2u32 ; # [doc = "remove request is available"] const Remove = 4u32 ; # [doc = "assign request is available"] const Assign = 8u32 ; } }
-        impl TryFrom<u32> for WorkspaceCapabilities {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
-        impl std::fmt::Display for WorkspaceCapabilities {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                self.bits().fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the ext_workspace_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ExtWorkspaceHandleV1 {
-            const INTERFACE: &'static str = "ext_workspace_handle_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroys the ext_workspace_handle_v1 object."]
-            #[doc = ""]
-            #[doc = "This request should be made either when the client does not want to"]
-            #[doc = "use the workspace object any more or after the remove event to finalize"]
-            #[doc = "the destruction of the object."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_handle_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Request that this workspace be activated."]
-            #[doc = ""]
-            #[doc = "There is no guarantee the workspace will be actually activated, and"]
-            #[doc = "behaviour may be compositor-dependent. For example, activating a"]
-            #[doc = "workspace may or may not deactivate all other workspaces in the same"]
-            #[doc = "group."]
-            async fn activate(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_handle_v1#{}.activate()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Request that this workspace be deactivated."]
-            #[doc = ""]
-            #[doc = "There is no guarantee the workspace will be actually deactivated."]
-            async fn deactivate(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_handle_v1#{}.deactivate()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Requests that this workspace is assigned to the given workspace group."]
-            #[doc = ""]
-            #[doc = "There is no guarantee the workspace will be assigned."]
-            async fn assign(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                workspace_group: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_handle_v1#{}.assign()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(workspace_group))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Request that this workspace be removed."]
-            #[doc = ""]
-            #[doc = "There is no guarantee the workspace will be actually removed."]
-            async fn remove(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_handle_v1#{}.remove()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "If this event is emitted, it will be send immediately after the"]
-            #[doc = "ext_workspace_handle_v1 is created or when an id is assigned to"]
-            #[doc = "a workspace (at most once during it's lifetime)."]
-            #[doc = ""]
-            #[doc = "An id will never change during the lifetime of the `ext_workspace_handle_v1`"]
-            #[doc = "and is guaranteed to be unique during it's lifetime."]
-            #[doc = ""]
-            #[doc = "Ids are not human-readable and shouldn't be displayed, use `name` for that purpose."]
-            #[doc = ""]
-            #[doc = "Compositors are expected to only send ids for workspaces likely stable across multiple"]
-            #[doc = "sessions and can be used by clients to store preferences for workspaces. Workspaces without"]
-            #[doc = "ids should be considered temporary and any data associated with them should be deleted once"]
-            #[doc = "the respective object is lost."]
-            async fn id(&self, id: String) -> crate::client::Result<()>;
-            #[doc = "This event is emitted immediately after the ext_workspace_handle_v1 is"]
-            #[doc = "created and whenever the name of the workspace changes."]
-            #[doc = ""]
-            #[doc = "A name is meant to be human-readable and can be displayed to a user."]
-            #[doc = "Unlike the id it is neither stable nor unique."]
-            async fn name(&self, name: String) -> crate::client::Result<()>;
-            #[doc = "This event is used to organize workspaces into an N-dimensional grid"]
-            #[doc = "within a workspace group, and if supported, is emitted immediately after"]
-            #[doc = "the ext_workspace_handle_v1 is created and whenever the coordinates of"]
-            #[doc = "the workspace change. Compositors may not send this event if they do not"]
-            #[doc = "conceptually arrange workspaces in this way. If compositors simply"]
-            #[doc = "number workspaces, without any geometric interpretation, they may send"]
-            #[doc = "1D coordinates, which clients should not interpret as implying any"]
-            #[doc = "geometry. Sending an empty array means that the compositor no longer"]
-            #[doc = "orders the workspace geometrically."]
-            #[doc = ""]
-            #[doc = "Coordinates have an arbitrary number of dimensions N with an uint32"]
-            #[doc = "position along each dimension. By convention if N > 1, the first"]
-            #[doc = "dimension is X, the second Y, the third Z, and so on. The compositor may"]
-            #[doc = "chose to utilize these events for a more novel workspace layout"]
-            #[doc = "convention, however. No guarantee is made about the grid being filled or"]
-            #[doc = "bounded; there may be a workspace at coordinate 1 and another at"]
-            #[doc = "coordinate 1000 and none in between. Within a workspace group, however,"]
-            #[doc = "workspaces must have unique coordinates of equal dimensionality."]
-            async fn coordinates(&self, coordinates: Vec<u8>) -> crate::client::Result<()>;
-            #[doc = "This event is emitted immediately after the ext_workspace_handle_v1 is"]
-            #[doc = "created and each time the workspace state changes, either because of a"]
-            #[doc = "compositor action or because of a request in this protocol."]
-            #[doc = ""]
-            #[doc = "Missing states convey the opposite meaning, e.g. an unset active bit"]
-            #[doc = "means the workspace is currently inactive."]
-            async fn state(&self, state: State) -> crate::client::Result<()>;
-            #[doc = "This event advertises the capabilities supported by the compositor. If"]
-            #[doc = "a capability isn't supported, clients should hide or disable the UI"]
-            #[doc = "elements that expose this functionality. For instance, if the"]
-            #[doc = "compositor doesn't advertise support for removing workspaces, a button"]
-            #[doc = "triggering the remove request should not be displayed."]
-            #[doc = ""]
-            #[doc = "The compositor will ignore requests it doesn't support. For instance,"]
-            #[doc = "a compositor which doesn't advertise support for remove will ignore"]
-            #[doc = "remove requests."]
-            #[doc = ""]
-            #[doc = "Compositors must send this event once after creation of an"]
-            #[doc = "ext_workspace_handle_v1 . When the capabilities change, compositors"]
-            #[doc = "must send this event again."]
-            async fn capabilities(
-                &self,
-                capabilities: WorkspaceCapabilities,
-            ) -> crate::client::Result<()>;
-            #[doc = "This event is send when the workspace associated with the ext_workspace_handle_v1"]
-            #[doc = "has been removed. After sending this request, the compositor will immediately consider"]
-            #[doc = "the object inert. Any requests will be ignored except the destroy request."]
-            #[doc = ""]
-            #[doc = "It is guaranteed there won't be any more events referencing this"]
-            #[doc = "ext_workspace_handle_v1."]
-            #[doc = ""]
-            #[doc = "The compositor must only remove a workspaces not currently belonging to any"]
-            #[doc = "workspace_group."]
-            async fn removed(&self) -> crate::client::Result<()>;
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod fifo_v1 {
-    #[doc = "When a Wayland compositor considers applying a content update,"]
-    #[doc = "it must ensure all the update's readiness constraints (fences, etc)"]
-    #[doc = "are met."]
-    #[doc = ""]
-    #[doc = "This protocol provides a way to use the completion of a display refresh"]
-    #[doc = "cycle as an additional readiness constraint."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_fifo_manager_v1 {
-        use futures_util::SinkExt;
-        #[doc = "These fatal protocol errors may be emitted in response to"]
-        #[doc = "illegal requests."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "fifo manager already exists for surface"]
-            AlreadyExists = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::AlreadyExists),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the wp_fifo_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpFifoManagerV1 {
-            const INTERFACE: &'static str = "wp_fifo_manager_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Informs the server that the client will no longer be using"]
-            #[doc = "this protocol object. Existing objects created by this object"]
-            #[doc = "are not affected."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_fifo_manager_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Establish a fifo object for a surface that may be used to add"]
-            #[doc = "display refresh constraints to content updates."]
-            #[doc = ""]
-            #[doc = "Only one such object may exist for a surface and attempting"]
-            #[doc = "to create more than one will result in an already_exists"]
-            #[doc = "protocol error. If a surface is acted on by multiple software"]
-            #[doc = "components, general best practice is that only the component"]
-            #[doc = "performing wl_surface.attach operations should use this protocol."]
-            async fn get_fifo(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_fifo_manager_v1#{}.get_fifo()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(id))
-                    .put_object(Some(surface))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-    #[doc = "A fifo object for a surface that may be used to add"]
-    #[doc = "display refresh constraints to content updates."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_fifo_v1 {
-        use futures_util::SinkExt;
-        #[doc = "These fatal protocol errors may be emitted in response to"]
-        #[doc = "illegal requests."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "the associated surface no longer exists"]
-            SurfaceDestroyed = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::SurfaceDestroyed),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the wp_fifo_v1 interface. See the module level documentation for more info"]
-        pub trait WpFifoV1 {
-            const INTERFACE: &'static str = "wp_fifo_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "When the content update containing the \"set_barrier\" is applied,"]
-            #[doc = "it sets a \"fifo_barrier\" condition on the surface associated with"]
-            #[doc = "the fifo object. The condition is cleared immediately after the"]
-            #[doc = "following latching deadline for non-tearing presentation."]
-            #[doc = ""]
-            #[doc = "The compositor may clear the condition early if it must do so to"]
-            #[doc = "ensure client forward progress assumptions."]
-            #[doc = ""]
-            #[doc = "To wait for this condition to clear, use the \"wait_barrier\" request."]
-            #[doc = ""]
-            #[doc = "\"set_barrier\" is double-buffered state, see wl_surface.commit."]
-            #[doc = ""]
-            #[doc = "Requesting set_barrier after the fifo object's surface is"]
-            #[doc = "destroyed will generate a \"surface_destroyed\" error."]
-            async fn set_barrier(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_fifo_v1#{}.set_barrier()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Indicate that this content update is not ready while a"]
-            #[doc = "\"fifo_barrier\" condition is present on the surface."]
-            #[doc = ""]
-            #[doc = "This means that when the content update containing \"set_barrier\""]
-            #[doc = "was made active at a latching deadline, it will be active for"]
-            #[doc = "at least one refresh cycle. A content update which is allowed to"]
-            #[doc = "tear might become active after a latching deadline if no content"]
-            #[doc = "update became active at the deadline."]
-            #[doc = ""]
-            #[doc = "The constraint must be ignored if the surface is a subsurface in"]
-            #[doc = "synchronized mode. If the surface is not being updated by the"]
-            #[doc = "compositor (off-screen, occluded) the compositor may ignore the"]
-            #[doc = "constraint. Clients must use an additional mechanism such as"]
-            #[doc = "frame callbacks or timestamps to ensure throttling occurs under"]
-            #[doc = "all conditions."]
-            #[doc = ""]
-            #[doc = "\"wait_barrier\" is double-buffered state, see wl_surface.commit."]
-            #[doc = ""]
-            #[doc = "Requesting \"wait_barrier\" after the fifo object's surface is"]
-            #[doc = "destroyed will generate a \"surface_destroyed\" error."]
-            async fn wait_barrier(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_fifo_v1#{}.wait_barrier()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Informs the server that the client will no longer be using"]
-            #[doc = "this protocol object."]
-            #[doc = ""]
-            #[doc = "Surface state changes previously made by this protocol are"]
-            #[doc = "unaffected by this object's destruction."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_fifo_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-}
-#[doc = "This protocol allows a compositor to suggest for surfaces to render at"]
-#[doc = "fractional scales."]
-#[doc = ""]
-#[doc = "A client can submit scaled content by utilizing wp_viewport. This is done by"]
-#[doc = "creating a wp_viewport object for the surface and setting the destination"]
-#[doc = "rectangle to the surface size before the scale factor is applied."]
-#[doc = ""]
-#[doc = "The buffer size is calculated by multiplying the surface size by the"]
-#[doc = "intended scale."]
-#[doc = ""]
-#[doc = "The wl_surface buffer scale should remain set to 1."]
-#[doc = ""]
-#[doc = "If a surface has a surface-local size of 100 px by 50 px and wishes to"]
-#[doc = "submit buffers with a scale of 1.5, then a buffer of 150px by 75 px should"]
-#[doc = "be used and the wp_viewport destination rectangle should be 100 px by 50 px."]
-#[doc = ""]
-#[doc = "For toplevel surfaces, the size is rounded halfway away from zero. The"]
-#[doc = "rounding algorithm for subsurface position and size is not defined."]
-#[allow(clippy::module_inception)]
-pub mod fractional_scale_v1 {
-    #[doc = "A global interface for requesting surfaces to use fractional scales."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_fractional_scale_manager_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "the surface already has a fractional_scale object associated"]
-            FractionalScaleExists = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::FractionalScaleExists),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the wp_fractional_scale_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpFractionalScaleManagerV1 {
-            const INTERFACE: &'static str = "wp_fractional_scale_manager_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Informs the server that the client will not be using this protocol"]
-            #[doc = "object anymore. This does not affect any other objects,"]
-            #[doc = "wp_fractional_scale_v1 objects included."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_fractional_scale_manager_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Create an add-on object for the the wl_surface to let the compositor"]
-            #[doc = "request fractional scales. If the given wl_surface already has a"]
-            #[doc = "wp_fractional_scale_v1 object associated, the fractional_scale_exists"]
-            #[doc = "protocol error is raised."]
-            async fn get_fractional_scale(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> wp_fractional_scale_manager_v1#{}.get_fractional_scale()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(id))
-                    .put_object(Some(surface))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-    #[doc = "An additional interface to a wl_surface object which allows the compositor"]
-    #[doc = "to inform the client of the preferred scale."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_fractional_scale_v1 {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the wp_fractional_scale_v1 interface. See the module level documentation for more info"]
-        pub trait WpFractionalScaleV1 {
-            const INTERFACE: &'static str = "wp_fractional_scale_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy the fractional scale object. When this object is destroyed,"]
-            #[doc = "preferred_scale events will no longer be sent."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_fractional_scale_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Notification of a new preferred scale for this surface that the"]
-            #[doc = "compositor suggests that the client should use."]
-            #[doc = ""]
-            #[doc = "The sent scale is the numerator of a fraction with a denominator of 120."]
-            async fn preferred_scale(&self, scale: u32) -> crate::client::Result<()>;
-        }
-    }
-}
-#[doc = "This protocol allows clients to request explicit synchronization for"]
-#[doc = "buffers. It is tied to the Linux DRM synchronization object framework."]
-#[doc = ""]
-#[doc = "Synchronization refers to co-ordination of pipelined operations performed"]
-#[doc = "on buffers. Most GPU clients will schedule an asynchronous operation to"]
-#[doc = "render to the buffer, then immediately send the buffer to the compositor"]
-#[doc = "to be attached to a surface."]
-#[doc = ""]
-#[doc = "With implicit synchronization, ensuring that the rendering operation is"]
-#[doc = "complete before the compositor displays the buffer is an implementation"]
-#[doc = "detail handled by either the kernel or userspace graphics driver."]
-#[doc = ""]
-#[doc = "By contrast, with explicit synchronization, DRM synchronization object"]
-#[doc = "timeline points mark when the asynchronous operations are complete. When"]
-#[doc = "submitting a buffer, the client provides a timeline point which will be"]
-#[doc = "waited on before the compositor accesses the buffer, and another timeline"]
-#[doc = "point that the compositor will signal when it no longer needs to access the"]
-#[doc = "buffer contents for the purposes of the surface commit."]
-#[doc = ""]
-#[doc = "Linux DRM synchronization objects are documented at:"]
-#[doc = "https://dri.freedesktop.org/docs/drm/gpu/drm-mm.html#drm-sync-objects"]
-#[doc = ""]
-#[doc = "Warning! The protocol described in this file is currently in the testing"]
-#[doc = "phase. Backward compatible changes may be added together with the"]
-#[doc = "corresponding interface version bump. Backward incompatible changes can"]
-#[doc = "only be done by creating a new major version of the extension."]
-#[allow(clippy::module_inception)]
-pub mod linux_drm_syncobj_v1 {
-    #[doc = "This global is a factory interface, allowing clients to request"]
-    #[doc = "explicit synchronization for buffers on a per-surface basis."]
-    #[doc = ""]
-    #[doc = "See wp_linux_drm_syncobj_surface_v1 for more information."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_linux_drm_syncobj_manager_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "the surface already has a synchronization object associated"]
-            SurfaceExists = 0u32,
-            #[doc = "the timeline object could not be imported"]
-            InvalidTimeline = 1u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::SurfaceExists),
-                    1u32 => Ok(Self::InvalidTimeline),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the wp_linux_drm_syncobj_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpLinuxDrmSyncobjManagerV1 {
-            const INTERFACE: &'static str = "wp_linux_drm_syncobj_manager_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy this explicit synchronization factory object. Other objects"]
-            #[doc = "shall not be affected by this request."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_linux_drm_syncobj_manager_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Instantiate an interface extension for the given wl_surface to provide"]
-            #[doc = "explicit synchronization."]
-            #[doc = ""]
-            #[doc = "If the given wl_surface already has an explicit synchronization object"]
-            #[doc = "associated, the surface_exists protocol error is raised."]
-            #[doc = ""]
-            #[doc = "Graphics APIs, like EGL or Vulkan, that manage the buffer queue and"]
-            #[doc = "commits of a wl_surface themselves, are likely to be using this"]
-            #[doc = "extension internally. If a client is using such an API for a"]
-            #[doc = "wl_surface, it should not directly use this extension on that surface,"]
-            #[doc = "to avoid raising a surface_exists protocol error."]
-            async fn get_surface(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> wp_linux_drm_syncobj_manager_v1#{}.get_surface()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(id))
-                    .put_object(Some(surface))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Import a DRM synchronization object timeline."]
-            #[doc = ""]
-            #[doc = "If the FD cannot be imported, the invalid_timeline error is raised."]
-            async fn import_timeline(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                fd: rustix::fd::OwnedFd,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> wp_linux_drm_syncobj_manager_v1#{}.import_timeline()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(id))
-                    .put_fd(fd)
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-    #[doc = "This object represents an explicit synchronization object timeline"]
-    #[doc = "imported by the client to the compositor."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_linux_drm_syncobj_timeline_v1 {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the wp_linux_drm_syncobj_timeline_v1 interface. See the module level documentation for more info"]
-        pub trait WpLinuxDrmSyncobjTimelineV1 {
-            const INTERFACE: &'static str = "wp_linux_drm_syncobj_timeline_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy the synchronization object timeline. Other objects are not"]
-            #[doc = "affected by this request, in particular timeline points set by"]
-            #[doc = "set_acquire_point and set_release_point are not unset."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> wp_linux_drm_syncobj_timeline_v1#{}.destroy()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-    #[doc = "This object is an add-on interface for wl_surface to enable explicit"]
-    #[doc = "synchronization."]
-    #[doc = ""]
-    #[doc = "Each surface can be associated with only one object of this interface at"]
-    #[doc = "any time."]
-    #[doc = ""]
-    #[doc = "Explicit synchronization is guaranteed to be supported for buffers"]
-    #[doc = "created with any version of the linux-dmabuf protocol. Compositors are"]
-    #[doc = "free to support explicit synchronization for additional buffer types."]
-    #[doc = "If at surface commit time the attached buffer does not support explicit"]
-    #[doc = "synchronization, an unsupported_buffer error is raised."]
-    #[doc = ""]
-    #[doc = "As long as the wp_linux_drm_syncobj_surface_v1 object is alive, the"]
-    #[doc = "compositor may ignore implicit synchronization for buffers attached and"]
-    #[doc = "committed to the wl_surface. The delivery of wl_buffer.release events"]
-    #[doc = "for buffers attached to the surface becomes undefined."]
-    #[doc = ""]
-    #[doc = "Clients must set both acquire and release points if and only if a"]
-    #[doc = "non-null buffer is attached in the same surface commit. See the"]
-    #[doc = "no_buffer, no_acquire_point and no_release_point protocol errors."]
-    #[doc = ""]
-    #[doc = "If at surface commit time the acquire and release DRM syncobj timelines"]
-    #[doc = "are identical, the acquire point value must be strictly less than the"]
-    #[doc = "release point value, or else the conflicting_points protocol error is"]
-    #[doc = "raised."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_linux_drm_syncobj_surface_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "the associated wl_surface was destroyed"]
-            NoSurface = 1u32,
-            #[doc = "the buffer does not support explicit synchronization"]
-            UnsupportedBuffer = 2u32,
-            #[doc = "no buffer was attached"]
-            NoBuffer = 3u32,
-            #[doc = "no acquire timeline point was set"]
-            NoAcquirePoint = 4u32,
-            #[doc = "no release timeline point was set"]
-            NoReleasePoint = 5u32,
-            #[doc = "acquire and release timeline points are in conflict"]
-            ConflictingPoints = 6u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    1u32 => Ok(Self::NoSurface),
-                    2u32 => Ok(Self::UnsupportedBuffer),
-                    3u32 => Ok(Self::NoBuffer),
-                    4u32 => Ok(Self::NoAcquirePoint),
-                    5u32 => Ok(Self::NoReleasePoint),
-                    6u32 => Ok(Self::ConflictingPoints),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the wp_linux_drm_syncobj_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpLinuxDrmSyncobjSurfaceV1 {
-            const INTERFACE: &'static str = "wp_linux_drm_syncobj_surface_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy this surface synchronization object."]
-            #[doc = ""]
-            #[doc = "Any timeline point set by this object with set_acquire_point or"]
-            #[doc = "set_release_point since the last commit may be discarded by the"]
-            #[doc = "compositor. Any timeline point set by this object before the last"]
-            #[doc = "commit will not be affected."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_linux_drm_syncobj_surface_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Set the timeline point that must be signalled before the compositor may"]
-            #[doc = "sample from the buffer attached with wl_surface.attach."]
-            #[doc = ""]
-            #[doc = "The 64-bit unsigned value combined from point_hi and point_lo is the"]
-            #[doc = "point value."]
-            #[doc = ""]
-            #[doc = "The acquire point is double-buffered state, and will be applied on the"]
-            #[doc = "next wl_surface.commit request for the associated surface. Thus, it"]
-            #[doc = "applies only to the buffer that is attached to the surface at commit"]
-            #[doc = "time."]
-            #[doc = ""]
-            #[doc = "If an acquire point has already been attached during the same commit"]
-            #[doc = "cycle, the new point replaces the old one."]
-            #[doc = ""]
-            #[doc = "If the associated wl_surface was destroyed, a no_surface error is"]
-            #[doc = "raised."]
-            #[doc = ""]
-            #[doc = "If at surface commit time there is a pending acquire timeline point set"]
-            #[doc = "but no pending buffer attached, a no_buffer error is raised. If at"]
-            #[doc = "surface commit time there is a pending buffer attached but no pending"]
-            #[doc = "acquire timeline point set, the no_acquire_point protocol error is"]
-            #[doc = "raised."]
-            async fn set_acquire_point(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                timeline: crate::wire::ObjectId,
-                point_hi: u32,
-                point_lo: u32,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> wp_linux_drm_syncobj_surface_v1#{}.set_acquire_point()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(timeline))
-                    .put_uint(point_hi)
-                    .put_uint(point_lo)
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Set the timeline point that must be signalled by the compositor when it"]
-            #[doc = "has finished its usage of the buffer attached with wl_surface.attach"]
-            #[doc = "for the relevant commit."]
-            #[doc = ""]
-            #[doc = "Once the timeline point is signaled, and assuming the associated buffer"]
-            #[doc = "is not pending release from other wl_surface.commit requests, no"]
-            #[doc = "additional explicit or implicit synchronization with the compositor is"]
-            #[doc = "required to safely re-use the buffer."]
-            #[doc = ""]
-            #[doc = "Note that clients cannot rely on the release point being always"]
-            #[doc = "signaled after the acquire point: compositors may release buffers"]
-            #[doc = "without ever reading from them. In addition, the compositor may use"]
-            #[doc = "different presentation paths for different commits, which may have"]
-            #[doc = "different release behavior. As a result, the compositor may signal the"]
-            #[doc = "release points in a different order than the client committed them."]
-            #[doc = ""]
-            #[doc = "Because signaling a timeline point also signals every previous point,"]
-            #[doc = "it is generally not safe to use the same timeline object for the"]
-            #[doc = "release points of multiple buffers. The out-of-order signaling"]
-            #[doc = "described above may lead to a release point being signaled before the"]
-            #[doc = "compositor has finished reading. To avoid this, it is strongly"]
-            #[doc = "recommended that each buffer should use a separate timeline for its"]
-            #[doc = "release points."]
-            #[doc = ""]
-            #[doc = "The 64-bit unsigned value combined from point_hi and point_lo is the"]
-            #[doc = "point value."]
-            #[doc = ""]
-            #[doc = "The release point is double-buffered state, and will be applied on the"]
-            #[doc = "next wl_surface.commit request for the associated surface. Thus, it"]
-            #[doc = "applies only to the buffer that is attached to the surface at commit"]
-            #[doc = "time."]
-            #[doc = ""]
-            #[doc = "If a release point has already been attached during the same commit"]
-            #[doc = "cycle, the new point replaces the old one."]
-            #[doc = ""]
-            #[doc = "If the associated wl_surface was destroyed, a no_surface error is"]
-            #[doc = "raised."]
-            #[doc = ""]
-            #[doc = "If at surface commit time there is a pending release timeline point set"]
-            #[doc = "but no pending buffer attached, a no_buffer error is raised. If at"]
-            #[doc = "surface commit time there is a pending buffer attached but no pending"]
-            #[doc = "release timeline point set, the no_release_point protocol error is"]
-            #[doc = "raised."]
-            async fn set_release_point(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                timeline: crate::wire::ObjectId,
-                point_hi: u32,
-                point_lo: u32,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> wp_linux_drm_syncobj_surface_v1#{}.set_release_point()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(timeline))
-                    .put_uint(point_hi)
-                    .put_uint(point_lo)
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod security_context_v1 {
-    #[doc = "This interface allows a client to register a new Wayland connection to"]
-    #[doc = "the compositor and attach a security context to it."]
-    #[doc = ""]
-    #[doc = "This is intended to be used by sandboxes. Sandbox engines attach a"]
-    #[doc = "security context to all connections coming from inside the sandbox. The"]
-    #[doc = "compositor can then restrict the features that the sandboxed connections"]
-    #[doc = "can use."]
-    #[doc = ""]
-    #[doc = "Compositors should forbid nesting multiple security contexts by not"]
-    #[doc = "exposing wp_security_context_manager_v1 global to clients with a security"]
-    #[doc = "context attached, or by sending the nested protocol error. Nested"]
-    #[doc = "security contexts are dangerous because they can potentially allow"]
-    #[doc = "privilege escalation of a sandboxed client."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_security_context_manager_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "listening socket FD is invalid"]
-            InvalidListenFd = 1u32,
-            #[doc = "nested security contexts are forbidden"]
-            Nested = 2u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    1u32 => Ok(Self::InvalidListenFd),
-                    2u32 => Ok(Self::Nested),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the wp_security_context_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpSecurityContextManagerV1 {
-            const INTERFACE: &'static str = "wp_security_context_manager_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy the manager. This doesn't destroy objects created with the"]
-            #[doc = "manager."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_security_context_manager_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Creates a new security context with a socket listening FD."]
-            #[doc = ""]
-            #[doc = "The compositor will accept new client connections on listen_fd."]
-            #[doc = "listen_fd must be ready to accept new connections when this request is"]
-            #[doc = "sent by the client. In other words, the client must call bind(2) and"]
-            #[doc = "listen(2) before sending the FD."]
-            #[doc = ""]
-            #[doc = "close_fd is a FD that will signal hangup when the compositor should stop"]
-            #[doc = "accepting new connections on listen_fd."]
-            #[doc = ""]
-            #[doc = "The compositor must continue to accept connections on listen_fd when"]
-            #[doc = "the Wayland client which created the security context disconnects."]
-            #[doc = ""]
-            #[doc = "After sending this request, closing listen_fd and close_fd remains the"]
-            #[doc = "only valid operation on them."]
-            async fn create_listener(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                listen_fd: rustix::fd::OwnedFd,
-                close_fd: rustix::fd::OwnedFd,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> wp_security_context_manager_v1#{}.create_listener()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(id))
-                    .put_fd(listen_fd)
-                    .put_fd(close_fd)
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-    #[doc = "The security context allows a client to register a new client and attach"]
-    #[doc = "security context metadata to the connections."]
-    #[doc = ""]
-    #[doc = "When both are set, the combination of the application ID and the sandbox"]
-    #[doc = "engine must uniquely identify an application. The same application ID"]
-    #[doc = "will be used across instances (e.g. if the application is restarted, or"]
-    #[doc = "if the application is started multiple times)."]
-    #[doc = ""]
-    #[doc = "When both are set, the combination of the instance ID and the sandbox"]
-    #[doc = "engine must uniquely identify a running instance of an application."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_security_context_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "security context has already been committed"]
-            AlreadyUsed = 1u32,
-            #[doc = "metadata has already been set"]
-            AlreadySet = 2u32,
-            #[doc = "metadata is invalid"]
-            InvalidMetadata = 3u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    1u32 => Ok(Self::AlreadyUsed),
-                    2u32 => Ok(Self::AlreadySet),
-                    3u32 => Ok(Self::InvalidMetadata),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the wp_security_context_v1 interface. See the module level documentation for more info"]
-        pub trait WpSecurityContextV1 {
-            const INTERFACE: &'static str = "wp_security_context_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy the security context object."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_security_context_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Attach a unique sandbox engine name to the security context. The name"]
-            #[doc = "should follow the reverse-DNS style (e.g. \"org.flatpak\")."]
-            #[doc = ""]
-            #[doc = "A list of well-known engines is maintained at:"]
-            #[doc = "https://gitlab.freedesktop.org/wayland/wayland-protocols/-/blob/main/staging/security-context/engines.md"]
-            #[doc = ""]
-            #[doc = "It is a protocol error to call this request twice. The already_set"]
-            #[doc = "error is sent in this case."]
-            async fn set_sandbox_engine(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                name: String,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> wp_security_context_v1#{}.set_sandbox_engine()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(name))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Attach an application ID to the security context."]
-            #[doc = ""]
-            #[doc = "The application ID is an opaque, sandbox-specific identifier for an"]
-            #[doc = "application. See the well-known engines document for more details:"]
-            #[doc = "https://gitlab.freedesktop.org/wayland/wayland-protocols/-/blob/main/staging/security-context/engines.md"]
-            #[doc = ""]
-            #[doc = "The compositor may use the application ID to group clients belonging to"]
-            #[doc = "the same security context application."]
-            #[doc = ""]
-            #[doc = "Whether this request is optional or not depends on the sandbox engine used."]
-            #[doc = ""]
-            #[doc = "It is a protocol error to call this request twice. The already_set"]
-            #[doc = "error is sent in this case."]
-            async fn set_app_id(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                app_id: String,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_security_context_v1#{}.set_app_id()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(app_id))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Attach an instance ID to the security context."]
-            #[doc = ""]
-            #[doc = "The instance ID is an opaque, sandbox-specific identifier for a running"]
-            #[doc = "instance of an application. See the well-known engines document for"]
-            #[doc = "more details:"]
-            #[doc = "https://gitlab.freedesktop.org/wayland/wayland-protocols/-/blob/main/staging/security-context/engines.md"]
-            #[doc = ""]
-            #[doc = "Whether this request is optional or not depends on the sandbox engine used."]
-            #[doc = ""]
-            #[doc = "It is a protocol error to call this request twice. The already_set"]
-            #[doc = "error is sent in this case."]
-            async fn set_instance_id(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                instance_id: String,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_security_context_v1#{}.set_instance_id()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(instance_id))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Atomically register the new client and attach the security context"]
-            #[doc = "metadata."]
-            #[doc = ""]
-            #[doc = "If the provided metadata is inconsistent or does not match with out of"]
-            #[doc = "band metadata (see"]
-            #[doc = "https://gitlab.freedesktop.org/wayland/wayland-protocols/-/blob/main/staging/security-context/engines.md),"]
-            #[doc = "the invalid_metadata error may be sent eventually."]
-            #[doc = ""]
-            #[doc = "It's a protocol error to send any request other than \"destroy\" after"]
-            #[doc = "this request. In this case, the already_used error is sent."]
-            async fn commit(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_security_context_v1#{}.commit()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-}
-#[doc = "This protocol extension allows clients to create single-pixel buffers."]
-#[doc = ""]
-#[doc = "Compositors supporting this protocol extension should also support the"]
-#[doc = "viewporter protocol extension. Clients may use viewporter to scale a"]
-#[doc = "single-pixel buffer to a desired size."]
-#[doc = ""]
-#[doc = "Warning! The protocol described in this file is currently in the testing"]
-#[doc = "phase. Backward compatible changes may be added together with the"]
-#[doc = "corresponding interface version bump. Backward incompatible changes can"]
-#[doc = "only be done by creating a new major version of the extension."]
-#[allow(clippy::module_inception)]
-pub mod single_pixel_buffer_v1 {
-    #[doc = "The wp_single_pixel_buffer_manager_v1 interface is a factory for"]
-    #[doc = "single-pixel buffers."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod wp_single_pixel_buffer_manager_v1 {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the wp_single_pixel_buffer_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpSinglePixelBufferManagerV1 {
-            const INTERFACE: &'static str = "wp_single_pixel_buffer_manager_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy the wp_single_pixel_buffer_manager_v1 object."]
-            #[doc = ""]
-            #[doc = "The child objects created via this interface are unaffected."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> wp_single_pixel_buffer_manager_v1#{}.destroy()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Create a single-pixel buffer from four 32-bit RGBA values."]
-            #[doc = ""]
-            #[doc = "Unless specified in another protocol extension, the RGBA values use"]
-            #[doc = "pre-multiplied alpha."]
-            #[doc = ""]
-            #[doc = "The width and height of the buffer are 1."]
-            async fn create_u32_rgba_buffer(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                r: u32,
-                g: u32,
-                b: u32,
-                a: u32,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> wp_single_pixel_buffer_manager_v1#{}.create_u32_rgba_buffer()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(id))
-                    .put_uint(r)
-                    .put_uint(g)
-                    .put_uint(b)
-                    .put_uint(a)
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-}
 #[allow(clippy::module_inception)]
 pub mod tearing_control_v1 {
     #[doc = "For some use cases like games or drawing tablets it can make sense to"]
@@ -5318,34 +5356,156 @@ pub mod xdg_activation_v1 {
         }
     }
 }
+#[doc = "This protocol allows for a privileged Wayland client to lock the session"]
+#[doc = "and display arbitrary graphics while the session is locked."]
+#[doc = ""]
+#[doc = "The compositor may choose to restrict this protocol to a special client"]
+#[doc = "launched by the compositor itself or expose it to all privileged clients,"]
+#[doc = "this is compositor policy."]
+#[doc = ""]
+#[doc = "The client is responsible for performing authentication and informing the"]
+#[doc = "compositor when the session should be unlocked. If the client dies while"]
+#[doc = "the session is locked the session remains locked, possibly permanently"]
+#[doc = "depending on compositor policy."]
+#[doc = ""]
+#[doc = "The key words \"must\", \"must not\", \"required\", \"shall\", \"shall not\","]
+#[doc = "\"should\", \"should not\", \"recommended\",  \"may\", and \"optional\" in this"]
+#[doc = "document are to be interpreted as described in IETF RFC 2119."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is currently in the"]
+#[doc = "testing phase. Backward compatible changes may be added together with"]
+#[doc = "the corresponding interface version bump. Backward incompatible changes"]
+#[doc = "can only be done by creating a new major version of the extension."]
 #[allow(clippy::module_inception)]
-pub mod xdg_dialog_v1 {
-    #[doc = "The xdg_wm_dialog_v1 interface is exposed as a global object allowing"]
-    #[doc = "to register surfaces with a xdg_toplevel role as \"dialogs\" relative to"]
-    #[doc = "another toplevel."]
-    #[doc = ""]
-    #[doc = "The compositor may let this relation influence how the surface is"]
-    #[doc = "placed, displayed or interacted with."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
+pub mod ext_session_lock_v1 {
+    #[doc = "This interface is used to request that the session be locked."]
     #[allow(clippy::too_many_arguments)]
-    pub mod xdg_wm_dialog_v1 {
+    pub mod ext_session_lock_manager_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the ext_session_lock_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ExtSessionLockManagerV1 {
+            const INTERFACE: &'static str = "ext_session_lock_manager_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This informs the compositor that the session lock manager object will"]
+            #[doc = "no longer be used. Existing objects created through this interface"]
+            #[doc = "remain valid."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_session_lock_manager_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This request creates a session lock and asks the compositor to lock the"]
+            #[doc = "session. The compositor will send either the ext_session_lock_v1.locked"]
+            #[doc = "or ext_session_lock_v1.finished event on the created object in"]
+            #[doc = "response to this request."]
+            async fn lock(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_session_lock_manager_v1#{}.lock()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "In response to the creation of this object the compositor must send"]
+    #[doc = "either the locked or finished event."]
+    #[doc = ""]
+    #[doc = "The locked event indicates that the session is locked. This means"]
+    #[doc = "that the compositor must stop rendering and providing input to normal"]
+    #[doc = "clients. Instead the compositor must blank all outputs with an opaque"]
+    #[doc = "color such that their normal content is fully hidden."]
+    #[doc = ""]
+    #[doc = "The only surfaces that should be rendered while the session is locked"]
+    #[doc = "are the lock surfaces created through this interface and optionally,"]
+    #[doc = "at the compositor's discretion, special privileged surfaces such as"]
+    #[doc = "input methods or portions of desktop shell UIs."]
+    #[doc = ""]
+    #[doc = "The locked event must not be sent until a new \"locked\" frame (either"]
+    #[doc = "from a session lock surface or the compositor blanking the output) has"]
+    #[doc = "been presented on all outputs and no security sensitive normal/unlocked"]
+    #[doc = "content is possibly visible."]
+    #[doc = ""]
+    #[doc = "The finished event should be sent immediately on creation of this"]
+    #[doc = "object if the compositor decides that the locked event will not be sent."]
+    #[doc = ""]
+    #[doc = "The compositor may wait for the client to create and render session lock"]
+    #[doc = "surfaces before sending the locked event to avoid displaying intermediate"]
+    #[doc = "blank frames. However, it must impose a reasonable time limit if"]
+    #[doc = "waiting and send the locked event as soon as the hard requirements"]
+    #[doc = "described above can be met if the time limit expires. Clients should"]
+    #[doc = "immediately create lock surfaces for all outputs on creation of this"]
+    #[doc = "object to make this possible."]
+    #[doc = ""]
+    #[doc = "This behavior of the locked event is required in order to prevent"]
+    #[doc = "possible race conditions with clients that wish to suspend the system"]
+    #[doc = "or similar after locking the session. Without these semantics, clients"]
+    #[doc = "triggering a suspend after receiving the locked event would race with"]
+    #[doc = "the first \"locked\" frame being presented and normal/unlocked frames"]
+    #[doc = "might be briefly visible as the system is resumed if the suspend"]
+    #[doc = "operation wins the race."]
+    #[doc = ""]
+    #[doc = "If the client dies while the session is locked, the compositor must not"]
+    #[doc = "unlock the session in response. It is acceptable for the session to be"]
+    #[doc = "permanently locked if this happens. The compositor may choose to continue"]
+    #[doc = "to display the lock surfaces the client had mapped before it died or"]
+    #[doc = "alternatively fall back to a solid color, this is compositor policy."]
+    #[doc = ""]
+    #[doc = "Compositors may also allow a secure way to recover the session, the"]
+    #[doc = "details of this are compositor policy. Compositors may allow a new"]
+    #[doc = "client to create a ext_session_lock_v1 object and take responsibility"]
+    #[doc = "for unlocking the session, they may even start a new lock client"]
+    #[doc = "instance automatically."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_session_lock_v1 {
         use futures_util::SinkExt;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            #[doc = "the xdg_toplevel object has already been used to create a xdg_dialog_v1"]
-            AlreadyUsed = 0u32,
+            #[doc = "attempted to destroy session lock while locked"]
+            InvalidDestroy = 0u32,
+            #[doc = "unlock requested but locked event was never sent"]
+            InvalidUnlock = 1u32,
+            #[doc = "given wl_surface already has a role"]
+            Role = 2u32,
+            #[doc = "given output already has a lock surface"]
+            DuplicateOutput = 3u32,
+            #[doc = "given wl_surface has a buffer attached or committed"]
+            AlreadyConstructed = 4u32,
         }
         impl TryFrom<u32> for Error {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
-                    0u32 => Ok(Self::AlreadyUsed),
+                    0u32 => Ok(Self::InvalidDestroy),
+                    1u32 => Ok(Self::InvalidUnlock),
+                    2u32 => Ok(Self::Role),
+                    3u32 => Ok(Self::DuplicateOutput),
+                    4u32 => Ok(Self::AlreadyConstructed),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -5355,9 +5515,9 @@ pub mod xdg_dialog_v1 {
                 (*self as u32).fmt(f)
             }
         }
-        #[doc = "Trait to implement the xdg_wm_dialog_v1 interface. See the module level documentation for more info"]
-        pub trait XdgWmDialogV1 {
-            const INTERFACE: &'static str = "xdg_wm_dialog_v1";
+        #[doc = "Trait to implement the ext_session_lock_v1 interface. See the module level documentation for more info"]
+        pub trait ExtSessionLockV1 {
+            const INTERFACE: &'static str = "ext_session_lock_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
@@ -5368,37 +5528,371 @@ pub mod xdg_dialog_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
-            #[doc = "Destroys the xdg_wm_dialog_v1 object. This does not affect"]
-            #[doc = "the xdg_dialog_v1 objects generated through it."]
+            #[doc = "This informs the compositor that the lock object will no longer be"]
+            #[doc = "used. Existing objects created through this interface remain valid."]
+            #[doc = ""]
+            #[doc = "After this request is made, lock surfaces created through this object"]
+            #[doc = "should be destroyed by the client as they will no longer be used by"]
+            #[doc = "the compositor."]
+            #[doc = ""]
+            #[doc = "It is a protocol error to make this request if the locked event was"]
+            #[doc = "sent, the unlock_and_destroy request must be used instead."]
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_wm_dialog_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_session_lock_v1#{}.destroy()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
                     .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
-            #[doc = "Creates a xdg_dialog_v1 object for the given toplevel. See the interface"]
-            #[doc = "description for more details."]
+            #[doc = "The client is expected to create lock surfaces for all outputs"]
+            #[doc = "currently present and any new outputs as they are advertised. These"]
+            #[doc = "won't be displayed by the compositor unless the lock is successful"]
+            #[doc = "and the locked event is sent."]
             #[doc = ""]
-            #[doc = "Compositors must raise an already_used error if clients attempt to"]
-            #[doc = "create multiple xdg_dialog_v1 objects for the same xdg_toplevel."]
-            async fn get_xdg_dialog(
+            #[doc = "Providing a wl_surface which already has a role or already has a buffer"]
+            #[doc = "attached or committed is a protocol error, as is attaching/committing"]
+            #[doc = "a buffer before the first ext_session_lock_surface_v1.configure event."]
+            #[doc = ""]
+            #[doc = "Attempting to create more than one lock surface for a given output"]
+            #[doc = "is a duplicate_output protocol error."]
+            async fn get_lock_surface(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-                toplevel: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_wm_dialog_v1#{}.get_xdg_dialog()", object_id);
+                tracing::debug!("-> ext_session_lock_v1#{}.get_lock_surface()", object_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
-                    .put_object(Some(toplevel))
+                    .put_object(Some(surface))
+                    .put_object(Some(output))
                     .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This request indicates that the session should be unlocked, for"]
+            #[doc = "example because the user has entered their password and it has been"]
+            #[doc = "verified by the client."]
+            #[doc = ""]
+            #[doc = "This request also informs the compositor that the lock object will"]
+            #[doc = "no longer be used and should be destroyed. Existing objects created"]
+            #[doc = "through this interface remain valid."]
+            #[doc = ""]
+            #[doc = "After this request is made, lock surfaces created through this object"]
+            #[doc = "should be destroyed by the client as they will no longer be used by"]
+            #[doc = "the compositor."]
+            #[doc = ""]
+            #[doc = "It is a protocol error to make this request if the locked event has"]
+            #[doc = "not been sent. In that case, the lock object must be destroyed using"]
+            #[doc = "the destroy request."]
+            #[doc = ""]
+            #[doc = "Note that a correct client that wishes to exit directly after unlocking"]
+            #[doc = "the session must use the wl_display.sync request to ensure the server"]
+            #[doc = "receives and processes the unlock_and_destroy request. Otherwise"]
+            #[doc = "there is no guarantee that the server has unlocked the session due"]
+            #[doc = "to the asynchronous nature of the Wayland protocol. For example,"]
+            #[doc = "the server might terminate the client with a protocol error before"]
+            #[doc = "it processes the unlock_and_destroy request."]
+            async fn unlock_and_destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_session_lock_v1#{}.unlock_and_destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This client is now responsible for displaying graphics while the"]
+            #[doc = "session is locked and deciding when to unlock the session."]
+            #[doc = ""]
+            #[doc = "The locked event must not be sent until a new \"locked\" frame has been"]
+            #[doc = "presented on all outputs and no security sensitive normal/unlocked"]
+            #[doc = "content is possibly visible."]
+            #[doc = ""]
+            #[doc = "If this event is sent, making the destroy request is a protocol error,"]
+            #[doc = "the lock object must be destroyed using the unlock_and_destroy request."]
+            async fn locked(&self) -> crate::client::Result<()>;
+            #[doc = "The compositor has decided that the session lock should be destroyed"]
+            #[doc = "as it will no longer be used by the compositor. Exactly when this"]
+            #[doc = "event is sent is compositor policy, but it must never be sent more"]
+            #[doc = "than once for a given session lock object."]
+            #[doc = ""]
+            #[doc = "This might be sent because there is already another ext_session_lock_v1"]
+            #[doc = "object held by a client, or the compositor has decided to deny the"]
+            #[doc = "request to lock the session for some other reason. This might also"]
+            #[doc = "be sent because the compositor implements some alternative, secure"]
+            #[doc = "way to authenticate and unlock the session."]
+            #[doc = ""]
+            #[doc = "The finished event should be sent immediately on creation of this"]
+            #[doc = "object if the compositor decides that the locked event will not"]
+            #[doc = "be sent."]
+            #[doc = ""]
+            #[doc = "If the locked event is sent on creation of this object the finished"]
+            #[doc = "event may still be sent at some later time in this object's"]
+            #[doc = "lifetime. This is compositor policy."]
+            #[doc = ""]
+            #[doc = "Upon receiving this event, the client should make either the destroy"]
+            #[doc = "request or the unlock_and_destroy request, depending on whether or"]
+            #[doc = "not the locked event was received on this object."]
+            async fn finished(&self) -> crate::client::Result<()>;
+        }
+    }
+    #[doc = "The client may use lock surfaces to display a screensaver, render a"]
+    #[doc = "dialog to enter a password and unlock the session, or however else it"]
+    #[doc = "sees fit."]
+    #[doc = ""]
+    #[doc = "On binding this interface the compositor will immediately send the"]
+    #[doc = "first configure event. After making the ack_configure request in"]
+    #[doc = "response to this event the client should attach and commit the first"]
+    #[doc = "buffer. Committing the surface before acking the first configure is a"]
+    #[doc = "protocol error. Committing the surface with a null buffer at any time"]
+    #[doc = "is a protocol error."]
+    #[doc = ""]
+    #[doc = "The compositor is free to handle keyboard/pointer focus for lock"]
+    #[doc = "surfaces however it chooses. A reasonable way to do this would be to"]
+    #[doc = "give the first lock surface created keyboard focus and change keyboard"]
+    #[doc = "focus if the user clicks on other surfaces."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_session_lock_surface_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "surface committed before first ack_configure request"]
+            CommitBeforeFirstAck = 0u32,
+            #[doc = "surface committed with a null buffer"]
+            NullBuffer = 1u32,
+            #[doc = "failed to match ack'd width/height"]
+            DimensionsMismatch = 2u32,
+            #[doc = "serial provided in ack_configure is invalid"]
+            InvalidSerial = 3u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::CommitBeforeFirstAck),
+                    1u32 => Ok(Self::NullBuffer),
+                    2u32 => Ok(Self::DimensionsMismatch),
+                    3u32 => Ok(Self::InvalidSerial),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the ext_session_lock_surface_v1 interface. See the module level documentation for more info"]
+        pub trait ExtSessionLockSurfaceV1 {
+            const INTERFACE: &'static str = "ext_session_lock_surface_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "This informs the compositor that the lock surface object will no"]
+            #[doc = "longer be used."]
+            #[doc = ""]
+            #[doc = "It is recommended for a lock client to destroy lock surfaces if"]
+            #[doc = "their corresponding wl_output global is removed."]
+            #[doc = ""]
+            #[doc = "If a lock surface on an active output is destroyed before the"]
+            #[doc = "ext_session_lock_v1.unlock_and_destroy event is sent, the compositor"]
+            #[doc = "must fall back to rendering a solid color."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_session_lock_surface_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "When a configure event is received, if a client commits the surface"]
+            #[doc = "in response to the configure event, then the client must make an"]
+            #[doc = "ack_configure request sometime before the commit request, passing"]
+            #[doc = "along the serial of the configure event."]
+            #[doc = ""]
+            #[doc = "If the client receives multiple configure events before it can"]
+            #[doc = "respond to one, it only has to ack the last configure event."]
+            #[doc = ""]
+            #[doc = "A client is not required to commit immediately after sending an"]
+            #[doc = "ack_configure request - it may even ack_configure several times"]
+            #[doc = "before its next surface commit."]
+            #[doc = ""]
+            #[doc = "A client may send multiple ack_configure requests before committing,"]
+            #[doc = "but only the last request sent before a commit indicates which"]
+            #[doc = "configure event the client really is responding to."]
+            #[doc = ""]
+            #[doc = "Sending an ack_configure request consumes the configure event"]
+            #[doc = "referenced by the given serial, as well as all older configure events"]
+            #[doc = "sent on this object."]
+            #[doc = ""]
+            #[doc = "It is a protocol error to issue multiple ack_configure requests"]
+            #[doc = "referencing the same configure event or to issue an ack_configure"]
+            #[doc = "request referencing a configure event older than the last configure"]
+            #[doc = "event acked for a given lock surface."]
+            async fn ack_configure(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                serial: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> ext_session_lock_surface_v1#{}.ack_configure()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This event is sent once on binding the interface and may be sent again"]
+            #[doc = "at the compositor's discretion, for example if output geometry changes."]
+            #[doc = ""]
+            #[doc = "The width and height are in surface-local coordinates and are exact"]
+            #[doc = "requirements. Failing to match these surface dimensions in the next"]
+            #[doc = "commit after acking a configure is a protocol error."]
+            async fn configure(
+                &self,
+                serial: u32,
+                width: u32,
+                height: u32,
+            ) -> crate::client::Result<()>;
+        }
+    }
+}
+#[doc = "This protocol serves as an intermediary between capturing protocols and"]
+#[doc = "potential image capture sources such as outputs and toplevels."]
+#[doc = ""]
+#[doc = "This protocol may be extended to support more image capture sources in the"]
+#[doc = "future, thereby adding those image capture sources to other protocols that"]
+#[doc = "use the image capture source object without having to modify those"]
+#[doc = "protocols."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is currently in the testing"]
+#[doc = "phase. Backward compatible changes may be added together with the"]
+#[doc = "corresponding interface version bump. Backward incompatible changes can"]
+#[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
+pub mod ext_image_capture_source_v1 {
+    #[doc = "The image capture source object is an opaque descriptor for a capturable"]
+    #[doc = "resource.  This resource may be any sort of entity from which an image"]
+    #[doc = "may be derived."]
+    #[doc = ""]
+    #[doc = "Note, because ext_image_capture_source_v1 objects are created from multiple"]
+    #[doc = "independent factory interfaces, the ext_image_capture_source_v1 interface is"]
+    #[doc = "frozen at version 1."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_image_capture_source_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the ext_image_capture_source_v1 interface. See the module level documentation for more info"]
+        pub trait ExtImageCaptureSourceV1 {
+            const INTERFACE: &'static str = "ext_image_capture_source_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroys the image capture source. This request may be sent at any time"]
+            #[doc = "by the client."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> ext_image_capture_source_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "A manager for creating image capture source objects for wl_output objects."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_output_image_capture_source_manager_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the ext_output_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ExtOutputImageCaptureSourceManagerV1 {
+            const INTERFACE: &'static str = "ext_output_image_capture_source_manager_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Creates a source object for an output. Images captured from this source"]
+            #[doc = "will show the same content as the output. Some elements may be omitted,"]
+            #[doc = "such as cursors and overlays that have been marked as transparent to"]
+            #[doc = "capturing."]
+            async fn create_source(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                source: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> ext_output_image_capture_source_manager_v1#{}.create_source()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(source))
+                    .put_object(Some(output))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Destroys the manager. This request may be sent at any time by the client"]
+            #[doc = "and objects created by the manager will remain valid after its"]
+            #[doc = "destruction."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> ext_output_image_capture_source_manager_v1#{}.destroy()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
                     .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
@@ -5406,21 +5900,14 @@ pub mod xdg_dialog_v1 {
             }
         }
     }
-    #[doc = "A xdg_dialog_v1 object is an ancillary object tied to a xdg_toplevel. Its"]
-    #[doc = "purpose is hinting the compositor that the toplevel is a \"dialog\" (e.g. a"]
-    #[doc = "temporary window) relative to another toplevel (see"]
-    #[doc = "xdg_toplevel.set_parent). If the xdg_toplevel is destroyed, the xdg_dialog_v1"]
-    #[doc = "becomes inert."]
-    #[doc = ""]
-    #[doc = "Through this object, the client may provide additional hints about"]
-    #[doc = "the purpose of the secondary toplevel. This interface has no effect"]
-    #[doc = "on toplevels that are not attached to a parent toplevel."]
+    #[doc = "A manager for creating image capture source objects for"]
+    #[doc = "ext_foreign_toplevel_handle_v1 objects."]
     #[allow(clippy::too_many_arguments)]
-    pub mod xdg_dialog_v1 {
+    pub mod ext_foreign_toplevel_image_capture_source_manager_v1 {
         use futures_util::SinkExt;
-        #[doc = "Trait to implement the xdg_dialog_v1 interface. See the module level documentation for more info"]
-        pub trait XdgDialogV1 {
-            const INTERFACE: &'static str = "xdg_dialog_v1";
+        #[doc = "Trait to implement the ext_foreign_toplevel_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ExtForeignToplevelImageCaptureSourceManagerV1 {
+            const INTERFACE: &'static str = "ext_foreign_toplevel_image_capture_source_manager_v1";
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
@@ -5431,55 +5918,43 @@ pub mod xdg_dialog_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
-            #[doc = "Destroys the xdg_dialog_v1 object. If this object is destroyed"]
-            #[doc = "before the related xdg_toplevel, the compositor should unapply its"]
-            #[doc = "effects."]
-            async fn destroy(
+            #[doc = "Creates a source object for a foreign toplevel handle. Images captured"]
+            #[doc = "from this source will show the same content as the toplevel."]
+            async fn create_source(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
+                source: crate::wire::ObjectId,
+                toplevel_handle: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_dialog_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                tracing::debug!(
+                    "-> ext_foreign_toplevel_image_capture_source_manager_v1#{}.create_source()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(source))
+                    .put_object(Some(toplevel_handle))
+                    .build();
                 socket
                     .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
-            #[doc = "Hints that the dialog has \"modal\" behavior. Modal dialogs typically"]
-            #[doc = "require to be fully addressed by the user (i.e. closed) before resuming"]
-            #[doc = "interaction with the parent toplevel, and may require a distinct"]
-            #[doc = "presentation."]
-            #[doc = ""]
-            #[doc = "Clients must implement the logic to filter events in the parent"]
-            #[doc = "toplevel on their own."]
-            #[doc = ""]
-            #[doc = "Compositors may choose any policy in event delivery to the parent"]
-            #[doc = "toplevel, from delivering all events unfiltered to using them for"]
-            #[doc = "internal consumption."]
-            async fn set_modal(
+            #[doc = "Destroys the manager. This request may be sent at any time by the client"]
+            #[doc = "and objects created by the manager will remain valid after its"]
+            #[doc = "destruction."]
+            async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
                 object_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_dialog_v1#{}.set_modal()", object_id);
+                tracing::debug!(
+                    "-> ext_foreign_toplevel_image_capture_source_manager_v1#{}.destroy()",
+                    object_id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
                     .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Drops the hint that this dialog has \"modal\" behavior. See"]
-            #[doc = "xdg_dialog_v1.set_modal for more details."]
-            async fn unset_modal(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_dialog_v1#{}.unset_modal()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5544,481 +6019,6 @@ pub mod xdg_system_bell_v1 {
                     .build();
                 socket
                     .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod xdg_toplevel_drag_v1 {
-    #[doc = "This protocol enhances normal drag and drop with the ability to move a"]
-    #[doc = "window at the same time. This allows having detachable parts of a window"]
-    #[doc = "that when dragged out of it become a new window and can be dragged over"]
-    #[doc = "an existing window to be reattached."]
-    #[doc = ""]
-    #[doc = "A typical workflow would be when the user starts dragging on top of a"]
-    #[doc = "detachable part of a window, the client would create a wl_data_source and"]
-    #[doc = "a xdg_toplevel_drag_v1 object and start the drag as normal via"]
-    #[doc = "wl_data_device.start_drag. Once the client determines that the detachable"]
-    #[doc = "window contents should be detached from the originating window, it creates"]
-    #[doc = "a new xdg_toplevel with these contents and issues a"]
-    #[doc = "xdg_toplevel_drag_v1.attach request before mapping it. From now on the new"]
-    #[doc = "window is moved by the compositor during the drag as if the client called"]
-    #[doc = "xdg_toplevel.move."]
-    #[doc = ""]
-    #[doc = "Dragging an existing window is similar. The client creates a"]
-    #[doc = "xdg_toplevel_drag_v1 object and attaches the existing toplevel before"]
-    #[doc = "starting the drag."]
-    #[doc = ""]
-    #[doc = "Clients use the existing drag and drop mechanism to detect when a window"]
-    #[doc = "can be docked or undocked. If the client wants to snap a window into a"]
-    #[doc = "parent window it should delete or unmap the dragged top-level. If the"]
-    #[doc = "contents should be detached again it attaches a new toplevel as described"]
-    #[doc = "above. If a drag operation is cancelled without being dropped, clients"]
-    #[doc = "should revert to the previous state, deleting any newly created windows"]
-    #[doc = "as appropriate. When a drag operation ends as indicated by"]
-    #[doc = "wl_data_source.dnd_drop_performed the dragged toplevel window's final"]
-    #[doc = "position is determined as if a xdg_toplevel_move operation ended."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod xdg_toplevel_drag_manager_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "data_source already used for toplevel drag"]
-            InvalidSource = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::InvalidSource),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the xdg_toplevel_drag_manager_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelDragManagerV1 {
-            const INTERFACE: &'static str = "xdg_toplevel_drag_manager_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy this xdg_toplevel_drag_manager_v1 object. Other objects,"]
-            #[doc = "including xdg_toplevel_drag_v1 objects created by this factory, are not"]
-            #[doc = "affected by this request."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_drag_manager_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Create an xdg_toplevel_drag for a drag and drop operation that is going"]
-            #[doc = "to be started with data_source."]
-            #[doc = ""]
-            #[doc = "This request can only be made on sources used in drag-and-drop, so it"]
-            #[doc = "must be performed before wl_data_device.start_drag. Attempting to use"]
-            #[doc = "the source other than for drag-and-drop such as in"]
-            #[doc = "wl_data_device.set_selection will raise an invalid_source error."]
-            #[doc = ""]
-            #[doc = "Destroying data_source while a toplevel is attached to the"]
-            #[doc = "xdg_toplevel_drag is undefined."]
-            async fn get_xdg_toplevel_drag(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                data_source: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> xdg_toplevel_drag_manager_v1#{}.get_xdg_toplevel_drag()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(id))
-                    .put_object(Some(data_source))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-    #[allow(clippy::too_many_arguments)]
-    pub mod xdg_toplevel_drag_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "valid toplevel already attached"]
-            ToplevelAttached = 0u32,
-            #[doc = "drag has not ended"]
-            OngoingDrag = 1u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::ToplevelAttached),
-                    1u32 => Ok(Self::OngoingDrag),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the xdg_toplevel_drag_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelDragV1 {
-            const INTERFACE: &'static str = "xdg_toplevel_drag_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy this xdg_toplevel_drag_v1 object. This request must only be"]
-            #[doc = "called after the underlying wl_data_source drag has ended, as indicated"]
-            #[doc = "by the dnd_drop_performed or cancelled events. In any other case an"]
-            #[doc = "ongoing_drag error is raised."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_drag_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Request that the window will be moved with the cursor during the drag"]
-            #[doc = "operation. The offset is a hint to the compositor how the toplevel"]
-            #[doc = "should be positioned relative to the cursor hotspot in surface local"]
-            #[doc = "coordinates and relative to the geometry of the toplevel being attached."]
-            #[doc = "See xdg_surface.set_window_geometry. For example it might only"]
-            #[doc = "be used when an unmapped window is attached. The attached window"]
-            #[doc = "does not participate in the selection of the drag target."]
-            #[doc = ""]
-            #[doc = "If the toplevel is unmapped while it is attached, it is automatically"]
-            #[doc = "detached from the drag. In this case this request has to be called again"]
-            #[doc = "if the window should be attached after it is remapped."]
-            #[doc = ""]
-            #[doc = "This request can be called multiple times but issuing it while a"]
-            #[doc = "toplevel with an active role is attached raises a toplevel_attached"]
-            #[doc = "error."]
-            async fn attach(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                toplevel: crate::wire::ObjectId,
-                x_offset: i32,
-                y_offset: i32,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_drag_v1#{}.attach()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(toplevel))
-                    .put_int(x_offset)
-                    .put_int(y_offset)
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-        }
-    }
-}
-#[doc = "This protocol allows clients to set icons for their toplevel surfaces"]
-#[doc = "either via the XDG icon stock (using an icon name), or from pixel data."]
-#[doc = ""]
-#[doc = "A toplevel icon represents the individual toplevel (unlike the application"]
-#[doc = "or launcher icon, which represents the application as a whole), and may be"]
-#[doc = "shown in window switchers, window overviews and taskbars that list"]
-#[doc = "individual windows."]
-#[doc = ""]
-#[doc = "This document adheres to RFC 2119 when using words like \"must\","]
-#[doc = "\"should\", \"may\", etc."]
-#[doc = ""]
-#[doc = "Warning! The protocol described in this file is currently in the testing"]
-#[doc = "phase. Backward compatible changes may be added together with the"]
-#[doc = "corresponding interface version bump. Backward incompatible changes can"]
-#[doc = "only be done by creating a new major version of the extension."]
-#[allow(clippy::module_inception)]
-pub mod xdg_toplevel_icon_v1 {
-    #[doc = "This interface allows clients to create toplevel window icons and set"]
-    #[doc = "them on toplevel windows to be displayed to the user."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod xdg_toplevel_icon_manager_v1 {
-        use futures_util::SinkExt;
-        #[doc = "Trait to implement the xdg_toplevel_icon_manager_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelIconManagerV1 {
-            const INTERFACE: &'static str = "xdg_toplevel_icon_manager_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroy the toplevel icon manager."]
-            #[doc = "This does not destroy objects created with the manager."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "Creates a new icon object. This icon can then be attached to a"]
-            #[doc = "xdg_toplevel via the 'set_icon' request."]
-            async fn create_icon(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!(
-                    "-> xdg_toplevel_icon_manager_v1#{}.create_icon()",
-                    object_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(id))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This request assigns the icon 'icon' to 'toplevel', or clears the"]
-            #[doc = "toplevel icon if 'icon' was null."]
-            #[doc = "This state is double-buffered and is applied on the next"]
-            #[doc = "wl_surface.commit of the toplevel."]
-            #[doc = ""]
-            #[doc = "After making this call, the xdg_toplevel_icon_v1 provided as 'icon'"]
-            #[doc = "can be destroyed by the client without 'toplevel' losing its icon."]
-            #[doc = "The xdg_toplevel_icon_v1 is immutable from this point, and any"]
-            #[doc = "future attempts to change it must raise the"]
-            #[doc = "'xdg_toplevel_icon_v1.immutable' protocol error."]
-            #[doc = ""]
-            #[doc = "The compositor must set the toplevel icon from either the pixel data"]
-            #[doc = "the icon provides, or by loading a stock icon using the icon name."]
-            #[doc = "See the description of 'xdg_toplevel_icon_v1' for details."]
-            #[doc = ""]
-            #[doc = "If 'icon' is set to null, the icon of the respective toplevel is reset"]
-            #[doc = "to its default icon (usually the icon of the application, derived from"]
-            #[doc = "its desktop-entry file, or a placeholder icon)."]
-            #[doc = "If this request is passed an icon with no pixel buffers or icon name"]
-            #[doc = "assigned, the icon must be reset just like if 'icon' was null."]
-            async fn set_icon(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                toplevel: crate::wire::ObjectId,
-                icon: Option<crate::wire::ObjectId>,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.set_icon()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(toplevel))
-                    .put_object(icon)
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This event indicates an icon size the compositor prefers to be"]
-            #[doc = "available if the client has scalable icons and can render to any size."]
-            #[doc = ""]
-            #[doc = "When the 'xdg_toplevel_icon_manager_v1' object is created, the"]
-            #[doc = "compositor may send one or more 'icon_size' events to describe the list"]
-            #[doc = "of preferred icon sizes. If the compositor has no size preference, it"]
-            #[doc = "may not send any 'icon_size' event, and it is up to the client to"]
-            #[doc = "decide a suitable icon size."]
-            #[doc = ""]
-            #[doc = "A sequence of 'icon_size' events must be finished with a 'done' event."]
-            #[doc = "If the compositor has no size preferences, it must still send the"]
-            #[doc = "'done' event, without any preceding 'icon_size' events."]
-            async fn icon_size(&self, size: i32) -> crate::client::Result<()>;
-            #[doc = "This event is sent after all 'icon_size' events have been sent."]
-            async fn done(&self) -> crate::client::Result<()>;
-        }
-    }
-    #[doc = "This interface defines a toplevel icon."]
-    #[doc = "An icon can have a name, and multiple buffers."]
-    #[doc = "In order to be applied, the icon must have either a name, or at least"]
-    #[doc = "one buffer assigned. Applying an empty icon (with no buffer or name) to"]
-    #[doc = "a toplevel should reset its icon to the default icon."]
-    #[doc = ""]
-    #[doc = "It is up to compositor policy whether to prefer using a buffer or loading"]
-    #[doc = "an icon via its name. See 'set_name' and 'add_buffer' for details."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod xdg_toplevel_icon_v1 {
-        use futures_util::SinkExt;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "the provided buffer does not satisfy requirements"]
-            InvalidBuffer = 1u32,
-            #[doc = "the icon has already been assigned to a toplevel and must not be changed"]
-            Immutable = 2u32,
-            #[doc = "the provided buffer has been destroyed before the toplevel icon"]
-            NoBuffer = 3u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    1u32 => Ok(Self::InvalidBuffer),
-                    2u32 => Ok(Self::Immutable),
-                    3u32 => Ok(Self::NoBuffer),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the xdg_toplevel_icon_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelIconV1 {
-            const INTERFACE: &'static str = "xdg_toplevel_icon_v1";
-            const VERSION: u32 = 1u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "Destroys the 'xdg_toplevel_icon_v1' object."]
-            #[doc = "The icon must still remain set on every toplevel it was assigned to,"]
-            #[doc = "until the toplevel icon is reset explicitly."]
-            async fn destroy(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_icon_v1#{}.destroy()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This request assigns an icon name to this icon."]
-            #[doc = "Any previously set name is overridden."]
-            #[doc = ""]
-            #[doc = "The compositor must resolve 'icon_name' according to the lookup rules"]
-            #[doc = "described in the XDG icon theme specification[1] using the"]
-            #[doc = "environment's current icon theme."]
-            #[doc = ""]
-            #[doc = "If the compositor does not support icon names or cannot resolve"]
-            #[doc = "'icon_name' according to the XDG icon theme specification it must"]
-            #[doc = "fall back to using pixel buffer data instead."]
-            #[doc = ""]
-            #[doc = "If this request is made after the icon has been assigned to a toplevel"]
-            #[doc = "via 'set_icon', a 'immutable' error must be raised."]
-            #[doc = ""]
-            #[doc = "[1]: https://specifications.freedesktop.org/icon-theme-spec/icon-theme-spec-latest.html"]
-            async fn set_name(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                icon_name: String,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_icon_v1#{}.set_name()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(icon_name))
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::client::Error::IoError)
-            }
-            #[doc = "This request adds pixel data supplied as wl_buffer to the icon."]
-            #[doc = ""]
-            #[doc = "The client should add pixel data for all icon sizes and scales that"]
-            #[doc = "it can provide, or which are explicitly requested by the compositor"]
-            #[doc = "via 'icon_size' events on xdg_toplevel_icon_manager_v1."]
-            #[doc = ""]
-            #[doc = "The wl_buffer supplying pixel data as 'buffer' must be backed by wl_shm"]
-            #[doc = "and must be a square (width and height being equal)."]
-            #[doc = "If any of these buffer requirements are not fulfilled, a 'invalid_buffer'"]
-            #[doc = "error must be raised."]
-            #[doc = ""]
-            #[doc = "If this icon instance already has a buffer of the same size and scale"]
-            #[doc = "from a previous 'add_buffer' request, data from the last request"]
-            #[doc = "overrides the preexisting pixel data."]
-            #[doc = ""]
-            #[doc = "The wl_buffer must be kept alive for as long as the xdg_toplevel_icon"]
-            #[doc = "it is associated with is not destroyed, otherwise a 'no_buffer' error"]
-            #[doc = "is raised. The buffer contents must not be modified after it was"]
-            #[doc = "assigned to the icon. As a result, the region of the wl_shm_pool's"]
-            #[doc = "backing storage used for the wl_buffer must not be modified after this"]
-            #[doc = "request is sent. The wl_buffer.release event is unused."]
-            #[doc = ""]
-            #[doc = "If this request is made after the icon has been assigned to a toplevel"]
-            #[doc = "via 'set_icon', a 'immutable' error must be raised."]
-            async fn add_buffer(
-                &self,
-                socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
-                buffer: crate::wire::ObjectId,
-                scale: i32,
-            ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_icon_v1#{}.add_buffer()", object_id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(buffer))
-                    .put_int(scale)
-                    .build();
-                socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
