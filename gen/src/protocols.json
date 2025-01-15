@@ -33,7 +33,8 @@
     "protocols/wayland-protocols/staging/xdg-dialog/xdg-dialog-v1.xml",
     "protocols/wayland-protocols/staging/xdg-system-bell/xdg-system-bell-v1.xml",
     "protocols/wayland-protocols/staging/xdg-toplevel-drag/xdg-toplevel-drag-v1.xml",
-    "protocols/wayland-protocols/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml"
+    "protocols/wayland-protocols/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml",
+    "protocols/wayland-protocols/staging/xwayland-shell/xwayland-shell-v1.xml"
   ],
 
   "unstable": [
@@ -78,11 +79,23 @@
     "protocols/plasma-wayland-protocols/src/protocols/appmenu.xml",
     "protocols/plasma-wayland-protocols/src/protocols/blur.xml",
     "protocols/plasma-wayland-protocols/src/protocols/contrast.xml",
+    "protocols/plasma-wayland-protocols/src/protocols/dpms.xml",
+    "protocols/plasma-wayland-protocols/src/protocols/fake-input.xml",
     "protocols/plasma-wayland-protocols/src/protocols/fullscreen-shell.xml",
     "protocols/plasma-wayland-protocols/src/protocols/idle.xml",
+    "protocols/plasma-wayland-protocols/src/protocols/kde-external-brightness-v1.xml",
+    "protocols/plasma-wayland-protocols/src/protocols/kde-lockscreen-overlay-v1.xml",
+    "protocols/plasma-wayland-protocols/src/protocols/kde-output-device-v2.xml",
+    "protocols/plasma-wayland-protocols/src/protocols/kde-output-management-v2.xml",
+    "protocols/plasma-wayland-protocols/src/protocols/kde-output-order-v1.xml",
+    "protocols/plasma-wayland-protocols/src/protocols/kde-primary-output-v1.xml",
+    "protocols/plasma-wayland-protocols/src/protocols/kde-screen-edge-v1.xml",
     "protocols/plasma-wayland-protocols/src/protocols/keystate.xml",
+    "protocols/plasma-wayland-protocols/src/protocols/org-kde-plasma-virtual-desktop.xml",
     "protocols/plasma-wayland-protocols/src/protocols/output-management.xml",
     "protocols/plasma-wayland-protocols/src/protocols/outputdevice.xml",
+    "protocols/plasma-wayland-protocols/src/protocols/plasma-shell.xml",
+    "protocols/plasma-wayland-protocols/src/protocols/plasma-window-management.xml",
     "protocols/plasma-wayland-protocols/src/protocols/remote-access.xml",
     "protocols/plasma-wayland-protocols/src/protocols/server-decoration-palette.xml",
     "protocols/plasma-wayland-protocols/src/protocols/server-decoration.xml",
@@ -92,17 +105,6 @@
     "protocols/plasma-wayland-protocols/src/protocols/text-input-unstable-v2.xml",
     "protocols/plasma-wayland-protocols/src/protocols/text-input.xml",
     "protocols/plasma-wayland-protocols/src/protocols/wayland-eglstream-controller.xml",
-    "protocols/plasma-wayland-protocols/src/protocols/dpms.xml",
-    "protocols/plasma-wayland-protocols/src/protocols/fake-input.xml",
-    "protocols/plasma-wayland-protocols/src/protocols/kde-lockscreen-overlay-v1.xml",
-    "protocols/plasma-wayland-protocols/src/protocols/kde-output-device-v2.xml",
-    "protocols/plasma-wayland-protocols/src/protocols/kde-output-management-v2.xml",
-    "protocols/plasma-wayland-protocols/src/protocols/kde-output-order-v1.xml",
-    "protocols/plasma-wayland-protocols/src/protocols/kde-primary-output-v1.xml",
-    "protocols/plasma-wayland-protocols/src/protocols/kde-screen-edge-v1.xml",
-    "protocols/plasma-wayland-protocols/src/protocols/org-kde-plasma-virtual-desktop.xml",
-    "protocols/plasma-wayland-protocols/src/protocols/plasma-shell.xml",
-    "protocols/plasma-wayland-protocols/src/protocols/plasma-window-management.xml",
     "protocols/plasma-wayland-protocols/src/protocols/zkde-screencast-unstable-v1.xml"
   ],
 
@@ -145,6 +147,7 @@
     "protocols/hyprland-protocols/protocols/hyprland-ctm-control-v1.xml",
     "protocols/hyprland-protocols/protocols/hyprland-focus-grab-v1.xml",
     "protocols/hyprland-protocols/protocols/hyprland-global-shortcuts-v1.xml",
+    "protocols/hyprland-protocols/protocols/hyprland-surface-v1.xml",
     "protocols/hyprland-protocols/protocols/hyprland-toplevel-export-v1.xml"
   ]
 }
