@@ -1,6 +1,5 @@
 use std::{
     io,
-    os::fd::FromRawFd,
     path::{Path, PathBuf},
     pin::Pin,
     task::{Context, Poll},
@@ -8,7 +7,6 @@ use std::{
 
 use futures_util::Stream;
 use pin_project_lite::pin_project;
-use rustix::fd::OwnedFd;
 use tokio::net::{UnixListener, UnixStream};
 
 use crate::server::Error;
@@ -16,7 +14,7 @@ use crate::server::Error;
 pin_project! {
     pub struct Listener {
         unix_listener: UnixListener,
-        _lock: OwnedFd,
+        // _lock: OwnedFd,
         socket_path: PathBuf,
         lock_path: PathBuf,
     }
@@ -50,7 +48,7 @@ impl Listener {
         // FIXME: actually implement this
         Ok(Self {
             unix_listener: UnixListener::bind(path)?,
-            _lock: unsafe { OwnedFd::from_raw_fd(5) },
+            // _lock: unsafe { OwnedFd::from_raw_fd(5) },
             socket_path: PathBuf::new(),
             lock_path: PathBuf::new(),
         })
