@@ -65,19 +65,24 @@ pub mod hyprland_ctm_control_v1 {
                         let mat7 = message.fixed()?;
                         let mat8 = message.fixed()?;
                         tracing :: debug ! ("hyprland_ctm_control_manager_v1#{}.set_ctm_for_output({}, {}, {}, {}, {}, {}, {}, {}, {}, {})" , object . id , output , mat0 , mat1 , mat2 , mat3 , mat4 , mat5 , mat6 , mat7 , mat8);
-                        self.set_ctm_for_output(
-                            object, client, output, mat0, mat1, mat2, mat3, mat4, mat5, mat6, mat7,
-                            mat8,
-                        )
-                        .await
+                        let result = self
+                            .set_ctm_for_output(
+                                object, client, output, mat0, mat1, mat2, mat3, mat4, mat5, mat6,
+                                mat7, mat8,
+                            )
+                            .await;
+                        result
                     }
                     1u16 => {
                         tracing::debug!("hyprland_ctm_control_manager_v1#{}.commit()", object.id,);
-                        self.commit(object, client).await
+                        let result = self.commit(object, client).await;
+                        result
                     }
                     2u16 => {
                         tracing::debug!("hyprland_ctm_control_manager_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -165,11 +170,14 @@ pub mod hyprland_focus_grab_v1 {
                             object.id,
                             grab
                         );
-                        self.create_grab(object, client, grab).await
+                        let result = self.create_grab(object, client, grab).await;
+                        result
                     }
                     1u16 => {
                         tracing::debug!("hyprland_focus_grab_manager_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -236,7 +244,8 @@ pub mod hyprland_focus_grab_v1 {
                             object.id,
                             surface
                         );
-                        self.add_surface(object, client, surface).await
+                        let result = self.add_surface(object, client, surface).await;
+                        result
                     }
                     1u16 => {
                         let surface = message
@@ -247,15 +256,19 @@ pub mod hyprland_focus_grab_v1 {
                             object.id,
                             surface
                         );
-                        self.remove_surface(object, client, surface).await
+                        let result = self.remove_surface(object, client, surface).await;
+                        result
                     }
                     2u16 => {
                         tracing::debug!("hyprland_focus_grab_v1#{}.commit()", object.id,);
-                        self.commit(object, client).await
+                        let result = self.commit(object, client).await;
+                        result
                     }
                     3u16 => {
                         tracing::debug!("hyprland_focus_grab_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -382,23 +395,27 @@ pub mod hyprland_global_shortcuts_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing :: debug ! ("hyprland_global_shortcuts_manager_v1#{}.register_shortcut({}, \"{}\", \"{}\", \"{}\", \"{}\")" , object . id , shortcut , id , app_id , description , trigger_description);
-                        self.register_shortcut(
-                            object,
-                            client,
-                            shortcut,
-                            id,
-                            app_id,
-                            description,
-                            trigger_description,
-                        )
-                        .await
+                        let result = self
+                            .register_shortcut(
+                                object,
+                                client,
+                                shortcut,
+                                id,
+                                app_id,
+                                description,
+                                trigger_description,
+                            )
+                            .await;
+                        result
                     }
                     1u16 => {
                         tracing::debug!(
                             "hyprland_global_shortcuts_manager_v1#{}.destroy()",
                             object.id,
                         );
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -454,7 +471,9 @@ pub mod hyprland_global_shortcuts_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("hyprland_global_shortcut_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -584,11 +603,14 @@ pub mod hyprland_surface_v1 {
                             id,
                             surface
                         );
-                        self.get_hyprland_surface(object, client, id, surface).await
+                        let result = self.get_hyprland_surface(object, client, id, surface).await;
+                        result
                     }
                     1u16 => {
                         tracing::debug!("hyprland_surface_manager_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -670,11 +692,14 @@ pub mod hyprland_surface_v1 {
                             object.id,
                             opacity
                         );
-                        self.set_opacity(object, client, opacity).await
+                        let result = self.set_opacity(object, client, opacity).await;
+                        result
                     }
                     1u16 => {
                         tracing::debug!("hyprland_surface_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -745,15 +770,19 @@ pub mod hyprland_toplevel_export_v1 {
                             overlay_cursor,
                             handle
                         );
-                        self.capture_toplevel(object, client, frame, overlay_cursor, handle)
-                            .await
+                        let result = self
+                            .capture_toplevel(object, client, frame, overlay_cursor, handle)
+                            .await;
+                        result
                     }
                     1u16 => {
                         tracing::debug!(
                             "hyprland_toplevel_export_manager_v1#{}.destroy()",
                             object.id,
                         );
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     2u16 => {
                         let frame = message
@@ -764,14 +793,16 @@ pub mod hyprland_toplevel_export_v1 {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing :: debug ! ("hyprland_toplevel_export_manager_v1#{}.capture_toplevel_with_wlr_toplevel_handle({}, {}, {})" , object . id , frame , overlay_cursor , handle);
-                        self.capture_toplevel_with_wlr_toplevel_handle(
-                            object,
-                            client,
-                            frame,
-                            overlay_cursor,
-                            handle,
-                        )
-                        .await
+                        let result = self
+                            .capture_toplevel_with_wlr_toplevel_handle(
+                                object,
+                                client,
+                                frame,
+                                overlay_cursor,
+                                handle,
+                            )
+                            .await;
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -896,14 +927,17 @@ pub mod hyprland_toplevel_export_v1 {
                             buffer,
                             ignore_damage
                         );
-                        self.copy(object, client, buffer, ignore_damage).await
+                        let result = self.copy(object, client, buffer, ignore_damage).await;
+                        result
                     }
                     1u16 => {
                         tracing::debug!(
                             "hyprland_toplevel_export_frame_v1#{}.destroy()",
                             object.id,
                         );
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }

@@ -49,6 +49,14 @@ impl Client {
         self.store.insert(object)
     }
 
+    pub fn get_object(&mut self, id: &ObjectId) -> Option<Object> {
+        self.store.get(object)
+    }
+
+    pub(crate) fn remove(&mut self, id: &ObjectId) {
+        self.store.remove(object)
+    }
+
     pub async fn handle_message(&mut self, message: &mut Message) -> Result<()> {
         let object = self.store.get(&message.object_id).ok_or(Error::Internal)?;
 
@@ -106,6 +114,10 @@ impl Store {
 
     fn get(&self, id: &ObjectId) -> Option<Object> {
         self.objects.get(id).cloned()
+    }
+
+    fn remove(&mut self, id: &ObjectId) {
+        self.objects.remove(id)
     }
 }
 

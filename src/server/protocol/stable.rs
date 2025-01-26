@@ -89,7 +89,9 @@ pub mod linux_dmabuf_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_linux_dmabuf_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     1u16 => {
                         let params_id = message
@@ -100,7 +102,8 @@ pub mod linux_dmabuf_v1 {
                             object.id,
                             params_id
                         );
-                        self.create_params(object, client, params_id).await
+                        let result = self.create_params(object, client, params_id).await;
+                        result
                     }
                     2u16 => {
                         let id = message
@@ -111,7 +114,8 @@ pub mod linux_dmabuf_v1 {
                             object.id,
                             id
                         );
-                        self.get_default_feedback(object, client, id).await
+                        let result = self.get_default_feedback(object, client, id).await;
+                        result
                     }
                     3u16 => {
                         let id = message
@@ -126,7 +130,8 @@ pub mod linux_dmabuf_v1 {
                             id,
                             surface
                         );
-                        self.get_surface_feedback(object, client, id, surface).await
+                        let result = self.get_surface_feedback(object, client, id, surface).await;
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -338,7 +343,9 @@ pub mod linux_dmabuf_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_linux_buffer_params_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     1u16 => {
                         let fd = message.fd()?;
@@ -357,17 +364,19 @@ pub mod linux_dmabuf_v1 {
                             modifier_hi,
                             modifier_lo
                         );
-                        self.add(
-                            object,
-                            client,
-                            fd,
-                            plane_idx,
-                            offset,
-                            stride,
-                            modifier_hi,
-                            modifier_lo,
-                        )
-                        .await
+                        let result = self
+                            .add(
+                                object,
+                                client,
+                                fd,
+                                plane_idx,
+                                offset,
+                                stride,
+                                modifier_hi,
+                                modifier_lo,
+                            )
+                            .await;
+                        result
                     }
                     2u16 => {
                         let width = message.int()?;
@@ -382,8 +391,10 @@ pub mod linux_dmabuf_v1 {
                             format,
                             flags
                         );
-                        self.create(object, client, width, height, format, flags.try_into()?)
-                            .await
+                        let result = self
+                            .create(object, client, width, height, format, flags.try_into()?)
+                            .await;
+                        result
                     }
                     3u16 => {
                         let buffer_id = message
@@ -402,16 +413,18 @@ pub mod linux_dmabuf_v1 {
                             format,
                             flags
                         );
-                        self.create_immed(
-                            object,
-                            client,
-                            buffer_id,
-                            width,
-                            height,
-                            format,
-                            flags.try_into()?,
-                        )
-                        .await
+                        let result = self
+                            .create_immed(
+                                object,
+                                client,
+                                buffer_id,
+                                width,
+                                height,
+                                format,
+                                flags.try_into()?,
+                            )
+                            .await;
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -659,7 +672,9 @@ pub mod linux_dmabuf_v1 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_linux_dmabuf_feedback_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -970,7 +985,9 @@ pub mod presentation_time {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_presentation#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     1u16 => {
                         let surface = message
@@ -985,7 +1002,8 @@ pub mod presentation_time {
                             surface,
                             callback
                         );
-                        self.feedback(object, client, surface, callback).await
+                        let result = self.feedback(object, client, surface, callback).await;
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1344,12 +1362,16 @@ pub mod tablet_v2 {
                             tablet_seat,
                             seat
                         );
-                        self.get_tablet_seat(object, client, tablet_seat, seat)
-                            .await
+                        let result = self
+                            .get_tablet_seat(object, client, tablet_seat, seat)
+                            .await;
+                        result
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_manager_v2#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1399,7 +1421,9 @@ pub mod tablet_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_seat_v2#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1670,12 +1694,16 @@ pub mod tablet_v2 {
                             hotspot_x,
                             hotspot_y
                         );
-                        self.set_cursor(object, client, serial, surface, hotspot_x, hotspot_y)
-                            .await
+                        let result = self
+                            .set_cursor(object, client, serial, surface, hotspot_x, hotspot_y)
+                            .await;
+                        result
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_tool_v2#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2228,7 +2256,9 @@ pub mod tablet_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_v2#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2411,11 +2441,14 @@ pub mod tablet_v2 {
                             description,
                             serial
                         );
-                        self.set_feedback(object, client, description, serial).await
+                        let result = self.set_feedback(object, client, description, serial).await;
+                        result
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_pad_ring_v2#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2611,11 +2644,14 @@ pub mod tablet_v2 {
                             description,
                             serial
                         );
-                        self.set_feedback(object, client, description, serial).await
+                        let result = self.set_feedback(object, client, description, serial).await;
+                        result
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_pad_strip_v2#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2803,7 +2839,9 @@ pub mod tablet_v2 {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("zwp_tablet_pad_group_v2#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3064,12 +3102,16 @@ pub mod tablet_v2 {
                             description,
                             serial
                         );
-                        self.set_feedback(object, client, button, description, serial)
-                            .await
+                        let result = self
+                            .set_feedback(object, client, button, description, serial)
+                            .await;
+                        result
                     }
                     1u16 => {
                         tracing::debug!("zwp_tablet_pad_v2#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3342,7 +3384,9 @@ pub mod viewporter {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_viewporter#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     1u16 => {
                         let id = message
@@ -3357,7 +3401,8 @@ pub mod viewporter {
                             id,
                             surface
                         );
-                        self.get_viewport(object, client, id, surface).await
+                        let result = self.get_viewport(object, client, id, surface).await;
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3491,7 +3536,9 @@ pub mod viewporter {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("wp_viewport#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     1u16 => {
                         let x = message.fixed()?;
@@ -3506,7 +3553,8 @@ pub mod viewporter {
                             width,
                             height
                         );
-                        self.set_source(object, client, x, y, width, height).await
+                        let result = self.set_source(object, client, x, y, width, height).await;
+                        result
                     }
                     2u16 => {
                         let width = message.int()?;
@@ -3517,7 +3565,8 @@ pub mod viewporter {
                             width,
                             height
                         );
-                        self.set_destination(object, client, width, height).await
+                        let result = self.set_destination(object, client, width, height).await;
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3638,14 +3687,17 @@ pub mod xdg_shell {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_wm_base#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     1u16 => {
                         let id = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("xdg_wm_base#{}.create_positioner({})", object.id, id);
-                        self.create_positioner(object, client, id).await
+                        let result = self.create_positioner(object, client, id).await;
+                        result
                     }
                     2u16 => {
                         let id = message
@@ -3660,12 +3712,14 @@ pub mod xdg_shell {
                             id,
                             surface
                         );
-                        self.get_xdg_surface(object, client, id, surface).await
+                        let result = self.get_xdg_surface(object, client, id, surface).await;
+                        result
                     }
                     3u16 => {
                         let serial = message.uint()?;
                         tracing::debug!("xdg_wm_base#{}.pong({})", object.id, serial);
-                        self.pong(object, client, serial).await
+                        let result = self.pong(object, client, serial).await;
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3894,7 +3948,9 @@ pub mod xdg_shell {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_positioner#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     1u16 => {
                         let width = message.int()?;
@@ -3905,7 +3961,8 @@ pub mod xdg_shell {
                             width,
                             height
                         );
-                        self.set_size(object, client, width, height).await
+                        let result = self.set_size(object, client, width, height).await;
+                        result
                     }
                     2u16 => {
                         let x = message.int()?;
@@ -3920,18 +3977,22 @@ pub mod xdg_shell {
                             width,
                             height
                         );
-                        self.set_anchor_rect(object, client, x, y, width, height)
-                            .await
+                        let result = self
+                            .set_anchor_rect(object, client, x, y, width, height)
+                            .await;
+                        result
                     }
                     3u16 => {
                         let anchor = message.uint()?;
                         tracing::debug!("xdg_positioner#{}.set_anchor({})", object.id, anchor);
-                        self.set_anchor(object, client, anchor.try_into()?).await
+                        let result = self.set_anchor(object, client, anchor.try_into()?).await;
+                        result
                     }
                     4u16 => {
                         let gravity = message.uint()?;
                         tracing::debug!("xdg_positioner#{}.set_gravity({})", object.id, gravity);
-                        self.set_gravity(object, client, gravity.try_into()?).await
+                        let result = self.set_gravity(object, client, gravity.try_into()?).await;
+                        result
                     }
                     5u16 => {
                         let constraint_adjustment = message.uint()?;
@@ -3940,22 +4001,26 @@ pub mod xdg_shell {
                             object.id,
                             constraint_adjustment
                         );
-                        self.set_constraint_adjustment(
-                            object,
-                            client,
-                            constraint_adjustment.try_into()?,
-                        )
-                        .await
+                        let result = self
+                            .set_constraint_adjustment(
+                                object,
+                                client,
+                                constraint_adjustment.try_into()?,
+                            )
+                            .await;
+                        result
                     }
                     6u16 => {
                         let x = message.int()?;
                         let y = message.int()?;
                         tracing::debug!("xdg_positioner#{}.set_offset({}, {})", object.id, x, y);
-                        self.set_offset(object, client, x, y).await
+                        let result = self.set_offset(object, client, x, y).await;
+                        result
                     }
                     7u16 => {
                         tracing::debug!("xdg_positioner#{}.set_reactive()", object.id,);
-                        self.set_reactive(object, client).await
+                        let result = self.set_reactive(object, client).await;
+                        result
                     }
                     8u16 => {
                         let parent_width = message.int()?;
@@ -3966,8 +4031,10 @@ pub mod xdg_shell {
                             parent_width,
                             parent_height
                         );
-                        self.set_parent_size(object, client, parent_width, parent_height)
-                            .await
+                        let result = self
+                            .set_parent_size(object, client, parent_width, parent_height)
+                            .await;
+                        result
                     }
                     9u16 => {
                         let serial = message.uint()?;
@@ -3976,7 +4043,8 @@ pub mod xdg_shell {
                             object.id,
                             serial
                         );
-                        self.set_parent_configure(object, client, serial).await
+                        let result = self.set_parent_configure(object, client, serial).await;
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4225,14 +4293,17 @@ pub mod xdg_shell {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_surface#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     1u16 => {
                         let id = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("xdg_surface#{}.get_toplevel({})", object.id, id);
-                        self.get_toplevel(object, client, id).await
+                        let result = self.get_toplevel(object, client, id).await;
+                        result
                     }
                     2u16 => {
                         let id = message
@@ -4251,7 +4322,8 @@ pub mod xdg_shell {
                                 .map_or("null".to_string(), |v| v.to_string()),
                             positioner
                         );
-                        self.get_popup(object, client, id, parent, positioner).await
+                        let result = self.get_popup(object, client, id, parent, positioner).await;
+                        result
                     }
                     3u16 => {
                         let x = message.int()?;
@@ -4266,13 +4338,16 @@ pub mod xdg_shell {
                             width,
                             height
                         );
-                        self.set_window_geometry(object, client, x, y, width, height)
-                            .await
+                        let result = self
+                            .set_window_geometry(object, client, x, y, width, height)
+                            .await;
+                        result
                     }
                     4u16 => {
                         let serial = message.uint()?;
                         tracing::debug!("xdg_surface#{}.ack_configure({})", object.id, serial);
-                        self.ack_configure(object, client, serial).await
+                        let result = self.ack_configure(object, client, serial).await;
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4614,7 +4689,9 @@ pub mod xdg_shell {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_toplevel#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     1u16 => {
                         let parent = message.object()?;
@@ -4625,21 +4702,24 @@ pub mod xdg_shell {
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.set_parent(object, client, parent).await
+                        let result = self.set_parent(object, client, parent).await;
+                        result
                     }
                     2u16 => {
                         let title = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("xdg_toplevel#{}.set_title(\"{}\")", object.id, title);
-                        self.set_title(object, client, title).await
+                        let result = self.set_title(object, client, title).await;
+                        result
                     }
                     3u16 => {
                         let app_id = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("xdg_toplevel#{}.set_app_id(\"{}\")", object.id, app_id);
-                        self.set_app_id(object, client, app_id).await
+                        let result = self.set_app_id(object, client, app_id).await;
+                        result
                     }
                     4u16 => {
                         let seat = message
@@ -4656,8 +4736,10 @@ pub mod xdg_shell {
                             x,
                             y
                         );
-                        self.show_window_menu(object, client, seat, serial, x, y)
-                            .await
+                        let result = self
+                            .show_window_menu(object, client, seat, serial, x, y)
+                            .await;
+                        result
                     }
                     5u16 => {
                         let seat = message
@@ -4665,7 +4747,8 @@ pub mod xdg_shell {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let serial = message.uint()?;
                         tracing::debug!("xdg_toplevel#{}.move({}, {})", object.id, seat, serial);
-                        self.r#move(object, client, seat, serial).await
+                        let result = self.r#move(object, client, seat, serial).await;
+                        result
                     }
                     6u16 => {
                         let seat = message
@@ -4680,8 +4763,10 @@ pub mod xdg_shell {
                             serial,
                             edges
                         );
-                        self.resize(object, client, seat, serial, edges.try_into()?)
-                            .await
+                        let result = self
+                            .resize(object, client, seat, serial, edges.try_into()?)
+                            .await;
+                        result
                     }
                     7u16 => {
                         let width = message.int()?;
@@ -4692,7 +4777,8 @@ pub mod xdg_shell {
                             width,
                             height
                         );
-                        self.set_max_size(object, client, width, height).await
+                        let result = self.set_max_size(object, client, width, height).await;
+                        result
                     }
                     8u16 => {
                         let width = message.int()?;
@@ -4703,15 +4789,18 @@ pub mod xdg_shell {
                             width,
                             height
                         );
-                        self.set_min_size(object, client, width, height).await
+                        let result = self.set_min_size(object, client, width, height).await;
+                        result
                     }
                     9u16 => {
                         tracing::debug!("xdg_toplevel#{}.set_maximized()", object.id,);
-                        self.set_maximized(object, client).await
+                        let result = self.set_maximized(object, client).await;
+                        result
                     }
                     10u16 => {
                         tracing::debug!("xdg_toplevel#{}.unset_maximized()", object.id,);
-                        self.unset_maximized(object, client).await
+                        let result = self.unset_maximized(object, client).await;
+                        result
                     }
                     11u16 => {
                         let output = message.object()?;
@@ -4722,15 +4811,18 @@ pub mod xdg_shell {
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.set_fullscreen(object, client, output).await
+                        let result = self.set_fullscreen(object, client, output).await;
+                        result
                     }
                     12u16 => {
                         tracing::debug!("xdg_toplevel#{}.unset_fullscreen()", object.id,);
-                        self.unset_fullscreen(object, client).await
+                        let result = self.unset_fullscreen(object, client).await;
+                        result
                     }
                     13u16 => {
                         tracing::debug!("xdg_toplevel#{}.set_minimized()", object.id,);
-                        self.set_minimized(object, client).await
+                        let result = self.set_minimized(object, client).await;
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5298,7 +5390,9 @@ pub mod xdg_shell {
                 match message.opcode {
                     0u16 => {
                         tracing::debug!("xdg_popup#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        let result = self.destroy(object, client).await;
+                        client.remove(&object.id);
+                        result
                     }
                     1u16 => {
                         let seat = message
@@ -5306,7 +5400,8 @@ pub mod xdg_shell {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let serial = message.uint()?;
                         tracing::debug!("xdg_popup#{}.grab({}, {})", object.id, seat, serial);
-                        self.grab(object, client, seat, serial).await
+                        let result = self.grab(object, client, seat, serial).await;
+                        result
                     }
                     2u16 => {
                         let positioner = message
@@ -5319,7 +5414,8 @@ pub mod xdg_shell {
                             positioner,
                             token
                         );
-                        self.reposition(object, client, positioner, token).await
+                        let result = self.reposition(object, client, positioner, token).await;
+                        result
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
