@@ -49,19 +49,16 @@ impl Message {
     }
 
     pub fn from_bytes(bytes: &mut BytesMut, fds: &mut [RawFd]) -> Result<Self, DecodeError> {
-        if bytes.remaining() < 8 {
-            return Err(DecodeError::MalformedHeader);
-        }
+        let object_id = bytes
+            .try_get_u32_ne()
+            .map_err(|_| DecodeError::MalformedHeader)?;
 
-        let object_id = bytes.get_u32_ne();
+        let object_id = ObjectId::new(object_id).ok_or(DecodeError::MalformedHeader)?;
 
-        if object_id == 0 {
-            return Err(DecodeError::MalformedHeader);
-        }
+        let second = bytes
+            .try_get_u32_ne()
+            .map_err(|_| DecodeError::MalformedHeader)?;
 
-        let object_id = unsafe { ObjectId::from_raw(object_id) };
-
-        let second = bytes.get_u32_ne();
         let len = (second >> 16) as usize;
         let opcode = (second & 65535) as u16;
 
@@ -84,19 +81,15 @@ impl Message {
     }
 
     pub fn int(&mut self) -> Result<i32, DecodeError> {
-        if self.payload.remaining() < 4 {
-            return Err(DecodeError::MalformedPayload);
-        }
-
-        Ok(self.payload.get_i32_ne())
+        self.payload
+            .try_get_i32_ne()
+            .map_err(|_| DecodeError::MalformedPayload)
     }
 
     pub fn uint(&mut self) -> Result<u32, DecodeError> {
-        if self.payload.remaining() < 4 {
-            return Err(DecodeError::MalformedPayload);
-        }
-
-        Ok(self.payload.get_u32_ne())
+        self.payload
+            .try_get_u32_ne()
+            .map_err(|_| DecodeError::MalformedPayload)
     }
 
     pub fn fixed(&mut self) -> Result<Fixed, DecodeError> {
