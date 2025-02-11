@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use std::{borrow::Cow, collections::HashMap, os::unix::net::UnixStream, path::Path, sync::Arc};
 
 use anyhow::Result;
