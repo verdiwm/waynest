@@ -42,8 +42,12 @@ impl ObjectId {
         Self(NonZeroU32::new_unchecked(id))
     }
 
-    pub fn new(id: u32) -> Option<Self> {
-        NonZeroU32::new(id).map(Self)
+    pub const fn new(id: u32) -> Option<Self> {
+        if id == 0 {
+            return None;
+        }
+
+        Some(unsafe { Self::from_raw(id) })
     }
 }
 
