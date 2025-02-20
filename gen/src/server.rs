@@ -34,13 +34,13 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
 
             let handler_args = if dispatchers.is_empty() {
                 quote! {
-                    _object: &crate::server::Object,
                     _client: &mut crate::server::Client,
+                    _sender_id: crate::wire::ObjectId,
                 }
             } else {
                 quote! {
-                    object: &crate::server::Object,
                     client: &mut crate::server::Client,
+                    sender_id: crate::wire::ObjectId,
                 }
             };
 
@@ -57,11 +57,6 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                     pub trait #trait_name: crate::server::Dispatcher {
                         const INTERFACE: &'static str = #name;
                         const VERSION: u32 = #version;
-
-                        fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object where Self: Sized
-                        {
-                            crate::server::Object::new(id, self)
-                        }
 
                         async fn handle_request(
                             &self,
@@ -110,7 +105,7 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
         let mut tracing_fmt = Vec::new();
         let mut tracing_args = Vec::new();
 
-        let mut args = vec![quote! { object }, quote! { client }];
+        let mut args = vec![quote! { client }, quote! { sender_id }];
         let mut setters = Vec::new();
 
         for arg in &request.args {
@@ -173,7 +168,7 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
             #opcode => {
                 #(#setters)*
 
-                tracing::debug!(#tracing_inner, object.id, #(#tracing_args),*);
+                tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
                 self.#name(#(#args),*).await
             }
         });
@@ -189,8 +184,8 @@ fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Tok
         let name = make_ident(request.name.to_snek_case());
         let mut args = vec![
             quote! {&self },
-            quote! {object: &crate::server::Object},
             quote! {client: &mut crate::server::Client},
+            quote! {sender_id: crate::wire::ObjectId},
         ];
 
         for arg in &request.args {
@@ -225,8 +220,8 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
 
         let mut args = vec![
             quote! {&self },
-            quote! {object: &crate::server::Object},
             quote! {client: &mut crate::server::Client},
+            quote! {sender_id: crate::wire::ObjectId},
         ];
 
         let mut tracing_fmt = Vec::new();
@@ -321,14 +316,14 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
         events.push(quote! {
             #(#docs)*
             async fn #name(#(#args),*) -> crate::server::Result<()> {
-                tracing::debug!(#tracing_inner, object.id, #(#tracing_args),*);
+                tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
 
                 let (payload,fds) = crate::wire::PayloadBuilder::new()
                     #(#build_args)*
                     .build();
 
                 client
-                    .send_message(crate::wire::Message::new(object.id, #opcode, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, #opcode, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }

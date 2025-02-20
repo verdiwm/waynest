@@ -43,16 +43,10 @@ pub mod wayland {
         pub trait WlDisplay: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_display";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -61,15 +55,15 @@ pub mod wayland {
                         let callback = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_display#{}.sync({})", object.id, callback);
-                        self.sync(object, client, callback).await
+                        tracing::debug!("wl_display#{}.sync({})", sender_id, callback);
+                        self.sync(client, sender_id, callback).await
                     }
                     1u16 => {
                         let registry = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_display#{}.get_registry({})", object.id, registry);
-                        self.get_registry(object, client, registry).await
+                        tracing::debug!("wl_display#{}.get_registry({})", sender_id, registry);
+                        self.get_registry(client, sender_id, registry).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -87,8 +81,8 @@ pub mod wayland {
             #[doc = "The callback_data passed in the callback is undefined and should be ignored."]
             async fn sync(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 callback: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This request creates a registry object that allows the client"]
@@ -102,8 +96,8 @@ pub mod wayland {
             #[doc = "possible to avoid wasting memory."]
             async fn get_registry(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 registry: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The error event is sent out when a fatal (non-recoverable)"]
@@ -115,15 +109,15 @@ pub mod wayland {
             #[doc = "of the error, for (debugging) convenience."]
             async fn error(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 object_id: crate::wire::ObjectId,
                 code: u32,
                 message: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_display#{}.error({}, {}, \"{}\")",
-                    object.id,
+                    sender_id,
                     object_id,
                     code,
                     message
@@ -134,7 +128,7 @@ pub mod wayland {
                     .put_string(Some(message))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -145,14 +139,14 @@ pub mod wayland {
             #[doc = "it will know that it can safely reuse the object ID."]
             async fn delete_id(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_display#{}.delete_id({})", object.id, id);
+                tracing::debug!("-> wl_display#{}.delete_id({})", sender_id, id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -186,16 +180,10 @@ pub mod wayland {
         pub trait WlRegistry: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_registry";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -203,8 +191,8 @@ pub mod wayland {
                     0u16 => {
                         let name = message.uint()?;
                         let id = message.new_id()?;
-                        tracing::debug!("wl_registry#{}.bind({}, {})", object.id, name, id);
-                        self.bind(object, client, name, id).await
+                        tracing::debug!("wl_registry#{}.bind({}, {})", sender_id, name, id);
+                        self.bind(client, sender_id, name, id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -213,8 +201,8 @@ pub mod wayland {
             #[doc = "specified name as the identifier."]
             async fn bind(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 name: u32,
                 id: crate::wire::NewId,
             ) -> crate::server::Result<()>;
@@ -225,15 +213,15 @@ pub mod wayland {
             #[doc = "given version of the given interface."]
             async fn global(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 name: u32,
                 interface: String,
                 version: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_registry#{}.global({}, \"{}\", {})",
-                    object.id,
+                    sender_id,
                     name,
                     interface,
                     version
@@ -244,7 +232,7 @@ pub mod wayland {
                     .put_uint(version)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -260,14 +248,14 @@ pub mod wayland {
             #[doc = "the global going away and a client sending a request to it."]
             async fn global_remove(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 name: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_registry#{}.global_remove({})", object.id, name);
+                tracing::debug!("-> wl_registry#{}.global_remove({})", sender_id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(name).build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -286,16 +274,10 @@ pub mod wayland {
         pub trait WlCallback: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_callback";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                _object: &crate::server::Object,
                 _client: &mut crate::server::Client,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -306,16 +288,16 @@ pub mod wayland {
             #[doc = "Notify the client when the related request is done."]
             async fn done(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 callback_data: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_callback#{}.done({})", object.id, callback_data);
+                tracing::debug!("-> wl_callback#{}.done({})", sender_id, callback_data);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(callback_data)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -332,16 +314,10 @@ pub mod wayland {
         pub trait WlCompositor: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_compositor";
             const VERSION: u32 = 6u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -350,15 +326,15 @@ pub mod wayland {
                         let id = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_compositor#{}.create_surface({})", object.id, id);
-                        self.create_surface(object, client, id).await
+                        tracing::debug!("wl_compositor#{}.create_surface({})", sender_id, id);
+                        self.create_surface(client, sender_id, id).await
                     }
                     1u16 => {
                         let id = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_compositor#{}.create_region({})", object.id, id);
-                        self.create_region(object, client, id).await
+                        tracing::debug!("wl_compositor#{}.create_region({})", sender_id, id);
+                        self.create_region(client, sender_id, id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -366,15 +342,15 @@ pub mod wayland {
             #[doc = "Ask the compositor to create a new surface."]
             async fn create_surface(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Ask the compositor to create a new region."]
             async fn create_region(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
@@ -394,16 +370,10 @@ pub mod wayland {
         pub trait WlShmPool: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_shm_pool";
             const VERSION: u32 = 2u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -419,7 +389,7 @@ pub mod wayland {
                         let format = message.uint()?;
                         tracing::debug!(
                             "wl_shm_pool#{}.create_buffer({}, {}, {}, {}, {}, {})",
-                            object.id,
+                            sender_id,
                             id,
                             offset,
                             width,
@@ -428,8 +398,8 @@ pub mod wayland {
                             format
                         );
                         self.create_buffer(
-                            object,
                             client,
+                            sender_id,
                             id,
                             offset,
                             width,
@@ -440,13 +410,13 @@ pub mod wayland {
                         .await
                     }
                     1u16 => {
-                        tracing::debug!("wl_shm_pool#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("wl_shm_pool#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     2u16 => {
                         let size = message.int()?;
-                        tracing::debug!("wl_shm_pool#{}.resize({})", object.id, size);
-                        self.resize(object, client, size).await
+                        tracing::debug!("wl_shm_pool#{}.resize({})", sender_id, size);
+                        self.resize(client, sender_id, size).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -464,8 +434,8 @@ pub mod wayland {
             #[doc = "a buffer from it."]
             async fn create_buffer(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 offset: i32,
                 width: i32,
@@ -480,8 +450,8 @@ pub mod wayland {
             #[doc = "are gone."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This request will cause the server to remap the backing memory"]
             #[doc = "for the pool from the file descriptor passed when the pool was"]
@@ -495,8 +465,8 @@ pub mod wayland {
             #[doc = "the new pool size."]
             async fn resize(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 size: i32,
             ) -> crate::server::Result<()>;
         }
@@ -933,16 +903,10 @@ pub mod wayland {
         pub trait WlShm: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_shm";
             const VERSION: u32 = 2u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -955,16 +919,16 @@ pub mod wayland {
                         let size = message.int()?;
                         tracing::debug!(
                             "wl_shm#{}.create_pool({}, {}, {})",
-                            object.id,
+                            sender_id,
                             id,
                             fd.as_raw_fd(),
                             size
                         );
-                        self.create_pool(object, client, id, fd, size).await
+                        self.create_pool(client, sender_id, id, fd, size).await
                     }
                     1u16 => {
-                        tracing::debug!("wl_shm#{}.release()", object.id,);
-                        self.release(object, client).await
+                        tracing::debug!("wl_shm#{}.release()", sender_id,);
+                        self.release(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -976,8 +940,8 @@ pub mod wayland {
             #[doc = "descriptor, to use as backing memory for the pool."]
             async fn create_pool(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 fd: rustix::fd::OwnedFd,
                 size: i32,
@@ -988,24 +952,24 @@ pub mod wayland {
             #[doc = "Objects created via this interface remain unaffected."]
             async fn release(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Informs the client about a valid pixel format that"]
             #[doc = "can be used for buffers. Known formats include"]
             #[doc = "argb8888 and xrgb8888."]
             async fn format(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 format: Format,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_shm#{}.format({})", object.id, format);
+                tracing::debug!("-> wl_shm#{}.format({})", sender_id, format);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(format as u32)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1034,23 +998,17 @@ pub mod wayland {
         pub trait WlBuffer: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_buffer";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wl_buffer#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("wl_buffer#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1061,8 +1019,8 @@ pub mod wayland {
             #[doc = "For possible side-effects to a surface, see wl_surface.attach."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Sent when this wl_buffer is no longer used by the compositor."]
             #[doc = "The client is now free to reuse or destroy this buffer and its"]
@@ -1078,13 +1036,13 @@ pub mod wayland {
             #[doc = "optimization for GL(ES) compositors with wl_shm clients."]
             async fn release(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_buffer#{}.release()", object.id,);
+                tracing::debug!("-> wl_buffer#{}.release()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1134,16 +1092,10 @@ pub mod wayland {
         pub trait WlDataOffer: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_data_offer";
             const VERSION: u32 = 3u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1153,13 +1105,13 @@ pub mod wayland {
                         let mime_type = message.string()?;
                         tracing::debug!(
                             "wl_data_offer#{}.accept({}, \"{}\")",
-                            object.id,
+                            sender_id,
                             serial,
                             mime_type
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.accept(object, client, serial, mime_type).await
+                        self.accept(client, sender_id, serial, mime_type).await
                     }
                     1u16 => {
                         let mime_type = message
@@ -1168,32 +1120,32 @@ pub mod wayland {
                         let fd = message.fd()?;
                         tracing::debug!(
                             "wl_data_offer#{}.receive(\"{}\", {})",
-                            object.id,
+                            sender_id,
                             mime_type,
                             fd.as_raw_fd()
                         );
-                        self.receive(object, client, mime_type, fd).await
+                        self.receive(client, sender_id, mime_type, fd).await
                     }
                     2u16 => {
-                        tracing::debug!("wl_data_offer#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("wl_data_offer#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     3u16 => {
-                        tracing::debug!("wl_data_offer#{}.finish()", object.id,);
-                        self.finish(object, client).await
+                        tracing::debug!("wl_data_offer#{}.finish()", sender_id,);
+                        self.finish(client, sender_id).await
                     }
                     4u16 => {
                         let dnd_actions = message.uint()?;
                         let preferred_action = message.uint()?;
                         tracing::debug!(
                             "wl_data_offer#{}.set_actions({}, {})",
-                            object.id,
+                            sender_id,
                             dnd_actions,
                             preferred_action
                         );
                         self.set_actions(
-                            object,
                             client,
+                            sender_id,
                             dnd_actions.try_into()?,
                             preferred_action.try_into()?,
                         )
@@ -1218,8 +1170,8 @@ pub mod wayland {
             #[doc = "conjunction with wl_data_source.action for feedback."]
             async fn accept(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
                 mime_type: Option<String>,
             ) -> crate::server::Result<()>;
@@ -1240,16 +1192,16 @@ pub mod wayland {
             #[doc = "determine acceptance."]
             async fn receive(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the data offer."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Notifies the compositor that the drag destination successfully"]
             #[doc = "finished the drag-and-drop operation."]
@@ -1267,8 +1219,8 @@ pub mod wayland {
             #[doc = "operation, the invalid_finish protocol error is raised."]
             async fn finish(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Sets the actions that the destination side client supports for"]
             #[doc = "this operation. This request may trigger the emission of"]
@@ -1303,8 +1255,8 @@ pub mod wayland {
             #[doc = "will be raised otherwise."]
             async fn set_actions(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 dnd_actions: super::super::super::core::wayland::wl_data_device_manager::DndAction,
                 preferred_action : super :: super :: super :: core :: wayland :: wl_data_device_manager :: DndAction,
             ) -> crate::server::Result<()>;
@@ -1312,16 +1264,16 @@ pub mod wayland {
             #[doc = "event per offered mime type."]
             async fn offer(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 mime_type: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_offer#{}.offer(\"{}\")", object.id, mime_type);
+                tracing::debug!("-> wl_data_offer#{}.offer(\"{}\")", sender_id, mime_type);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(mime_type))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1331,20 +1283,20 @@ pub mod wayland {
             #[doc = "wl_data_source.set_actions."]
             async fn source_actions(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 source_actions : super :: super :: super :: core :: wayland :: wl_data_device_manager :: DndAction,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_data_offer#{}.source_actions({})",
-                    object.id,
+                    sender_id,
                     source_actions
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(source_actions.bits())
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1385,16 +1337,16 @@ pub mod wayland {
             #[doc = "must happen before the call to wl_data_offer.finish."]
             async fn action(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 dnd_action: super::super::super::core::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_offer#{}.action({})", object.id, dnd_action);
+                tracing::debug!("-> wl_data_offer#{}.action({})", sender_id, dnd_action);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(dnd_action.bits())
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1436,16 +1388,10 @@ pub mod wayland {
         pub trait WlDataSource: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_data_source";
             const VERSION: u32 = 3u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1454,21 +1400,21 @@ pub mod wayland {
                         let mime_type = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_data_source#{}.offer(\"{}\")", object.id, mime_type);
-                        self.offer(object, client, mime_type).await
+                        tracing::debug!("wl_data_source#{}.offer(\"{}\")", sender_id, mime_type);
+                        self.offer(client, sender_id, mime_type).await
                     }
                     1u16 => {
-                        tracing::debug!("wl_data_source#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("wl_data_source#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     2u16 => {
                         let dnd_actions = message.uint()?;
                         tracing::debug!(
                             "wl_data_source#{}.set_actions({})",
-                            object.id,
+                            sender_id,
                             dnd_actions
                         );
-                        self.set_actions(object, client, dnd_actions.try_into()?)
+                        self.set_actions(client, sender_id, dnd_actions.try_into()?)
                             .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -1479,15 +1425,15 @@ pub mod wayland {
             #[doc = "multiple types."]
             async fn offer(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 mime_type: String,
             ) -> crate::server::Result<()>;
             #[doc = "Destroy the data source."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Sets the actions that the source side client supports for this"]
             #[doc = "operation. This request may trigger wl_data_source.action and"]
@@ -1504,8 +1450,8 @@ pub mod wayland {
             #[doc = "for drag-and-drop will raise a protocol error."]
             async fn set_actions(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 dnd_actions: super::super::super::core::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()>;
             #[doc = "Sent when a target accepts pointer_focus or motion events.  If"]
@@ -1514,13 +1460,13 @@ pub mod wayland {
             #[doc = "Used for feedback during drag-and-drop."]
             async fn target(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 mime_type: Option<String>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_data_source#{}.target(\"{}\")",
-                    object.id,
+                    sender_id,
                     mime_type
                         .as_ref()
                         .map_or("null".to_string(), |v| v.to_string())
@@ -1529,7 +1475,7 @@ pub mod wayland {
                     .put_string(mime_type)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1538,14 +1484,14 @@ pub mod wayland {
             #[doc = "close it."]
             async fn send(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_data_source#{}.send(\"{}\", {})",
-                    object.id,
+                    sender_id,
                     mime_type,
                     fd.as_raw_fd()
                 );
@@ -1554,7 +1500,7 @@ pub mod wayland {
                     .put_fd(fd)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1580,13 +1526,13 @@ pub mod wayland {
             #[doc = "source."]
             async fn cancelled(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.cancelled()", object.id,);
+                tracing::debug!("-> wl_data_source#{}.cancelled()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1601,13 +1547,13 @@ pub mod wayland {
             #[doc = "not be destroyed here."]
             async fn dnd_drop_performed(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.dnd_drop_performed()", object.id,);
+                tracing::debug!("-> wl_data_source#{}.dnd_drop_performed()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1619,13 +1565,13 @@ pub mod wayland {
             #[doc = "source can now delete the transferred data."]
             async fn dnd_finished(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.dnd_finished()", object.id,);
+                tracing::debug!("-> wl_data_source#{}.dnd_finished()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1656,16 +1602,16 @@ pub mod wayland {
             #[doc = "they reflect the current action."]
             async fn action(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 dnd_action: super::super::super::core::wayland::wl_data_device_manager::DndAction,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_source#{}.action({})", object.id, dnd_action);
+                tracing::debug!("-> wl_data_source#{}.action({})", sender_id, dnd_action);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(dnd_action.bits())
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1708,16 +1654,10 @@ pub mod wayland {
         pub trait WlDataDevice: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_data_device";
             const VERSION: u32 = 3u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1731,7 +1671,7 @@ pub mod wayland {
                         let serial = message.uint()?;
                         tracing::debug!(
                             "wl_data_device#{}.start_drag({}, {}, {}, {})",
-                            object.id,
+                            sender_id,
                             source
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string()),
@@ -1739,7 +1679,7 @@ pub mod wayland {
                             icon.as_ref().map_or("null".to_string(), |v| v.to_string()),
                             serial
                         );
-                        self.start_drag(object, client, source, origin, icon, serial)
+                        self.start_drag(client, sender_id, source, origin, icon, serial)
                             .await
                     }
                     1u16 => {
@@ -1747,17 +1687,17 @@ pub mod wayland {
                         let serial = message.uint()?;
                         tracing::debug!(
                             "wl_data_device#{}.set_selection({}, {})",
-                            object.id,
+                            sender_id,
                             source
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string()),
                             serial
                         );
-                        self.set_selection(object, client, source, serial).await
+                        self.set_selection(client, sender_id, source, serial).await
                     }
                     2u16 => {
-                        tracing::debug!("wl_data_device#{}.release()", object.id,);
-                        self.release(object, client).await
+                        tracing::debug!("wl_data_device#{}.release()", sender_id,);
+                        self.release(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1793,8 +1733,8 @@ pub mod wayland {
             #[doc = "may send a used_source error."]
             async fn start_drag(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 source: Option<crate::wire::ObjectId>,
                 origin: crate::wire::ObjectId,
                 icon: Option<crate::wire::ObjectId>,
@@ -1810,16 +1750,16 @@ pub mod wayland {
             #[doc = "may send a used_source error."]
             async fn set_selection(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 source: Option<crate::wire::ObjectId>,
                 serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "This request destroys the data device."]
             async fn release(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The data_offer event introduces a new wl_data_offer object,"]
             #[doc = "which will subsequently be used in either the"]
@@ -1830,16 +1770,16 @@ pub mod wayland {
             #[doc = "mime types it offers."]
             async fn data_offer(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_device#{}.data_offer({})", object.id, id);
+                tracing::debug!("-> wl_data_device#{}.data_offer({})", sender_id, id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1849,8 +1789,8 @@ pub mod wayland {
             #[doc = "coordinates."]
             async fn enter(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
                 x: crate::wire::Fixed,
@@ -1859,7 +1799,7 @@ pub mod wayland {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_data_device#{}.enter({}, {}, {}, {}, {})",
-                    object.id,
+                    sender_id,
                     serial,
                     surface,
                     x,
@@ -1874,7 +1814,7 @@ pub mod wayland {
                     .put_object(id)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1883,13 +1823,13 @@ pub mod wayland {
             #[doc = "wl_data_offer introduced at enter time at this point."]
             async fn leave(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_device#{}.leave()", object.id,);
+                tracing::debug!("-> wl_data_device#{}.leave()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1899,15 +1839,15 @@ pub mod wayland {
             #[doc = "coordinates."]
             async fn motion(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 time: u32,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_data_device#{}.motion({}, {}, {})",
-                    object.id,
+                    sender_id,
                     time,
                     x,
                     y
@@ -1918,7 +1858,7 @@ pub mod wayland {
                     .put_fixed(y)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1937,13 +1877,13 @@ pub mod wayland {
             #[doc = "to cancel the operation."]
             async fn drop(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_data_device#{}.drop()", object.id,);
+                tracing::debug!("-> wl_data_device#{}.drop()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1961,18 +1901,18 @@ pub mod wayland {
             #[doc = "data_offer, if any, upon receiving this event."]
             async fn selection(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_data_device#{}.selection({})",
-                    object.id,
+                    sender_id,
                     id.as_ref().map_or("null".to_string(), |v| v.to_string())
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2008,16 +1948,10 @@ pub mod wayland {
         pub trait WlDataDeviceManager: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_data_device_manager";
             const VERSION: u32 = 3u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2028,10 +1962,10 @@ pub mod wayland {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "wl_data_device_manager#{}.create_data_source({})",
-                            object.id,
+                            sender_id,
                             id
                         );
-                        self.create_data_source(object, client, id).await
+                        self.create_data_source(client, sender_id, id).await
                     }
                     1u16 => {
                         let id = message
@@ -2042,11 +1976,11 @@ pub mod wayland {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "wl_data_device_manager#{}.get_data_device({}, {})",
-                            object.id,
+                            sender_id,
                             id,
                             seat
                         );
-                        self.get_data_device(object, client, id, seat).await
+                        self.get_data_device(client, sender_id, id, seat).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2054,15 +1988,15 @@ pub mod wayland {
             #[doc = "Create a new data source."]
             async fn create_data_source(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Create a new data device for a given seat."]
             async fn get_data_device(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
@@ -2106,16 +2040,10 @@ pub mod wayland {
         pub trait WlShell: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_shell";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2129,11 +2057,11 @@ pub mod wayland {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "wl_shell#{}.get_shell_surface({}, {})",
-                            object.id,
+                            sender_id,
                             id,
                             surface
                         );
-                        self.get_shell_surface(object, client, id, surface).await
+                        self.get_shell_surface(client, sender_id, id, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2145,8 +2073,8 @@ pub mod wayland {
             #[doc = "Only one shell surface can be associated with a given surface."]
             async fn get_shell_surface(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
@@ -2228,24 +2156,18 @@ pub mod wayland {
         pub trait WlShellSurface: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_shell_surface";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
                         let serial = message.uint()?;
-                        tracing::debug!("wl_shell_surface#{}.pong({})", object.id, serial);
-                        self.pong(object, client, serial).await
+                        tracing::debug!("wl_shell_surface#{}.pong({})", sender_id, serial);
+                        self.pong(client, sender_id, serial).await
                     }
                     1u16 => {
                         let seat = message
@@ -2254,11 +2176,11 @@ pub mod wayland {
                         let serial = message.uint()?;
                         tracing::debug!(
                             "wl_shell_surface#{}.move({}, {})",
-                            object.id,
+                            sender_id,
                             seat,
                             serial
                         );
-                        self.r#move(object, client, seat, serial).await
+                        self.r#move(client, sender_id, seat, serial).await
                     }
                     2u16 => {
                         let seat = message
@@ -2268,17 +2190,17 @@ pub mod wayland {
                         let edges = message.uint()?;
                         tracing::debug!(
                             "wl_shell_surface#{}.resize({}, {}, {})",
-                            object.id,
+                            sender_id,
                             seat,
                             serial,
                             edges
                         );
-                        self.resize(object, client, seat, serial, edges.try_into()?)
+                        self.resize(client, sender_id, seat, serial, edges.try_into()?)
                             .await
                     }
                     3u16 => {
-                        tracing::debug!("wl_shell_surface#{}.set_toplevel()", object.id,);
-                        self.set_toplevel(object, client).await
+                        tracing::debug!("wl_shell_surface#{}.set_toplevel()", sender_id,);
+                        self.set_toplevel(client, sender_id).await
                     }
                     4u16 => {
                         let parent = message
@@ -2289,13 +2211,13 @@ pub mod wayland {
                         let flags = message.uint()?;
                         tracing::debug!(
                             "wl_shell_surface#{}.set_transient({}, {}, {}, {})",
-                            object.id,
+                            sender_id,
                             parent,
                             x,
                             y,
                             flags
                         );
-                        self.set_transient(object, client, parent, x, y, flags.try_into()?)
+                        self.set_transient(client, sender_id, parent, x, y, flags.try_into()?)
                             .await
                     }
                     5u16 => {
@@ -2304,15 +2226,21 @@ pub mod wayland {
                         let output = message.object()?;
                         tracing::debug!(
                             "wl_shell_surface#{}.set_fullscreen({}, {}, {})",
-                            object.id,
+                            sender_id,
                             method,
                             framerate,
                             output
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.set_fullscreen(object, client, method.try_into()?, framerate, output)
-                            .await
+                        self.set_fullscreen(
+                            client,
+                            sender_id,
+                            method.try_into()?,
+                            framerate,
+                            output,
+                        )
+                        .await
                     }
                     6u16 => {
                         let seat = message
@@ -2327,7 +2255,7 @@ pub mod wayland {
                         let flags = message.uint()?;
                         tracing::debug!(
                             "wl_shell_surface#{}.set_popup({}, {}, {}, {}, {}, {})",
-                            object.id,
+                            sender_id,
                             seat,
                             serial,
                             parent,
@@ -2336,8 +2264,8 @@ pub mod wayland {
                             flags
                         );
                         self.set_popup(
-                            object,
                             client,
+                            sender_id,
                             seat,
                             serial,
                             parent,
@@ -2351,26 +2279,26 @@ pub mod wayland {
                         let output = message.object()?;
                         tracing::debug!(
                             "wl_shell_surface#{}.set_maximized({})",
-                            object.id,
+                            sender_id,
                             output
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.set_maximized(object, client, output).await
+                        self.set_maximized(client, sender_id, output).await
                     }
                     8u16 => {
                         let title = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_shell_surface#{}.set_title(\"{}\")", object.id, title);
-                        self.set_title(object, client, title).await
+                        tracing::debug!("wl_shell_surface#{}.set_title(\"{}\")", sender_id, title);
+                        self.set_title(client, sender_id, title).await
                     }
                     9u16 => {
                         let class_ = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_shell_surface#{}.set_class(\"{}\")", object.id, class_);
-                        self.set_class(object, client, class_).await
+                        tracing::debug!("wl_shell_surface#{}.set_class(\"{}\")", sender_id, class_);
+                        self.set_class(client, sender_id, class_).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2379,8 +2307,8 @@ pub mod wayland {
             #[doc = "the client may be deemed unresponsive."]
             async fn pong(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> crate::server::Result<()>;
             #[doc = "Start a pointer-driven move of the surface."]
@@ -2390,8 +2318,8 @@ pub mod wayland {
             #[doc = "the surface (e.g. fullscreen or maximized)."]
             async fn r#move(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 serial: u32,
             ) -> crate::server::Result<()>;
@@ -2402,8 +2330,8 @@ pub mod wayland {
             #[doc = "the surface (e.g. fullscreen or maximized)."]
             async fn resize(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 serial: u32,
                 edges: Resize,
@@ -2413,8 +2341,8 @@ pub mod wayland {
             #[doc = "A toplevel surface is not fullscreen, maximized or transient."]
             async fn set_toplevel(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Map the surface relative to an existing surface."]
             #[doc = ""]
@@ -2425,8 +2353,8 @@ pub mod wayland {
             #[doc = "The flags argument controls details of the transient behaviour."]
             async fn set_transient(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 parent: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -2467,8 +2395,8 @@ pub mod wayland {
             #[doc = "be made fullscreen."]
             async fn set_fullscreen(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 method: FullscreenMethod,
                 framerate: u32,
                 output: Option<crate::wire::ObjectId>,
@@ -2494,8 +2422,8 @@ pub mod wayland {
             #[doc = "parent surface, in surface-local coordinates."]
             async fn set_popup(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 serial: u32,
                 parent: crate::wire::ObjectId,
@@ -2523,8 +2451,8 @@ pub mod wayland {
             #[doc = "The details depend on the compositor implementation."]
             async fn set_maximized(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 output: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "Set a short title for the surface."]
@@ -2536,8 +2464,8 @@ pub mod wayland {
             #[doc = "The string must be encoded in UTF-8."]
             async fn set_title(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 title: String,
             ) -> crate::server::Result<()>;
             #[doc = "Set a class for the surface."]
@@ -2548,22 +2476,22 @@ pub mod wayland {
             #[doc = "the application's .desktop file as the class."]
             async fn set_class(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 class: String,
             ) -> crate::server::Result<()>;
             #[doc = "Ping a client to check if it is receiving events and sending"]
             #[doc = "requests. A client is expected to reply with a pong request."]
             async fn ping(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_shell_surface#{}.ping({})", object.id, serial);
+                tracing::debug!("-> wl_shell_surface#{}.ping({})", sender_id, serial);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2586,15 +2514,15 @@ pub mod wayland {
             #[doc = "in surface-local coordinates."]
             async fn configure(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 edges: Resize,
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_shell_surface#{}.configure({}, {}, {})",
-                    object.id,
+                    sender_id,
                     edges,
                     width,
                     height
@@ -2605,7 +2533,7 @@ pub mod wayland {
                     .put_int(height)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2614,13 +2542,13 @@ pub mod wayland {
             #[doc = "to the client owning the popup surface."]
             async fn popup_done(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_shell_surface#{}.popup_done()", object.id,);
+                tracing::debug!("-> wl_shell_surface#{}.popup_done()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2710,23 +2638,17 @@ pub mod wayland {
         pub trait WlSurface: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_surface";
             const VERSION: u32 = 6u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wl_surface#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("wl_surface#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     1u16 => {
                         let buffer = message.object()?;
@@ -2734,14 +2656,14 @@ pub mod wayland {
                         let y = message.int()?;
                         tracing::debug!(
                             "wl_surface#{}.attach({}, {}, {})",
-                            object.id,
+                            sender_id,
                             buffer
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string()),
                             x,
                             y
                         );
-                        self.attach(object, client, buffer, x, y).await
+                        self.attach(client, sender_id, buffer, x, y).await
                     }
                     2u16 => {
                         let x = message.int()?;
@@ -2750,61 +2672,61 @@ pub mod wayland {
                         let height = message.int()?;
                         tracing::debug!(
                             "wl_surface#{}.damage({}, {}, {}, {})",
-                            object.id,
+                            sender_id,
                             x,
                             y,
                             width,
                             height
                         );
-                        self.damage(object, client, x, y, width, height).await
+                        self.damage(client, sender_id, x, y, width, height).await
                     }
                     3u16 => {
                         let callback = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_surface#{}.frame({})", object.id, callback);
-                        self.frame(object, client, callback).await
+                        tracing::debug!("wl_surface#{}.frame({})", sender_id, callback);
+                        self.frame(client, sender_id, callback).await
                     }
                     4u16 => {
                         let region = message.object()?;
                         tracing::debug!(
                             "wl_surface#{}.set_opaque_region({})",
-                            object.id,
+                            sender_id,
                             region
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.set_opaque_region(object, client, region).await
+                        self.set_opaque_region(client, sender_id, region).await
                     }
                     5u16 => {
                         let region = message.object()?;
                         tracing::debug!(
                             "wl_surface#{}.set_input_region({})",
-                            object.id,
+                            sender_id,
                             region
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.set_input_region(object, client, region).await
+                        self.set_input_region(client, sender_id, region).await
                     }
                     6u16 => {
-                        tracing::debug!("wl_surface#{}.commit()", object.id,);
-                        self.commit(object, client).await
+                        tracing::debug!("wl_surface#{}.commit()", sender_id,);
+                        self.commit(client, sender_id).await
                     }
                     7u16 => {
                         let transform = message.uint()?;
                         tracing::debug!(
                             "wl_surface#{}.set_buffer_transform({})",
-                            object.id,
+                            sender_id,
                             transform
                         );
-                        self.set_buffer_transform(object, client, transform.try_into()?)
+                        self.set_buffer_transform(client, sender_id, transform.try_into()?)
                             .await
                     }
                     8u16 => {
                         let scale = message.int()?;
-                        tracing::debug!("wl_surface#{}.set_buffer_scale({})", object.id, scale);
-                        self.set_buffer_scale(object, client, scale).await
+                        tracing::debug!("wl_surface#{}.set_buffer_scale({})", sender_id, scale);
+                        self.set_buffer_scale(client, sender_id, scale).await
                     }
                     9u16 => {
                         let x = message.int()?;
@@ -2813,20 +2735,20 @@ pub mod wayland {
                         let height = message.int()?;
                         tracing::debug!(
                             "wl_surface#{}.damage_buffer({}, {}, {}, {})",
-                            object.id,
+                            sender_id,
                             x,
                             y,
                             width,
                             height
                         );
-                        self.damage_buffer(object, client, x, y, width, height)
+                        self.damage_buffer(client, sender_id, x, y, width, height)
                             .await
                     }
                     10u16 => {
                         let x = message.int()?;
                         let y = message.int()?;
-                        tracing::debug!("wl_surface#{}.offset({}, {})", object.id, x, y);
-                        self.offset(object, client, x, y).await
+                        tracing::debug!("wl_surface#{}.offset({}, {})", sender_id, x, y);
+                        self.offset(client, sender_id, x, y).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2834,8 +2756,8 @@ pub mod wayland {
             #[doc = "Deletes the surface and invalidates its object ID."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Set a buffer as the content of this surface."]
             #[doc = ""]
@@ -2903,8 +2825,8 @@ pub mod wayland {
             #[doc = "destroying buffers."]
             async fn attach(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 buffer: Option<crate::wire::ObjectId>,
                 x: i32,
                 y: i32,
@@ -2932,8 +2854,8 @@ pub mod wayland {
             #[doc = "instead of surface coordinates."]
             async fn damage(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
                 width: i32,
@@ -2973,8 +2895,8 @@ pub mod wayland {
             #[doc = "milliseconds, with an undefined base."]
             async fn frame(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 callback: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This request sets the region of the surface that contains"]
@@ -3003,8 +2925,8 @@ pub mod wayland {
             #[doc = "region to be set to empty."]
             async fn set_opaque_region(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "This request sets the region of the surface that can receive"]
@@ -3031,8 +2953,8 @@ pub mod wayland {
             #[doc = "to infinite."]
             async fn set_input_region(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
             #[doc = "Surface state (input, opaque, and damage regions, attached buffers,"]
@@ -3056,8 +2978,8 @@ pub mod wayland {
             #[doc = "Other interfaces may add further double-buffered surface state."]
             async fn commit(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This request sets the transformation that the client has already applied"]
             #[doc = "to the content of the buffer. The accepted values for the transform"]
@@ -3092,8 +3014,8 @@ pub mod wayland {
             #[doc = "is raised."]
             async fn set_buffer_transform(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::server::Result<()>;
             #[doc = "This request sets an optional scaling factor on how the compositor"]
@@ -3121,8 +3043,8 @@ pub mod wayland {
             #[doc = "raised."]
             async fn set_buffer_scale(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 scale: i32,
             ) -> crate::server::Result<()>;
             #[doc = "This request is used to describe the regions where the pending"]
@@ -3159,8 +3081,8 @@ pub mod wayland {
             #[doc = "after receiving the wl_surface.commit."]
             async fn damage_buffer(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
                 width: i32,
@@ -3180,8 +3102,8 @@ pub mod wayland {
             #[doc = "to 5. See wl_surface.attach for details."]
             async fn offset(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
             ) -> crate::server::Result<()>;
@@ -3192,16 +3114,16 @@ pub mod wayland {
             #[doc = "Note that a surface may be overlapping with zero or more outputs."]
             async fn enter(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_surface#{}.enter({})", object.id, output);
+                tracing::debug!("-> wl_surface#{}.enter({})", sender_id, output);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(output))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -3216,16 +3138,16 @@ pub mod wayland {
             #[doc = "used instead."]
             async fn leave(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_surface#{}.leave({})", object.id, output);
+                tracing::debug!("-> wl_surface#{}.leave({})", sender_id, output);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(output))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -3243,18 +3165,18 @@ pub mod wayland {
             #[doc = "The compositor shall emit a scale value greater than 0."]
             async fn preferred_buffer_scale(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 factor: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_surface#{}.preferred_buffer_scale({})",
-                    object.id,
+                    sender_id,
                     factor
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(factor).build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -3269,20 +3191,20 @@ pub mod wayland {
             #[doc = "surface buffer more efficiently."]
             async fn preferred_buffer_transform(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_surface#{}.preferred_buffer_transform({})",
-                    object.id,
+                    sender_id,
                     transform
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(transform as u32)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -3334,16 +3256,10 @@ pub mod wayland {
         pub trait WlSeat: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_seat";
             const VERSION: u32 = 9u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3352,26 +3268,26 @@ pub mod wayland {
                         let id = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_seat#{}.get_pointer({})", object.id, id);
-                        self.get_pointer(object, client, id).await
+                        tracing::debug!("wl_seat#{}.get_pointer({})", sender_id, id);
+                        self.get_pointer(client, sender_id, id).await
                     }
                     1u16 => {
                         let id = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_seat#{}.get_keyboard({})", object.id, id);
-                        self.get_keyboard(object, client, id).await
+                        tracing::debug!("wl_seat#{}.get_keyboard({})", sender_id, id);
+                        self.get_keyboard(client, sender_id, id).await
                     }
                     2u16 => {
                         let id = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_seat#{}.get_touch({})", object.id, id);
-                        self.get_touch(object, client, id).await
+                        tracing::debug!("wl_seat#{}.get_touch({})", sender_id, id);
+                        self.get_touch(client, sender_id, id).await
                     }
                     3u16 => {
-                        tracing::debug!("wl_seat#{}.release()", object.id,);
-                        self.release(object, client).await
+                        tracing::debug!("wl_seat#{}.release()", sender_id,);
+                        self.release(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3386,8 +3302,8 @@ pub mod wayland {
             #[doc = "be sent in this case."]
             async fn get_pointer(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The ID provided will be initialized to the wl_keyboard interface"]
@@ -3400,8 +3316,8 @@ pub mod wayland {
             #[doc = "be sent in this case."]
             async fn get_keyboard(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The ID provided will be initialized to the wl_touch interface"]
@@ -3414,16 +3330,16 @@ pub mod wayland {
             #[doc = "be sent in this case."]
             async fn get_touch(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Using this request a client can tell the server that it is not going to"]
             #[doc = "use the seat object anymore."]
             async fn release(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This is emitted whenever a seat gains or loses the pointer,"]
             #[doc = "keyboard or touch capabilities.  The argument is a capability"]
@@ -3451,16 +3367,16 @@ pub mod wayland {
             #[doc = "keyboard and touch capabilities, respectively."]
             async fn capabilities(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 capabilities: Capability,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_seat#{}.capabilities({})", object.id, capabilities);
+                tracing::debug!("-> wl_seat#{}.capabilities({})", sender_id, capabilities);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(capabilities.bits())
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -3482,16 +3398,16 @@ pub mod wayland {
             #[doc = "destroyed and re-created later."]
             async fn name(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_seat#{}.name(\"{}\")", object.id, name);
+                tracing::debug!("-> wl_seat#{}.name(\"{}\")", sender_id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -3657,16 +3573,10 @@ pub mod wayland {
         pub trait WlPointer: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_pointer";
             const VERSION: u32 = 9u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3678,7 +3588,7 @@ pub mod wayland {
                         let hotspot_y = message.int()?;
                         tracing::debug!(
                             "wl_pointer#{}.set_cursor({}, {}, {}, {})",
-                            object.id,
+                            sender_id,
                             serial,
                             surface
                                 .as_ref()
@@ -3686,12 +3596,12 @@ pub mod wayland {
                             hotspot_x,
                             hotspot_y
                         );
-                        self.set_cursor(object, client, serial, surface, hotspot_x, hotspot_y)
+                        self.set_cursor(client, sender_id, serial, surface, hotspot_x, hotspot_y)
                             .await
                     }
                     1u16 => {
-                        tracing::debug!("wl_pointer#{}.release()", object.id,);
-                        self.release(object, client).await
+                        tracing::debug!("wl_pointer#{}.release()", sender_id,);
+                        self.release(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -3731,8 +3641,8 @@ pub mod wayland {
             #[doc = "ignored."]
             async fn set_cursor(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: Option<crate::wire::ObjectId>,
                 hotspot_x: i32,
@@ -3745,8 +3655,8 @@ pub mod wayland {
             #[doc = "wl_pointer_destroy() after using this request."]
             async fn release(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Notification that this seat's pointer is focused on a certain"]
             #[doc = "surface."]
@@ -3756,8 +3666,8 @@ pub mod wayland {
             #[doc = "an appropriate pointer image with the set_cursor request."]
             async fn enter(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
                 surface_x: crate::wire::Fixed,
@@ -3765,7 +3675,7 @@ pub mod wayland {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_pointer#{}.enter({}, {}, {}, {})",
-                    object.id,
+                    sender_id,
                     serial,
                     surface,
                     surface_x,
@@ -3778,7 +3688,7 @@ pub mod wayland {
                     .put_fixed(surface_y)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -3789,18 +3699,18 @@ pub mod wayland {
             #[doc = "for the new focus."]
             async fn leave(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.leave({}, {})", object.id, serial, surface);
+                tracing::debug!("-> wl_pointer#{}.leave({}, {})", sender_id, serial, surface);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_object(Some(surface))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -3809,15 +3719,15 @@ pub mod wayland {
             #[doc = "focused surface."]
             async fn motion(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 time: u32,
                 surface_x: crate::wire::Fixed,
                 surface_y: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_pointer#{}.motion({}, {}, {})",
-                    object.id,
+                    sender_id,
                     time,
                     surface_x,
                     surface_y
@@ -3828,7 +3738,7 @@ pub mod wayland {
                     .put_fixed(surface_y)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -3848,8 +3758,8 @@ pub mod wayland {
             #[doc = "protocol."]
             async fn button(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
                 button: u32,
@@ -3857,7 +3767,7 @@ pub mod wayland {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_pointer#{}.button({}, {}, {}, {})",
-                    object.id,
+                    sender_id,
                     serial,
                     time,
                     button,
@@ -3870,7 +3780,7 @@ pub mod wayland {
                     .put_uint(state as u32)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -3892,15 +3802,15 @@ pub mod wayland {
             #[doc = "scroll distance."]
             async fn axis(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 time: u32,
                 axis: Axis,
                 value: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_pointer#{}.axis({}, {}, {})",
-                    object.id,
+                    sender_id,
                     time,
                     axis,
                     value
@@ -3911,7 +3821,7 @@ pub mod wayland {
                     .put_fixed(value)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -3951,13 +3861,13 @@ pub mod wayland {
             #[doc = "groups."]
             async fn frame(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.frame()", object.id,);
+                tracing::debug!("-> wl_pointer#{}.frame()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -3988,16 +3898,16 @@ pub mod wayland {
             #[doc = "not guaranteed."]
             async fn axis_source(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 axis_source: AxisSource,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.axis_source({})", object.id, axis_source);
+                tracing::debug!("-> wl_pointer#{}.axis_source({})", sender_id, axis_source);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(axis_source as u32)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4017,18 +3927,18 @@ pub mod wayland {
             #[doc = "preceding wl_pointer.axis event."]
             async fn axis_stop(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 time: u32,
                 axis: Axis,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_pointer#{}.axis_stop({}, {})", object.id, time, axis);
+                tracing::debug!("-> wl_pointer#{}.axis_stop({}, {})", sender_id, time, axis);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(time)
                     .put_uint(axis as u32)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4064,14 +3974,14 @@ pub mod wayland {
             #[doc = "not guaranteed."]
             async fn axis_discrete(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 axis: Axis,
                 discrete: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_pointer#{}.axis_discrete({}, {})",
-                    object.id,
+                    sender_id,
                     axis,
                     discrete
                 );
@@ -4080,7 +3990,7 @@ pub mod wayland {
                     .put_int(discrete)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4107,14 +4017,14 @@ pub mod wayland {
             #[doc = "not guaranteed."]
             async fn axis_value120(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 axis: Axis,
                 value120: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_pointer#{}.axis_value120({}, {})",
-                    object.id,
+                    sender_id,
                     axis,
                     value120
                 );
@@ -4123,7 +4033,7 @@ pub mod wayland {
                     .put_int(value120)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 9u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4164,14 +4074,14 @@ pub mod wayland {
             #[doc = "guaranteed."]
             async fn axis_relative_direction(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 axis: Axis,
                 direction: AxisRelativeDirection,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_pointer#{}.axis_relative_direction({}, {})",
-                    object.id,
+                    sender_id,
                     axis,
                     direction
                 );
@@ -4180,7 +4090,7 @@ pub mod wayland {
                     .put_uint(direction as u32)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 10u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4257,31 +4167,25 @@ pub mod wayland {
         pub trait WlKeyboard: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_keyboard";
             const VERSION: u32 = 9u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wl_keyboard#{}.release()", object.id,);
-                        self.release(object, client).await
+                        tracing::debug!("wl_keyboard#{}.release()", sender_id,);
+                        self.release(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             async fn release(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This event provides a file descriptor to the client which can be"]
             #[doc = "memory-mapped in read-only mode to provide a keyboard mapping"]
@@ -4291,15 +4195,15 @@ pub mod wayland {
             #[doc = "the recipient, as MAP_SHARED may fail."]
             async fn keymap(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 format: KeymapFormat,
                 fd: rustix::fd::OwnedFd,
                 size: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_keyboard#{}.keymap({}, {}, {})",
-                    object.id,
+                    sender_id,
                     format,
                     fd.as_raw_fd(),
                     size
@@ -4310,7 +4214,7 @@ pub mod wayland {
                     .put_uint(size)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4326,15 +4230,15 @@ pub mod wayland {
             #[doc = "wl_keyboard already had an active surface immediately before this event."]
             async fn enter(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
                 keys: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_keyboard#{}.enter({}, {}, array[{}])",
-                    object.id,
+                    sender_id,
                     serial,
                     surface,
                     keys.len()
@@ -4345,7 +4249,7 @@ pub mod wayland {
                     .put_array(keys)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4361,14 +4265,14 @@ pub mod wayland {
             #[doc = "before this event."]
             async fn leave(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_keyboard#{}.leave({}, {})",
-                    object.id,
+                    sender_id,
                     serial,
                     surface
                 );
@@ -4377,7 +4281,7 @@ pub mod wayland {
                     .put_object(Some(surface))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4401,8 +4305,8 @@ pub mod wayland {
             #[doc = "immediately before this event."]
             async fn key(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
                 key: u32,
@@ -4410,7 +4314,7 @@ pub mod wayland {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_keyboard#{}.key({}, {}, {}, {})",
-                    object.id,
+                    sender_id,
                     serial,
                     time,
                     key,
@@ -4423,7 +4327,7 @@ pub mod wayland {
                     .put_uint(state as u32)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4442,8 +4346,8 @@ pub mod wayland {
             #[doc = "group."]
             async fn modifiers(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
                 mods_depressed: u32,
                 mods_latched: u32,
@@ -4452,7 +4356,7 @@ pub mod wayland {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_keyboard#{}.modifiers({}, {}, {}, {}, {})",
-                    object.id,
+                    sender_id,
                     serial,
                     mods_depressed,
                     mods_latched,
@@ -4467,7 +4371,7 @@ pub mod wayland {
                     .put_uint(group)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4485,14 +4389,14 @@ pub mod wayland {
             #[doc = "of wl_keyboard."]
             async fn repeat_info(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 rate: i32,
                 delay: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_keyboard#{}.repeat_info({}, {})",
-                    object.id,
+                    sender_id,
                     rate,
                     delay
                 );
@@ -4501,7 +4405,7 @@ pub mod wayland {
                     .put_int(delay)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4523,31 +4427,25 @@ pub mod wayland {
         pub trait WlTouch: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_touch";
             const VERSION: u32 = 9u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wl_touch#{}.release()", object.id,);
-                        self.release(object, client).await
+                        tracing::debug!("wl_touch#{}.release()", sender_id,);
+                        self.release(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             async fn release(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "A new touch point has appeared on the surface. This touch point is"]
             #[doc = "assigned a unique ID. Future events from this touch point reference"]
@@ -4555,8 +4453,8 @@ pub mod wayland {
             #[doc = "reused in the future."]
             async fn down(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
                 surface: crate::wire::ObjectId,
@@ -4566,7 +4464,7 @@ pub mod wayland {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_touch#{}.down({}, {}, {}, {}, {}, {})",
-                    object.id,
+                    sender_id,
                     serial,
                     time,
                     surface,
@@ -4583,7 +4481,7 @@ pub mod wayland {
                     .put_fixed(y)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4592,28 +4490,28 @@ pub mod wayland {
             #[doc = "reused in a future touch down event."]
             async fn up(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
                 id: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.up({}, {}, {})", object.id, serial, time, id);
+                tracing::debug!("-> wl_touch#{}.up({}, {}, {})", sender_id, serial, time, id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_uint(time)
                     .put_int(id)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
             #[doc = "A touch point has changed coordinates."]
             async fn motion(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 time: u32,
                 id: i32,
                 x: crate::wire::Fixed,
@@ -4621,7 +4519,7 @@ pub mod wayland {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_touch#{}.motion({}, {}, {}, {})",
-                    object.id,
+                    sender_id,
                     time,
                     id,
                     x,
@@ -4634,7 +4532,7 @@ pub mod wayland {
                     .put_fixed(y)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4648,13 +4546,13 @@ pub mod wayland {
             #[doc = "previously known state."]
             async fn frame(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.frame()", object.id,);
+                tracing::debug!("-> wl_touch#{}.frame()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4668,13 +4566,13 @@ pub mod wayland {
             #[doc = "No frame event is required after the cancel event."]
             async fn cancel(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_touch#{}.cancel()", object.id,);
+                tracing::debug!("-> wl_touch#{}.cancel()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4705,15 +4603,15 @@ pub mod wayland {
             #[doc = "shape if it did not receive this event."]
             async fn shape(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: i32,
                 major: crate::wire::Fixed,
                 minor: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_touch#{}.shape({}, {}, {})",
-                    object.id,
+                    sender_id,
                     id,
                     major,
                     minor
@@ -4724,7 +4622,7 @@ pub mod wayland {
                     .put_fixed(minor)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4753,14 +4651,14 @@ pub mod wayland {
             #[doc = "orientation reports."]
             async fn orientation(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: i32,
                 orientation: crate::wire::Fixed,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_touch#{}.orientation({}, {})",
-                    object.id,
+                    sender_id,
                     id,
                     orientation
                 );
@@ -4769,7 +4667,7 @@ pub mod wayland {
                     .put_fixed(orientation)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -4891,23 +4789,17 @@ pub mod wayland {
         pub trait WlOutput: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_output";
             const VERSION: u32 = 4u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wl_output#{}.release()", object.id,);
-                        self.release(object, client).await
+                        tracing::debug!("wl_output#{}.release()", sender_id,);
+                        self.release(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -4916,8 +4808,8 @@ pub mod wayland {
             #[doc = "use the output object anymore."]
             async fn release(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The geometry event describes geometric properties of the output."]
             #[doc = "The event is sent when binding to the output object and whenever"]
@@ -4941,8 +4833,8 @@ pub mod wayland {
             #[doc = "clients should use name and description."]
             async fn geometry(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
                 physical_width: i32,
@@ -4954,7 +4846,7 @@ pub mod wayland {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_output#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
-                    object.id,
+                    sender_id,
                     x,
                     y,
                     physical_width,
@@ -4975,7 +4867,7 @@ pub mod wayland {
                     .put_uint(transform as u32)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -5014,8 +4906,8 @@ pub mod wayland {
             #[doc = "refresh rate or the size."]
             async fn mode(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 flags: Mode,
                 width: i32,
                 height: i32,
@@ -5023,7 +4915,7 @@ pub mod wayland {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_output#{}.mode({}, {}, {}, {})",
-                    object.id,
+                    sender_id,
                     flags,
                     width,
                     height,
@@ -5036,7 +4928,7 @@ pub mod wayland {
                     .put_int(refresh)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -5047,13 +4939,13 @@ pub mod wayland {
             #[doc = "atomic, even if they happen via multiple events."]
             async fn done(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.done()", object.id,);
+                tracing::debug!("-> wl_output#{}.done()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -5077,14 +4969,14 @@ pub mod wayland {
             #[doc = "The scale event will be followed by a done event."]
             async fn scale(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 factor: i32,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.scale({})", object.id, factor);
+                tracing::debug!("-> wl_output#{}.scale({})", sender_id, factor);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(factor).build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -5118,16 +5010,16 @@ pub mod wayland {
             #[doc = "The name event will be followed by a done event."]
             async fn name(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 name: String,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> wl_output#{}.name(\"{}\")", object.id, name);
+                tracing::debug!("-> wl_output#{}.name(\"{}\")", sender_id, name);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -5147,20 +5039,20 @@ pub mod wayland {
             #[doc = "The description event will be followed by a done event."]
             async fn description(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 description: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> wl_output#{}.description(\"{}\")",
-                    object.id,
+                    sender_id,
                     description
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(description))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -5178,23 +5070,17 @@ pub mod wayland {
         pub trait WlRegion: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_region";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wl_region#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("wl_region#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     1u16 => {
                         let x = message.int()?;
@@ -5203,13 +5089,13 @@ pub mod wayland {
                         let height = message.int()?;
                         tracing::debug!(
                             "wl_region#{}.add({}, {}, {}, {})",
-                            object.id,
+                            sender_id,
                             x,
                             y,
                             width,
                             height
                         );
-                        self.add(object, client, x, y, width, height).await
+                        self.add(client, sender_id, x, y, width, height).await
                     }
                     2u16 => {
                         let x = message.int()?;
@@ -5218,13 +5104,13 @@ pub mod wayland {
                         let height = message.int()?;
                         tracing::debug!(
                             "wl_region#{}.subtract({}, {}, {}, {})",
-                            object.id,
+                            sender_id,
                             x,
                             y,
                             width,
                             height
                         );
-                        self.subtract(object, client, x, y, width, height).await
+                        self.subtract(client, sender_id, x, y, width, height).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5232,14 +5118,14 @@ pub mod wayland {
             #[doc = "Destroy the region.  This will invalidate the object ID."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Add the specified rectangle to the region."]
             async fn add(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
                 width: i32,
@@ -5248,8 +5134,8 @@ pub mod wayland {
             #[doc = "Subtract the specified rectangle from the region."]
             async fn subtract(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
                 width: i32,
@@ -5308,23 +5194,17 @@ pub mod wayland {
         pub trait WlSubcompositor: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_subcompositor";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wl_subcompositor#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("wl_subcompositor#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     1u16 => {
                         let id = message
@@ -5338,12 +5218,12 @@ pub mod wayland {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "wl_subcompositor#{}.get_subsurface({}, {}, {})",
-                            object.id,
+                            sender_id,
                             id,
                             surface,
                             parent
                         );
-                        self.get_subsurface(object, client, id, surface, parent)
+                        self.get_subsurface(client, sender_id, id, surface, parent)
                             .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -5354,8 +5234,8 @@ pub mod wayland {
             #[doc = "objects, wl_subsurface objects included."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Create a sub-surface interface for the given surface, and"]
             #[doc = "associate it with the given parent surface. This turns a"]
@@ -5378,8 +5258,8 @@ pub mod wayland {
             #[doc = "the sub-surface, see the documentation on wl_subsurface interface."]
             async fn get_subsurface(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 parent: crate::wire::ObjectId,
@@ -5467,51 +5347,45 @@ pub mod wayland {
         pub trait WlSubsurface: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wl_subsurface";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("wl_subsurface#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("wl_subsurface#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     1u16 => {
                         let x = message.int()?;
                         let y = message.int()?;
-                        tracing::debug!("wl_subsurface#{}.set_position({}, {})", object.id, x, y);
-                        self.set_position(object, client, x, y).await
+                        tracing::debug!("wl_subsurface#{}.set_position({}, {})", sender_id, x, y);
+                        self.set_position(client, sender_id, x, y).await
                     }
                     2u16 => {
                         let sibling = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_subsurface#{}.place_above({})", object.id, sibling);
-                        self.place_above(object, client, sibling).await
+                        tracing::debug!("wl_subsurface#{}.place_above({})", sender_id, sibling);
+                        self.place_above(client, sender_id, sibling).await
                     }
                     3u16 => {
                         let sibling = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wl_subsurface#{}.place_below({})", object.id, sibling);
-                        self.place_below(object, client, sibling).await
+                        tracing::debug!("wl_subsurface#{}.place_below({})", sender_id, sibling);
+                        self.place_below(client, sender_id, sibling).await
                     }
                     4u16 => {
-                        tracing::debug!("wl_subsurface#{}.set_sync()", object.id,);
-                        self.set_sync(object, client).await
+                        tracing::debug!("wl_subsurface#{}.set_sync()", sender_id,);
+                        self.set_sync(client, sender_id).await
                     }
                     5u16 => {
-                        tracing::debug!("wl_subsurface#{}.set_desync()", object.id,);
-                        self.set_desync(object, client).await
+                        tracing::debug!("wl_subsurface#{}.set_desync()", sender_id,);
+                        self.set_desync(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -5522,8 +5396,8 @@ pub mod wayland {
             #[doc = "to the parent is deleted. The wl_surface is unmapped immediately."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This schedules a sub-surface position change."]
             #[doc = "The sub-surface will be moved so that its origin (top left"]
@@ -5541,8 +5415,8 @@ pub mod wayland {
             #[doc = "The initial position is 0, 0."]
             async fn set_position(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
             ) -> crate::server::Result<()>;
@@ -5561,16 +5435,16 @@ pub mod wayland {
             #[doc = "of its siblings and parent."]
             async fn place_above(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 sibling: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The sub-surface is placed just below the reference surface."]
             #[doc = "See wl_subsurface.place_above."]
             async fn place_below(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 sibling: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Change the commit behaviour of the sub-surface to synchronized"]
@@ -5588,8 +5462,8 @@ pub mod wayland {
             #[doc = "See wl_subsurface for the recursive effect of this mode."]
             async fn set_sync(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Change the commit behaviour of the sub-surface to desynchronized"]
             #[doc = "mode, also described as independent or freely running mode."]
@@ -5612,8 +5486,8 @@ pub mod wayland {
             #[doc = "the cached state is applied on set_desync."]
             async fn set_desync(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }

@@ -16,23 +16,17 @@ pub mod cosmic_atspi_v1 {
         pub trait CosmicAtspiManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "cosmic_atspi_manager_v1";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("cosmic_atspi_manager_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("cosmic_atspi_manager_v1#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     1u16 => {
                         let mods = message.uint()?;
@@ -40,12 +34,12 @@ pub mod cosmic_atspi_v1 {
                         let key = message.uint()?;
                         tracing::debug!(
                             "cosmic_atspi_manager_v1#{}.add_key_grab({}, array[{}], {})",
-                            object.id,
+                            sender_id,
                             mods,
                             virtual_mods.len(),
                             key
                         );
-                        self.add_key_grab(object, client, mods, virtual_mods, key)
+                        self.add_key_grab(client, sender_id, mods, virtual_mods, key)
                             .await
                     }
                     2u16 => {
@@ -54,21 +48,21 @@ pub mod cosmic_atspi_v1 {
                         let key = message.uint()?;
                         tracing::debug!(
                             "cosmic_atspi_manager_v1#{}.remove_key_grab({}, array[{}], {})",
-                            object.id,
+                            sender_id,
                             mods,
                             virtual_mods.len(),
                             key
                         );
-                        self.remove_key_grab(object, client, mods, virtual_mods, key)
+                        self.remove_key_grab(client, sender_id, mods, virtual_mods, key)
                             .await
                     }
                     3u16 => {
-                        tracing::debug!("cosmic_atspi_manager_v1#{}.grab_keyboard()", object.id,);
-                        self.grab_keyboard(object, client).await
+                        tracing::debug!("cosmic_atspi_manager_v1#{}.grab_keyboard()", sender_id,);
+                        self.grab_keyboard(client, sender_id).await
                     }
                     4u16 => {
-                        tracing::debug!("cosmic_atspi_manager_v1#{}.ungrab_keyboard()", object.id,);
-                        self.ungrab_keyboard(object, client).await
+                        tracing::debug!("cosmic_atspi_manager_v1#{}.ungrab_keyboard()", sender_id,);
+                        self.ungrab_keyboard(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -76,14 +70,14 @@ pub mod cosmic_atspi_v1 {
             #[doc = "Any grabs that are still active will be disabled."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Grab the given key combination, so it will not be sent to clients."]
             async fn add_key_grab(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 mods: u32,
                 virtual_mods: Vec<u8>,
                 key: u32,
@@ -91,8 +85,8 @@ pub mod cosmic_atspi_v1 {
             #[doc = "Disables a grab added with add_key_grab."]
             async fn remove_key_grab(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 mods: u32,
                 virtual_mods: Vec<u8>,
                 key: u32,
@@ -100,30 +94,30 @@ pub mod cosmic_atspi_v1 {
             #[doc = "Grab keyboard, so key input will not be sent to clients."]
             async fn grab_keyboard(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Disables a grab added with grab_keyboard."]
             async fn ungrab_keyboard(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Produces an fd that can be used with libei to monitor keyboard input."]
             async fn key_events_eis(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> cosmic_atspi_manager_v1#{}.key_events_eis({})",
-                    object.id,
+                    sender_id,
                     fd.as_raw_fd()
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(fd).build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -158,23 +152,17 @@ pub mod cosmic_image_source_unstable_v1 {
         pub trait ZcosmicImageSourceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_image_source_v1";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zcosmic_image_source_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("zcosmic_image_source_v1#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -183,8 +171,8 @@ pub mod cosmic_image_source_unstable_v1 {
             #[doc = "client."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -197,16 +185,10 @@ pub mod cosmic_image_source_unstable_v1 {
         pub trait ZcosmicOutputImageSourceManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_output_image_source_manager_v1";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -220,18 +202,18 @@ pub mod cosmic_image_source_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_output_image_source_manager_v1#{}.create_source({}, {})",
-                            object.id,
+                            sender_id,
                             source,
                             output
                         );
-                        self.create_source(object, client, source, output).await
+                        self.create_source(client, sender_id, source, output).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zcosmic_output_image_source_manager_v1#{}.destroy()",
-                            object.id,
+                            sender_id,
                         );
-                        self.destroy(object, client).await
+                        self.destroy(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -242,8 +224,8 @@ pub mod cosmic_image_source_unstable_v1 {
             #[doc = "capturing."]
             async fn create_source(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
@@ -252,8 +234,8 @@ pub mod cosmic_image_source_unstable_v1 {
             #[doc = "destruction."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -266,16 +248,10 @@ pub mod cosmic_image_source_unstable_v1 {
         pub trait ZcosmicWorkspaceImageSourceManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_workspace_image_source_manager_v1";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -289,18 +265,18 @@ pub mod cosmic_image_source_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_workspace_image_source_manager_v1#{}.create_source({}, {})",
-                            object.id,
+                            sender_id,
                             source,
                             output
                         );
-                        self.create_source(object, client, source, output).await
+                        self.create_source(client, sender_id, source, output).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zcosmic_workspace_image_source_manager_v1#{}.destroy()",
-                            object.id,
+                            sender_id,
                         );
-                        self.destroy(object, client).await
+                        self.destroy(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -311,8 +287,8 @@ pub mod cosmic_image_source_unstable_v1 {
             #[doc = "capturing."]
             async fn create_source(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
@@ -321,8 +297,8 @@ pub mod cosmic_image_source_unstable_v1 {
             #[doc = "destruction."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -336,16 +312,10 @@ pub mod cosmic_image_source_unstable_v1 {
         pub trait ZcosmicToplevelImageSourceManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_toplevel_image_source_manager_v1";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -359,19 +329,19 @@ pub mod cosmic_image_source_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_toplevel_image_source_manager_v1#{}.create_source({}, {})",
-                            object.id,
+                            sender_id,
                             source,
                             toplevel_handle
                         );
-                        self.create_source(object, client, source, toplevel_handle)
+                        self.create_source(client, sender_id, source, toplevel_handle)
                             .await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zcosmic_toplevel_image_source_manager_v1#{}.destroy()",
-                            object.id,
+                            sender_id,
                         );
-                        self.destroy(object, client).await
+                        self.destroy(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -380,8 +350,8 @@ pub mod cosmic_image_source_unstable_v1 {
             #[doc = "from this source will show the same content as the toplevel."]
             async fn create_source(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 toplevel_handle: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
@@ -390,8 +360,8 @@ pub mod cosmic_image_source_unstable_v1 {
             #[doc = "destruction."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -435,16 +405,10 @@ pub mod cosmic_output_management_unstable_v1 {
         pub trait ZcosmicOutputManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_output_manager_v1";
             const VERSION: u32 = 2u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -458,11 +422,11 @@ pub mod cosmic_output_management_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_output_manager_v1#{}.get_head({}, {})",
-                            object.id,
+                            sender_id,
                             extended,
                             head
                         );
-                        self.get_head(object, client, extended, head).await
+                        self.get_head(client, sender_id, extended, head).await
                     }
                     1u16 => {
                         let extended = message
@@ -473,11 +437,11 @@ pub mod cosmic_output_management_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_output_manager_v1#{}.get_configuration({}, {})",
-                            object.id,
+                            sender_id,
                             extended,
                             config
                         );
-                        self.get_configuration(object, client, extended, config)
+                        self.get_configuration(client, sender_id, extended, config)
                             .await
                     }
                     2u16 => {
@@ -489,16 +453,16 @@ pub mod cosmic_output_management_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_output_manager_v1#{}.get_configuration_head({}, {})",
-                            object.id,
+                            sender_id,
                             extended,
                             config_head
                         );
-                        self.get_configuration_head(object, client, extended, config_head)
+                        self.get_configuration_head(client, sender_id, extended, config_head)
                             .await
                     }
                     3u16 => {
-                        tracing::debug!("zcosmic_output_manager_v1#{}.release()", object.id,);
-                        self.release(object, client).await
+                        tracing::debug!("zcosmic_output_manager_v1#{}.release()", sender_id,);
+                        self.release(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -516,8 +480,8 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "\"already_extended\" error."]
             async fn get_head(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 extended: crate::wire::ObjectId,
                 head: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
@@ -527,8 +491,8 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "will raise an \"already_extended\" error."]
             async fn get_configuration(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 extended: crate::wire::ObjectId,
                 config: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
@@ -538,16 +502,16 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "zwlr_output_configuration_head_v1 will raise an \"already_extended\" error."]
             async fn get_configuration_head(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 extended: crate::wire::ObjectId,
                 config_head: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Destroys this global. All previously created objects remain valid."]
             async fn release(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -619,23 +583,17 @@ pub mod cosmic_output_management_unstable_v1 {
         pub trait ZcosmicOutputHeadV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_output_head_v1";
             const VERSION: u32 = 2u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zcosmic_output_head_v1#{}.release()", object.id,);
-                        self.release(object, client).await
+                        tracing::debug!("zcosmic_output_head_v1#{}.release()", sender_id,);
+                        self.release(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -644,8 +602,8 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "in the head object anymore."]
             async fn release(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This events describes the scale of the head in the global compositor"]
             #[doc = "space multiplied by 1000 for additional precision."]
@@ -653,20 +611,20 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "It is only sent if the output is enabled."]
             async fn scale_1000(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 scale_1000: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_output_head_v1#{}.scale_1000({})",
-                    object.id,
+                    sender_id,
                     scale_1000
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(scale_1000)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -679,18 +637,18 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "It is only sent if the output is enabled."]
             async fn mirroring(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 name: Option<String>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_output_head_v1#{}.mirroring(\"{}\")",
-                    object.id,
+                    sender_id,
                     name.as_ref().map_or("null".to_string(), |v| v.to_string())
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_string(name).build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -699,20 +657,20 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "It is only sent if the output is enabled."]
             async fn adaptive_sync_available(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 available: AdaptiveSyncAvailability,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_output_head_v1#{}.adaptive_sync_available({})",
-                    object.id,
+                    sender_id,
                     available
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(available as u32)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -721,20 +679,20 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "It is only sent if the output is enabled."]
             async fn adaptive_sync_ext(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 state: AdaptiveSyncStateExt,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_output_head_v1#{}.adaptive_sync_ext({})",
-                    object.id,
+                    sender_id,
                     state
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(state as u32)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -775,16 +733,10 @@ pub mod cosmic_output_management_unstable_v1 {
         pub trait ZcosmicOutputConfigurationV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_output_configuration_v1";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -801,16 +753,17 @@ pub mod cosmic_output_management_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_output_configuration_v1#{}.mirror_head({}, {}, {})",
-                            object.id,
+                            sender_id,
                             id,
                             head,
                             mirroring
                         );
-                        self.mirror_head(object, client, id, head, mirroring).await
+                        self.mirror_head(client, sender_id, id, head, mirroring)
+                            .await
                     }
                     1u16 => {
-                        tracing::debug!("zcosmic_output_configuration_v1#{}.release()", object.id,);
-                        self.release(object, client).await
+                        tracing::debug!("zcosmic_output_configuration_v1#{}.release()", sender_id,);
+                        self.release(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -830,8 +783,8 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "as a `mirroring` argument will raise a `mirrored_head_busy` protocol error."]
             async fn mirror_head(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 head: crate::wire::ObjectId,
                 mirroring: crate::wire::ObjectId,
@@ -842,8 +795,8 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "if it isn't destroyed."]
             async fn release(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This event indicates that the configuration is no longer available."]
             #[doc = ""]
@@ -854,16 +807,16 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "The configration object becomes inert and any requests other than `destroy` will be ignored."]
             async fn finished(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_output_configuration_v1#{}.finished()",
-                    object.id,
+                    sender_id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -883,16 +836,10 @@ pub mod cosmic_output_management_unstable_v1 {
         pub trait ZcosmicOutputConfigurationHeadV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_output_configuration_head_v1";
             const VERSION: u32 = 2u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -901,26 +848,26 @@ pub mod cosmic_output_management_unstable_v1 {
                         let scale_1000 = message.int()?;
                         tracing::debug!(
                             "zcosmic_output_configuration_head_v1#{}.set_scale_1000({})",
-                            object.id,
+                            sender_id,
                             scale_1000
                         );
-                        self.set_scale_1000(object, client, scale_1000).await
+                        self.set_scale_1000(client, sender_id, scale_1000).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zcosmic_output_configuration_head_v1#{}.release()",
-                            object.id,
+                            sender_id,
                         );
-                        self.release(object, client).await
+                        self.release(client, sender_id).await
                     }
                     2u16 => {
                         let state = message.uint()?;
                         tracing::debug!(
                             "zcosmic_output_configuration_head_v1#{}.set_adaptive_sync_ext({})",
-                            object.id,
+                            sender_id,
                             state
                         );
-                        self.set_adaptive_sync_ext(object, client, state.try_into()?)
+                        self.set_adaptive_sync_ext(client, sender_id, state.try_into()?)
                             .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -935,8 +882,8 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "Any request conflicting with `set_scale` will also conflict with `set_scale_1000`."]
             async fn set_scale_1000(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 scale_1000: i32,
             ) -> crate::server::Result<()>;
             #[doc = "Using this request a client can tell the compositor that it is not going"]
@@ -945,8 +892,8 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "until it is destroyed."]
             async fn release(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This request requests a new adaptive sync state."]
             #[doc = ""]
@@ -957,8 +904,8 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "Any request conflicting with `set_adaptive_sync` will also conflict with `set_adaptive_sync_ext`."]
             async fn set_adaptive_sync_ext(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 state : super :: super :: super :: cosmic :: cosmic_output_management_unstable_v1 :: zcosmic_output_head_v1 :: AdaptiveSyncStateExt,
             ) -> crate::server::Result<()>;
         }
@@ -980,16 +927,10 @@ pub mod cosmic_overlap_notify_unstable_v1 {
         pub trait ZcosmicOverlapNotifyV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_overlap_notify_v1";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1003,12 +944,17 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_overlap_notify_v1#{}.notify_on_overlap({}, {})",
-                            object.id,
+                            sender_id,
                             overlap_notification,
                             layer_surface
                         );
-                        self.notify_on_overlap(object, client, overlap_notification, layer_surface)
-                            .await
+                        self.notify_on_overlap(
+                            client,
+                            sender_id,
+                            overlap_notification,
+                            layer_surface,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1021,8 +967,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             #[doc = "zcosmic_overlap_notification_v1 object."]
             async fn notify_on_overlap(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 overlap_notification: crate::wire::ObjectId,
                 layer_surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
@@ -1036,23 +982,17 @@ pub mod cosmic_overlap_notify_unstable_v1 {
         pub trait ZcosmicOverlapNotificationV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_overlap_notification_v1";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zcosmic_overlap_notification_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("zcosmic_overlap_notification_v1#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1061,8 +1001,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             #[doc = "notifications anymore."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "A ext_foreign_toplevel_handle_v1 has entered the surface area."]
             #[doc = ""]
@@ -1074,8 +1014,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             #[doc = "in between."]
             async fn toplevel_enter(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -1084,7 +1024,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_overlap_notification_v1#{}.toplevel_enter({}, {}, {}, {}, {})",
-                    object.id,
+                    sender_id,
                     toplevel,
                     x,
                     y,
@@ -1099,7 +1039,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                     .put_int(height)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1109,20 +1049,20 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             #[doc = "representing this toplevel."]
             async fn toplevel_leave(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_overlap_notification_v1#{}.toplevel_leave({})",
-                    object.id,
+                    sender_id,
                     toplevel
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1136,8 +1076,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             #[doc = "used to create this notification object."]
             async fn layer_enter(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 identifier: String,
                 namespace: String,
                 exclusive: u32,
@@ -1147,7 +1087,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 width: i32,
                 height: i32,
             ) -> crate::server::Result<()> {
-                tracing :: debug ! ("-> zcosmic_overlap_notification_v1#{}.layer_enter(\"{}\", \"{}\", {}, {}, {}, {}, {}, {})" , object . id , identifier , namespace , exclusive , layer , x , y , width , height);
+                tracing :: debug ! ("-> zcosmic_overlap_notification_v1#{}.layer_enter(\"{}\", \"{}\", {}, {}, {}, {}, {}, {})" , sender_id , identifier , namespace , exclusive , layer , x , y , width , height);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(identifier))
                     .put_string(Some(namespace))
@@ -1159,27 +1099,27 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                     .put_int(height)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
             #[doc = "A zwlr_layer_surface_v1 has left the surface area."]
             async fn layer_leave(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 identifier: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_overlap_notification_v1#{}.layer_leave(\"{}\")",
-                    object.id,
+                    sender_id,
                     identifier
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(identifier))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1238,16 +1178,10 @@ pub mod cosmic_screencopy_unstable_v2 {
         pub trait ZcosmicScreencopyManagerV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_screencopy_manager_v2";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1262,12 +1196,12 @@ pub mod cosmic_screencopy_unstable_v2 {
                         let options = message.uint()?;
                         tracing::debug!(
                             "zcosmic_screencopy_manager_v2#{}.create_session({}, {}, {})",
-                            object.id,
+                            sender_id,
                             session,
                             source,
                             options
                         );
-                        self.create_session(object, client, session, source, options.try_into()?)
+                        self.create_session(client, sender_id, session, source, options.try_into()?)
                             .await
                     }
                     1u16 => {
@@ -1281,15 +1215,15 @@ pub mod cosmic_screencopy_unstable_v2 {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         let options = message.uint()?;
-                        tracing :: debug ! ("zcosmic_screencopy_manager_v2#{}.create_pointer_cursor_session({}, {}, {}, {})" , object . id , session , source , pointer , options);
+                        tracing :: debug ! ("zcosmic_screencopy_manager_v2#{}.create_pointer_cursor_session({}, {}, {}, {})" , sender_id , session , source , pointer , options);
                         self.create_pointer_cursor_session(
-                            object, client, session, source, pointer, options,
+                            client, sender_id, session, source, pointer, options,
                         )
                         .await
                     }
                     2u16 => {
-                        tracing::debug!("zcosmic_screencopy_manager_v2#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("zcosmic_screencopy_manager_v2#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1301,8 +1235,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "if this flag is not set."]
             async fn create_session(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 session: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 options: Options,
@@ -1313,8 +1247,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "intended for any future flags that might be added."]
             async fn create_pointer_cursor_session(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 session: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 pointer: crate::wire::ObjectId,
@@ -1325,8 +1259,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "Other objects created via this interface are unaffected."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }
@@ -1354,16 +1288,10 @@ pub mod cosmic_screencopy_unstable_v2 {
         pub trait ZcosmicScreencopySessionV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_screencopy_session_v2";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1374,14 +1302,14 @@ pub mod cosmic_screencopy_unstable_v2 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_screencopy_session_v2#{}.create_frame({})",
-                            object.id,
+                            sender_id,
                             frame
                         );
-                        self.create_frame(object, client, frame).await
+                        self.create_frame(client, sender_id, frame).await
                     }
                     1u16 => {
-                        tracing::debug!("zcosmic_screencopy_session_v2#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("zcosmic_screencopy_session_v2#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1389,8 +1317,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "Create a capture frame for this session."]
             async fn create_frame(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 frame: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Destroys the session. This request can be sent at any time by the"]
@@ -1400,22 +1328,22 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "this object."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Provides the dimensions of the source image in buffer pixel coordinates."]
             #[doc = ""]
             #[doc = "The client must attach buffers that match this size."]
             async fn buffer_size(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 width: u32,
                 height: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_session_v2#{}.buffer_size({}, {})",
-                    object.id,
+                    sender_id,
                     width,
                     height
                 );
@@ -1424,7 +1352,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                     .put_uint(height)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1434,18 +1362,18 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "choose any given format."]
             async fn shm_format(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 format: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_session_v2#{}.shm_format({})",
-                    object.id,
+                    sender_id,
                     format
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(format).build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1458,18 +1386,18 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "by comparing the dev_t value."]
             async fn dmabuf_device(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 device: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_session_v2#{}.dmabuf_device(array[{}])",
-                    object.id,
+                    sender_id,
                     device.len()
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1482,14 +1410,14 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "choose any given format."]
             async fn dmabuf_format(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 format: u32,
                 modifiers: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_session_v2#{}.dmabuf_format({}, array[{}])",
-                    object.id,
+                    sender_id,
                     format,
                     modifiers.len()
                 );
@@ -1498,7 +1426,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                     .put_array(modifiers)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1510,13 +1438,13 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "an update."]
             async fn done(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zcosmic_screencopy_session_v2#{}.done()", object.id,);
+                tracing::debug!("-> zcosmic_screencopy_session_v2#{}.done()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1528,13 +1456,13 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "The client should destroy the session after receiving this event."]
             async fn stopped(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zcosmic_screencopy_session_v2#{}.stopped()", object.id,);
+                tracing::debug!("-> zcosmic_screencopy_session_v2#{}.stopped()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1609,23 +1537,17 @@ pub mod cosmic_screencopy_unstable_v2 {
         pub trait ZcosmicScreencopyFrameV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_screencopy_frame_v2";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zcosmic_screencopy_frame_v2#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("zcosmic_screencopy_frame_v2#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     1u16 => {
                         let buffer = message
@@ -1633,10 +1555,10 @@ pub mod cosmic_screencopy_unstable_v2 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_screencopy_frame_v2#{}.attach_buffer({})",
-                            object.id,
+                            sender_id,
                             buffer
                         );
-                        self.attach_buffer(object, client, buffer).await
+                        self.attach_buffer(client, sender_id, buffer).await
                     }
                     2u16 => {
                         let x = message.int()?;
@@ -1645,18 +1567,18 @@ pub mod cosmic_screencopy_unstable_v2 {
                         let height = message.int()?;
                         tracing::debug!(
                             "zcosmic_screencopy_frame_v2#{}.damage_buffer({}, {}, {}, {})",
-                            object.id,
+                            sender_id,
                             x,
                             y,
                             width,
                             height
                         );
-                        self.damage_buffer(object, client, x, y, width, height)
+                        self.damage_buffer(client, sender_id, x, y, width, height)
                             .await
                     }
                     3u16 => {
-                        tracing::debug!("zcosmic_screencopy_frame_v2#{}.capture()", object.id,);
-                        self.capture(object, client).await
+                        tracing::debug!("zcosmic_screencopy_frame_v2#{}.capture()", sender_id,);
+                        self.capture(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1665,8 +1587,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "client."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Attach a buffer to the session."]
             #[doc = ""]
@@ -1676,8 +1598,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "already_captured protocol error is raised."]
             async fn attach_buffer(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Apply damage to the buffer which is to be captured next. This request"]
@@ -1703,8 +1625,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "already_captured protocol error is raised."]
             async fn damage_buffer(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
                 width: i32,
@@ -1721,27 +1643,27 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "is sent, or else the no_buffer protocol error is raised."]
             async fn capture(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This event is sent before the ready event and holds the transform of"]
             #[doc = "the source buffer."]
             async fn transform(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_frame_v2#{}.transform({})",
-                    object.id,
+                    sender_id,
                     transform
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(transform as u32)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1755,8 +1677,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "These coordinates originate in the upper left corner of the buffer."]
             async fn damage(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
                 width: i32,
@@ -1764,7 +1686,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_frame_v2#{}.damage({}, {}, {}, {})",
-                    object.id,
+                    sender_id,
                     x,
                     y,
                     width,
@@ -1777,7 +1699,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                     .put_int(height)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1792,15 +1714,15 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "for valid timestamps tv_nsec must be in [0, 999999999]."]
             async fn presentation_time(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_frame_v2#{}.presentation_time({}, {}, {})",
-                    object.id,
+                    sender_id,
                     tv_sec_hi,
                     tv_sec_lo,
                     tv_nsec
@@ -1811,7 +1733,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                     .put_uint(tv_nsec)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1823,13 +1745,13 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "After receiving this event, the client must destroy the object."]
             async fn ready(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zcosmic_screencopy_frame_v2#{}.ready()", object.id,);
+                tracing::debug!("-> zcosmic_screencopy_frame_v2#{}.ready()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1838,20 +1760,20 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "After receiving this event, the client must destroy the object."]
             async fn failed(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 reason: FailureReason,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_frame_v2#{}.failed({})",
-                    object.id,
+                    sender_id,
                     reason
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(reason as u32)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1888,16 +1810,10 @@ pub mod cosmic_screencopy_unstable_v2 {
         pub trait ZcosmicScreencopyCursorSessionV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_screencopy_cursor_session_v2";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1905,9 +1821,9 @@ pub mod cosmic_screencopy_unstable_v2 {
                     0u16 => {
                         tracing::debug!(
                             "zcosmic_screencopy_cursor_session_v2#{}.destroy()",
-                            object.id,
+                            sender_id,
                         );
-                        self.destroy(object, client).await
+                        self.destroy(client, sender_id).await
                     }
                     1u16 => {
                         let session = message
@@ -1915,10 +1831,11 @@ pub mod cosmic_screencopy_unstable_v2 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_screencopy_cursor_session_v2#{}.get_screencopy_session({})",
-                            object.id,
+                            sender_id,
                             session
                         );
-                        self.get_screencopy_session(object, client, session).await
+                        self.get_screencopy_session(client, sender_id, session)
+                            .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -1930,8 +1847,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "this object."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Gets the screencopy session for this cursor session."]
             #[doc = ""]
@@ -1942,8 +1859,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "duplicate_session protocol error is raised."]
             async fn get_screencopy_session(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 session: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Sent when a cursor enters the captured area. It shall be generated"]
@@ -1955,16 +1872,16 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "wl_pointer.enter."]
             async fn enter(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_cursor_session_v2#{}.enter()",
-                    object.id,
+                    sender_id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1973,16 +1890,16 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "area again."]
             async fn leave(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_cursor_session_v2#{}.leave()",
-                    object.id,
+                    sender_id,
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -1998,14 +1915,14 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "size."]
             async fn position(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_cursor_session_v2#{}.position({}, {})",
-                    object.id,
+                    sender_id,
                     x,
                     y
                 );
@@ -2014,7 +1931,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                     .put_int(y)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2028,14 +1945,14 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "effective when the next zcosmic_screencopy_frame_v2.ready event is received."]
             async fn hotspot(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_cursor_session_v2#{}.hotspot({}, {})",
-                    object.id,
+                    sender_id,
                     x,
                     y
                 );
@@ -2044,7 +1961,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                     .put_int(y)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2067,23 +1984,17 @@ pub mod cosmic_toplevel_info_unstable_v1 {
         pub trait ZcosmicToplevelInfoV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_toplevel_info_v1";
             const VERSION: u32 = 2u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zcosmic_toplevel_info_v1#{}.stop()", object.id,);
-                        self.stop(object, client).await
+                        tracing::debug!("zcosmic_toplevel_info_v1#{}.stop()", sender_id,);
+                        self.stop(client, sender_id).await
                     }
                     1u16 => {
                         let cosmic_toplevel = message
@@ -2094,12 +2005,17 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_toplevel_info_v1#{}.get_cosmic_toplevel({}, {})",
-                            object.id,
+                            sender_id,
                             cosmic_toplevel,
                             foreign_toplevel
                         );
-                        self.get_cosmic_toplevel(object, client, cosmic_toplevel, foreign_toplevel)
-                            .await
+                        self.get_cosmic_toplevel(
+                            client,
+                            sender_id,
+                            cosmic_toplevel,
+                            foreign_toplevel,
+                        )
+                        .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2114,8 +2030,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "of this protocol and will be ignored."]
             async fn stop(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Request a zcosmic_toplevel_handle_v1 extension object for an existing"]
             #[doc = "ext_foreign_toplevel_handle_v1."]
@@ -2125,8 +2041,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "events in zcosmic_toplevel_handle_v1."]
             async fn get_cosmic_toplevel(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 cosmic_toplevel: crate::wire::ObjectId,
                 foreign_toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
@@ -2142,20 +2058,20 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "events in zcosmic_toplevel_handle_v1."]
             async fn toplevel(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_info_v1#{}.toplevel({})",
-                    object.id,
+                    sender_id,
                     toplevel
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2168,13 +2084,13 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "clients binding version 2 of this protocol for backwards compatibility."]
             async fn finished(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zcosmic_toplevel_info_v1#{}.finished()", object.id,);
+                tracing::debug!("-> zcosmic_toplevel_info_v1#{}.finished()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2186,13 +2102,13 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "multiple events."]
             async fn done(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zcosmic_toplevel_info_v1#{}.done()", object.id,);
+                tracing::debug!("-> zcosmic_toplevel_info_v1#{}.done()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2246,23 +2162,17 @@ pub mod cosmic_toplevel_info_unstable_v1 {
         pub trait ZcosmicToplevelHandleV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_toplevel_handle_v1";
             const VERSION: u32 = 2u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zcosmic_toplevel_handle_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("zcosmic_toplevel_handle_v1#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2271,8 +2181,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "use the zcosmic_toplevel_handle_v1."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "The server will emit no further events on the"]
             #[doc = "zcosmic_toplevel_handle_v1 after this event. Any requests received"]
@@ -2285,13 +2195,13 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "equivalent."]
             async fn closed(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zcosmic_toplevel_handle_v1#{}.closed()", object.id,);
+                tracing::debug!("-> zcosmic_toplevel_handle_v1#{}.closed()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2308,13 +2218,13 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "equivalent."]
             async fn done(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
-                tracing::debug!("-> zcosmic_toplevel_handle_v1#{}.done()", object.id,);
+                tracing::debug!("-> zcosmic_toplevel_handle_v1#{}.done()", sender_id,);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 1u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2325,20 +2235,20 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "equivalent."]
             async fn title(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 title: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_handle_v1#{}.title(\"{}\")",
-                    object.id,
+                    sender_id,
                     title
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(title))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 2u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2349,20 +2259,20 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "equivalent."]
             async fn app_id(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 app_id: String,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_handle_v1#{}.app_id(\"{}\")",
-                    object.id,
+                    sender_id,
                     app_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(app_id))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 3u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2370,20 +2280,20 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "given output. A toplevel may be visible on multiple outputs."]
             async fn output_enter(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_handle_v1#{}.output_enter({})",
-                    object.id,
+                    sender_id,
                     output
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(output))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 4u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2392,20 +2302,20 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "the same output has been emitted before this event."]
             async fn output_leave(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_handle_v1#{}.output_leave({})",
-                    object.id,
+                    sender_id,
                     output
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(output))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 5u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2413,20 +2323,20 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "given workspace. A toplevel may be visible on multiple workspaces."]
             async fn workspace_enter(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_handle_v1#{}.workspace_enter({})",
-                    object.id,
+                    sender_id,
                     workspace
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(workspace))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 6u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2435,20 +2345,20 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "the same workspace has been emitted before this event."]
             async fn workspace_leave(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_handle_v1#{}.workspace_leave({})",
-                    object.id,
+                    sender_id,
                     workspace
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(workspace))
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 7u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2457,18 +2367,18 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "toplevel changes."]
             async fn state(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 state: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_handle_v1#{}.state(array[{}])",
-                    object.id,
+                    sender_id,
                     state.len()
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(state).build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 8u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2480,8 +2390,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "whenever the geometry of the toplevel changes relative to any output."]
             async fn geometry(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -2490,7 +2400,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_handle_v1#{}.geometry({}, {}, {}, {}, {})",
-                    object.id,
+                    sender_id,
                     output,
                     x,
                     y,
@@ -2505,7 +2415,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                     .put_int(height)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 9u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -2585,23 +2495,17 @@ pub mod cosmic_toplevel_management_unstable_v1 {
         pub trait ZcosmicToplevelManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_toplevel_manager_v1";
             const VERSION: u32 = 3u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("zcosmic_toplevel_manager_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("zcosmic_toplevel_manager_v1#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     1u16 => {
                         let toplevel = message
@@ -2609,10 +2513,10 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_toplevel_manager_v1#{}.close({})",
-                            object.id,
+                            sender_id,
                             toplevel
                         );
-                        self.close(object, client, toplevel).await
+                        self.close(client, sender_id, toplevel).await
                     }
                     2u16 => {
                         let toplevel = message
@@ -2623,11 +2527,11 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_toplevel_manager_v1#{}.activate({}, {})",
-                            object.id,
+                            sender_id,
                             toplevel,
                             seat
                         );
-                        self.activate(object, client, toplevel, seat).await
+                        self.activate(client, sender_id, toplevel, seat).await
                     }
                     3u16 => {
                         let toplevel = message
@@ -2635,10 +2539,10 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_toplevel_manager_v1#{}.set_maximized({})",
-                            object.id,
+                            sender_id,
                             toplevel
                         );
-                        self.set_maximized(object, client, toplevel).await
+                        self.set_maximized(client, sender_id, toplevel).await
                     }
                     4u16 => {
                         let toplevel = message
@@ -2646,10 +2550,10 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_toplevel_manager_v1#{}.unset_maximized({})",
-                            object.id,
+                            sender_id,
                             toplevel
                         );
-                        self.unset_maximized(object, client, toplevel).await
+                        self.unset_maximized(client, sender_id, toplevel).await
                     }
                     5u16 => {
                         let toplevel = message
@@ -2657,10 +2561,10 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_toplevel_manager_v1#{}.set_minimized({})",
-                            object.id,
+                            sender_id,
                             toplevel
                         );
-                        self.set_minimized(object, client, toplevel).await
+                        self.set_minimized(client, sender_id, toplevel).await
                     }
                     6u16 => {
                         let toplevel = message
@@ -2668,10 +2572,10 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_toplevel_manager_v1#{}.unset_minimized({})",
-                            object.id,
+                            sender_id,
                             toplevel
                         );
-                        self.unset_minimized(object, client, toplevel).await
+                        self.unset_minimized(client, sender_id, toplevel).await
                     }
                     7u16 => {
                         let toplevel = message
@@ -2680,13 +2584,14 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                         let output = message.object()?;
                         tracing::debug!(
                             "zcosmic_toplevel_manager_v1#{}.set_fullscreen({}, {})",
-                            object.id,
+                            sender_id,
                             toplevel,
                             output
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.set_fullscreen(object, client, toplevel, output).await
+                        self.set_fullscreen(client, sender_id, toplevel, output)
+                            .await
                     }
                     8u16 => {
                         let toplevel = message
@@ -2694,10 +2599,10 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_toplevel_manager_v1#{}.unset_fullscreen({})",
-                            object.id,
+                            sender_id,
                             toplevel
                         );
-                        self.unset_fullscreen(object, client, toplevel).await
+                        self.unset_fullscreen(client, sender_id, toplevel).await
                     }
                     9u16 => {
                         let toplevel = message
@@ -2712,7 +2617,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                         let height = message.int()?;
                         tracing::debug!(
                             "zcosmic_toplevel_manager_v1#{}.set_rectangle({}, {}, {}, {}, {}, {})",
-                            object.id,
+                            sender_id,
                             toplevel,
                             surface,
                             x,
@@ -2720,8 +2625,10 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                             width,
                             height
                         );
-                        self.set_rectangle(object, client, toplevel, surface, x, y, width, height)
-                            .await
+                        self.set_rectangle(
+                            client, sender_id, toplevel, surface, x, y, width, height,
+                        )
+                        .await
                     }
                     10u16 => {
                         let toplevel = message
@@ -2735,12 +2642,12 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_toplevel_manager_v1#{}.move_to_workspace({}, {}, {})",
-                            object.id,
+                            sender_id,
                             toplevel,
                             workspace,
                             output
                         );
-                        self.move_to_workspace(object, client, toplevel, workspace, output)
+                        self.move_to_workspace(client, sender_id, toplevel, workspace, output)
                             .await
                     }
                     11u16 => {
@@ -2749,10 +2656,10 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_toplevel_manager_v1#{}.set_sticky({})",
-                            object.id,
+                            sender_id,
                             toplevel
                         );
-                        self.set_sticky(object, client, toplevel).await
+                        self.set_sticky(client, sender_id, toplevel).await
                     }
                     12u16 => {
                         let toplevel = message
@@ -2760,10 +2667,10 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "zcosmic_toplevel_manager_v1#{}.unset_sticky({})",
-                            object.id,
+                            sender_id,
                             toplevel
                         );
-                        self.unset_sticky(object, client, toplevel).await
+                        self.unset_sticky(client, sender_id, toplevel).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -2773,23 +2680,23 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             #[doc = "destroyed."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.closed event will be sent."]
             async fn close(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             async fn activate(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
@@ -2797,32 +2704,32 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             async fn set_maximized(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             async fn unset_maximized(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             async fn set_minimized(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             async fn unset_minimized(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "If the compositor honors this request, the"]
@@ -2835,8 +2742,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             #[doc = "output, if it honors the fullscreen request."]
             async fn set_fullscreen(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 output: Option<crate::wire::ObjectId>,
             ) -> crate::server::Result<()>;
@@ -2844,8 +2751,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             async fn unset_fullscreen(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "If a client using this protocol displays UI elements corresponding"]
@@ -2861,8 +2768,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             #[doc = "Setting width=height=0 removes the current rectangle if one was set."]
             async fn set_rectangle(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 x: i32,
@@ -2873,8 +2780,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             #[doc = "Move window to workspace, on given output."]
             async fn move_to_workspace(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
@@ -2883,16 +2790,16 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             async fn set_sticky(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             async fn unset_sticky(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
@@ -2913,20 +2820,20 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             #[doc = "native endianness."]
             async fn capabilities(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 capabilities: Vec<u8>,
             ) -> crate::server::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_manager_v1#{}.capabilities(array[{}])",
-                    object.id,
+                    sender_id,
                     capabilities.len()
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_array(capabilities)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }

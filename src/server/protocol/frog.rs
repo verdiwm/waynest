@@ -15,23 +15,17 @@ pub mod frog_color_management_v1 {
         pub trait FrogColorManagementFactoryV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "frog_color_management_factory_v1";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("frog_color_management_factory_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("frog_color_management_factory_v1#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     1u16 => {
                         let surface = message
@@ -42,11 +36,11 @@ pub mod frog_color_management_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "frog_color_management_factory_v1#{}.get_color_managed_surface({}, {})",
-                            object.id,
+                            sender_id,
                             surface,
                             callback
                         );
-                        self.get_color_managed_surface(object, client, surface, callback)
+                        self.get_color_managed_surface(client, sender_id, surface, callback)
                             .await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -54,13 +48,13 @@ pub mod frog_color_management_v1 {
             }
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             async fn get_color_managed_surface(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 callback: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
@@ -168,34 +162,28 @@ pub mod frog_color_management_v1 {
         pub trait FrogColorManagedSurface: crate::server::Dispatcher {
             const INTERFACE: &'static str = "frog_color_managed_surface";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("frog_color_managed_surface#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("frog_color_managed_surface#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     1u16 => {
                         let transfer_function = message.uint()?;
                         tracing::debug!(
                             "frog_color_managed_surface#{}.set_known_transfer_function({})",
-                            object.id,
+                            sender_id,
                             transfer_function
                         );
                         self.set_known_transfer_function(
-                            object,
                             client,
+                            sender_id,
                             transfer_function.try_into()?,
                         )
                         .await
@@ -204,20 +192,24 @@ pub mod frog_color_management_v1 {
                         let primaries = message.uint()?;
                         tracing::debug!(
                             "frog_color_managed_surface#{}.set_known_container_color_volume({})",
-                            object.id,
+                            sender_id,
                             primaries
                         );
-                        self.set_known_container_color_volume(object, client, primaries.try_into()?)
-                            .await
+                        self.set_known_container_color_volume(
+                            client,
+                            sender_id,
+                            primaries.try_into()?,
+                        )
+                        .await
                     }
                     3u16 => {
                         let render_intent = message.uint()?;
                         tracing::debug!(
                             "frog_color_managed_surface#{}.set_render_intent({})",
-                            object.id,
+                            sender_id,
                             render_intent
                         );
-                        self.set_render_intent(object, client, render_intent.try_into()?)
+                        self.set_render_intent(client, sender_id, render_intent.try_into()?)
                             .await
                     }
                     4u16 => {
@@ -233,10 +225,10 @@ pub mod frog_color_management_v1 {
                         let min_display_mastering_luminance = message.uint()?;
                         let max_cll = message.uint()?;
                         let max_fall = message.uint()?;
-                        tracing :: debug ! ("frog_color_managed_surface#{}.set_hdr_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})" , object . id , mastering_display_primary_red_x , mastering_display_primary_red_y , mastering_display_primary_green_x , mastering_display_primary_green_y , mastering_display_primary_blue_x , mastering_display_primary_blue_y , mastering_white_point_x , mastering_white_point_y , max_display_mastering_luminance , min_display_mastering_luminance , max_cll , max_fall);
+                        tracing :: debug ! ("frog_color_managed_surface#{}.set_hdr_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})" , sender_id , mastering_display_primary_red_x , mastering_display_primary_red_y , mastering_display_primary_green_x , mastering_display_primary_green_y , mastering_display_primary_blue_x , mastering_display_primary_blue_y , mastering_white_point_x , mastering_white_point_y , max_display_mastering_luminance , min_display_mastering_luminance , max_cll , max_fall);
                         self.set_hdr_metadata(
-                            object,
                             client,
+                            sender_id,
                             mastering_display_primary_red_x,
                             mastering_display_primary_red_y,
                             mastering_display_primary_green_x,
@@ -260,19 +252,19 @@ pub mod frog_color_management_v1 {
             #[doc = "values."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             async fn set_known_transfer_function(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 transfer_function: TransferFunction,
             ) -> crate::server::Result<()>;
             async fn set_known_container_color_volume(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 primaries: Primaries,
             ) -> crate::server::Result<()>;
             #[doc = "NOTE: On a surface with \"perceptual\" (default) render intent, handling of the container's color volume"]
@@ -283,8 +275,8 @@ pub mod frog_color_management_v1 {
             #[doc = "(including utilizing negatives out of the 709 gamut triangle)"]
             async fn set_render_intent(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 render_intent: RenderIntent,
             ) -> crate::server::Result<()>;
             #[doc = "Forwards HDR metadata from the client to the compositor."]
@@ -295,8 +287,8 @@ pub mod frog_color_management_v1 {
             #[doc = "outside of the scope of this protocol."]
             async fn set_hdr_metadata(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 mastering_display_primary_red_x: u32,
                 mastering_display_primary_red_y: u32,
                 mastering_display_primary_green_x: u32,
@@ -318,8 +310,8 @@ pub mod frog_color_management_v1 {
             #[doc = "rather what the compositor thinks would be best for a given surface."]
             async fn preferred_metadata(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 transfer_function: TransferFunction,
                 output_display_primary_red_x: u32,
                 output_display_primary_red_y: u32,
@@ -333,7 +325,7 @@ pub mod frog_color_management_v1 {
                 min_luminance: u32,
                 max_full_frame_luminance: u32,
             ) -> crate::server::Result<()> {
-                tracing :: debug ! ("-> frog_color_managed_surface#{}.preferred_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})" , object . id , transfer_function , output_display_primary_red_x , output_display_primary_red_y , output_display_primary_green_x , output_display_primary_green_y , output_display_primary_blue_x , output_display_primary_blue_y , output_white_point_x , output_white_point_y , max_luminance , min_luminance , max_full_frame_luminance);
+                tracing :: debug ! ("-> frog_color_managed_surface#{}.preferred_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})" , sender_id , transfer_function , output_display_primary_red_x , output_display_primary_red_y , output_display_primary_green_x , output_display_primary_green_y , output_display_primary_blue_x , output_display_primary_blue_y , output_white_point_x , output_white_point_y , max_luminance , min_luminance , max_full_frame_luminance);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(transfer_function as u32)
                     .put_uint(output_display_primary_red_x)
@@ -349,7 +341,7 @@ pub mod frog_color_management_v1 {
                     .put_uint(max_full_frame_luminance)
                     .build();
                 client
-                    .send_message(crate::wire::Message::new(object.id, 0u16, payload, fds))
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::server::error::Error::IoError)
             }
@@ -400,23 +392,17 @@ pub mod frog_fifo_v1 {
         pub trait FrogFifoManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "frog_fifo_manager_v1";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("frog_fifo_manager_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("frog_fifo_manager_v1#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     1u16 => {
                         let id = message
@@ -427,11 +413,11 @@ pub mod frog_fifo_v1 {
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "frog_fifo_manager_v1#{}.get_fifo({}, {})",
-                            object.id,
+                            sender_id,
                             id,
                             surface
                         );
-                        self.get_fifo(object, client, id, surface).await
+                        self.get_fifo(client, sender_id, id, surface).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -441,8 +427,8 @@ pub mod frog_fifo_v1 {
             #[doc = "are not affected."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Establish a fifo object for a surface that may be used to add"]
             #[doc = "display refresh constraints to content updates."]
@@ -454,8 +440,8 @@ pub mod frog_fifo_v1 {
             #[doc = "performing wl_surface.attach operations should use this protocol."]
             async fn get_fifo(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
@@ -494,31 +480,25 @@ pub mod frog_fifo_v1 {
         pub trait FrogFifoSurfaceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "frog_fifo_surface_v1";
             const VERSION: u32 = 1u32;
-            fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
-            where
-                Self: Sized,
-            {
-                crate::server::Object::new(id, self)
-            }
             async fn handle_request(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::server::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode {
                     0u16 => {
-                        tracing::debug!("frog_fifo_surface_v1#{}.set_barrier()", object.id,);
-                        self.set_barrier(object, client).await
+                        tracing::debug!("frog_fifo_surface_v1#{}.set_barrier()", sender_id,);
+                        self.set_barrier(client, sender_id).await
                     }
                     1u16 => {
-                        tracing::debug!("frog_fifo_surface_v1#{}.wait_barrier()", object.id,);
-                        self.wait_barrier(object, client).await
+                        tracing::debug!("frog_fifo_surface_v1#{}.wait_barrier()", sender_id,);
+                        self.wait_barrier(client, sender_id).await
                     }
                     2u16 => {
-                        tracing::debug!("frog_fifo_surface_v1#{}.destroy()", object.id,);
-                        self.destroy(object, client).await
+                        tracing::debug!("frog_fifo_surface_v1#{}.destroy()", sender_id,);
+                        self.destroy(client, sender_id).await
                     }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
@@ -539,8 +519,8 @@ pub mod frog_fifo_v1 {
             #[doc = "destroyed will generate a \"surface_destroyed\" error."]
             async fn set_barrier(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Indicate that this content update is not ready while a"]
             #[doc = "\"fifo_barrier\" condition is present on the surface."]
@@ -557,8 +537,8 @@ pub mod frog_fifo_v1 {
             #[doc = "destroyed will generate a \"surface_destroyed\" error."]
             async fn wait_barrier(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
             #[doc = "Informs the server that the client will no longer be using"]
             #[doc = "this protocol object."]
@@ -567,8 +547,8 @@ pub mod frog_fifo_v1 {
             #[doc = "unaffected by this object's destruction."]
             async fn destroy(
                 &self,
-                object: &crate::server::Object,
                 client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
         }
     }

@@ -8,7 +8,6 @@ pub use waynest_macros::Dispatcher;
 
 use async_trait::async_trait;
 use core::fmt;
-use downcast_rs::{impl_downcast, DowncastSync};
 use futures_util::{SinkExt, TryStreamExt};
 use std::{collections::HashMap, io, sync::Arc};
 use tokio::net::UnixStream;
@@ -45,14 +44,14 @@ impl Client {
         prev
     }
 
-    pub fn insert(&mut self, object: Object) {
-        self.store.insert(object)
+    pub fn insert<D: Dispatcher + 'static>(&mut self, sender_id: ObjectId, object: D) {
+        self.store.insert(sender_id, Arc::new(object))
     }
 
     pub async fn handle_message(&mut self, message: &mut Message) -> Result<()> {
         let object = self.store.get(&message.object_id).ok_or(Error::Internal)?;
 
-        object.dispatch(self, message).await
+        object.dispatch(self, message.object_id, message).await
     }
 
     pub async fn next_message(&mut self) -> Result<Option<Message>> {
@@ -66,31 +65,8 @@ impl Client {
     }
 }
 
-#[derive(Clone)]
-pub struct Object {
-    pub id: ObjectId,
-    dispatcher: Arc<dyn Dispatcher>,
-}
-
-impl Object {
-    pub fn new<D: Dispatcher>(id: ObjectId, dispatcher: D) -> Self {
-        Self {
-            id,
-            dispatcher: Arc::new(dispatcher),
-        }
-    }
-
-    pub fn as_dispatcher<D: Dispatcher>(&self) -> Result<&D> {
-        self.dispatcher.downcast_ref().ok_or(Error::Internal)
-    }
-
-    async fn dispatch(&self, client: &mut Client, message: &mut Message) -> Result<()> {
-        self.dispatcher.dispatch(self, client, message).await
-    }
-}
-
 struct Store {
-    objects: HashMap<ObjectId, Object>,
+    objects: HashMap<ObjectId, Arc<dyn Dispatcher>>,
 }
 
 impl Store {
@@ -100,23 +76,21 @@ impl Store {
         }
     }
     // FIXME: handle possible error if id already exists
-    fn insert(&mut self, object: Object) {
-        self.objects.insert(object.id, object);
+    fn insert(&mut self, sender_id: ObjectId, object: Arc<dyn Dispatcher>) {
+        self.objects.insert(sender_id, object);
     }
 
-    fn get(&self, id: &ObjectId) -> Option<Object> {
+    fn get(&self, id: &ObjectId) -> Option<Arc<dyn Dispatcher>> {
         self.objects.get(id).cloned()
     }
 }
 
 #[async_trait]
-pub trait Dispatcher: DowncastSync {
+pub trait Dispatcher: Send + Sync {
     async fn dispatch(
         &self,
-        object: &Object,
         client: &mut Client,
+        sender_id: ObjectId,
         message: &mut Message,
     ) -> Result<()>;
 }
-
-impl_downcast!(sync Dispatcher);

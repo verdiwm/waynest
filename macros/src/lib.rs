@@ -12,11 +12,11 @@ pub fn derive_dispatcher(input: TokenStream) -> TokenStream {
         impl waynest::server::Dispatcher for #ident {
             async fn dispatch(
                 &self,
-                object: &waynest::server::Object,
                 client: &mut waynest::server::Client,
+                sender_id: waynest::wire::ObjectId,
                 message: &mut waynest::wire::Message,
             ) -> Result<()> {
-                self.handle_request(object, client, message).await
+                self.handle_request(client, sender_id, message).await
             }
         }
     }
