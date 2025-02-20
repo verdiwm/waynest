@@ -58,15 +58,17 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                         const INTERFACE: &'static str = #name;
                         const VERSION: u32 = #version;
 
-                        async fn handle_request(
+                        fn handle_request(
                             &self,
                             #handler_args
                             message: &mut crate::wire::Message,
-                        ) -> crate::server::Result<()> {
-                            #[allow(clippy::match_single_binding)]
-                            match message.opcode {
-                                #(#dispatchers),*
-                                _ => Err(crate::server::error::Error::UnknownOpcode),
+                        ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                            async move {
+                                #[allow(clippy::match_single_binding)]
+                                match message.opcode {
+                                    #(#dispatchers),*
+                                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                                }
                             }
                         }
 
@@ -90,7 +92,6 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
     }
 
     quote! {
-        #![allow(async_fn_in_trait)]
         #(#modules)*
     }
 }
@@ -202,7 +203,7 @@ fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Tok
 
         requests.push(quote! {
             #(#docs)*
-            async fn #name(#(#args),*) -> crate::server::Result<()>;
+            fn #name(#(#args),*) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         });
     }
 
@@ -315,17 +316,19 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
 
         events.push(quote! {
             #(#docs)*
-            async fn #name(#(#args),*) -> crate::server::Result<()> {
-                tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
+            fn #name(#(#args),*) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
 
-                let (payload,fds) = crate::wire::PayloadBuilder::new()
-                    #(#build_args)*
-                    .build();
+                    let (payload,fds) = crate::wire::PayloadBuilder::new()
+                        #(#build_args)*
+                        .build();
 
-                client
-                    .send_message(crate::wire::Message::new(sender_id, #opcode, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, #opcode, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         });
     }

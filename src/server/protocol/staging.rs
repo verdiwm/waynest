@@ -1,4 +1,3 @@
-#![allow(async_fn_in_trait)]
 #[allow(clippy::module_inception)]
 pub mod alpha_modifier_v1 {
     #[doc = "This interface allows a client to set a factor for the alpha values on a"]
@@ -38,53 +37,55 @@ pub mod alpha_modifier_v1 {
         pub trait WpAlphaModifierV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_alpha_modifier_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_alpha_modifier_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("wp_alpha_modifier_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_alpha_modifier_v1#{}.get_surface({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_surface(client, sender_id, id, surface).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_alpha_modifier_v1#{}.get_surface({}, {})",
-                            sender_id,
-                            id,
-                            surface
-                        );
-                        self.get_surface(client, sender_id, id, surface).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the alpha modifier manager. This doesn't destroy objects"]
             #[doc = "created with the manager."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a new alpha modifier surface object associated with the"]
             #[doc = "given wl_surface. If there is already such an object associated with"]
             #[doc = "the wl_surface, the already_constructed error will be raised."]
-            async fn get_surface(
+            fn get_surface(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This interface allows the client to set a factor for the alpha values on"]
@@ -123,38 +124,40 @@ pub mod alpha_modifier_v1 {
         pub trait WpAlphaModifierSurfaceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_alpha_modifier_surface_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_alpha_modifier_surface_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("wp_alpha_modifier_surface_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let factor = message.uint()?;
+                            tracing::debug!(
+                                "wp_alpha_modifier_surface_v1#{}.set_multiplier({})",
+                                sender_id,
+                                factor
+                            );
+                            self.set_multiplier(client, sender_id, factor).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let factor = message.uint()?;
-                        tracing::debug!(
-                            "wp_alpha_modifier_surface_v1#{}.set_multiplier({})",
-                            sender_id,
-                            factor
-                        );
-                        self.set_multiplier(client, sender_id, factor).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "This destroys the object, and is equivalent to set_multiplier with"]
             #[doc = "a value of UINT32_MAX, with the same double-buffered semantics as"]
             #[doc = "set_multiplier."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the alpha multiplier for the surface. The alpha multiplier is"]
             #[doc = "double-buffered state, see wl_surface.commit for details."]
             #[doc = ""]
@@ -168,12 +171,12 @@ pub mod alpha_modifier_v1 {
             #[doc = "of one is used instead."]
             #[doc = ""]
             #[doc = "Zero means completely transparent, UINT32_MAX means completely opaque."]
-            async fn set_multiplier(
+            fn set_multiplier(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 factor: u32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -436,119 +439,121 @@ pub mod color_management_v1 {
         pub trait WpColorManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_color_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_color_manager_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("wp_color_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let output = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_color_manager_v1#{}.get_output({}, {})",
+                                sender_id,
+                                id,
+                                output
+                            );
+                            self.get_output(client, sender_id, id, output).await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_color_manager_v1#{}.get_surface({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_surface(client, sender_id, id, surface).await
+                        }
+                        3u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_color_manager_v1#{}.get_surface_feedback({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_surface_feedback(client, sender_id, id, surface)
+                                .await
+                        }
+                        4u16 => {
+                            let obj = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_color_manager_v1#{}.create_icc_creator({})",
+                                sender_id,
+                                obj
+                            );
+                            self.create_icc_creator(client, sender_id, obj).await
+                        }
+                        5u16 => {
+                            let obj = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_color_manager_v1#{}.create_parametric_creator({})",
+                                sender_id,
+                                obj
+                            );
+                            self.create_parametric_creator(client, sender_id, obj).await
+                        }
+                        6u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_color_manager_v1#{}.create_windows_scrgb({})",
+                                sender_id,
+                                image_description
+                            );
+                            self.create_windows_scrgb(client, sender_id, image_description)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let output = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_color_manager_v1#{}.get_output({}, {})",
-                            sender_id,
-                            id,
-                            output
-                        );
-                        self.get_output(client, sender_id, id, output).await
-                    }
-                    2u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_color_manager_v1#{}.get_surface({}, {})",
-                            sender_id,
-                            id,
-                            surface
-                        );
-                        self.get_surface(client, sender_id, id, surface).await
-                    }
-                    3u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_color_manager_v1#{}.get_surface_feedback({}, {})",
-                            sender_id,
-                            id,
-                            surface
-                        );
-                        self.get_surface_feedback(client, sender_id, id, surface)
-                            .await
-                    }
-                    4u16 => {
-                        let obj = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_color_manager_v1#{}.create_icc_creator({})",
-                            sender_id,
-                            obj
-                        );
-                        self.create_icc_creator(client, sender_id, obj).await
-                    }
-                    5u16 => {
-                        let obj = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_color_manager_v1#{}.create_parametric_creator({})",
-                            sender_id,
-                            obj
-                        );
-                        self.create_parametric_creator(client, sender_id, obj).await
-                    }
-                    6u16 => {
-                        let image_description = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_color_manager_v1#{}.create_windows_scrgb({})",
-                            sender_id,
-                            image_description
-                        );
-                        self.create_windows_scrgb(client, sender_id, image_description)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the wp_color_manager_v1 object. This does not affect any other"]
             #[doc = "objects in any way."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This creates a new wp_color_management_output_v1 object for the"]
             #[doc = "given wl_output."]
             #[doc = ""]
             #[doc = "See the wp_color_management_output_v1 interface for more details."]
-            async fn get_output(
+            fn get_output(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If a wp_color_management_surface_v1 object already exists for the given"]
             #[doc = "wl_surface, the protocol error surface_exists is raised."]
             #[doc = ""]
@@ -556,25 +561,25 @@ pub mod color_management_v1 {
             #[doc = "given wl_surface."]
             #[doc = ""]
             #[doc = "See the wp_color_management_surface_v1 interface for more details."]
-            async fn get_surface(
+            fn get_surface(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This creates a new color wp_color_management_surface_feedback_v1 object"]
             #[doc = "for the given wl_surface."]
             #[doc = ""]
             #[doc = "See the wp_color_management_surface_feedback_v1 interface for more"]
             #[doc = "details."]
-            async fn get_surface_feedback(
+            fn get_surface_feedback(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Makes a new ICC-based image description creator object with all"]
             #[doc = "properties initially unset. The client can then use the object's"]
             #[doc = "interface to define all the required properties for an image description"]
@@ -583,12 +588,12 @@ pub mod color_management_v1 {
             #[doc = "This request can be used when the compositor advertises"]
             #[doc = "wp_color_manager_v1.feature.icc_v2_v4."]
             #[doc = "Otherwise this request raises the protocol error unsupported_feature."]
-            async fn create_icc_creator(
+            fn create_icc_creator(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 obj: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Makes a new parametric image description creator object with all"]
             #[doc = "properties initially unset. The client can then use the object's"]
             #[doc = "interface to define all the required properties for an image description"]
@@ -597,12 +602,12 @@ pub mod color_management_v1 {
             #[doc = "This request can be used when the compositor advertises"]
             #[doc = "wp_color_manager_v1.feature.parametric."]
             #[doc = "Otherwise this request raises the protocol error unsupported_feature."]
-            async fn create_parametric_creator(
+            fn create_parametric_creator(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 obj: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This creates a pre-defined image description for the so-called"]
             #[doc = "Windows-scRGB stimulus encoding. This comes from the Windows 10 handling"]
             #[doc = "of its own definition of an scRGB color space for an HDR screen"]
@@ -647,111 +652,121 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "The resulting image description object does not allow get_information"]
             #[doc = "request. The wp_image_description_v1.ready event shall be sent."]
-            async fn create_windows_scrgb(
+            fn create_windows_scrgb(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each rendering intent the compositor supports."]
-            async fn supported_intent(
+            fn supported_intent(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 render_intent: RenderIntent,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_color_manager_v1#{}.supported_intent({})",
-                    sender_id,
-                    render_intent
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(render_intent as u32)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_color_manager_v1#{}.supported_intent({})",
+                        sender_id,
+                        render_intent
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(render_intent as u32)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each compositor supported feature listed in the enumeration."]
-            async fn supported_feature(
+            fn supported_feature(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 feature: Feature,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_color_manager_v1#{}.supported_feature({})",
-                    sender_id,
-                    feature
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(feature as u32)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_color_manager_v1#{}.supported_feature({})",
+                        sender_id,
+                        feature
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(feature as u32)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each named transfer function the compositor supports with the"]
             #[doc = "parametric image description creator."]
-            async fn supported_tf_named(
+            fn supported_tf_named(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 tf: TransferFunction,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_color_manager_v1#{}.supported_tf_named({})",
-                    sender_id,
-                    tf
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(tf as u32)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_color_manager_v1#{}.supported_tf_named({})",
+                        sender_id,
+                        tf
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(tf as u32)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each named set of primaries the compositor supports with the"]
             #[doc = "parametric image description creator."]
-            async fn supported_primaries_named(
+            fn supported_primaries_named(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 primaries: Primaries,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_color_manager_v1#{}.supported_primaries_named({})",
-                    sender_id,
-                    primaries
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(primaries as u32)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_color_manager_v1#{}.supported_primaries_named({})",
+                        sender_id,
+                        primaries
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(primaries as u32)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is sent when all supported rendering intents, features,"]
             #[doc = "transfer functions and named primaries have been sent."]
-            async fn done(
+            fn done(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_color_manager_v1#{}.done()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> wp_color_manager_v1#{}.done()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -770,40 +785,45 @@ pub mod color_management_v1 {
         pub trait WpColorManagementOutputV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_color_management_output_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_color_management_output_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!(
+                                "wp_color_management_output_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_color_management_output_v1#{}.get_image_description({})",
+                                sender_id,
+                                image_description
+                            );
+                            self.get_image_description(client, sender_id, image_description)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let image_description = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_color_management_output_v1#{}.get_image_description({})",
-                            sender_id,
-                            image_description
-                        );
-                        self.get_image_description(client, sender_id, image_description)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the color wp_color_management_output_v1 object. This does not"]
             #[doc = "affect any remaining protocol objects."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This creates a new wp_image_description_v1 object for the current image"]
             #[doc = "description of the output. There always is exactly one image description"]
             #[doc = "active for an output so the client should destroy the image description"]
@@ -835,12 +855,12 @@ pub mod color_management_v1 {
             #[doc = "wp_image_description_v1.failed event with the low_version cause."]
             #[doc = ""]
             #[doc = "Otherwise the object shall immediately deliver the ready event."]
-            async fn get_image_description(
+            fn get_image_description(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent whenever the image description of the output changed,"]
             #[doc = "followed by one wl_output.done event common to output events across all"]
             #[doc = "extensions."]
@@ -848,20 +868,22 @@ pub mod color_management_v1 {
             #[doc = "If the client wants to use the updated image description, it needs to do"]
             #[doc = "get_image_description again, because image description objects are"]
             #[doc = "immutable."]
-            async fn image_description_changed(
+            fn image_description_changed(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_color_management_output_v1#{}.image_description_changed()",
-                    sender_id,
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_color_management_output_v1#{}.image_description_changed()",
+                        sender_id,
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -905,54 +927,59 @@ pub mod color_management_v1 {
         pub trait WpColorManagementSurfaceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_color_management_surface_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_color_management_surface_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!(
+                                "wp_color_management_surface_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let render_intent = message.uint()?;
+                            tracing::debug!(
+                                "wp_color_management_surface_v1#{}.set_image_description({}, {})",
+                                sender_id,
+                                image_description,
+                                render_intent
+                            );
+                            self.set_image_description(
+                                client,
+                                sender_id,
+                                image_description,
+                                render_intent.try_into()?,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            tracing::debug!(
+                                "wp_color_management_surface_v1#{}.unset_image_description()",
+                                sender_id,
+                            );
+                            self.unset_image_description(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let image_description = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let render_intent = message.uint()?;
-                        tracing::debug!(
-                            "wp_color_management_surface_v1#{}.set_image_description({}, {})",
-                            sender_id,
-                            image_description,
-                            render_intent
-                        );
-                        self.set_image_description(
-                            client,
-                            sender_id,
-                            image_description,
-                            render_intent.try_into()?,
-                        )
-                        .await
-                    }
-                    2u16 => {
-                        tracing::debug!(
-                            "wp_color_management_surface_v1#{}.unset_image_description()",
-                            sender_id,
-                        );
-                        self.unset_image_description(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the wp_color_management_surface_v1 object and do the same as"]
             #[doc = "unset_image_description."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If this protocol object is inert, the protocol error inert is raised."]
             #[doc = ""]
             #[doc = "Set the image description of the underlying surface. The image"]
@@ -992,24 +1019,24 @@ pub mod color_management_v1 {
             #[doc = "Setting the image description has copy semantics; after this request,"]
             #[doc = "the image description can be immediately destroyed without affecting"]
             #[doc = "the pending state of the surface."]
-            async fn set_image_description(
+            fn set_image_description(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
                 render_intent : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: RenderIntent,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If this protocol object is inert, the protocol error inert is raised."]
             #[doc = ""]
             #[doc = "This request removes any image description from the surface. See"]
             #[doc = "set_image_description for how a compositor handles a surface without"]
             #[doc = "an image description. This is double-buffered state, see"]
             #[doc = "wl_surface.commit."]
-            async fn unset_image_description(
+            fn unset_image_description(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "A wp_color_management_surface_feedback_v1 allows the client to get the"]
@@ -1049,50 +1076,52 @@ pub mod color_management_v1 {
         pub trait WpColorManagementSurfaceFeedbackV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_color_management_surface_feedback_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!(
-                            "wp_color_management_surface_feedback_v1#{}.destroy()",
-                            sender_id,
-                        );
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!(
+                                "wp_color_management_surface_feedback_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_color_management_surface_feedback_v1#{}.get_preferred({})",
+                                sender_id,
+                                image_description
+                            );
+                            self.get_preferred(client, sender_id, image_description)
+                                .await
+                        }
+                        2u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing :: debug ! ("wp_color_management_surface_feedback_v1#{}.get_preferred_parametric({})" , sender_id , image_description);
+                            self.get_preferred_parametric(client, sender_id, image_description)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let image_description = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_color_management_surface_feedback_v1#{}.get_preferred({})",
-                            sender_id,
-                            image_description
-                        );
-                        self.get_preferred(client, sender_id, image_description)
-                            .await
-                    }
-                    2u16 => {
-                        let image_description = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing :: debug ! ("wp_color_management_surface_feedback_v1#{}.get_preferred_parametric({})" , sender_id , image_description);
-                        self.get_preferred_parametric(client, sender_id, image_description)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the wp_color_management_surface_feedback_v1 object."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If this protocol object is inert, the protocol error inert is raised."]
             #[doc = ""]
             #[doc = "The preferred image description represents the compositor's preferred"]
@@ -1126,24 +1155,24 @@ pub mod color_management_v1 {
             #[doc = "description object shall immediately deliver the"]
             #[doc = "wp_image_description_v1.failed event with the low_version cause,"]
             #[doc = "otherwise the object shall immediately deliver the ready event."]
-            async fn get_preferred(
+            fn get_preferred(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The same description as for get_preferred applies, except the returned"]
             #[doc = "image description is guaranteed to be parametric. This is meant for"]
             #[doc = "clients that can only deal with parametric image descriptions."]
             #[doc = ""]
             #[doc = "If the compositor doesn't support parametric image descriptions, the"]
             #[doc = "unsupported_feature error is emitted."]
-            async fn get_preferred_parametric(
+            fn get_preferred_parametric(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The preferred image description is the one which likely has the most"]
             #[doc = "performance and/or quality benefits for the compositor if used by the"]
             #[doc = "client for its wl_surface contents. This event is sent whenever the"]
@@ -1160,24 +1189,26 @@ pub mod color_management_v1 {
             #[doc = "improvements by providing the wl_surface contents in the preferred"]
             #[doc = "image description. Therefore clients that can, should render according"]
             #[doc = "to the preferred image description"]
-            async fn preferred_changed(
+            fn preferred_changed(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 identity: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_color_management_surface_feedback_v1#{}.preferred_changed({})",
-                    sender_id,
-                    identity
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(identity)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_color_management_surface_feedback_v1#{}.preferred_changed({})",
+                        sender_id,
+                        identity
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(identity)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -1236,40 +1267,42 @@ pub mod color_management_v1 {
         pub trait WpImageDescriptionCreatorIccV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_image_description_creator_icc_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let image_description = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_image_description_creator_icc_v1#{}.create({})",
-                            sender_id,
-                            image_description
-                        );
-                        self.create(client, sender_id, image_description).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_image_description_creator_icc_v1#{}.create({})",
+                                sender_id,
+                                image_description
+                            );
+                            self.create(client, sender_id, image_description).await
+                        }
+                        1u16 => {
+                            let icc_profile = message.fd()?;
+                            let offset = message.uint()?;
+                            let length = message.uint()?;
+                            tracing::debug!(
+                                "wp_image_description_creator_icc_v1#{}.set_icc_file({}, {}, {})",
+                                sender_id,
+                                icc_profile.as_raw_fd(),
+                                offset,
+                                length
+                            );
+                            self.set_icc_file(client, sender_id, icc_profile, offset, length)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let icc_profile = message.fd()?;
-                        let offset = message.uint()?;
-                        let length = message.uint()?;
-                        tracing::debug!(
-                            "wp_image_description_creator_icc_v1#{}.set_icc_file({}, {}, {})",
-                            sender_id,
-                            icc_profile.as_raw_fd(),
-                            offset,
-                            length
-                        );
-                        self.set_icc_file(client, sender_id, icc_profile, offset, length)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Create an image description object based on the ICC information"]
@@ -1291,12 +1324,12 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "The resulting image description object does not allow get_information"]
             #[doc = "request."]
-            async fn create(
+            fn create(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the ICC profile file to be used as the basis of the image"]
             #[doc = "description."]
             #[doc = ""]
@@ -1336,14 +1369,14 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "If ICC file has already been set on this object, the protocol error"]
             #[doc = "already_set is raised."]
-            async fn set_icc_file(
+            fn set_icc_file(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 icc_profile: rustix::fd::OwnedFd,
                 offset: u32,
                 length: u32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This type of object is used for collecting all the parameters required"]
@@ -1417,123 +1450,119 @@ pub mod color_management_v1 {
         pub trait WpImageDescriptionCreatorParamsV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_image_description_creator_params_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let image_description = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_image_description_creator_params_v1#{}.create({})",
-                            sender_id,
-                            image_description
-                        );
-                        self.create(client, sender_id, image_description).await
-                    }
-                    1u16 => {
-                        let tf = message.uint()?;
-                        tracing::debug!(
-                            "wp_image_description_creator_params_v1#{}.set_tf_named({})",
-                            sender_id,
-                            tf
-                        );
-                        self.set_tf_named(client, sender_id, tf.try_into()?).await
-                    }
-                    2u16 => {
-                        let eexp = message.uint()?;
-                        tracing::debug!(
-                            "wp_image_description_creator_params_v1#{}.set_tf_power({})",
-                            sender_id,
-                            eexp
-                        );
-                        self.set_tf_power(client, sender_id, eexp).await
-                    }
-                    3u16 => {
-                        let primaries = message.uint()?;
-                        tracing::debug!(
-                            "wp_image_description_creator_params_v1#{}.set_primaries_named({})",
-                            sender_id,
-                            primaries
-                        );
-                        self.set_primaries_named(client, sender_id, primaries.try_into()?)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.create({})",
+                                sender_id,
+                                image_description
+                            );
+                            self.create(client, sender_id, image_description).await
+                        }
+                        1u16 => {
+                            let tf = message.uint()?;
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_tf_named({})",
+                                sender_id,
+                                tf
+                            );
+                            self.set_tf_named(client, sender_id, tf.try_into()?).await
+                        }
+                        2u16 => {
+                            let eexp = message.uint()?;
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_tf_power({})",
+                                sender_id,
+                                eexp
+                            );
+                            self.set_tf_power(client, sender_id, eexp).await
+                        }
+                        3u16 => {
+                            let primaries = message.uint()?;
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_primaries_named({})",
+                                sender_id,
+                                primaries
+                            );
+                            self.set_primaries_named(client, sender_id, primaries.try_into()?)
+                                .await
+                        }
+                        4u16 => {
+                            let r_x = message.int()?;
+                            let r_y = message.int()?;
+                            let g_x = message.int()?;
+                            let g_y = message.int()?;
+                            let b_x = message.int()?;
+                            let b_y = message.int()?;
+                            let w_x = message.int()?;
+                            let w_y = message.int()?;
+                            tracing :: debug ! ("wp_image_description_creator_params_v1#{}.set_primaries({}, {}, {}, {}, {}, {}, {}, {})" , sender_id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
+                            self.set_primaries(
+                                client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
+                            )
                             .await
-                    }
-                    4u16 => {
-                        let r_x = message.int()?;
-                        let r_y = message.int()?;
-                        let g_x = message.int()?;
-                        let g_y = message.int()?;
-                        let b_x = message.int()?;
-                        let b_y = message.int()?;
-                        let w_x = message.int()?;
-                        let w_y = message.int()?;
-                        tracing :: debug ! ("wp_image_description_creator_params_v1#{}.set_primaries({}, {}, {}, {}, {}, {}, {}, {})" , sender_id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
-                        self.set_primaries(
-                            client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
-                        )
-                        .await
-                    }
-                    5u16 => {
-                        let min_lum = message.uint()?;
-                        let max_lum = message.uint()?;
-                        let reference_lum = message.uint()?;
-                        tracing::debug!(
-                            "wp_image_description_creator_params_v1#{}.set_luminances({}, {}, {})",
-                            sender_id,
-                            min_lum,
-                            max_lum,
-                            reference_lum
-                        );
-                        self.set_luminances(client, sender_id, min_lum, max_lum, reference_lum)
+                        }
+                        5u16 => {
+                            let min_lum = message.uint()?;
+                            let max_lum = message.uint()?;
+                            let reference_lum = message.uint()?;
+                            tracing :: debug ! ("wp_image_description_creator_params_v1#{}.set_luminances({}, {}, {})" , sender_id , min_lum , max_lum , reference_lum);
+                            self.set_luminances(client, sender_id, min_lum, max_lum, reference_lum)
+                                .await
+                        }
+                        6u16 => {
+                            let r_x = message.int()?;
+                            let r_y = message.int()?;
+                            let g_x = message.int()?;
+                            let g_y = message.int()?;
+                            let b_x = message.int()?;
+                            let b_y = message.int()?;
+                            let w_x = message.int()?;
+                            let w_y = message.int()?;
+                            tracing :: debug ! ("wp_image_description_creator_params_v1#{}.set_mastering_display_primaries({}, {}, {}, {}, {}, {}, {}, {})" , sender_id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
+                            self.set_mastering_display_primaries(
+                                client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
+                            )
                             .await
+                        }
+                        7u16 => {
+                            let min_lum = message.uint()?;
+                            let max_lum = message.uint()?;
+                            tracing :: debug ! ("wp_image_description_creator_params_v1#{}.set_mastering_luminance({}, {})" , sender_id , min_lum , max_lum);
+                            self.set_mastering_luminance(client, sender_id, min_lum, max_lum)
+                                .await
+                        }
+                        8u16 => {
+                            let max_cll = message.uint()?;
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_max_cll({})",
+                                sender_id,
+                                max_cll
+                            );
+                            self.set_max_cll(client, sender_id, max_cll).await
+                        }
+                        9u16 => {
+                            let max_fall = message.uint()?;
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_max_fall({})",
+                                sender_id,
+                                max_fall
+                            );
+                            self.set_max_fall(client, sender_id, max_fall).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    6u16 => {
-                        let r_x = message.int()?;
-                        let r_y = message.int()?;
-                        let g_x = message.int()?;
-                        let g_y = message.int()?;
-                        let b_x = message.int()?;
-                        let b_y = message.int()?;
-                        let w_x = message.int()?;
-                        let w_y = message.int()?;
-                        tracing :: debug ! ("wp_image_description_creator_params_v1#{}.set_mastering_display_primaries({}, {}, {}, {}, {}, {}, {}, {})" , sender_id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
-                        self.set_mastering_display_primaries(
-                            client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
-                        )
-                        .await
-                    }
-                    7u16 => {
-                        let min_lum = message.uint()?;
-                        let max_lum = message.uint()?;
-                        tracing :: debug ! ("wp_image_description_creator_params_v1#{}.set_mastering_luminance({}, {})" , sender_id , min_lum , max_lum);
-                        self.set_mastering_luminance(client, sender_id, min_lum, max_lum)
-                            .await
-                    }
-                    8u16 => {
-                        let max_cll = message.uint()?;
-                        tracing::debug!(
-                            "wp_image_description_creator_params_v1#{}.set_max_cll({})",
-                            sender_id,
-                            max_cll
-                        );
-                        self.set_max_cll(client, sender_id, max_cll).await
-                    }
-                    9u16 => {
-                        let max_fall = message.uint()?;
-                        tracing::debug!(
-                            "wp_image_description_creator_params_v1#{}.set_max_fall({})",
-                            sender_id,
-                            max_fall
-                        );
-                        self.set_max_fall(client, sender_id, max_fall).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Create an image description object based on the parameters previously"]
@@ -1564,12 +1593,12 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "The resulting image description object does not allow get_information"]
             #[doc = "request."]
-            async fn create(
+            fn create(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the transfer characteristic using explicitly enumerated named"]
             #[doc = "functions."]
             #[doc = ""]
@@ -1582,12 +1611,12 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "If transfer characteristic has already been set on this object, the"]
             #[doc = "protocol error already_set is raised."]
-            async fn set_tf_named(
+            fn set_tf_named(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 tf : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: TransferFunction,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the color component transfer characteristic to a power curve with"]
             #[doc = "the given exponent. Negative values are handled by mirroring the"]
             #[doc = "positive half of the curve through the origin. The valid domain and"]
@@ -1609,12 +1638,12 @@ pub mod color_management_v1 {
             #[doc = "This request can be used when the compositor advertises"]
             #[doc = "wp_color_manager_v1.feature.set_tf_power. Otherwise this request raises"]
             #[doc = "the protocol error unsupported_feature."]
-            async fn set_tf_power(
+            fn set_tf_power(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 eexp: u32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the color primaries and white point using explicitly named sets."]
             #[doc = "This describes the primary color volume which is the basis for color"]
             #[doc = "value encoding."]
@@ -1625,12 +1654,12 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "If primaries have already been set on this object, the protocol error"]
             #[doc = "already_set is raised."]
-            async fn set_primaries_named(
+            fn set_primaries_named(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 primaries : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: Primaries,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the color primaries and white point using CIE 1931 xy chromaticity"]
             #[doc = "coordinates. This describes the primary color volume which is the basis"]
             #[doc = "for color value encoding."]
@@ -1644,7 +1673,7 @@ pub mod color_management_v1 {
             #[doc = "This request can be used if the compositor advertises"]
             #[doc = "wp_color_manager_v1.feature.set_primaries. Otherwise this request raises"]
             #[doc = "the protocol error unsupported_feature."]
-            async fn set_primaries(
+            fn set_primaries(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
@@ -1656,7 +1685,7 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the primary color volume luminance range and the reference white"]
             #[doc = "luminance level. These values include the minimum display emission"]
             #[doc = "and ambient flare luminances, assumed to be optically additive and have"]
@@ -1706,14 +1735,14 @@ pub mod color_management_v1 {
             #[doc = "This request can be used if the compositor advertises"]
             #[doc = "wp_color_manager_v1.feature.set_luminances. Otherwise this request"]
             #[doc = "raises the protocol error unsupported_feature."]
-            async fn set_luminances(
+            fn set_luminances(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
                 reference_lum: u32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Provides the color primaries and white point of the mastering display"]
             #[doc = "using CIE 1931 xy chromaticity coordinates. This is compatible with the"]
             #[doc = "SMPTE ST 2086 definition of HDR static metadata."]
@@ -1760,7 +1789,7 @@ pub mod color_management_v1 {
             #[doc = "compositor does not support it, the result is implementation defined."]
             #[doc = "Compositors are recommended to detect this case and fail the image"]
             #[doc = "description gracefully, but it may as well result in color artifacts."]
-            async fn set_mastering_display_primaries(
+            fn set_mastering_display_primaries(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
@@ -1772,7 +1801,7 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the luminance range that was used during the content mastering"]
             #[doc = "process as the minimum and maximum absolute luminance L. These values"]
             #[doc = "include the minimum display emission and ambient flare luminances,"]
@@ -1806,32 +1835,32 @@ pub mod color_management_v1 {
             #[doc = "compositor does not support it, the result is implementation defined."]
             #[doc = "Compositors are recommended to detect this case and fail the image"]
             #[doc = "description gracefully, but it may as well result in color artifacts."]
-            async fn set_mastering_luminance(
+            fn set_mastering_luminance(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the maximum content light level (max_cll) as defined by CTA-861-H."]
             #[doc = ""]
             #[doc = "max_cll is undefined by default."]
-            async fn set_max_cll(
+            fn set_max_cll(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 max_cll: u32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the maximum frame-average light level (max_fall) as defined by"]
             #[doc = "CTA-861-H."]
             #[doc = ""]
             #[doc = "max_fall is undefined by default."]
-            async fn set_max_fall(
+            fn set_max_fall(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 max_fall: u32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "An image description carries information about the color encoding used on"]
@@ -1915,30 +1944,32 @@ pub mod color_management_v1 {
         pub trait WpImageDescriptionV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_image_description_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_image_description_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("wp_image_description_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let information = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_image_description_v1#{}.get_information({})",
+                                sender_id,
+                                information
+                            );
+                            self.get_information(client, sender_id, information).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let information = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_image_description_v1#{}.get_information({})",
-                            sender_id,
-                            information
-                        );
-                        self.get_information(client, sender_id, information).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy this object. It is safe to destroy an object which is not ready."]
@@ -1946,11 +1977,11 @@ pub mod color_management_v1 {
             #[doc = "Destroying a wp_image_description_v1 object has no side-effects, not"]
             #[doc = "even if a wp_color_management_surface_v1.set_image_description has not"]
             #[doc = "yet been followed by a wl_surface.commit."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Creates a wp_image_description_info_v1 object which delivers the"]
             #[doc = "information that makes up the image description."]
             #[doc = ""]
@@ -1958,12 +1989,12 @@ pub mod color_management_v1 {
             #[doc = "request. Whether it is allowed or not is defined by the request that"]
             #[doc = "created the object. If get_information is not allowed, the protocol"]
             #[doc = "error no_information is raised."]
-            async fn get_information(
+            fn get_information(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 information: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If creating a wp_image_description_v1 object fails for a reason that is"]
             #[doc = "not defined as a protocol error, this event is sent."]
             #[doc = ""]
@@ -1974,27 +2005,29 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "Once this event has been sent, the wp_image_description_v1 object will"]
             #[doc = "never become ready and it can only be destroyed."]
-            async fn failed(
+            fn failed(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 cause: Cause,
                 msg: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_image_description_v1#{}.failed({}, \"{}\")",
-                    sender_id,
-                    cause,
-                    msg
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(cause as u32)
-                    .put_string(Some(msg))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_image_description_v1#{}.failed({}, \"{}\")",
+                        sender_id,
+                        cause,
+                        msg
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(cause as u32)
+                        .put_string(Some(msg))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "Once this event has been sent, the wp_image_description_v1 object is"]
             #[doc = "deemed \"ready\". Ready objects can be used to send requests and can be"]
@@ -2023,24 +2056,26 @@ pub mod color_management_v1 {
             #[doc = "This identity allows clients to de-duplicate image description records"]
             #[doc = "and avoid get_information request if they already have the image"]
             #[doc = "description information."]
-            async fn ready(
+            fn ready(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 identity: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_image_description_v1#{}.ready({})",
-                    sender_id,
-                    identity
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(identity)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_image_description_v1#{}.ready({})",
+                        sender_id,
+                        identity
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(identity)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -2074,29 +2109,33 @@ pub mod color_management_v1 {
         pub trait WpImageDescriptionInfoV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_image_description_info_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                    }
                 }
             }
             #[doc = "Signals the end of information events and destroys the object."]
-            async fn done(
+            fn done(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_image_description_info_v1#{}.done()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> wp_image_description_info_v1#{}.done()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "The icc argument provides a file descriptor to the client which may be"]
             #[doc = "memory-mapped to provide the ICC profile matching the image description."]
@@ -2106,34 +2145,36 @@ pub mod color_management_v1 {
             #[doc = "The ICC profile version and other details are determined by the"]
             #[doc = "compositor. There is no provision for a client to ask for a specific"]
             #[doc = "kind of a profile."]
-            async fn icc_file(
+            fn icc_file(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 icc: rustix::fd::OwnedFd,
                 icc_size: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_image_description_info_v1#{}.icc_file({}, {})",
-                    sender_id,
-                    icc.as_raw_fd(),
-                    icc_size
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_fd(icc)
-                    .put_uint(icc_size)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.icc_file({}, {})",
+                        sender_id,
+                        icc.as_raw_fd(),
+                        icc_size
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_fd(icc)
+                        .put_uint(icc_size)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "Delivers the primary color volume primaries and white point using CIE"]
             #[doc = "1931 xy chromaticity coordinates."]
             #[doc = ""]
             #[doc = "Each coordinate value is multiplied by 1 million to get the argument"]
             #[doc = "value to carry precision of 6 decimals."]
-            async fn primaries(
+            fn primaries(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
@@ -2145,54 +2186,47 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_image_description_info_v1#{}.primaries({}, {}, {}, {}, {}, {}, {}, {})",
-                    sender_id,
-                    r_x,
-                    r_y,
-                    g_x,
-                    g_y,
-                    b_x,
-                    b_y,
-                    w_x,
-                    w_y
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_int(r_x)
-                    .put_int(r_y)
-                    .put_int(g_x)
-                    .put_int(g_y)
-                    .put_int(b_x)
-                    .put_int(b_y)
-                    .put_int(w_x)
-                    .put_int(w_y)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing :: debug ! ("-> wp_image_description_info_v1#{}.primaries({}, {}, {}, {}, {}, {}, {}, {})" , sender_id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_int(r_x)
+                        .put_int(r_y)
+                        .put_int(g_x)
+                        .put_int(g_y)
+                        .put_int(b_x)
+                        .put_int(b_y)
+                        .put_int(w_x)
+                        .put_int(w_y)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "Delivers the primary color volume primaries and white point using an"]
             #[doc = "explicitly enumerated named set."]
-            async fn primaries_named(
+            fn primaries_named(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 primaries : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: Primaries,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_image_description_info_v1#{}.primaries_named({})",
-                    sender_id,
-                    primaries
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(primaries as u32)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.primaries_named({})",
+                        sender_id,
+                        primaries
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(primaries as u32)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "The color component transfer characteristic of this image description is"]
             #[doc = "a pure power curve. This event provides the exponent of the power"]
@@ -2201,43 +2235,47 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "The curve exponent has been multiplied by 10000 to get the argument eexp"]
             #[doc = "value to carry the precision of 4 decimals."]
-            async fn tf_power(
+            fn tf_power(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 eexp: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_image_description_info_v1#{}.tf_power({})",
-                    sender_id,
-                    eexp
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(eexp).build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.tf_power({})",
+                        sender_id,
+                        eexp
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(eexp).build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "Delivers the transfer characteristic using an explicitly enumerated"]
             #[doc = "named function."]
-            async fn tf_named(
+            fn tf_named(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 tf : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: TransferFunction,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_image_description_info_v1#{}.tf_named({})",
-                    sender_id,
-                    tf
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(tf as u32)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.tf_named({})",
+                        sender_id,
+                        tf
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(tf as u32)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "Delivers the primary color volume luminance range and the reference"]
             #[doc = "white luminance level. These values include the minimum display emission"]
@@ -2247,30 +2285,32 @@ pub mod color_management_v1 {
             #[doc = "The minimum luminance is multiplied by 10000 to get the argument"]
             #[doc = "'min_lum' value and carries precision of 4 decimals. The maximum"]
             #[doc = "luminance and reference white luminance values are unscaled."]
-            async fn luminances(
+            fn luminances(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
                 reference_lum: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_image_description_info_v1#{}.luminances({}, {}, {})",
-                    sender_id,
-                    min_lum,
-                    max_lum,
-                    reference_lum
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(min_lum)
-                    .put_uint(max_lum)
-                    .put_uint(reference_lum)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.luminances({}, {}, {})",
+                        sender_id,
+                        min_lum,
+                        max_lum,
+                        reference_lum
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(min_lum)
+                        .put_uint(max_lum)
+                        .put_uint(reference_lum)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "Provides the color primaries and white point of the target color volume"]
             #[doc = "using CIE 1931 xy chromaticity coordinates. This is compatible with the"]
@@ -2283,7 +2323,7 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "Each coordinate value is multiplied by 1 million to get the argument"]
             #[doc = "value to carry precision of 6 decimals."]
-            async fn target_primaries(
+            fn target_primaries(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
@@ -2295,22 +2335,24 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> crate::server::Result<()> {
-                tracing :: debug ! ("-> wp_image_description_info_v1#{}.target_primaries({}, {}, {}, {}, {}, {}, {}, {})" , sender_id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_int(r_x)
-                    .put_int(r_y)
-                    .put_int(g_x)
-                    .put_int(g_y)
-                    .put_int(b_x)
-                    .put_int(b_y)
-                    .put_int(w_x)
-                    .put_int(w_y)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing :: debug ! ("-> wp_image_description_info_v1#{}.target_primaries({}, {}, {}, {}, {}, {}, {}, {})" , sender_id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_int(r_x)
+                        .put_int(r_y)
+                        .put_int(g_x)
+                        .put_int(g_y)
+                        .put_int(b_x)
+                        .put_int(b_y)
+                        .put_int(w_x)
+                        .put_int(w_y)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "Provides the luminance range that the image description is targeting as"]
             #[doc = "the minimum and maximum absolute luminance L. These values include the"]
@@ -2324,73 +2366,80 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "Min L value is multiplied by 10000 to get the argument min_lum value and"]
             #[doc = "carry precision of 4 decimals. Max L value is unscaled for max_lum."]
-            async fn target_luminance(
+            fn target_luminance(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_image_description_info_v1#{}.target_luminance({}, {})",
-                    sender_id,
-                    min_lum,
-                    max_lum
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(min_lum)
-                    .put_uint(max_lum)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.target_luminance({}, {})",
+                        sender_id,
+                        min_lum,
+                        max_lum
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(min_lum)
+                        .put_uint(max_lum)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "Provides the targeted max_cll of the image description. max_cll is"]
             #[doc = "defined by CTA-861-H."]
             #[doc = ""]
             #[doc = "This luminance is only theoretical and may not correspond to the"]
             #[doc = "luminance of light emitted on an actual display."]
-            async fn target_max_cll(
+            fn target_max_cll(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 max_cll: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_image_description_info_v1#{}.target_max_cll({})",
-                    sender_id,
-                    max_cll
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(max_cll).build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.target_max_cll({})",
+                        sender_id,
+                        max_cll
+                    );
+                    let (payload, fds) =
+                        crate::wire::PayloadBuilder::new().put_uint(max_cll).build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "Provides the targeted max_fall of the image description. max_fall is"]
             #[doc = "defined by CTA-861-H."]
             #[doc = ""]
             #[doc = "This luminance is only theoretical and may not correspond to the"]
             #[doc = "luminance of light emitted on an actual display."]
-            async fn target_max_fall(
+            fn target_max_fall(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 max_fall: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_image_description_info_v1#{}.target_max_fall({})",
-                    sender_id,
-                    max_fall
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(max_fall)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.target_max_fall({})",
+                        sender_id,
+                        max_fall
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(max_fall)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -2447,55 +2496,57 @@ pub mod commit_timing_v1 {
         pub trait WpCommitTimingManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_commit_timing_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_commit_timing_manager_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("wp_commit_timing_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_commit_timing_manager_v1#{}.get_timer({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_timer(client, sender_id, id, surface).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_commit_timing_manager_v1#{}.get_timer({}, {})",
-                            sender_id,
-                            id,
-                            surface
-                        );
-                        self.get_timer(client, sender_id, id, surface).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Informs the server that the client will no longer be using"]
             #[doc = "this protocol object. Existing objects created by this object"]
             #[doc = "are not affected."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Establish a timing controller for a surface."]
             #[doc = ""]
             #[doc = "Only one commit timer can be created for a surface, or a"]
             #[doc = "commit_timer_exists protocol error will be generated."]
-            async fn get_timer(
+            fn get_timer(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "An object to set a time constraint for a content update on a surface."]
@@ -2534,33 +2585,35 @@ pub mod commit_timing_v1 {
         pub trait WpCommitTimerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_commit_timer_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let tv_sec_hi = message.uint()?;
-                        let tv_sec_lo = message.uint()?;
-                        let tv_nsec = message.uint()?;
-                        tracing::debug!(
-                            "wp_commit_timer_v1#{}.set_timestamp({}, {}, {})",
-                            sender_id,
-                            tv_sec_hi,
-                            tv_sec_lo,
-                            tv_nsec
-                        );
-                        self.set_timestamp(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
-                            .await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let tv_sec_hi = message.uint()?;
+                            let tv_sec_lo = message.uint()?;
+                            let tv_nsec = message.uint()?;
+                            tracing::debug!(
+                                "wp_commit_timer_v1#{}.set_timestamp({}, {}, {})",
+                                sender_id,
+                                tv_sec_hi,
+                                tv_sec_lo,
+                                tv_nsec
+                            );
+                            self.set_timestamp(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                                .await
+                        }
+                        1u16 => {
+                            tracing::debug!("wp_commit_timer_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!("wp_commit_timer_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Provide a timing constraint for a surface content update."]
@@ -2577,23 +2630,23 @@ pub mod commit_timing_v1 {
             #[doc = ""]
             #[doc = "Requesting set_timestamp after the commit_timer object's surface is"]
             #[doc = "destroyed will generate a \"surface_destroyed\" error."]
-            async fn set_timestamp(
+            fn set_timestamp(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Informs the server that the client will no longer be using"]
             #[doc = "this protocol object."]
             #[doc = ""]
             #[doc = "Existing timing constraints are not affected by the destruction."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -2635,55 +2688,57 @@ pub mod content_type_v1 {
         pub trait WpContentTypeManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_content_type_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_content_type_manager_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("wp_content_type_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_content_type_manager_v1#{}.get_surface_content_type({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_surface_content_type(client, sender_id, id, surface)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_content_type_manager_v1#{}.get_surface_content_type({}, {})",
-                            sender_id,
-                            id,
-                            surface
-                        );
-                        self.get_surface_content_type(client, sender_id, id, surface)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the content type manager. This doesn't destroy objects created"]
             #[doc = "with the manager."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a new content type object associated with the given surface."]
             #[doc = ""]
             #[doc = "Creating a wp_content_type_v1 from a wl_surface which already has one"]
             #[doc = "attached is a client error: already_constructed."]
-            async fn get_surface_content_type(
+            fn get_surface_content_type(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "The content type object allows the compositor to optimize for the kind"]
@@ -2728,39 +2783,41 @@ pub mod content_type_v1 {
         pub trait WpContentTypeV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_content_type_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_content_type_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("wp_content_type_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let content_type = message.uint()?;
+                            tracing::debug!(
+                                "wp_content_type_v1#{}.set_content_type({})",
+                                sender_id,
+                                content_type
+                            );
+                            self.set_content_type(client, sender_id, content_type.try_into()?)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let content_type = message.uint()?;
-                        tracing::debug!(
-                            "wp_content_type_v1#{}.set_content_type({})",
-                            sender_id,
-                            content_type
-                        );
-                        self.set_content_type(client, sender_id, content_type.try_into()?)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Switch back to not specifying the content type of this surface. This is"]
             #[doc = "equivalent to setting the content type to none, including double"]
             #[doc = "buffering semantics. See set_content_type for details."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the surface content type. This informs the compositor that the"]
             #[doc = "client believes it is displaying buffers matching this content type."]
             #[doc = ""]
@@ -2769,12 +2826,12 @@ pub mod content_type_v1 {
             #[doc = ""]
             #[doc = "The content type is double-buffered state, see wl_surface.commit for"]
             #[doc = "details."]
-            async fn set_content_type(
+            fn set_content_type(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 content_type: Type,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -2796,81 +2853,88 @@ pub mod cursor_shape_v1 {
         pub trait WpCursorShapeManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_cursor_shape_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_cursor_shape_manager_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
-                    }
-                    1u16 => {
-                        let cursor_shape_device = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let pointer = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_cursor_shape_manager_v1#{}.get_pointer({}, {})",
-                            sender_id,
-                            cursor_shape_device,
-                            pointer
-                        );
-                        self.get_pointer(client, sender_id, cursor_shape_device, pointer)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("wp_cursor_shape_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let cursor_shape_device = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let pointer = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_cursor_shape_manager_v1#{}.get_pointer({}, {})",
+                                sender_id,
+                                cursor_shape_device,
+                                pointer
+                            );
+                            self.get_pointer(client, sender_id, cursor_shape_device, pointer)
+                                .await
+                        }
+                        2u16 => {
+                            let cursor_shape_device = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let tablet_tool = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_cursor_shape_manager_v1#{}.get_tablet_tool_v2({}, {})",
+                                sender_id,
+                                cursor_shape_device,
+                                tablet_tool
+                            );
+                            self.get_tablet_tool_v2(
+                                client,
+                                sender_id,
+                                cursor_shape_device,
+                                tablet_tool,
+                            )
                             .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    2u16 => {
-                        let cursor_shape_device = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let tablet_tool = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_cursor_shape_manager_v1#{}.get_tablet_tool_v2({}, {})",
-                            sender_id,
-                            cursor_shape_device,
-                            tablet_tool
-                        );
-                        self.get_tablet_tool_v2(client, sender_id, cursor_shape_device, tablet_tool)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the cursor shape manager."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Obtain a wp_cursor_shape_device_v1 for a wl_pointer object."]
             #[doc = ""]
             #[doc = "When the pointer capability is removed from the wl_seat, the"]
             #[doc = "wp_cursor_shape_device_v1 object becomes inert."]
-            async fn get_pointer(
+            fn get_pointer(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 cursor_shape_device: crate::wire::ObjectId,
                 pointer: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Obtain a wp_cursor_shape_device_v1 for a zwp_tablet_tool_v2 object."]
             #[doc = ""]
             #[doc = "When the zwp_tablet_tool_v2 is removed, the wp_cursor_shape_device_v1"]
             #[doc = "object becomes inert."]
-            async fn get_tablet_tool_v2(
+            fn get_tablet_tool_v2(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 cursor_shape_device: crate::wire::ObjectId,
                 tablet_tool: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This interface allows clients to set the cursor shape."]
@@ -3027,41 +3091,43 @@ pub mod cursor_shape_v1 {
         pub trait WpCursorShapeDeviceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_cursor_shape_device_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_cursor_shape_device_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("wp_cursor_shape_device_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let serial = message.uint()?;
+                            let shape = message.uint()?;
+                            tracing::debug!(
+                                "wp_cursor_shape_device_v1#{}.set_shape({}, {})",
+                                sender_id,
+                                serial,
+                                shape
+                            );
+                            self.set_shape(client, sender_id, serial, shape.try_into()?)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let serial = message.uint()?;
-                        let shape = message.uint()?;
-                        tracing::debug!(
-                            "wp_cursor_shape_device_v1#{}.set_shape({}, {})",
-                            sender_id,
-                            serial,
-                            shape
-                        );
-                        self.set_shape(client, sender_id, serial, shape.try_into()?)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the cursor shape device."]
             #[doc = ""]
             #[doc = "The device cursor shape remains unchanged."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the device cursor to the specified shape. The compositor will"]
             #[doc = "change the cursor image based on the specified shape."]
             #[doc = ""]
@@ -3080,13 +3146,13 @@ pub mod cursor_shape_v1 {
             #[doc = "The serial parameter must match the latest wl_pointer.enter or"]
             #[doc = "zwp_tablet_tool_v2.proximity_in serial number sent to the client."]
             #[doc = "Otherwise the request will be ignored."]
-            async fn set_shape(
+            fn set_shape(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 shape: Shape,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -3130,52 +3196,54 @@ pub mod drm_lease_v1 {
         pub trait WpDrmLeaseDeviceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_drm_lease_device_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_drm_lease_device_v1#{}.create_lease_request({})",
-                            sender_id,
-                            id
-                        );
-                        self.create_lease_request(client, sender_id, id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_drm_lease_device_v1#{}.create_lease_request({})",
+                                sender_id,
+                                id
+                            );
+                            self.create_lease_request(client, sender_id, id).await
+                        }
+                        1u16 => {
+                            tracing::debug!("wp_drm_lease_device_v1#{}.release()", sender_id,);
+                            self.release(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!("wp_drm_lease_device_v1#{}.release()", sender_id,);
-                        self.release(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Creates a lease request object."]
             #[doc = ""]
             #[doc = "See the documentation for wp_drm_lease_request_v1 for details."]
-            async fn create_lease_request(
+            fn create_lease_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Indicates the client no longer wishes to use this object. In response"]
             #[doc = "the compositor will immediately send the released event and destroy"]
             #[doc = "this object. It can however not guarantee that the client won't receive"]
             #[doc = "connector events before the released event. The client must not send any"]
             #[doc = "requests after this one, doing so will raise a wl_display error."]
             #[doc = "Existing connectors, lease request and leases will not be affected."]
-            async fn release(
+            fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The compositor will send this event when the wp_drm_lease_device_v1"]
             #[doc = "global is bound, although there are no guarantees as to how long this"]
             #[doc = "takes - the compositor might need to wait until regaining DRM master."]
@@ -3184,22 +3252,24 @@ pub mod drm_lease_v1 {
             #[doc = "The purpose of this event is to give the client the ability to"]
             #[doc = "query DRM and discover information which may help them pick the"]
             #[doc = "appropriate DRM device or select the appropriate connectors therein."]
-            async fn drm_fd(
+            fn drm_fd(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 fd: rustix::fd::OwnedFd,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_drm_lease_device_v1#{}.drm_fd({})",
-                    sender_id,
-                    fd.as_raw_fd()
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(fd).build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_drm_lease_device_v1#{}.drm_fd({})",
+                        sender_id,
+                        fd.as_raw_fd()
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(fd).build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "The compositor will use this event to advertise connectors available for"]
             #[doc = "lease by clients. This object may be passed into a lease request to"]
@@ -3211,20 +3281,22 @@ pub mod drm_lease_v1 {
             #[doc = "The compositor must send the drm_fd event before sending connectors."]
             #[doc = "After the drm_fd event it will send all available connectors but may"]
             #[doc = "send additional connectors at any time."]
-            async fn connector(
+            fn connector(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_device_v1#{}.connector({})", sender_id, id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(id))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> wp_drm_lease_device_v1#{}.connector({})", sender_id, id);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_object(Some(id))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "The compositor will send this event to indicate that it has sent all"]
             #[doc = "currently available connectors after the client binds to the global or"]
@@ -3232,34 +3304,38 @@ pub mod drm_lease_v1 {
             #[doc = "change or when a leased connector becomes available again. It will"]
             #[doc = "similarly send this event to group wp_drm_lease_connector_v1.withdrawn"]
             #[doc = "events of connectors of this device."]
-            async fn done(
+            fn done(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_device_v1#{}.done()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> wp_drm_lease_device_v1#{}.done()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is sent in response to the release request and indicates"]
             #[doc = "that the compositor is done sending connector events."]
             #[doc = "The compositor will destroy this object immediately after sending the"]
             #[doc = "event and it will become invalid. The client should release any"]
             #[doc = "resources associated with this device after receiving this event."]
-            async fn released(
+            fn released(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_device_v1#{}.released()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> wp_drm_lease_device_v1#{}.released()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -3278,19 +3354,21 @@ pub mod drm_lease_v1 {
         pub trait WpDrmLeaseConnectorV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_drm_lease_connector_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_drm_lease_connector_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("wp_drm_lease_connector_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "The client may send this request to indicate that it will not use this"]
@@ -3298,11 +3376,11 @@ pub mod drm_lease_v1 {
             #[doc = "\"withdrawn\" event so that the server can release the resources"]
             #[doc = "associated with this connector offer. Neither existing lease requests"]
             #[doc = "nor leases will be affected."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The compositor sends this event once the connector is created to"]
             #[doc = "indicate the name of this connector. This will not change for the"]
             #[doc = "duration of the Wayland session, but is not guaranteed to be consistent"]
@@ -3311,85 +3389,93 @@ pub mod drm_lease_v1 {
             #[doc = "If the compositor supports wl_output version 4 and this connector"]
             #[doc = "corresponds to a wl_output, the compositor should use the same name as"]
             #[doc = "for the wl_output."]
-            async fn name(
+            fn name(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_drm_lease_connector_v1#{}.name(\"{}\")",
-                    sender_id,
-                    name
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(name))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_drm_lease_connector_v1#{}.name(\"{}\")",
+                        sender_id,
+                        name
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_string(Some(name))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "The compositor sends this event once the connector is created to provide"]
             #[doc = "a human-readable description for this connector, which may be presented"]
             #[doc = "to the user. The compositor may send this event multiple times over the"]
             #[doc = "lifetime of this object to reflect changes in the description."]
-            async fn description(
+            fn description(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 description: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_drm_lease_connector_v1#{}.description(\"{}\")",
-                    sender_id,
-                    description
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(description))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_drm_lease_connector_v1#{}.description(\"{}\")",
+                        sender_id,
+                        description
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_string(Some(description))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "The compositor sends this event once the connector is created to"]
             #[doc = "indicate the DRM object ID which represents the underlying connector"]
             #[doc = "that is being offered. Note that the final lease may include additional"]
             #[doc = "object IDs, such as CRTCs and planes."]
-            async fn connector_id(
+            fn connector_id(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 connector_id: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_drm_lease_connector_v1#{}.connector_id({})",
-                    sender_id,
-                    connector_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(connector_id)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_drm_lease_connector_v1#{}.connector_id({})",
+                        sender_id,
+                        connector_id
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(connector_id)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is sent after all properties of a connector have been sent."]
             #[doc = "This allows changes to the properties to be seen as atomic even if they"]
             #[doc = "happen via multiple events."]
-            async fn done(
+            fn done(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.done()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> wp_drm_lease_connector_v1#{}.done()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "Sent to indicate that the compositor will no longer honor requests for"]
             #[doc = "DRM leases which include this connector. The client may still issue a"]
@@ -3402,17 +3488,19 @@ pub mod drm_lease_v1 {
             #[doc = "If a client holds a lease for the connector, the status of the lease"]
             #[doc = "remains the same. The client should destroy the object after receiving"]
             #[doc = "this event."]
-            async fn withdrawn(
+            fn withdrawn(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.withdrawn()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> wp_drm_lease_connector_v1#{}.withdrawn()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -3455,33 +3543,35 @@ pub mod drm_lease_v1 {
         pub trait WpDrmLeaseRequestV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_drm_lease_request_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let connector = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_drm_lease_request_v1#{}.request_connector({})",
-                            sender_id,
-                            connector
-                        );
-                        self.request_connector(client, sender_id, connector).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let connector = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_drm_lease_request_v1#{}.request_connector({})",
+                                sender_id,
+                                connector
+                            );
+                            self.request_connector(client, sender_id, connector).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!("wp_drm_lease_request_v1#{}.submit({})", sender_id, id);
+                            self.submit(client, sender_id, id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("wp_drm_lease_request_v1#{}.submit({})", sender_id, id);
-                        self.submit(client, sender_id, id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Indicates that the client would like to lease the given connector."]
@@ -3494,12 +3584,12 @@ pub mod drm_lease_v1 {
             #[doc = "Requesting a connector that was created from a different lease device"]
             #[doc = "than this lease request raises the wrong_device error. Requesting a"]
             #[doc = "connector twice will raise the duplicate_connector error."]
-            async fn request_connector(
+            fn request_connector(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 connector: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Submits the lease request and creates a new wp_drm_lease_v1 object."]
             #[doc = "After calling submit the compositor will immediately destroy this"]
             #[doc = "object, issuing any more requests will cause a wl_display error."]
@@ -3507,12 +3597,12 @@ pub mod drm_lease_v1 {
             #[doc = "lease object, clients cannot expect an immediate response."]
             #[doc = "Not requesting any connectors before submitting the lease request"]
             #[doc = "will raise the empty_lease error."]
-            async fn submit(
+            fn submit(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "A DRM lease object is used to transfer the DRM file descriptor to the"]
@@ -3531,19 +3621,21 @@ pub mod drm_lease_v1 {
         pub trait WpDrmLeaseV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_drm_lease_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_drm_lease_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("wp_drm_lease_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "The client should send this to indicate that it no longer wishes to use"]
@@ -3553,11 +3645,11 @@ pub mod drm_lease_v1 {
             #[doc = "Upon destruction, the compositor should advertise the connector for"]
             #[doc = "leasing again by sending the connector event through the"]
             #[doc = "wp_drm_lease_device_v1 interface."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event returns a file descriptor suitable for use with DRM-related"]
             #[doc = "ioctls. The client should use drmModeGetLease to enumerate the DRM"]
             #[doc = "objects which have been leased to them. The compositor guarantees it"]
@@ -3568,22 +3660,25 @@ pub mod drm_lease_v1 {
             #[doc = ""]
             #[doc = "The compositor will send this event at most once during this objects"]
             #[doc = "lifetime."]
-            async fn lease_fd(
+            fn lease_fd(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 leased_fd: rustix::fd::OwnedFd,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_drm_lease_v1#{}.lease_fd({})",
-                    sender_id,
-                    leased_fd.as_raw_fd()
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(leased_fd).build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_drm_lease_v1#{}.lease_fd({})",
+                        sender_id,
+                        leased_fd.as_raw_fd()
+                    );
+                    let (payload, fds) =
+                        crate::wire::PayloadBuilder::new().put_fd(leased_fd).build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "The compositor uses this event to either reject a lease request, or if"]
             #[doc = "it previously sent a lease_fd, to notify the client that the lease has"]
@@ -3595,17 +3690,19 @@ pub mod drm_lease_v1 {
             #[doc = "compositor loses DRM master. Compositors may advertise the connector"]
             #[doc = "for leasing again, if the resource is available, by sending the"]
             #[doc = "connector event through the wp_drm_lease_device_v1 interface."]
-            async fn finished(
+            fn finished(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> wp_drm_lease_v1#{}.finished()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> wp_drm_lease_v1#{}.finished()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -3630,69 +3727,71 @@ pub mod ext_data_control_v1 {
         pub trait ExtDataControlManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_data_control_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "ext_data_control_manager_v1#{}.create_data_source({})",
-                            sender_id,
-                            id
-                        );
-                        self.create_data_source(client, sender_id, id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "ext_data_control_manager_v1#{}.create_data_source({})",
+                                sender_id,
+                                id
+                            );
+                            self.create_data_source(client, sender_id, id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let seat = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "ext_data_control_manager_v1#{}.get_data_device({}, {})",
+                                sender_id,
+                                id,
+                                seat
+                            );
+                            self.get_data_device(client, sender_id, id, seat).await
+                        }
+                        2u16 => {
+                            tracing::debug!("ext_data_control_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let seat = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "ext_data_control_manager_v1#{}.get_data_device({}, {})",
-                            sender_id,
-                            id,
-                            seat
-                        );
-                        self.get_data_device(client, sender_id, id, seat).await
-                    }
-                    2u16 => {
-                        tracing::debug!("ext_data_control_manager_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Create a new data source."]
-            async fn create_data_source(
+            fn create_data_source(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a data device that can be used to manage a seat's selection."]
-            async fn get_data_device(
+            fn get_data_device(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This interface allows a client to manage a seat's selection."]
@@ -3727,41 +3826,43 @@ pub mod ext_data_control_v1 {
         pub trait ExtDataControlDeviceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_data_control_device_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let source = message.object()?;
-                        tracing::debug!(
-                            "ext_data_control_device_v1#{}.set_selection({})",
-                            sender_id,
-                            source
-                                .as_ref()
-                                .map_or("null".to_string(), |v| v.to_string())
-                        );
-                        self.set_selection(client, sender_id, source).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let source = message.object()?;
+                            tracing::debug!(
+                                "ext_data_control_device_v1#{}.set_selection({})",
+                                sender_id,
+                                source
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_selection(client, sender_id, source).await
+                        }
+                        1u16 => {
+                            tracing::debug!("ext_data_control_device_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        2u16 => {
+                            let source = message.object()?;
+                            tracing::debug!(
+                                "ext_data_control_device_v1#{}.set_primary_selection({})",
+                                sender_id,
+                                source
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_primary_selection(client, sender_id, source).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!("ext_data_control_device_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
-                    }
-                    2u16 => {
-                        let source = message.object()?;
-                        tracing::debug!(
-                            "ext_data_control_device_v1#{}.set_primary_selection({})",
-                            sender_id,
-                            source
-                                .as_ref()
-                                .map_or("null".to_string(), |v| v.to_string())
-                        );
-                        self.set_primary_selection(client, sender_id, source).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "This request asks the compositor to set the selection to the data from"]
@@ -3772,18 +3873,18 @@ pub mod ext_data_control_v1 {
             #[doc = "source triggers the used_source protocol error."]
             #[doc = ""]
             #[doc = "To unset the selection, set the source to NULL."]
-            async fn set_selection(
+            fn set_selection(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 source: Option<crate::wire::ObjectId>,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the data device object."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request asks the compositor to set the primary selection to the"]
             #[doc = "data from the source on behalf of the client."]
             #[doc = ""]
@@ -3795,12 +3896,12 @@ pub mod ext_data_control_v1 {
             #[doc = ""]
             #[doc = "The compositor will ignore this request if it does not support primary"]
             #[doc = "selection."]
-            async fn set_primary_selection(
+            fn set_primary_selection(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 source: Option<crate::wire::ObjectId>,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The data_offer event introduces a new ext_data_control_offer object,"]
             #[doc = "which will subsequently be used in either the"]
             #[doc = "ext_data_control_device.selection event (for the regular clipboard"]
@@ -3809,24 +3910,26 @@ pub mod ext_data_control_v1 {
             #[doc = "ext_data_control_device.data_offer event, the new data_offer object"]
             #[doc = "will send out ext_data_control_offer.offer events to describe the MIME"]
             #[doc = "types it offers."]
-            async fn data_offer(
+            fn data_offer(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_data_control_device_v1#{}.data_offer({})",
-                    sender_id,
-                    id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(id))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_data_control_device_v1#{}.data_offer({})",
+                        sender_id,
+                        id
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_object(Some(id))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "The selection event is sent out to notify the client of a new"]
             #[doc = "ext_data_control_offer for the selection for this device. The"]
@@ -3841,36 +3944,40 @@ pub mod ext_data_control_v1 {
             #[doc = ""]
             #[doc = "The first selection event is sent upon binding the"]
             #[doc = "ext_data_control_device object."]
-            async fn selection(
+            fn selection(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: Option<crate::wire::ObjectId>,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_data_control_device_v1#{}.selection({})",
-                    sender_id,
-                    id.as_ref().map_or("null".to_string(), |v| v.to_string())
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_data_control_device_v1#{}.selection({})",
+                        sender_id,
+                        id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This data control object is no longer valid and should be destroyed by"]
             #[doc = "the client."]
-            async fn finished(
+            fn finished(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_data_control_device_v1#{}.finished()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_data_control_device_v1#{}.finished()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "The primary_selection event is sent out to notify the client of a new"]
             #[doc = "ext_data_control_offer for the primary selection for this device. The"]
@@ -3887,22 +3994,24 @@ pub mod ext_data_control_v1 {
             #[doc = "If the compositor supports primary selection, the first"]
             #[doc = "primary_selection event is sent upon binding the"]
             #[doc = "ext_data_control_device object."]
-            async fn primary_selection(
+            fn primary_selection(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: Option<crate::wire::ObjectId>,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_data_control_device_v1#{}.primary_selection({})",
-                    sender_id,
-                    id.as_ref().map_or("null".to_string(), |v| v.to_string())
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_data_control_device_v1#{}.primary_selection({})",
+                        sender_id,
+                        id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -3939,30 +4048,32 @@ pub mod ext_data_control_v1 {
         pub trait ExtDataControlSourceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_data_control_source_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let mime_type = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "ext_data_control_source_v1#{}.offer(\"{}\")",
-                            sender_id,
-                            mime_type
-                        );
-                        self.offer(client, sender_id, mime_type).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let mime_type = message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "ext_data_control_source_v1#{}.offer(\"{}\")",
+                                sender_id,
+                                mime_type
+                            );
+                            self.offer(client, sender_id, mime_type).await
+                        }
+                        1u16 => {
+                            tracing::debug!("ext_data_control_source_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!("ext_data_control_source_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "This request adds a MIME type to the set of MIME types advertised to"]
@@ -3970,57 +4081,61 @@ pub mod ext_data_control_v1 {
             #[doc = ""]
             #[doc = "Calling this after ext_data_control_device.set_selection is a protocol"]
             #[doc = "error."]
-            async fn offer(
+            fn offer(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the data source object."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request for data from the client. Send the data as the specified MIME"]
             #[doc = "type over the passed file descriptor, then close it."]
-            async fn send(
+            fn send(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_data_control_source_v1#{}.send(\"{}\", {})",
-                    sender_id,
-                    mime_type,
-                    fd.as_raw_fd()
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(mime_type))
-                    .put_fd(fd)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_data_control_source_v1#{}.send(\"{}\", {})",
+                        sender_id,
+                        mime_type,
+                        fd.as_raw_fd()
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_string(Some(mime_type))
+                        .put_fd(fd)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This data source is no longer valid. The data source has been replaced"]
             #[doc = "by another data source."]
             #[doc = ""]
             #[doc = "The client should clean up and destroy this data source."]
-            async fn cancelled(
+            fn cancelled(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_data_control_source_v1#{}.cancelled()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_data_control_source_v1#{}.cancelled()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -4036,32 +4151,34 @@ pub mod ext_data_control_v1 {
         pub trait ExtDataControlOfferV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_data_control_offer_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let mime_type = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let fd = message.fd()?;
-                        tracing::debug!(
-                            "ext_data_control_offer_v1#{}.receive(\"{}\", {})",
-                            sender_id,
-                            mime_type,
-                            fd.as_raw_fd()
-                        );
-                        self.receive(client, sender_id, mime_type, fd).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let mime_type = message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let fd = message.fd()?;
+                            tracing::debug!(
+                                "ext_data_control_offer_v1#{}.receive(\"{}\", {})",
+                                sender_id,
+                                mime_type,
+                                fd.as_raw_fd()
+                            );
+                            self.receive(client, sender_id, mime_type, fd).await
+                        }
+                        1u16 => {
+                            tracing::debug!("ext_data_control_offer_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!("ext_data_control_offer_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "To transfer the offered data, the client issues this request and"]
@@ -4074,39 +4191,41 @@ pub mod ext_data_control_v1 {
             #[doc = "then closes its end, at which point the transfer is complete."]
             #[doc = ""]
             #[doc = "This request may happen multiple times for different MIME types."]
-            async fn receive(
+            fn receive(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the data offer object."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent immediately after creating the ext_data_control_offer object."]
             #[doc = "One event per offered MIME type."]
-            async fn offer(
+            fn offer(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_data_control_offer_v1#{}.offer(\"{}\")",
-                    sender_id,
-                    mime_type
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(mime_type))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_data_control_offer_v1#{}.offer(\"{}\")",
+                        sender_id,
+                        mime_type
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_string(Some(mime_type))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -4157,23 +4276,25 @@ pub mod ext_foreign_toplevel_list_v1 {
         pub trait ExtForeignToplevelListV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_foreign_toplevel_list_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("ext_foreign_toplevel_list_v1#{}.stop()", sender_id,);
-                        self.stop(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("ext_foreign_toplevel_list_v1#{}.stop()", sender_id,);
+                            self.stop(client, sender_id).await
+                        }
+                        1u16 => {
+                            tracing::debug!("ext_foreign_toplevel_list_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!("ext_foreign_toplevel_list_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "This request indicates that the client no longer wishes to receive"]
@@ -4183,11 +4304,11 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = "further toplevel events until the stop request is processed."]
             #[doc = "The client should wait for a ext_foreign_toplevel_list_v1.finished"]
             #[doc = "event before destroying this object."]
-            async fn stop(
+            fn stop(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request should be called either when the client will no longer"]
             #[doc = "use the ext_foreign_toplevel_list_v1 or after the finished event"]
             #[doc = "has been received to allow destruction of the object."]
@@ -4195,11 +4316,11 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = "If a client wishes to destroy this object it should send a"]
             #[doc = "ext_foreign_toplevel_list_v1.stop request and wait for a ext_foreign_toplevel_list_v1.finished"]
             #[doc = "event, then destroy the handles and then this object."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is emitted whenever a new toplevel window is created. It is"]
             #[doc = "emitted for all toplevels, regardless of the app that has created them."]
             #[doc = ""]
@@ -4208,41 +4329,45 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = "ext_foreign_toplevel_handle_v1. The compositor will use the"]
             #[doc = "ext_foreign_toplevel_handle_v1.done event to indicate when all data has"]
             #[doc = "been sent."]
-            async fn toplevel(
+            fn toplevel(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_foreign_toplevel_list_v1#{}.toplevel({})",
-                    sender_id,
-                    toplevel
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(toplevel))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_foreign_toplevel_list_v1#{}.toplevel({})",
+                        sender_id,
+                        toplevel
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_object(Some(toplevel))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event indicates that the compositor is done sending events"]
             #[doc = "to this object. The client should destroy the object."]
             #[doc = "See ext_foreign_toplevel_list_v1.destroy for more information."]
             #[doc = ""]
             #[doc = "The compositor must not send any more toplevel events after this event."]
-            async fn finished(
+            fn finished(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.finished()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.finished()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -4256,19 +4381,24 @@ pub mod ext_foreign_toplevel_list_v1 {
         pub trait ExtForeignToplevelHandleV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_foreign_toplevel_handle_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("ext_foreign_toplevel_handle_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!(
+                                "ext_foreign_toplevel_handle_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "This request should be used when the client will no longer use the handle"]
@@ -4284,28 +4414,30 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = "Other protocols which extend the ext_foreign_toplevel_handle_v1"]
             #[doc = "interface should require destructors for extension interfaces be"]
             #[doc = "called before allowing the toplevel handle to be destroyed."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The server will emit no further events on the ext_foreign_toplevel_handle_v1"]
             #[doc = "after this event. Any requests received aside from the destroy request must"]
             #[doc = "be ignored. Upon receiving this event, the client should destroy the handle."]
             #[doc = ""]
             #[doc = "Other protocols which extend the ext_foreign_toplevel_handle_v1"]
             #[doc = "interface must also ignore requests other than destructors."]
-            async fn closed(
+            fn closed(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.closed()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.closed()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is sent after all changes in the toplevel state have"]
             #[doc = "been sent."]
@@ -4317,63 +4449,69 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = ""]
             #[doc = "This event must not be sent after the ext_foreign_toplevel_handle_v1.closed"]
             #[doc = "event."]
-            async fn done(
+            fn done(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.done()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.done()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "The title of the toplevel has changed."]
             #[doc = ""]
             #[doc = "The configured state must not be applied immediately. See"]
             #[doc = "ext_foreign_toplevel_handle_v1.done for details."]
-            async fn title(
+            fn title(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 title: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_foreign_toplevel_handle_v1#{}.title(\"{}\")",
-                    sender_id,
-                    title
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(title))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_foreign_toplevel_handle_v1#{}.title(\"{}\")",
+                        sender_id,
+                        title
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_string(Some(title))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "The app id of the toplevel has changed."]
             #[doc = ""]
             #[doc = "The configured state must not be applied immediately. See"]
             #[doc = "ext_foreign_toplevel_handle_v1.done for details."]
-            async fn app_id(
+            fn app_id(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 app_id: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_foreign_toplevel_handle_v1#{}.app_id(\"{}\")",
-                    sender_id,
-                    app_id
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(app_id))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_foreign_toplevel_handle_v1#{}.app_id(\"{}\")",
+                        sender_id,
+                        app_id
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_string(Some(app_id))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This identifier is used to check if two or more toplevel handles belong"]
             #[doc = "to the same toplevel."]
@@ -4395,24 +4533,26 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = "compositor includes an opaque generation value in identifiers. How the"]
             #[doc = "generation value is used when generating the identifier is implementation"]
             #[doc = "dependent."]
-            async fn identifier(
+            fn identifier(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 identifier: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_foreign_toplevel_handle_v1#{}.identifier(\"{}\")",
-                    sender_id,
-                    identifier
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(identifier))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_foreign_toplevel_handle_v1#{}.identifier(\"{}\")",
+                        sender_id,
+                        identifier
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_string(Some(identifier))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -4431,64 +4571,66 @@ pub mod ext_idle_notify_v1 {
         pub trait ExtIdleNotifierV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_idle_notifier_v1";
             const VERSION: u32 = 2u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("ext_idle_notifier_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("ext_idle_notifier_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let timeout = message.uint()?;
+                            let seat = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "ext_idle_notifier_v1#{}.get_idle_notification({}, {}, {})",
+                                sender_id,
+                                id,
+                                timeout,
+                                seat
+                            );
+                            self.get_idle_notification(client, sender_id, id, timeout, seat)
+                                .await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let timeout = message.uint()?;
+                            let seat = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "ext_idle_notifier_v1#{}.get_input_idle_notification({}, {}, {})",
+                                sender_id,
+                                id,
+                                timeout,
+                                seat
+                            );
+                            self.get_input_idle_notification(client, sender_id, id, timeout, seat)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let timeout = message.uint()?;
-                        let seat = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "ext_idle_notifier_v1#{}.get_idle_notification({}, {}, {})",
-                            sender_id,
-                            id,
-                            timeout,
-                            seat
-                        );
-                        self.get_idle_notification(client, sender_id, id, timeout, seat)
-                            .await
-                    }
-                    2u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let timeout = message.uint()?;
-                        let seat = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "ext_idle_notifier_v1#{}.get_input_idle_notification({}, {}, {})",
-                            sender_id,
-                            id,
-                            timeout,
-                            seat
-                        );
-                        self.get_input_idle_notification(client, sender_id, id, timeout, seat)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the manager object. All objects created via this interface"]
             #[doc = "remain valid."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a new idle notification object."]
             #[doc = ""]
             #[doc = "The notification object has a minimum timeout duration and is tied to a"]
@@ -4497,14 +4639,14 @@ pub mod ext_idle_notify_v1 {
             #[doc = ""]
             #[doc = "A zero timeout is valid and means the client wants to be notified as"]
             #[doc = "soon as possible when the seat is inactive."]
-            async fn get_idle_notification(
+            fn get_idle_notification(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 timeout: u32,
                 seat: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a new idle notification object to track input from the"]
             #[doc = "user, such as keyboard and mouse movement. Because this object is"]
             #[doc = "meant to track user input alone, it ignores idle inhibitors."]
@@ -4515,14 +4657,14 @@ pub mod ext_idle_notify_v1 {
             #[doc = ""]
             #[doc = "A zero timeout is valid and means the client wants to be notified as"]
             #[doc = "soon as possible when the seat is inactive."]
-            async fn get_input_idle_notification(
+            fn get_input_idle_notification(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 timeout: u32,
                 seat: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This interface is used by the compositor to send idle notification events"]
@@ -4555,59 +4697,65 @@ pub mod ext_idle_notify_v1 {
         pub trait ExtIdleNotificationV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_idle_notification_v1";
             const VERSION: u32 = 2u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("ext_idle_notification_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("ext_idle_notification_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the notification object."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent when the notification object becomes idle."]
             #[doc = ""]
             #[doc = "It's a compositor protocol error to send this event twice without a"]
             #[doc = "resumed event in-between."]
-            async fn idled(
+            fn idled(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_idle_notification_v1#{}.idled()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_idle_notification_v1#{}.idled()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is sent when the notification object stops being idle."]
             #[doc = ""]
             #[doc = "It's a compositor protocol error to send this event twice without an"]
             #[doc = "idled event in-between. It's a compositor protocol error to send this"]
             #[doc = "event prior to any idled event."]
-            async fn resumed(
+            fn resumed(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_idle_notification_v1#{}.resumed()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_idle_notification_v1#{}.resumed()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -4641,28 +4789,30 @@ pub mod ext_image_capture_source_v1 {
         pub trait ExtImageCaptureSourceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_image_capture_source_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("ext_image_capture_source_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("ext_image_capture_source_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroys the image capture source. This request may be sent at any time"]
             #[doc = "by the client."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "A manager for creating image capture source objects for wl_output objects."]
@@ -4674,58 +4824,55 @@ pub mod ext_image_capture_source_v1 {
         pub trait ExtOutputImageCaptureSourceManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_output_image_capture_source_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let source = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let output = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "ext_output_image_capture_source_manager_v1#{}.create_source({}, {})",
-                            sender_id,
-                            source,
-                            output
-                        );
-                        self.create_source(client, sender_id, source, output).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let source = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let output = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing :: debug ! ("ext_output_image_capture_source_manager_v1#{}.create_source({}, {})" , sender_id , source , output);
+                            self.create_source(client, sender_id, source, output).await
+                        }
+                        1u16 => {
+                            tracing::debug!(
+                                "ext_output_image_capture_source_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!(
-                            "ext_output_image_capture_source_manager_v1#{}.destroy()",
-                            sender_id,
-                        );
-                        self.destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Creates a source object for an output. Images captured from this source"]
             #[doc = "will show the same content as the output. Some elements may be omitted,"]
             #[doc = "such as cursors and overlays that have been marked as transparent to"]
             #[doc = "capturing."]
-            async fn create_source(
+            fn create_source(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the manager. This request may be sent at any time by the client"]
             #[doc = "and objects created by the manager will remain valid after its"]
             #[doc = "destruction."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "A manager for creating image capture source objects for"]
@@ -4738,52 +4885,54 @@ pub mod ext_image_capture_source_v1 {
         pub trait ExtForeignToplevelImageCaptureSourceManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_foreign_toplevel_image_capture_source_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let source = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let toplevel_handle = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing :: debug ! ("ext_foreign_toplevel_image_capture_source_manager_v1#{}.create_source({}, {})" , sender_id , source , toplevel_handle);
-                        self.create_source(client, sender_id, source, toplevel_handle)
-                            .await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let source = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let toplevel_handle = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing :: debug ! ("ext_foreign_toplevel_image_capture_source_manager_v1#{}.create_source({}, {})" , sender_id , source , toplevel_handle);
+                            self.create_source(client, sender_id, source, toplevel_handle)
+                                .await
+                        }
+                        1u16 => {
+                            tracing::debug!(
+                                "ext_foreign_toplevel_image_capture_source_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!(
-                            "ext_foreign_toplevel_image_capture_source_manager_v1#{}.destroy()",
-                            sender_id,
-                        );
-                        self.destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Creates a source object for a foreign toplevel handle. Images captured"]
             #[doc = "from this source will show the same content as the toplevel."]
-            async fn create_source(
+            fn create_source(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 toplevel_handle: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the manager. This request may be sent at any time by the client"]
             #[doc = "and objects created by the manager will remain valid after its"]
             #[doc = "destruction."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -4839,56 +4988,64 @@ pub mod ext_image_copy_capture_v1 {
         pub trait ExtImageCopyCaptureManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_image_copy_capture_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let session = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let source = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let options = message.uint()?;
-                        tracing::debug!(
-                            "ext_image_copy_capture_manager_v1#{}.create_session({}, {}, {})",
-                            sender_id,
-                            session,
-                            source,
-                            options
-                        );
-                        self.create_session(client, sender_id, session, source, options.try_into()?)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let session = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let source = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let options = message.uint()?;
+                            tracing::debug!(
+                                "ext_image_copy_capture_manager_v1#{}.create_session({}, {}, {})",
+                                sender_id,
+                                session,
+                                source,
+                                options
+                            );
+                            self.create_session(
+                                client,
+                                sender_id,
+                                session,
+                                source,
+                                options.try_into()?,
+                            )
                             .await
+                        }
+                        1u16 => {
+                            let session = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let source = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let pointer = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing :: debug ! ("ext_image_copy_capture_manager_v1#{}.create_pointer_cursor_session({}, {}, {})" , sender_id , session , source , pointer);
+                            self.create_pointer_cursor_session(
+                                client, sender_id, session, source, pointer,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            tracing::debug!(
+                                "ext_image_copy_capture_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let session = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let source = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let pointer = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing :: debug ! ("ext_image_copy_capture_manager_v1#{}.create_pointer_cursor_session({}, {}, {})" , sender_id , session , source , pointer);
-                        self.create_pointer_cursor_session(
-                            client, sender_id, session, source, pointer,
-                        )
-                        .await
-                    }
-                    2u16 => {
-                        tracing::debug!(
-                            "ext_image_copy_capture_manager_v1#{}.destroy()",
-                            sender_id,
-                        );
-                        self.destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Create a capturing session for an image capture source."]
@@ -4899,32 +5056,32 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = ""]
             #[doc = "If the options bitfield is invalid, the invalid_option protocol error"]
             #[doc = "is sent."]
-            async fn create_session(
+            fn create_session(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 session: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 options: Options,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a cursor capturing session for the pointer of an image capture"]
             #[doc = "source."]
-            async fn create_pointer_cursor_session(
+            fn create_pointer_cursor_session(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 session: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 pointer: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the manager object."]
             #[doc = ""]
             #[doc = "Other objects created via this interface are unaffected."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This object represents an active image copy capture session."]
@@ -4972,33 +5129,35 @@ pub mod ext_image_copy_capture_v1 {
         pub trait ExtImageCopyCaptureSessionV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_image_copy_capture_session_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let frame = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "ext_image_copy_capture_session_v1#{}.create_frame({})",
-                            sender_id,
-                            frame
-                        );
-                        self.create_frame(client, sender_id, frame).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let frame = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "ext_image_copy_capture_session_v1#{}.create_frame({})",
+                                sender_id,
+                                frame
+                            );
+                            self.create_frame(client, sender_id, frame).await
+                        }
+                        1u16 => {
+                            tracing::debug!(
+                                "ext_image_copy_capture_session_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!(
-                            "ext_image_copy_capture_session_v1#{}.destroy()",
-                            sender_id,
-                        );
-                        self.destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Create a capture frame for this session."]
@@ -5006,69 +5165,73 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "At most one frame object can exist for a given session at any time. If"]
             #[doc = "a client sends a create_frame request before a previous frame object"]
             #[doc = "has been destroyed, the duplicate_frame protocol error is raised."]
-            async fn create_frame(
+            fn create_frame(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 frame: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the session. This request can be sent at any time by the"]
             #[doc = "client."]
             #[doc = ""]
             #[doc = "This request doesn't affect ext_image_copy_capture_frame_v1 objects created by"]
             #[doc = "this object."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Provides the dimensions of the source image in buffer pixel coordinates."]
             #[doc = ""]
             #[doc = "The client must attach buffers that match this size."]
-            async fn buffer_size(
+            fn buffer_size(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 width: u32,
                 height: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_image_copy_capture_session_v1#{}.buffer_size({}, {})",
-                    sender_id,
-                    width,
-                    height
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(width)
-                    .put_uint(height)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_session_v1#{}.buffer_size({}, {})",
+                        sender_id,
+                        width,
+                        height
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(width)
+                        .put_uint(height)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "Provides the format that must be used for shared-memory buffers."]
             #[doc = ""]
             #[doc = "This event may be emitted multiple times, in which case the client may"]
             #[doc = "choose any given format."]
-            async fn shm_format(
+            fn shm_format(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 format: super::super::super::core::wayland::wl_shm::Format,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_image_copy_capture_session_v1#{}.shm_format({})",
-                    sender_id,
-                    format
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(format as u32)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_session_v1#{}.shm_format({})",
+                        sender_id,
+                        format
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(format as u32)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event advertises the device buffers must be allocated on for"]
             #[doc = "dma-buf buffers."]
@@ -5077,22 +5240,25 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "render) is unspecified. Clients must not rely on the compositor sending"]
             #[doc = "a particular node type. Clients cannot check two devices for equality"]
             #[doc = "by comparing the dev_t value."]
-            async fn dmabuf_device(
+            fn dmabuf_device(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 device: Vec<u8>,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_image_copy_capture_session_v1#{}.dmabuf_device(array[{}])",
-                    sender_id,
-                    device.len()
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_session_v1#{}.dmabuf_device(array[{}])",
+                        sender_id,
+                        device.len()
+                    );
+                    let (payload, fds) =
+                        crate::wire::PayloadBuilder::new().put_array(device).build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "Provides the format that must be used for dma-buf buffers."]
             #[doc = ""]
@@ -5101,27 +5267,29 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = ""]
             #[doc = "This event may be emitted multiple times, in which case the client may"]
             #[doc = "choose any given format."]
-            async fn dmabuf_format(
+            fn dmabuf_format(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 format: u32,
                 modifiers: Vec<u8>,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_image_copy_capture_session_v1#{}.dmabuf_format({}, array[{}])",
-                    sender_id,
-                    format,
-                    modifiers.len()
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(format)
-                    .put_array(modifiers)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_session_v1#{}.dmabuf_format({}, array[{}])",
+                        sender_id,
+                        format,
+                        modifiers.len()
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(format)
+                        .put_array(modifiers)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is sent once when all buffer constraint events have been"]
             #[doc = "sent."]
@@ -5129,17 +5297,19 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "The compositor must always end a batch of buffer constraint events with"]
             #[doc = "this event, regardless of whether it sends the initial constraints or"]
             #[doc = "an update."]
-            async fn done(
+            fn done(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_image_copy_capture_session_v1#{}.done()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_image_copy_capture_session_v1#{}.done()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event indicates that the capture session has stopped and is no"]
             #[doc = "longer available. This can happen in a number of cases, e.g. when the"]
@@ -5147,20 +5317,22 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "capture, or if an unrecoverable runtime error has occurred."]
             #[doc = ""]
             #[doc = "The client should destroy the session after receiving this event."]
-            async fn stopped(
+            fn stopped(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_image_copy_capture_session_v1#{}.stopped()",
-                    sender_id,
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_session_v1#{}.stopped()",
+                        sender_id,
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -5233,59 +5405,67 @@ pub mod ext_image_copy_capture_v1 {
         pub trait ExtImageCopyCaptureFrameV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_image_copy_capture_frame_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("ext_image_copy_capture_frame_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!(
+                                "ext_image_copy_capture_frame_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "ext_image_copy_capture_frame_v1#{}.attach_buffer({})",
+                                sender_id,
+                                buffer
+                            );
+                            self.attach_buffer(client, sender_id, buffer).await
+                        }
+                        2u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            tracing::debug!(
+                                "ext_image_copy_capture_frame_v1#{}.damage_buffer({}, {}, {}, {})",
+                                sender_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.damage_buffer(client, sender_id, x, y, width, height)
+                                .await
+                        }
+                        3u16 => {
+                            tracing::debug!(
+                                "ext_image_copy_capture_frame_v1#{}.capture()",
+                                sender_id,
+                            );
+                            self.capture(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let buffer = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "ext_image_copy_capture_frame_v1#{}.attach_buffer({})",
-                            sender_id,
-                            buffer
-                        );
-                        self.attach_buffer(client, sender_id, buffer).await
-                    }
-                    2u16 => {
-                        let x = message.int()?;
-                        let y = message.int()?;
-                        let width = message.int()?;
-                        let height = message.int()?;
-                        tracing::debug!(
-                            "ext_image_copy_capture_frame_v1#{}.damage_buffer({}, {}, {}, {})",
-                            sender_id,
-                            x,
-                            y,
-                            width,
-                            height
-                        );
-                        self.damage_buffer(client, sender_id, x, y, width, height)
-                            .await
-                    }
-                    3u16 => {
-                        tracing::debug!("ext_image_copy_capture_frame_v1#{}.capture()", sender_id,);
-                        self.capture(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroys the frame. This request can be sent at any time by the"]
             #[doc = "client."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Attach a buffer to the session."]
             #[doc = ""]
             #[doc = "The wl_buffer.release request is unused."]
@@ -5294,12 +5474,12 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = ""]
             #[doc = "This request must not be sent after capture, or else the"]
             #[doc = "already_captured protocol error is raised."]
-            async fn attach_buffer(
+            fn attach_buffer(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Apply damage to the buffer which is to be captured next. This request"]
             #[doc = "may be sent multiple times to describe a region."]
             #[doc = ""]
@@ -5321,7 +5501,7 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = ""]
             #[doc = "This request must not be sent after capture, or else the"]
             #[doc = "already_captured protocol error is raised."]
-            async fn damage_buffer(
+            fn damage_buffer(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
@@ -5329,7 +5509,7 @@ pub mod ext_image_copy_capture_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Capture a frame."]
             #[doc = ""]
             #[doc = "Unless this is the first successful captured frame performed in this"]
@@ -5339,31 +5519,33 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "This request may only be sent once, or else the already_captured"]
             #[doc = "protocol error is raised. A buffer must be attached before this request"]
             #[doc = "is sent, or else the no_buffer protocol error is raised."]
-            async fn capture(
+            fn capture(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent before the ready event and holds the transform that"]
             #[doc = "the compositor has applied to the buffer contents."]
-            async fn transform(
+            fn transform(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_image_copy_capture_frame_v1#{}.transform({})",
-                    sender_id,
-                    transform
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(transform as u32)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_frame_v1#{}.transform({})",
+                        sender_id,
+                        transform
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(transform as u32)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is sent before the ready event. It may be generated multiple"]
             #[doc = "times to describe a region."]
@@ -5373,7 +5555,7 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "have changed since the last ready event."]
             #[doc = ""]
             #[doc = "These coordinates originate in the upper left corner of the buffer."]
-            async fn damage(
+            fn damage(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
@@ -5381,25 +5563,27 @@ pub mod ext_image_copy_capture_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_image_copy_capture_frame_v1#{}.damage({}, {}, {}, {})",
-                    sender_id,
-                    x,
-                    y,
-                    width,
-                    height
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_int(x)
-                    .put_int(y)
-                    .put_int(width)
-                    .put_int(height)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_frame_v1#{}.damage({}, {}, {}, {})",
+                        sender_id,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_int(x)
+                        .put_int(y)
+                        .put_int(width)
+                        .put_int(height)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event indicates the time at which the frame is presented to the"]
             #[doc = "output in system monotonic time. This event is sent before the ready"]
@@ -5410,30 +5594,32 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "tv_sec which is a 64-bit value combined from tv_sec_hi and tv_sec_lo,"]
             #[doc = "and the additional fractional part in tv_nsec as nanoseconds. Hence,"]
             #[doc = "for valid timestamps tv_nsec must be in [0, 999999999]."]
-            async fn presentation_time(
+            fn presentation_time(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_image_copy_capture_frame_v1#{}.presentation_time({}, {}, {})",
-                    sender_id,
-                    tv_sec_hi,
-                    tv_sec_lo,
-                    tv_nsec
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(tv_sec_hi)
-                    .put_uint(tv_sec_lo)
-                    .put_uint(tv_nsec)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_frame_v1#{}.presentation_time({}, {}, {})",
+                        sender_id,
+                        tv_sec_hi,
+                        tv_sec_lo,
+                        tv_nsec
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(tv_sec_hi)
+                        .put_uint(tv_sec_lo)
+                        .put_uint(tv_nsec)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "Called as soon as the frame is copied, indicating it is available"]
             #[doc = "for reading."]
@@ -5441,39 +5627,43 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "The buffer may be re-used by the client after this event."]
             #[doc = ""]
             #[doc = "After receiving this event, the client must destroy the object."]
-            async fn ready(
+            fn ready(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.ready()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.ready()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event indicates that the attempted frame copy has failed."]
             #[doc = ""]
             #[doc = "After receiving this event, the client must destroy the object."]
-            async fn failed(
+            fn failed(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 reason: FailureReason,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_image_copy_capture_frame_v1#{}.failed({})",
-                    sender_id,
-                    reason
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(reason as u32)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_frame_v1#{}.failed({})",
+                        sender_id,
+                        reason
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(reason as u32)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -5508,33 +5698,31 @@ pub mod ext_image_copy_capture_v1 {
         pub trait ExtImageCopyCaptureCursorSessionV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_image_copy_capture_cursor_session_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!(
-                            "ext_image_copy_capture_cursor_session_v1#{}.destroy()",
-                            sender_id,
-                        );
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!(
+                                "ext_image_copy_capture_cursor_session_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let session = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing :: debug ! ("ext_image_copy_capture_cursor_session_v1#{}.get_capture_session({})" , sender_id , session);
+                            self.get_capture_session(client, sender_id, session).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let session = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "ext_image_copy_capture_cursor_session_v1#{}.get_capture_session({})",
-                            sender_id,
-                            session
-                        );
-                        self.get_capture_session(client, sender_id, session).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroys the session. This request can be sent at any time by the"]
@@ -5542,11 +5730,11 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = ""]
             #[doc = "This request doesn't affect ext_image_copy_capture_frame_v1 objects created by"]
             #[doc = "this object."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Gets the image copy capture session for this cursor session."]
             #[doc = ""]
             #[doc = "The session will produce frames of the cursor image. The compositor may"]
@@ -5554,12 +5742,12 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = ""]
             #[doc = "This request must not be sent more than once, or else the"]
             #[doc = "duplicate_session protocol error is raised."]
-            async fn get_capture_session(
+            fn get_capture_session(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 session: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent when a cursor enters the captured area. It shall be generated"]
             #[doc = "before the \"position\" and \"hotspot\" events when and only when a cursor"]
             #[doc = "enters the area."]
@@ -5567,38 +5755,42 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "The cursor enters the captured area when the cursor image intersects"]
             #[doc = "with the captured area. Note, this is different from e.g."]
             #[doc = "wl_pointer.enter."]
-            async fn enter(
+            fn enter(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_image_copy_capture_cursor_session_v1#{}.enter()",
-                    sender_id,
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_cursor_session_v1#{}.enter()",
+                        sender_id,
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "Sent when a cursor leaves the captured area. No \"position\" or \"hotspot\""]
             #[doc = "event is generated for the cursor until the cursor enters the captured"]
             #[doc = "area again."]
-            async fn leave(
+            fn leave(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_image_copy_capture_cursor_session_v1#{}.leave()",
-                    sender_id,
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_cursor_session_v1#{}.leave()",
+                        sender_id,
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "Cursors outside the image capture source do not get captured and no"]
             #[doc = "event will be generated for them."]
@@ -5607,27 +5799,29 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "relative to the main buffer's top left corner in transformed buffer"]
             #[doc = "pixel coordinates. The coordinates may be negative or greater than the"]
             #[doc = "main buffer size."]
-            async fn position(
+            fn position(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_image_copy_capture_cursor_session_v1#{}.position({}, {})",
-                    sender_id,
-                    x,
-                    y
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_int(x)
-                    .put_int(y)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_cursor_session_v1#{}.position({}, {})",
+                        sender_id,
+                        x,
+                        y
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_int(x)
+                        .put_int(y)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "The hotspot describes the offset between the cursor image and the"]
             #[doc = "position of the input device."]
@@ -5639,27 +5833,29 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "effective when the next ext_image_copy_capture_frame_v1.ready event is received."]
             #[doc = ""]
             #[doc = "Compositors may delay this event until the client captures a new frame."]
-            async fn hotspot(
+            fn hotspot(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_image_copy_capture_cursor_session_v1#{}.hotspot({}, {})",
-                    sender_id,
-                    x,
-                    y
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_int(x)
-                    .put_int(y)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_cursor_session_v1#{}.hotspot({}, {})",
+                        sender_id,
+                        x,
+                        y
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_int(x)
+                        .put_int(y)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -5695,46 +5891,52 @@ pub mod ext_session_lock_v1 {
         pub trait ExtSessionLockManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_session_lock_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("ext_session_lock_manager_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("ext_session_lock_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "ext_session_lock_manager_v1#{}.lock({})",
+                                sender_id,
+                                id
+                            );
+                            self.lock(client, sender_id, id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!("ext_session_lock_manager_v1#{}.lock({})", sender_id, id);
-                        self.lock(client, sender_id, id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "This informs the compositor that the session lock manager object will"]
             #[doc = "no longer be used. Existing objects created through this interface"]
             #[doc = "remain valid."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request creates a session lock and asks the compositor to lock the"]
             #[doc = "session. The compositor will send either the ext_session_lock_v1.locked"]
             #[doc = "or ext_session_lock_v1.finished event on the created object in"]
             #[doc = "response to this request."]
-            async fn lock(
+            fn lock(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "In response to the creation of this object the compositor must send"]
@@ -5826,43 +6028,48 @@ pub mod ext_session_lock_v1 {
         pub trait ExtSessionLockV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_session_lock_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("ext_session_lock_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("ext_session_lock_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let output = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "ext_session_lock_v1#{}.get_lock_surface({}, {}, {})",
+                                sender_id,
+                                id,
+                                surface,
+                                output
+                            );
+                            self.get_lock_surface(client, sender_id, id, surface, output)
+                                .await
+                        }
+                        2u16 => {
+                            tracing::debug!(
+                                "ext_session_lock_v1#{}.unlock_and_destroy()",
+                                sender_id,
+                            );
+                            self.unlock_and_destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let output = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "ext_session_lock_v1#{}.get_lock_surface({}, {}, {})",
-                            sender_id,
-                            id,
-                            surface,
-                            output
-                        );
-                        self.get_lock_surface(client, sender_id, id, surface, output)
-                            .await
-                    }
-                    2u16 => {
-                        tracing::debug!("ext_session_lock_v1#{}.unlock_and_destroy()", sender_id,);
-                        self.unlock_and_destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "This informs the compositor that the lock object will no longer be"]
@@ -5874,11 +6081,11 @@ pub mod ext_session_lock_v1 {
             #[doc = ""]
             #[doc = "It is a protocol error to make this request if the locked event was"]
             #[doc = "sent, the unlock_and_destroy request must be used instead."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The client is expected to create lock surfaces for all outputs"]
             #[doc = "currently present and any new outputs as they are advertised. These"]
             #[doc = "won't be displayed by the compositor unless the lock is successful"]
@@ -5890,14 +6097,14 @@ pub mod ext_session_lock_v1 {
             #[doc = ""]
             #[doc = "Attempting to create more than one lock surface for a given output"]
             #[doc = "is a duplicate_output protocol error."]
-            async fn get_lock_surface(
+            fn get_lock_surface(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request indicates that the session should be unlocked, for"]
             #[doc = "example because the user has entered their password and it has been"]
             #[doc = "verified by the client."]
@@ -5921,11 +6128,11 @@ pub mod ext_session_lock_v1 {
             #[doc = "to the asynchronous nature of the Wayland protocol. For example,"]
             #[doc = "the server might terminate the client with a protocol error before"]
             #[doc = "it processes the unlock_and_destroy request."]
-            async fn unlock_and_destroy(
+            fn unlock_and_destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This client is now responsible for displaying graphics while the"]
             #[doc = "session is locked and deciding when to unlock the session."]
             #[doc = ""]
@@ -5935,17 +6142,19 @@ pub mod ext_session_lock_v1 {
             #[doc = ""]
             #[doc = "If this event is sent, making the destroy request is a protocol error,"]
             #[doc = "the lock object must be destroyed using the unlock_and_destroy request."]
-            async fn locked(
+            fn locked(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_session_lock_v1#{}.locked()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_session_lock_v1#{}.locked()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "The compositor has decided that the session lock should be destroyed"]
             #[doc = "as it will no longer be used by the compositor. Exactly when this"]
@@ -5969,17 +6178,19 @@ pub mod ext_session_lock_v1 {
             #[doc = "Upon receiving this event, the client should make either the destroy"]
             #[doc = "request or the unlock_and_destroy request, depending on whether or"]
             #[doc = "not the locked event was received on this object."]
-            async fn finished(
+            fn finished(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_session_lock_v1#{}.finished()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_session_lock_v1#{}.finished()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -6036,28 +6247,30 @@ pub mod ext_session_lock_v1 {
         pub trait ExtSessionLockSurfaceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_session_lock_surface_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("ext_session_lock_surface_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("ext_session_lock_surface_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let serial = message.uint()?;
+                            tracing::debug!(
+                                "ext_session_lock_surface_v1#{}.ack_configure({})",
+                                sender_id,
+                                serial
+                            );
+                            self.ack_configure(client, sender_id, serial).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let serial = message.uint()?;
-                        tracing::debug!(
-                            "ext_session_lock_surface_v1#{}.ack_configure({})",
-                            sender_id,
-                            serial
-                        );
-                        self.ack_configure(client, sender_id, serial).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "This informs the compositor that the lock surface object will no"]
@@ -6069,11 +6282,11 @@ pub mod ext_session_lock_v1 {
             #[doc = "If a lock surface on an active output is destroyed before the"]
             #[doc = "ext_session_lock_v1.unlock_and_destroy event is sent, the compositor"]
             #[doc = "must fall back to rendering a solid color."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "When a configure event is received, if a client commits the surface"]
             #[doc = "in response to the configure event, then the client must make an"]
             #[doc = "ack_configure request sometime before the commit request, passing"]
@@ -6098,42 +6311,44 @@ pub mod ext_session_lock_v1 {
             #[doc = "referencing the same configure event or to issue an ack_configure"]
             #[doc = "request referencing a configure event older than the last configure"]
             #[doc = "event acked for a given lock surface."]
-            async fn ack_configure(
+            fn ack_configure(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent once on binding the interface and may be sent again"]
             #[doc = "at the compositor's discretion, for example if output geometry changes."]
             #[doc = ""]
             #[doc = "The width and height are in surface-local coordinates and are exact"]
             #[doc = "requirements. Failing to match these surface dimensions in the next"]
             #[doc = "commit after acking a configure is a protocol error."]
-            async fn configure(
+            fn configure(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 width: u32,
                 height: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_session_lock_surface_v1#{}.configure({}, {}, {})",
-                    sender_id,
-                    serial,
-                    width,
-                    height
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(serial)
-                    .put_uint(width)
-                    .put_uint(height)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_session_lock_surface_v1#{}.configure({}, {}, {})",
+                        sender_id,
+                        serial,
+                        width,
+                        height
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(serial)
+                        .put_uint(width)
+                        .put_uint(height)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -6167,30 +6382,35 @@ pub mod ext_transient_seat_v1 {
         pub trait ExtTransientSeatManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_transient_seat_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let seat = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "ext_transient_seat_manager_v1#{}.create({})",
-                            sender_id,
-                            seat
-                        );
-                        self.create(client, sender_id, seat).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let seat = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "ext_transient_seat_manager_v1#{}.create({})",
+                                sender_id,
+                                seat
+                            );
+                            self.create(client, sender_id, seat).await
+                        }
+                        1u16 => {
+                            tracing::debug!(
+                                "ext_transient_seat_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!("ext_transient_seat_manager_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Create a new seat that is removed when the client side transient seat"]
@@ -6198,21 +6418,21 @@ pub mod ext_transient_seat_v1 {
             #[doc = ""]
             #[doc = "The actual seat may be removed sooner, in which case the transient seat"]
             #[doc = "object shall become inert."]
-            async fn create(
+            fn create(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the manager."]
             #[doc = ""]
             #[doc = "All objects created by the manager will remain valid until they are"]
             #[doc = "destroyed themselves."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "When the transient seat handle is destroyed, the seat itself will also be"]
@@ -6225,52 +6445,56 @@ pub mod ext_transient_seat_v1 {
         pub trait ExtTransientSeatV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_transient_seat_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("ext_transient_seat_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("ext_transient_seat_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "When the transient seat object is destroyed by the client, the"]
             #[doc = "associated seat created by the compositor is also destroyed."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event advertises the global name for the wl_seat to be used with"]
             #[doc = "wl_registry_bind."]
             #[doc = ""]
             #[doc = "It is sent exactly once, immediately after the transient seat is created"]
             #[doc = "and the new \"wl_seat\" global is advertised, if and only if the creation"]
             #[doc = "of the transient seat was allowed."]
-            async fn ready(
+            fn ready(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 global_name: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_transient_seat_v1#{}.ready({})",
-                    sender_id,
-                    global_name
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(global_name)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_transient_seat_v1#{}.ready({})",
+                        sender_id,
+                        global_name
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(global_name)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "The event informs the client that the compositor denied its request to"]
             #[doc = "create a transient seat."]
@@ -6279,17 +6503,19 @@ pub mod ext_transient_seat_v1 {
             #[doc = "created, if and only if the creation of the transient seat was denied."]
             #[doc = ""]
             #[doc = "After receiving this event, the client should destroy the object."]
-            async fn denied(
+            fn denied(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_transient_seat_v1#{}.denied()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_transient_seat_v1#{}.denied()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -6323,23 +6549,25 @@ pub mod ext_workspace_v1 {
         pub trait ExtWorkspaceManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_workspace_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("ext_workspace_manager_v1#{}.commit()", sender_id,);
-                        self.commit(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("ext_workspace_manager_v1#{}.commit()", sender_id,);
+                            self.commit(client, sender_id).await
+                        }
+                        1u16 => {
+                            tracing::debug!("ext_workspace_manager_v1#{}.stop()", sender_id,);
+                            self.stop(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!("ext_workspace_manager_v1#{}.stop()", sender_id,);
-                        self.stop(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "The client must send this request after it has finished sending other"]
@@ -6350,11 +6578,11 @@ pub mod ext_workspace_v1 {
             #[doc = "even if they happen via multiple events, and even if they involve"]
             #[doc = "multiple ext_workspace_handle_v1 objects, for example, deactivating one"]
             #[doc = "workspace and activating another."]
-            async fn commit(
+            fn commit(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Indicates the client no longer wishes to receive events for new"]
             #[doc = "workspace groups. However the compositor may emit further workspace"]
             #[doc = "events, until the finished event is emitted. The compositor is expected"]
@@ -6362,34 +6590,36 @@ pub mod ext_workspace_v1 {
             #[doc = ""]
             #[doc = "The client must not send any requests after this one, doing so will raise a wl_display"]
             #[doc = "invalid_object error."]
-            async fn stop(
+            fn stop(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is emitted whenever a new workspace group has been created."]
             #[doc = ""]
             #[doc = "All initial details of the workspace group (outputs) will be"]
             #[doc = "sent immediately after this event via the corresponding events in"]
             #[doc = "ext_workspace_group_handle_v1 and ext_workspace_handle_v1."]
-            async fn workspace_group(
+            fn workspace_group(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 workspace_group: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_workspace_manager_v1#{}.workspace_group({})",
-                    sender_id,
-                    workspace_group
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(workspace_group))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_workspace_manager_v1#{}.workspace_group({})",
+                        sender_id,
+                        workspace_group
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_object(Some(workspace_group))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is emitted whenever a new workspace has been created."]
             #[doc = ""]
@@ -6398,24 +6628,26 @@ pub mod ext_workspace_v1 {
             #[doc = "ext_workspace_handle_v1."]
             #[doc = ""]
             #[doc = "Workspaces start off unassigned to any workspace group."]
-            async fn workspace(
+            fn workspace(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_workspace_manager_v1#{}.workspace({})",
-                    sender_id,
-                    workspace
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(workspace))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_workspace_manager_v1#{}.workspace({})",
+                        sender_id,
+                        workspace
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_object(Some(workspace))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is sent after all changes in all workspaces and workspace groups have been"]
             #[doc = "sent."]
@@ -6428,32 +6660,36 @@ pub mod ext_workspace_v1 {
             #[doc = "ext_workspace_group_handle_v1 objects in question. The compositor sends"]
             #[doc = "the done event only after updating the output information in both"]
             #[doc = "workspace groups."]
-            async fn done(
+            fn done(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_workspace_manager_v1#{}.done()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_workspace_manager_v1#{}.done()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event indicates that the compositor is done sending events to the"]
             #[doc = "ext_workspace_manager_v1. The server will destroy the object"]
             #[doc = "immediately after sending this request."]
-            async fn finished(
+            fn finished(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_workspace_manager_v1#{}.finished()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_workspace_manager_v1#{}.finished()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -6488,30 +6724,35 @@ pub mod ext_workspace_v1 {
         pub trait ExtWorkspaceGroupHandleV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_workspace_group_handle_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let workspace = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "ext_workspace_group_handle_v1#{}.create_workspace(\"{}\")",
-                            sender_id,
-                            workspace
-                        );
-                        self.create_workspace(client, sender_id, workspace).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let workspace = message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "ext_workspace_group_handle_v1#{}.create_workspace(\"{}\")",
+                                sender_id,
+                                workspace
+                            );
+                            self.create_workspace(client, sender_id, workspace).await
+                        }
+                        1u16 => {
+                            tracing::debug!(
+                                "ext_workspace_group_handle_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!("ext_workspace_group_handle_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Request that the compositor create a new workspace with the given name"]
@@ -6519,22 +6760,22 @@ pub mod ext_workspace_v1 {
             #[doc = ""]
             #[doc = "There is no guarantee that the compositor will create a new workspace,"]
             #[doc = "or that the created workspace will have the provided name."]
-            async fn create_workspace(
+            fn create_workspace(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 workspace: String,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the ext_workspace_group_handle_v1 object."]
             #[doc = ""]
             #[doc = "This request should be send either when the client does not want to"]
             #[doc = "use the workspace group object any more or after the removed event to finalize"]
             #[doc = "the destruction of the object."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
             #[doc = "a capability isn't supported, clients should hide or disable the UI"]
             #[doc = "elements that expose this functionality. For instance, if the"]
@@ -6548,109 +6789,119 @@ pub mod ext_workspace_v1 {
             #[doc = "Compositors must send this event once after creation of an"]
             #[doc = "ext_workspace_group_handle_v1. When the capabilities change, compositors"]
             #[doc = "must send this event again."]
-            async fn capabilities(
+            fn capabilities(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 capabilities: GroupCapabilities,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_workspace_group_handle_v1#{}.capabilities({})",
-                    sender_id,
-                    capabilities
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(capabilities.bits())
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_workspace_group_handle_v1#{}.capabilities({})",
+                        sender_id,
+                        capabilities
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(capabilities.bits())
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is emitted whenever an output is assigned to the workspace"]
             #[doc = "group or a new `wl_output` object is bound by the client, which was already"]
             #[doc = "assigned to this workspace_group."]
-            async fn output_enter(
+            fn output_enter(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_workspace_group_handle_v1#{}.output_enter({})",
-                    sender_id,
-                    output
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(output))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_workspace_group_handle_v1#{}.output_enter({})",
+                        sender_id,
+                        output
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_object(Some(output))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is emitted whenever an output is removed from the workspace"]
             #[doc = "group."]
-            async fn output_leave(
+            fn output_leave(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_workspace_group_handle_v1#{}.output_leave({})",
-                    sender_id,
-                    output
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(output))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_workspace_group_handle_v1#{}.output_leave({})",
+                        sender_id,
+                        output
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_object(Some(output))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is emitted whenever a workspace is assigned to this group."]
             #[doc = "A workspace may only ever be assigned to a single group at a single point"]
             #[doc = "in time, but can be re-assigned during it's lifetime."]
-            async fn workspace_enter(
+            fn workspace_enter(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_workspace_group_handle_v1#{}.workspace_enter({})",
-                    sender_id,
-                    workspace
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(workspace))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_workspace_group_handle_v1#{}.workspace_enter({})",
+                        sender_id,
+                        workspace
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_object(Some(workspace))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is emitted whenever a workspace is removed from this group."]
-            async fn workspace_leave(
+            fn workspace_leave(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_workspace_group_handle_v1#{}.workspace_leave({})",
-                    sender_id,
-                    workspace
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_object(Some(workspace))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_workspace_group_handle_v1#{}.workspace_leave({})",
+                        sender_id,
+                        workspace
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_object(Some(workspace))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is send when the group associated with the ext_workspace_group_handle_v1"]
             #[doc = "has been removed. After sending this request the compositor will immediately consider"]
@@ -6660,17 +6911,19 @@ pub mod ext_workspace_v1 {
             #[doc = ""]
             #[doc = "The compositor must remove all workspaces belonging to a workspace group"]
             #[doc = "via a workspace_leave event before removing the workspace group."]
-            async fn removed(
+            fn removed(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_workspace_group_handle_v1#{}.removed()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_workspace_group_handle_v1#{}.removed()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -6722,42 +6975,44 @@ pub mod ext_workspace_v1 {
         pub trait ExtWorkspaceHandleV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_workspace_handle_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("ext_workspace_handle_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("ext_workspace_handle_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            tracing::debug!("ext_workspace_handle_v1#{}.activate()", sender_id,);
+                            self.activate(client, sender_id).await
+                        }
+                        2u16 => {
+                            tracing::debug!("ext_workspace_handle_v1#{}.deactivate()", sender_id,);
+                            self.deactivate(client, sender_id).await
+                        }
+                        3u16 => {
+                            let workspace_group = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "ext_workspace_handle_v1#{}.assign({})",
+                                sender_id,
+                                workspace_group
+                            );
+                            self.assign(client, sender_id, workspace_group).await
+                        }
+                        4u16 => {
+                            tracing::debug!("ext_workspace_handle_v1#{}.remove()", sender_id,);
+                            self.remove(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!("ext_workspace_handle_v1#{}.activate()", sender_id,);
-                        self.activate(client, sender_id).await
-                    }
-                    2u16 => {
-                        tracing::debug!("ext_workspace_handle_v1#{}.deactivate()", sender_id,);
-                        self.deactivate(client, sender_id).await
-                    }
-                    3u16 => {
-                        let workspace_group = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "ext_workspace_handle_v1#{}.assign({})",
-                            sender_id,
-                            workspace_group
-                        );
-                        self.assign(client, sender_id, workspace_group).await
-                    }
-                    4u16 => {
-                        tracing::debug!("ext_workspace_handle_v1#{}.remove()", sender_id,);
-                        self.remove(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroys the ext_workspace_handle_v1 object."]
@@ -6765,47 +7020,47 @@ pub mod ext_workspace_v1 {
             #[doc = "This request should be made either when the client does not want to"]
             #[doc = "use the workspace object any more or after the remove event to finalize"]
             #[doc = "the destruction of the object."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request that this workspace be activated."]
             #[doc = ""]
             #[doc = "There is no guarantee the workspace will be actually activated, and"]
             #[doc = "behaviour may be compositor-dependent. For example, activating a"]
             #[doc = "workspace may or may not deactivate all other workspaces in the same"]
             #[doc = "group."]
-            async fn activate(
+            fn activate(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request that this workspace be deactivated."]
             #[doc = ""]
             #[doc = "There is no guarantee the workspace will be actually deactivated."]
-            async fn deactivate(
+            fn deactivate(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests that this workspace is assigned to the given workspace group."]
             #[doc = ""]
             #[doc = "There is no guarantee the workspace will be assigned."]
-            async fn assign(
+            fn assign(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 workspace_group: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request that this workspace be removed."]
             #[doc = ""]
             #[doc = "There is no guarantee the workspace will be actually removed."]
-            async fn remove(
+            fn remove(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If this event is emitted, it will be send immediately after the"]
             #[doc = "ext_workspace_handle_v1 is created or when an id is assigned to"]
             #[doc = "a workspace (at most once during it's lifetime)."]
@@ -6819,44 +7074,48 @@ pub mod ext_workspace_v1 {
             #[doc = "sessions and can be used by clients to store preferences for workspaces. Workspaces without"]
             #[doc = "ids should be considered temporary and any data associated with them should be deleted once"]
             #[doc = "the respective object is lost."]
-            async fn id(
+            fn id(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_workspace_handle_v1#{}.id(\"{}\")", sender_id, id);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(id))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_workspace_handle_v1#{}.id(\"{}\")", sender_id, id);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_string(Some(id))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is emitted immediately after the ext_workspace_handle_v1 is"]
             #[doc = "created and whenever the name of the workspace changes."]
             #[doc = ""]
             #[doc = "A name is meant to be human-readable and can be displayed to a user."]
             #[doc = "Unlike the id it is neither stable nor unique."]
-            async fn name(
+            fn name(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_workspace_handle_v1#{}.name(\"{}\")",
-                    sender_id,
-                    name
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(name))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_workspace_handle_v1#{}.name(\"{}\")",
+                        sender_id,
+                        name
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_string(Some(name))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is used to organize workspaces into an N-dimensional grid"]
             #[doc = "within a workspace group, and if supported, is emitted immediately after"]
@@ -6876,24 +7135,26 @@ pub mod ext_workspace_v1 {
             #[doc = "bounded; there may be a workspace at coordinate 1 and another at"]
             #[doc = "coordinate 1000 and none in between. Within a workspace group, however,"]
             #[doc = "workspaces must have unique coordinates of equal dimensionality."]
-            async fn coordinates(
+            fn coordinates(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 coordinates: Vec<u8>,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_workspace_handle_v1#{}.coordinates(array[{}])",
-                    sender_id,
-                    coordinates.len()
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_array(coordinates)
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_workspace_handle_v1#{}.coordinates(array[{}])",
+                        sender_id,
+                        coordinates.len()
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_array(coordinates)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is emitted immediately after the ext_workspace_handle_v1 is"]
             #[doc = "created and each time the workspace state changes, either because of a"]
@@ -6901,20 +7162,22 @@ pub mod ext_workspace_v1 {
             #[doc = ""]
             #[doc = "Missing states convey the opposite meaning, e.g. an unset active bit"]
             #[doc = "means the workspace is currently inactive."]
-            async fn state(
+            fn state(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state: State,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_workspace_handle_v1#{}.state({})", sender_id, state);
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(state.bits())
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_workspace_handle_v1#{}.state({})", sender_id, state);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(state.bits())
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
             #[doc = "a capability isn't supported, clients should hide or disable the UI"]
@@ -6929,24 +7192,26 @@ pub mod ext_workspace_v1 {
             #[doc = "Compositors must send this event once after creation of an"]
             #[doc = "ext_workspace_handle_v1 . When the capabilities change, compositors"]
             #[doc = "must send this event again."]
-            async fn capabilities(
+            fn capabilities(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 capabilities: WorkspaceCapabilities,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> ext_workspace_handle_v1#{}.capabilities({})",
-                    sender_id,
-                    capabilities
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_uint(capabilities.bits())
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_workspace_handle_v1#{}.capabilities({})",
+                        sender_id,
+                        capabilities
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(capabilities.bits())
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is send when the workspace associated with the ext_workspace_handle_v1"]
             #[doc = "has been removed. After sending this request, the compositor will immediately consider"]
@@ -6957,17 +7222,19 @@ pub mod ext_workspace_v1 {
             #[doc = ""]
             #[doc = "The compositor must only remove a workspaces not currently belonging to any"]
             #[doc = "workspace_group."]
-            async fn removed(
+            fn removed(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> ext_workspace_handle_v1#{}.removed()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> ext_workspace_handle_v1#{}.removed()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -7016,44 +7283,46 @@ pub mod fifo_v1 {
         pub trait WpFifoManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_fifo_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_fifo_manager_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("wp_fifo_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_fifo_manager_v1#{}.get_fifo({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_fifo(client, sender_id, id, surface).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_fifo_manager_v1#{}.get_fifo({}, {})",
-                            sender_id,
-                            id,
-                            surface
-                        );
-                        self.get_fifo(client, sender_id, id, surface).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Informs the server that the client will no longer be using"]
             #[doc = "this protocol object. Existing objects created by this object"]
             #[doc = "are not affected."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Establish a fifo object for a surface that may be used to add"]
             #[doc = "display refresh constraints to content updates."]
             #[doc = ""]
@@ -7062,13 +7331,13 @@ pub mod fifo_v1 {
             #[doc = "protocol error. If a surface is acted on by multiple software"]
             #[doc = "components, general best practice is that only the component"]
             #[doc = "performing wl_surface.attach operations should use this protocol."]
-            async fn get_fifo(
+            fn get_fifo(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "A fifo object for a surface that may be used to add"]
@@ -7104,27 +7373,29 @@ pub mod fifo_v1 {
         pub trait WpFifoV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_fifo_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_fifo_v1#{}.set_barrier()", sender_id,);
-                        self.set_barrier(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("wp_fifo_v1#{}.set_barrier()", sender_id,);
+                            self.set_barrier(client, sender_id).await
+                        }
+                        1u16 => {
+                            tracing::debug!("wp_fifo_v1#{}.wait_barrier()", sender_id,);
+                            self.wait_barrier(client, sender_id).await
+                        }
+                        2u16 => {
+                            tracing::debug!("wp_fifo_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!("wp_fifo_v1#{}.wait_barrier()", sender_id,);
-                        self.wait_barrier(client, sender_id).await
-                    }
-                    2u16 => {
-                        tracing::debug!("wp_fifo_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "When the content update containing the \"set_barrier\" is applied,"]
@@ -7141,11 +7412,11 @@ pub mod fifo_v1 {
             #[doc = ""]
             #[doc = "Requesting set_barrier after the fifo object's surface is"]
             #[doc = "destroyed will generate a \"surface_destroyed\" error."]
-            async fn set_barrier(
+            fn set_barrier(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Indicate that this content update is not ready while a"]
             #[doc = "\"fifo_barrier\" condition is present on the surface."]
             #[doc = ""]
@@ -7166,21 +7437,21 @@ pub mod fifo_v1 {
             #[doc = ""]
             #[doc = "Requesting \"wait_barrier\" after the fifo object's surface is"]
             #[doc = "destroyed will generate a \"surface_destroyed\" error."]
-            async fn wait_barrier(
+            fn wait_barrier(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Informs the server that the client will no longer be using"]
             #[doc = "this protocol object."]
             #[doc = ""]
             #[doc = "Surface state changes previously made by this protocol are"]
             #[doc = "unaffected by this object's destruction."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -7234,56 +7505,61 @@ pub mod fractional_scale_v1 {
         pub trait WpFractionalScaleManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_fractional_scale_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_fractional_scale_manager_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!(
+                                "wp_fractional_scale_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_fractional_scale_manager_v1#{}.get_fractional_scale({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_fractional_scale(client, sender_id, id, surface)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_fractional_scale_manager_v1#{}.get_fractional_scale({}, {})",
-                            sender_id,
-                            id,
-                            surface
-                        );
-                        self.get_fractional_scale(client, sender_id, id, surface)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Informs the server that the client will not be using this protocol"]
             #[doc = "object anymore. This does not affect any other objects,"]
             #[doc = "wp_fractional_scale_v1 objects included."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create an add-on object for the the wl_surface to let the compositor"]
             #[doc = "request fractional scales. If the given wl_surface already has a"]
             #[doc = "wp_fractional_scale_v1 object associated, the fractional_scale_exists"]
             #[doc = "protocol error is raised."]
-            async fn get_fractional_scale(
+            fn get_fractional_scale(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "An additional interface to a wl_surface object which allows the compositor"]
@@ -7296,48 +7572,52 @@ pub mod fractional_scale_v1 {
         pub trait WpFractionalScaleV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_fractional_scale_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_fractional_scale_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("wp_fractional_scale_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the fractional scale object. When this object is destroyed,"]
             #[doc = "preferred_scale events will no longer be sent."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Notification of a new preferred scale for this surface that the"]
             #[doc = "compositor suggests that the client should use."]
             #[doc = ""]
             #[doc = "The sent scale is the numerator of a fraction with a denominator of 120."]
-            async fn preferred_scale(
+            fn preferred_scale(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 scale: u32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> wp_fractional_scale_v1#{}.preferred_scale({})",
-                    sender_id,
-                    scale
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(scale).build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> wp_fractional_scale_v1#{}.preferred_scale({})",
+                        sender_id,
+                        scale
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(scale).build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -7406,56 +7686,61 @@ pub mod linux_drm_syncobj_v1 {
         pub trait WpLinuxDrmSyncobjManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_linux_drm_syncobj_manager_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!(
+                                "wp_linux_drm_syncobj_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_linux_drm_syncobj_manager_v1#{}.get_surface({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_surface(client, sender_id, id, surface).await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let fd = message.fd()?;
+                            tracing::debug!(
+                                "wp_linux_drm_syncobj_manager_v1#{}.import_timeline({}, {})",
+                                sender_id,
+                                id,
+                                fd.as_raw_fd()
+                            );
+                            self.import_timeline(client, sender_id, id, fd).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_linux_drm_syncobj_manager_v1#{}.get_surface({}, {})",
-                            sender_id,
-                            id,
-                            surface
-                        );
-                        self.get_surface(client, sender_id, id, surface).await
-                    }
-                    2u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let fd = message.fd()?;
-                        tracing::debug!(
-                            "wp_linux_drm_syncobj_manager_v1#{}.import_timeline({}, {})",
-                            sender_id,
-                            id,
-                            fd.as_raw_fd()
-                        );
-                        self.import_timeline(client, sender_id, id, fd).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy this explicit synchronization factory object. Other objects"]
             #[doc = "shall not be affected by this request."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Instantiate an interface extension for the given wl_surface to provide"]
             #[doc = "explicit synchronization."]
             #[doc = ""]
@@ -7467,23 +7752,23 @@ pub mod linux_drm_syncobj_v1 {
             #[doc = "extension internally. If a client is using such an API for a"]
             #[doc = "wl_surface, it should not directly use this extension on that surface,"]
             #[doc = "to avoid raising a surface_exists protocol error."]
-            async fn get_surface(
+            fn get_surface(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Import a DRM synchronization object timeline."]
             #[doc = ""]
             #[doc = "If the FD cannot be imported, the invalid_timeline error is raised."]
-            async fn import_timeline(
+            fn import_timeline(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 fd: rustix::fd::OwnedFd,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This object represents an explicit synchronization object timeline"]
@@ -7496,29 +7781,34 @@ pub mod linux_drm_syncobj_v1 {
         pub trait WpLinuxDrmSyncobjTimelineV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_timeline_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_linux_drm_syncobj_timeline_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!(
+                                "wp_linux_drm_syncobj_timeline_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the synchronization object timeline. Other objects are not"]
             #[doc = "affected by this request, in particular timeline points set by"]
             #[doc = "set_acquire_point and set_release_point are not unset."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This object is an add-on interface for wl_surface to enable explicit"]
@@ -7590,51 +7880,56 @@ pub mod linux_drm_syncobj_v1 {
         pub trait WpLinuxDrmSyncobjSurfaceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_surface_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_linux_drm_syncobj_surface_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!(
+                                "wp_linux_drm_syncobj_surface_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let timeline = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let point_hi = message.uint()?;
+                            let point_lo = message.uint()?;
+                            tracing::debug!(
+                                "wp_linux_drm_syncobj_surface_v1#{}.set_acquire_point({}, {}, {})",
+                                sender_id,
+                                timeline,
+                                point_hi,
+                                point_lo
+                            );
+                            self.set_acquire_point(client, sender_id, timeline, point_hi, point_lo)
+                                .await
+                        }
+                        2u16 => {
+                            let timeline = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let point_hi = message.uint()?;
+                            let point_lo = message.uint()?;
+                            tracing::debug!(
+                                "wp_linux_drm_syncobj_surface_v1#{}.set_release_point({}, {}, {})",
+                                sender_id,
+                                timeline,
+                                point_hi,
+                                point_lo
+                            );
+                            self.set_release_point(client, sender_id, timeline, point_hi, point_lo)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let timeline = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let point_hi = message.uint()?;
-                        let point_lo = message.uint()?;
-                        tracing::debug!(
-                            "wp_linux_drm_syncobj_surface_v1#{}.set_acquire_point({}, {}, {})",
-                            sender_id,
-                            timeline,
-                            point_hi,
-                            point_lo
-                        );
-                        self.set_acquire_point(client, sender_id, timeline, point_hi, point_lo)
-                            .await
-                    }
-                    2u16 => {
-                        let timeline = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let point_hi = message.uint()?;
-                        let point_lo = message.uint()?;
-                        tracing::debug!(
-                            "wp_linux_drm_syncobj_surface_v1#{}.set_release_point({}, {}, {})",
-                            sender_id,
-                            timeline,
-                            point_hi,
-                            point_lo
-                        );
-                        self.set_release_point(client, sender_id, timeline, point_hi, point_lo)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy this surface synchronization object."]
@@ -7643,11 +7938,11 @@ pub mod linux_drm_syncobj_v1 {
             #[doc = "set_release_point since the last commit may be discarded by the"]
             #[doc = "compositor. Any timeline point set by this object before the last"]
             #[doc = "commit will not be affected."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the timeline point that must be signalled before the compositor may"]
             #[doc = "sample from the buffer attached with wl_surface.attach."]
             #[doc = ""]
@@ -7670,14 +7965,14 @@ pub mod linux_drm_syncobj_v1 {
             #[doc = "surface commit time there is a pending buffer attached but no pending"]
             #[doc = "acquire timeline point set, the no_acquire_point protocol error is"]
             #[doc = "raised."]
-            async fn set_acquire_point(
+            fn set_acquire_point(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 timeline: crate::wire::ObjectId,
                 point_hi: u32,
                 point_lo: u32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the timeline point that must be signalled by the compositor when it"]
             #[doc = "has finished its usage of the buffer attached with wl_surface.attach"]
             #[doc = "for the relevant commit."]
@@ -7721,14 +8016,14 @@ pub mod linux_drm_syncobj_v1 {
             #[doc = "surface commit time there is a pending buffer attached but no pending"]
             #[doc = "release timeline point set, the no_release_point protocol error is"]
             #[doc = "raised."]
-            async fn set_release_point(
+            fn set_release_point(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 timeline: crate::wire::ObjectId,
                 point_hi: u32,
                 point_lo: u32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -7784,44 +8079,49 @@ pub mod security_context_v1 {
         pub trait WpSecurityContextManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_security_context_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_security_context_manager_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!(
+                                "wp_security_context_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let listen_fd = message.fd()?;
+                            let close_fd = message.fd()?;
+                            tracing::debug!(
+                                "wp_security_context_manager_v1#{}.create_listener({}, {}, {})",
+                                sender_id,
+                                id,
+                                listen_fd.as_raw_fd(),
+                                close_fd.as_raw_fd()
+                            );
+                            self.create_listener(client, sender_id, id, listen_fd, close_fd)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let listen_fd = message.fd()?;
-                        let close_fd = message.fd()?;
-                        tracing::debug!(
-                            "wp_security_context_manager_v1#{}.create_listener({}, {}, {})",
-                            sender_id,
-                            id,
-                            listen_fd.as_raw_fd(),
-                            close_fd.as_raw_fd()
-                        );
-                        self.create_listener(client, sender_id, id, listen_fd, close_fd)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the manager. This doesn't destroy objects created with the"]
             #[doc = "manager."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Creates a new security context with a socket listening FD."]
             #[doc = ""]
             #[doc = "The compositor will accept new client connections on listen_fd."]
@@ -7837,14 +8137,14 @@ pub mod security_context_v1 {
             #[doc = ""]
             #[doc = "After sending this request, closing listen_fd and close_fd remains the"]
             #[doc = "only valid operation on them."]
-            async fn create_listener(
+            fn create_listener(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 listen_fd: rustix::fd::OwnedFd,
                 close_fd: rustix::fd::OwnedFd,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "The security context allows a client to register a new client and attach"]
@@ -7892,64 +8192,66 @@ pub mod security_context_v1 {
         pub trait WpSecurityContextV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_security_context_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_security_context_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("wp_security_context_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_security_context_v1#{}.set_sandbox_engine(\"{}\")",
+                                sender_id,
+                                name
+                            );
+                            self.set_sandbox_engine(client, sender_id, name).await
+                        }
+                        2u16 => {
+                            let app_id = message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_security_context_v1#{}.set_app_id(\"{}\")",
+                                sender_id,
+                                app_id
+                            );
+                            self.set_app_id(client, sender_id, app_id).await
+                        }
+                        3u16 => {
+                            let instance_id = message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_security_context_v1#{}.set_instance_id(\"{}\")",
+                                sender_id,
+                                instance_id
+                            );
+                            self.set_instance_id(client, sender_id, instance_id).await
+                        }
+                        4u16 => {
+                            tracing::debug!("wp_security_context_v1#{}.commit()", sender_id,);
+                            self.commit(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let name = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_security_context_v1#{}.set_sandbox_engine(\"{}\")",
-                            sender_id,
-                            name
-                        );
-                        self.set_sandbox_engine(client, sender_id, name).await
-                    }
-                    2u16 => {
-                        let app_id = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_security_context_v1#{}.set_app_id(\"{}\")",
-                            sender_id,
-                            app_id
-                        );
-                        self.set_app_id(client, sender_id, app_id).await
-                    }
-                    3u16 => {
-                        let instance_id = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_security_context_v1#{}.set_instance_id(\"{}\")",
-                            sender_id,
-                            instance_id
-                        );
-                        self.set_instance_id(client, sender_id, instance_id).await
-                    }
-                    4u16 => {
-                        tracing::debug!("wp_security_context_v1#{}.commit()", sender_id,);
-                        self.commit(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the security context object."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Attach a unique sandbox engine name to the security context. The name"]
             #[doc = "should follow the reverse-DNS style (e.g. \"org.flatpak\")."]
             #[doc = ""]
@@ -7958,12 +8260,12 @@ pub mod security_context_v1 {
             #[doc = ""]
             #[doc = "It is a protocol error to call this request twice. The already_set"]
             #[doc = "error is sent in this case."]
-            async fn set_sandbox_engine(
+            fn set_sandbox_engine(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: String,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Attach an application ID to the security context."]
             #[doc = ""]
             #[doc = "The application ID is an opaque, sandbox-specific identifier for an"]
@@ -7977,12 +8279,12 @@ pub mod security_context_v1 {
             #[doc = ""]
             #[doc = "It is a protocol error to call this request twice. The already_set"]
             #[doc = "error is sent in this case."]
-            async fn set_app_id(
+            fn set_app_id(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 app_id: String,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Attach an instance ID to the security context."]
             #[doc = ""]
             #[doc = "The instance ID is an opaque, sandbox-specific identifier for a running"]
@@ -7994,12 +8296,12 @@ pub mod security_context_v1 {
             #[doc = ""]
             #[doc = "It is a protocol error to call this request twice. The already_set"]
             #[doc = "error is sent in this case."]
-            async fn set_instance_id(
+            fn set_instance_id(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 instance_id: String,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Atomically register the new client and attach the security context"]
             #[doc = "metadata."]
             #[doc = ""]
@@ -8010,11 +8312,11 @@ pub mod security_context_v1 {
             #[doc = ""]
             #[doc = "It's a protocol error to send any request other than \"destroy\" after"]
             #[doc = "this request. In this case, the already_used error is sent."]
-            async fn commit(
+            fn commit(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -8040,51 +8342,53 @@ pub mod single_pixel_buffer_v1 {
         pub trait WpSinglePixelBufferManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_single_pixel_buffer_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!(
-                            "wp_single_pixel_buffer_manager_v1#{}.destroy()",
-                            sender_id,
-                        );
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!(
+                                "wp_single_pixel_buffer_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let r = message.uint()?;
+                            let g = message.uint()?;
+                            let b = message.uint()?;
+                            let a = message.uint()?;
+                            tracing :: debug ! ("wp_single_pixel_buffer_manager_v1#{}.create_u32_rgba_buffer({}, {}, {}, {}, {})" , sender_id , id , r , g , b , a);
+                            self.create_u32_rgba_buffer(client, sender_id, id, r, g, b, a)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let r = message.uint()?;
-                        let g = message.uint()?;
-                        let b = message.uint()?;
-                        let a = message.uint()?;
-                        tracing :: debug ! ("wp_single_pixel_buffer_manager_v1#{}.create_u32_rgba_buffer({}, {}, {}, {}, {})" , sender_id , id , r , g , b , a);
-                        self.create_u32_rgba_buffer(client, sender_id, id, r, g, b, a)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the wp_single_pixel_buffer_manager_v1 object."]
             #[doc = ""]
             #[doc = "The child objects created via this interface are unaffected."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a single-pixel buffer from four 32-bit RGBA values."]
             #[doc = ""]
             #[doc = "Unless specified in another protocol extension, the RGBA values use"]
             #[doc = "pre-multiplied alpha."]
             #[doc = ""]
             #[doc = "The width and height of the buffer are 1."]
-            async fn create_u32_rgba_buffer(
+            fn create_u32_rgba_buffer(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
@@ -8093,7 +8397,7 @@ pub mod single_pixel_buffer_v1 {
                 g: u32,
                 b: u32,
                 a: u32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -8143,57 +8447,62 @@ pub mod tearing_control_v1 {
         pub trait WpTearingControlManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_tearing_control_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("wp_tearing_control_manager_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!(
+                                "wp_tearing_control_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "wp_tearing_control_manager_v1#{}.get_tearing_control({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_tearing_control(client, sender_id, id, surface)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "wp_tearing_control_manager_v1#{}.get_tearing_control({}, {})",
-                            sender_id,
-                            id,
-                            surface
-                        );
-                        self.get_tearing_control(client, sender_id, id, surface)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy this tearing control factory object. Other objects, including"]
             #[doc = "wp_tearing_control_v1 objects created by this factory, are not affected"]
             #[doc = "by this request."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Instantiate an interface extension for the given wl_surface to request"]
             #[doc = "asynchronous page flips for presentation."]
             #[doc = ""]
             #[doc = "If the given wl_surface already has a wp_tearing_control_v1 object"]
             #[doc = "associated, the tearing_control_exists protocol error is raised."]
-            async fn get_tearing_control(
+            fn get_tearing_control(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "An additional interface to a wl_surface object, which allows the client"]
@@ -8236,29 +8545,31 @@ pub mod tearing_control_v1 {
         pub trait WpTearingControlV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "wp_tearing_control_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let hint = message.uint()?;
-                        tracing::debug!(
-                            "wp_tearing_control_v1#{}.set_presentation_hint({})",
-                            sender_id,
-                            hint
-                        );
-                        self.set_presentation_hint(client, sender_id, hint.try_into()?)
-                            .await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let hint = message.uint()?;
+                            tracing::debug!(
+                                "wp_tearing_control_v1#{}.set_presentation_hint({})",
+                                sender_id,
+                                hint
+                            );
+                            self.set_presentation_hint(client, sender_id, hint.try_into()?)
+                                .await
+                        }
+                        1u16 => {
+                            tracing::debug!("wp_tearing_control_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!("wp_tearing_control_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Set the presentation hint for the associated wl_surface. This state is"]
@@ -8267,19 +8578,19 @@ pub mod tearing_control_v1 {
             #[doc = "The compositor is free to dynamically respect or ignore this hint based"]
             #[doc = "on various conditions like hardware capabilities, surface state and"]
             #[doc = "user preferences."]
-            async fn set_presentation_hint(
+            fn set_presentation_hint(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 hint: PresentationHint,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy this surface tearing object and revert the presentation hint to"]
             #[doc = "vsync. The change will be applied on the next wl_surface.commit."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -8334,45 +8645,47 @@ pub mod xdg_activation_v1 {
         pub trait XdgActivationV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_activation_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("xdg_activation_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("xdg_activation_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "xdg_activation_v1#{}.get_activation_token({})",
+                                sender_id,
+                                id
+                            );
+                            self.get_activation_token(client, sender_id, id).await
+                        }
+                        2u16 => {
+                            let token = message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "xdg_activation_v1#{}.activate(\"{}\", {})",
+                                sender_id,
+                                token,
+                                surface
+                            );
+                            self.activate(client, sender_id, token, surface).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "xdg_activation_v1#{}.get_activation_token({})",
-                            sender_id,
-                            id
-                        );
-                        self.get_activation_token(client, sender_id, id).await
-                    }
-                    2u16 => {
-                        let token = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "xdg_activation_v1#{}.activate(\"{}\", {})",
-                            sender_id,
-                            token,
-                            surface
-                        );
-                        self.activate(client, sender_id, token, surface).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Notify the compositor that the xdg_activation object will no longer be"]
@@ -8380,20 +8693,20 @@ pub mod xdg_activation_v1 {
             #[doc = ""]
             #[doc = "The child objects created via this interface are unaffected and should"]
             #[doc = "be destroyed separately."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Creates an xdg_activation_token_v1 object that will provide"]
             #[doc = "the initiating client with a unique token for this activation. This"]
             #[doc = "token should be offered to the clients to be activated."]
-            async fn get_activation_token(
+            fn get_activation_token(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests surface activation. It's up to the compositor to display"]
             #[doc = "this information as desired, for example by placing the surface above"]
             #[doc = "the rest."]
@@ -8404,13 +8717,13 @@ pub mod xdg_activation_v1 {
             #[doc = ""]
             #[doc = "Compositors can ignore unknown activation tokens when an invalid"]
             #[doc = "token is passed."]
-            async fn activate(
+            fn activate(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 token: String,
                 surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "An object for setting up a token and receiving a token handle that can"]
@@ -8450,58 +8763,60 @@ pub mod xdg_activation_v1 {
         pub trait XdgActivationTokenV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_activation_token_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let serial = message.uint()?;
-                        let seat = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "xdg_activation_token_v1#{}.set_serial({}, {})",
-                            sender_id,
-                            serial,
-                            seat
-                        );
-                        self.set_serial(client, sender_id, serial, seat).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let serial = message.uint()?;
+                            let seat = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "xdg_activation_token_v1#{}.set_serial({}, {})",
+                                sender_id,
+                                serial,
+                                seat
+                            );
+                            self.set_serial(client, sender_id, serial, seat).await
+                        }
+                        1u16 => {
+                            let app_id = message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "xdg_activation_token_v1#{}.set_app_id(\"{}\")",
+                                sender_id,
+                                app_id
+                            );
+                            self.set_app_id(client, sender_id, app_id).await
+                        }
+                        2u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "xdg_activation_token_v1#{}.set_surface({})",
+                                sender_id,
+                                surface
+                            );
+                            self.set_surface(client, sender_id, surface).await
+                        }
+                        3u16 => {
+                            tracing::debug!("xdg_activation_token_v1#{}.commit()", sender_id,);
+                            self.commit(client, sender_id).await
+                        }
+                        4u16 => {
+                            tracing::debug!("xdg_activation_token_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let app_id = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "xdg_activation_token_v1#{}.set_app_id(\"{}\")",
-                            sender_id,
-                            app_id
-                        );
-                        self.set_app_id(client, sender_id, app_id).await
-                    }
-                    2u16 => {
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "xdg_activation_token_v1#{}.set_surface({})",
-                            sender_id,
-                            surface
-                        );
-                        self.set_surface(client, sender_id, surface).await
-                    }
-                    3u16 => {
-                        tracing::debug!("xdg_activation_token_v1#{}.commit()", sender_id,);
-                        self.commit(client, sender_id).await
-                    }
-                    4u16 => {
-                        tracing::debug!("xdg_activation_token_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Provides information about the seat and serial event that requested the"]
@@ -8516,23 +8831,23 @@ pub mod xdg_activation_v1 {
             #[doc = "doesn't have a valid and recent enough event serial."]
             #[doc = ""]
             #[doc = "Must be sent before commit. This information is optional."]
-            async fn set_serial(
+            fn set_serial(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 seat: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The requesting client can specify an app_id to associate the token"]
             #[doc = "being created with it."]
             #[doc = ""]
             #[doc = "Must be sent before commit. This information is optional."]
-            async fn set_app_id(
+            fn set_app_id(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 app_id: String,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request sets the surface requesting the activation. Note, this is"]
             #[doc = "different from the surface that will be activated."]
             #[doc = ""]
@@ -8540,46 +8855,48 @@ pub mod xdg_activation_v1 {
             #[doc = "doesn't have a requesting surface."]
             #[doc = ""]
             #[doc = "Must be sent before commit. This information is optional."]
-            async fn set_surface(
+            fn set_surface(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests an activation token based on the different parameters that"]
             #[doc = "have been offered through set_serial, set_surface and set_app_id."]
-            async fn commit(
+            fn commit(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Notify the compositor that the xdg_activation_token_v1 object will no"]
             #[doc = "longer be used. The received token stays valid."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The 'done' event contains the unique token of this activation request"]
             #[doc = "and notifies that the provider is done."]
-            async fn done(
+            fn done(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 token: String,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> xdg_activation_token_v1#{}.done(\"{}\")",
-                    sender_id,
-                    token
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new()
-                    .put_string(Some(token))
-                    .build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> xdg_activation_token_v1#{}.done(\"{}\")",
+                        sender_id,
+                        token
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_string(Some(token))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -8626,55 +8943,57 @@ pub mod xdg_dialog_v1 {
         pub trait XdgWmDialogV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_wm_dialog_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("xdg_wm_dialog_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("xdg_wm_dialog_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let toplevel = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "xdg_wm_dialog_v1#{}.get_xdg_dialog({}, {})",
+                                sender_id,
+                                id,
+                                toplevel
+                            );
+                            self.get_xdg_dialog(client, sender_id, id, toplevel).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "xdg_wm_dialog_v1#{}.get_xdg_dialog({}, {})",
-                            sender_id,
-                            id,
-                            toplevel
-                        );
-                        self.get_xdg_dialog(client, sender_id, id, toplevel).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroys the xdg_wm_dialog_v1 object. This does not affect"]
             #[doc = "the xdg_dialog_v1 objects generated through it."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Creates a xdg_dialog_v1 object for the given toplevel. See the interface"]
             #[doc = "description for more details."]
             #[doc = ""]
             #[doc = "Compositors must raise an already_used error if clients attempt to"]
             #[doc = "create multiple xdg_dialog_v1 objects for the same xdg_toplevel."]
-            async fn get_xdg_dialog(
+            fn get_xdg_dialog(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "A xdg_dialog_v1 object is an ancillary object tied to a xdg_toplevel. Its"]
@@ -8694,37 +9013,39 @@ pub mod xdg_dialog_v1 {
         pub trait XdgDialogV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_dialog_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("xdg_dialog_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("xdg_dialog_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            tracing::debug!("xdg_dialog_v1#{}.set_modal()", sender_id,);
+                            self.set_modal(client, sender_id).await
+                        }
+                        2u16 => {
+                            tracing::debug!("xdg_dialog_v1#{}.unset_modal()", sender_id,);
+                            self.unset_modal(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!("xdg_dialog_v1#{}.set_modal()", sender_id,);
-                        self.set_modal(client, sender_id).await
-                    }
-                    2u16 => {
-                        tracing::debug!("xdg_dialog_v1#{}.unset_modal()", sender_id,);
-                        self.unset_modal(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroys the xdg_dialog_v1 object. If this object is destroyed"]
             #[doc = "before the related xdg_toplevel, the compositor should unapply its"]
             #[doc = "effects."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Hints that the dialog has \"modal\" behavior. Modal dialogs typically"]
             #[doc = "require to be fully addressed by the user (i.e. closed) before resuming"]
             #[doc = "interaction with the parent toplevel, and may require a distinct"]
@@ -8736,18 +9057,18 @@ pub mod xdg_dialog_v1 {
             #[doc = "Compositors may choose any policy in event delivery to the parent"]
             #[doc = "toplevel, from delivering all events unfiltered to using them for"]
             #[doc = "internal consumption."]
-            async fn set_modal(
+            fn set_modal(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Drops the hint that this dialog has \"modal\" behavior. See"]
             #[doc = "xdg_dialog_v1.set_modal for more details."]
-            async fn unset_modal(
+            fn unset_modal(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -8767,38 +9088,40 @@ pub mod xdg_system_bell_v1 {
         pub trait XdgSystemBellV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_system_bell_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("xdg_system_bell_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("xdg_system_bell_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let surface = message.object()?;
+                            tracing::debug!(
+                                "xdg_system_bell_v1#{}.ring({})",
+                                sender_id,
+                                surface
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.ring(client, sender_id, surface).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let surface = message.object()?;
-                        tracing::debug!(
-                            "xdg_system_bell_v1#{}.ring({})",
-                            sender_id,
-                            surface
-                                .as_ref()
-                                .map_or("null".to_string(), |v| v.to_string())
-                        );
-                        self.ring(client, sender_id, surface).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Notify that the object will no longer be used."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This requests rings the system bell on behalf of a client. How ringing"]
             #[doc = "the bell is implemented is up to the compositor. It may be an audible"]
             #[doc = "sound, a visual feedback of some kind, or any other thing including"]
@@ -8808,12 +9131,12 @@ pub mod xdg_system_bell_v1 {
             #[doc = "or be null, meaning the client doesn't have a particular toplevel it"]
             #[doc = "wants to associate the bell ringing with. See the xdg-shell protocol"]
             #[doc = "extension for a toplevel like surface role."]
-            async fn ring(
+            fn ring(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: Option<crate::wire::ObjectId>,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -8881,45 +9204,47 @@ pub mod xdg_toplevel_drag_v1 {
         pub trait XdgToplevelDragManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_toplevel_drag_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("xdg_toplevel_drag_manager_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("xdg_toplevel_drag_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let data_source = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "xdg_toplevel_drag_manager_v1#{}.get_xdg_toplevel_drag({}, {})",
+                                sender_id,
+                                id,
+                                data_source
+                            );
+                            self.get_xdg_toplevel_drag(client, sender_id, id, data_source)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let data_source = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "xdg_toplevel_drag_manager_v1#{}.get_xdg_toplevel_drag({}, {})",
-                            sender_id,
-                            id,
-                            data_source
-                        );
-                        self.get_xdg_toplevel_drag(client, sender_id, id, data_source)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy this xdg_toplevel_drag_manager_v1 object. Other objects,"]
             #[doc = "including xdg_toplevel_drag_v1 objects created by this factory, are not"]
             #[doc = "affected by this request."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create an xdg_toplevel_drag for a drag and drop operation that is going"]
             #[doc = "to be started with data_source."]
             #[doc = ""]
@@ -8930,13 +9255,13 @@ pub mod xdg_toplevel_drag_v1 {
             #[doc = ""]
             #[doc = "Destroying data_source while a toplevel is attached to the"]
             #[doc = "xdg_toplevel_drag is undefined."]
-            async fn get_xdg_toplevel_drag(
+            fn get_xdg_toplevel_drag(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 data_source: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -8971,46 +9296,48 @@ pub mod xdg_toplevel_drag_v1 {
         pub trait XdgToplevelDragV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_toplevel_drag_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("xdg_toplevel_drag_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("xdg_toplevel_drag_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let x_offset = message.int()?;
+                            let y_offset = message.int()?;
+                            tracing::debug!(
+                                "xdg_toplevel_drag_v1#{}.attach({}, {}, {})",
+                                sender_id,
+                                toplevel,
+                                x_offset,
+                                y_offset
+                            );
+                            self.attach(client, sender_id, toplevel, x_offset, y_offset)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let x_offset = message.int()?;
-                        let y_offset = message.int()?;
-                        tracing::debug!(
-                            "xdg_toplevel_drag_v1#{}.attach({}, {}, {})",
-                            sender_id,
-                            toplevel,
-                            x_offset,
-                            y_offset
-                        );
-                        self.attach(client, sender_id, toplevel, x_offset, y_offset)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy this xdg_toplevel_drag_v1 object. This request must only be"]
             #[doc = "called after the underlying wl_data_source drag has ended, as indicated"]
             #[doc = "by the dnd_drop_performed or cancelled events. In any other case an"]
             #[doc = "ongoing_drag error is raised."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request that the window will be moved with the cursor during the drag"]
             #[doc = "operation. The offset is a hint to the compositor how the toplevel"]
             #[doc = "should be positioned relative to the cursor hotspot in surface local"]
@@ -9026,14 +9353,14 @@ pub mod xdg_toplevel_drag_v1 {
             #[doc = "This request can be called multiple times but issuing it while a"]
             #[doc = "toplevel with an active role is attached raises a toplevel_attached"]
             #[doc = "error."]
-            async fn attach(
+            fn attach(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 x_offset: i32,
                 y_offset: i32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -9064,60 +9391,62 @@ pub mod xdg_toplevel_icon_v1 {
         pub trait XdgToplevelIconManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_toplevel_icon_manager_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("xdg_toplevel_icon_manager_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("xdg_toplevel_icon_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "xdg_toplevel_icon_manager_v1#{}.create_icon({})",
+                                sender_id,
+                                id
+                            );
+                            self.create_icon(client, sender_id, id).await
+                        }
+                        2u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let icon = message.object()?;
+                            tracing::debug!(
+                                "xdg_toplevel_icon_manager_v1#{}.set_icon({}, {})",
+                                sender_id,
+                                toplevel,
+                                icon.as_ref().map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_icon(client, sender_id, toplevel, icon).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "xdg_toplevel_icon_manager_v1#{}.create_icon({})",
-                            sender_id,
-                            id
-                        );
-                        self.create_icon(client, sender_id, id).await
-                    }
-                    2u16 => {
-                        let toplevel = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let icon = message.object()?;
-                        tracing::debug!(
-                            "xdg_toplevel_icon_manager_v1#{}.set_icon({}, {})",
-                            sender_id,
-                            toplevel,
-                            icon.as_ref().map_or("null".to_string(), |v| v.to_string())
-                        );
-                        self.set_icon(client, sender_id, toplevel, icon).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the toplevel icon manager."]
             #[doc = "This does not destroy objects created with the manager."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Creates a new icon object. This icon can then be attached to a"]
             #[doc = "xdg_toplevel via the 'set_icon' request."]
-            async fn create_icon(
+            fn create_icon(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request assigns the icon 'icon' to 'toplevel', or clears the"]
             #[doc = "toplevel icon if 'icon' was null."]
             #[doc = "This state is double-buffered and is applied on the next"]
@@ -9138,13 +9467,13 @@ pub mod xdg_toplevel_icon_v1 {
             #[doc = "its desktop-entry file, or a placeholder icon)."]
             #[doc = "If this request is passed an icon with no pixel buffers or icon name"]
             #[doc = "assigned, the icon must be reset just like if 'icon' was null."]
-            async fn set_icon(
+            fn set_icon(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 icon: Option<crate::wire::ObjectId>,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event indicates an icon size the compositor prefers to be"]
             #[doc = "available if the client has scalable icons and can render to any size."]
             #[doc = ""]
@@ -9157,35 +9486,39 @@ pub mod xdg_toplevel_icon_v1 {
             #[doc = "A sequence of 'icon_size' events must be finished with a 'done' event."]
             #[doc = "If the compositor has no size preferences, it must still send the"]
             #[doc = "'done' event, without any preceding 'icon_size' events."]
-            async fn icon_size(
+            fn icon_size(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 size: i32,
-            ) -> crate::server::Result<()> {
-                tracing::debug!(
-                    "-> xdg_toplevel_icon_manager_v1#{}.icon_size({})",
-                    sender_id,
-                    size
-                );
-                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(size).build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> xdg_toplevel_icon_manager_v1#{}.icon_size({})",
+                        sender_id,
+                        size
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(size).build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
             #[doc = "This event is sent after all 'icon_size' events have been sent."]
-            async fn done(
+            fn done(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()> {
-                tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.done()", sender_id,);
-                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                client
-                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                    .await
-                    .map_err(crate::server::error::Error::IoError)
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.done()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
             }
         }
     }
@@ -9232,53 +9565,55 @@ pub mod xdg_toplevel_icon_v1 {
         pub trait XdgToplevelIconV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_toplevel_icon_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("xdg_toplevel_icon_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("xdg_toplevel_icon_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let icon_name = message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "xdg_toplevel_icon_v1#{}.set_name(\"{}\")",
+                                sender_id,
+                                icon_name
+                            );
+                            self.set_name(client, sender_id, icon_name).await
+                        }
+                        2u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let scale = message.int()?;
+                            tracing::debug!(
+                                "xdg_toplevel_icon_v1#{}.add_buffer({}, {})",
+                                sender_id,
+                                buffer,
+                                scale
+                            );
+                            self.add_buffer(client, sender_id, buffer, scale).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let icon_name = message
-                            .string()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "xdg_toplevel_icon_v1#{}.set_name(\"{}\")",
-                            sender_id,
-                            icon_name
-                        );
-                        self.set_name(client, sender_id, icon_name).await
-                    }
-                    2u16 => {
-                        let buffer = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let scale = message.int()?;
-                        tracing::debug!(
-                            "xdg_toplevel_icon_v1#{}.add_buffer({}, {})",
-                            sender_id,
-                            buffer,
-                            scale
-                        );
-                        self.add_buffer(client, sender_id, buffer, scale).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroys the 'xdg_toplevel_icon_v1' object."]
             #[doc = "The icon must still remain set on every toplevel it was assigned to,"]
             #[doc = "until the toplevel icon is reset explicitly."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request assigns an icon name to this icon."]
             #[doc = "Any previously set name is overridden."]
             #[doc = ""]
@@ -9294,12 +9629,12 @@ pub mod xdg_toplevel_icon_v1 {
             #[doc = "via 'set_icon', a 'immutable' error must be raised."]
             #[doc = ""]
             #[doc = "[1]: https://specifications.freedesktop.org/icon-theme-spec/icon-theme-spec-latest.html"]
-            async fn set_name(
+            fn set_name(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 icon_name: String,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request adds pixel data supplied as wl_buffer to the icon."]
             #[doc = ""]
             #[doc = "The client should add pixel data for all icon sizes and scales that"]
@@ -9324,13 +9659,13 @@ pub mod xdg_toplevel_icon_v1 {
             #[doc = ""]
             #[doc = "If this request is made after the icon has been assigned to a toplevel"]
             #[doc = "via 'set_icon', a 'immutable' error must be raised."]
-            async fn add_buffer(
+            fn add_buffer(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
                 scale: i32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -9409,45 +9744,47 @@ pub mod xwayland_shell_v1 {
         pub trait XwaylandShellV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xwayland_shell_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        tracing::debug!("xwayland_shell_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            tracing::debug!("xwayland_shell_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "xwayland_shell_v1#{}.get_xwayland_surface({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_xwayland_surface(client, sender_id, id, surface)
+                                .await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        let id = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        let surface = message
-                            .object()?
-                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                        tracing::debug!(
-                            "xwayland_shell_v1#{}.get_xwayland_surface({}, {})",
-                            sender_id,
-                            id,
-                            surface
-                        );
-                        self.get_xwayland_surface(client, sender_id, id, surface)
-                            .await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Destroy the xwayland_shell_v1 object."]
             #[doc = ""]
             #[doc = "The child objects created via this interface are unaffected."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create an xwayland_surface_v1 interface for a given wl_surface"]
             #[doc = "object and gives it the xwayland_surface role."]
             #[doc = ""]
@@ -9457,13 +9794,13 @@ pub mod xwayland_shell_v1 {
             #[doc = ""]
             #[doc = "See the documentation of xwayland_surface_v1 for more details"]
             #[doc = "about what an xwayland_surface_v1 is and how it is used."]
-            async fn get_xwayland_surface(
+            fn get_xwayland_surface(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "An Xwayland surface is a surface managed by an Xwayland server."]
@@ -9506,31 +9843,33 @@ pub mod xwayland_shell_v1 {
         pub trait XwaylandSurfaceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xwayland_surface_v1";
             const VERSION: u32 = 1u32;
-            async fn handle_request(
+            fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> crate::server::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode {
-                    0u16 => {
-                        let serial_lo = message.uint()?;
-                        let serial_hi = message.uint()?;
-                        tracing::debug!(
-                            "xwayland_surface_v1#{}.set_serial({}, {})",
-                            sender_id,
-                            serial_lo,
-                            serial_hi
-                        );
-                        self.set_serial(client, sender_id, serial_lo, serial_hi)
-                            .await
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode {
+                        0u16 => {
+                            let serial_lo = message.uint()?;
+                            let serial_hi = message.uint()?;
+                            tracing::debug!(
+                                "xwayland_surface_v1#{}.set_serial({}, {})",
+                                sender_id,
+                                serial_lo,
+                                serial_hi
+                            );
+                            self.set_serial(client, sender_id, serial_lo, serial_hi)
+                                .await
+                        }
+                        1u16 => {
+                            tracing::debug!("xwayland_surface_v1#{}.destroy()", sender_id,);
+                            self.destroy(client, sender_id).await
+                        }
+                        _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
-                    1u16 => {
-                        tracing::debug!("xwayland_surface_v1#{}.destroy()", sender_id,);
-                        self.destroy(client, sender_id).await
-                    }
-                    _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
             #[doc = "Associates an Xwayland window to a wl_surface."]
@@ -9554,21 +9893,21 @@ pub mod xwayland_shell_v1 {
             #[doc = ""]
             #[doc = "For each wl_surface, this state must not be committed more than once,"]
             #[doc = "otherwise the `already_associated` protocol error will be raised."]
-            async fn set_serial(
+            fn set_serial(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial_lo: u32,
                 serial_hi: u32,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the xwayland_surface_v1 object."]
             #[doc = ""]
             #[doc = "Any already existing associations are unaffected by this action."]
-            async fn destroy(
+            fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> crate::server::Result<()>;
+            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
