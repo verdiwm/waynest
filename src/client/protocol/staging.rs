@@ -173,6 +173,1883 @@ pub mod alpha_modifier_v1 {
         }
     }
 }
+#[doc = "The aim of the color management extension is to allow clients to know"]
+#[doc = "the color properties of outputs, and to tell the compositor about the color"]
+#[doc = "properties of their content on surfaces. Doing this enables a compositor"]
+#[doc = "to perform automatic color management of content for different outputs"]
+#[doc = "according to how content is intended to look like."]
+#[doc = ""]
+#[doc = "The color properties are represented as an image description object which"]
+#[doc = "is immutable after it has been created. A wl_output always has an"]
+#[doc = "associated image description that clients can observe. A wl_surface"]
+#[doc = "always has an associated preferred image description as a hint chosen by"]
+#[doc = "the compositor that clients can also observe. Clients can set an image"]
+#[doc = "description on a wl_surface to denote the color characteristics of the"]
+#[doc = "surface contents."]
+#[doc = ""]
+#[doc = "An image description includes SDR and HDR colorimetry and encoding, HDR"]
+#[doc = "metadata, and viewing environment parameters. An image description does"]
+#[doc = "not include the properties set through color-representation extension."]
+#[doc = "It is expected that the color-representation extension is used in"]
+#[doc = "conjunction with the color management extension when necessary,"]
+#[doc = "particularly with the YUV family of pixel formats."]
+#[doc = ""]
+#[doc = "Recommendation ITU-T H.273"]
+#[doc = "\"Coding-independent code points for video signal type identification\""]
+#[doc = "shall be referred to as simply H.273 here."]
+#[doc = ""]
+#[doc = "The color-and-hdr repository"]
+#[doc = "(https://gitlab.freedesktop.org/pq/color-and-hdr) contains"]
+#[doc = "background information on the protocol design and legacy color management."]
+#[doc = "It also contains a glossary, learning resources for digital color, tools,"]
+#[doc = "samples and more."]
+#[doc = ""]
+#[doc = "The terminology used in this protocol is based on common color science and"]
+#[doc = "color encoding terminology where possible. The glossary in the color-and-hdr"]
+#[doc = "repository shall be the authority on the definition of terms in this"]
+#[doc = "protocol."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is currently in the testing"]
+#[doc = "phase. Backward compatible changes may be added together with the"]
+#[doc = "corresponding interface version bump. Backward incompatible changes can"]
+#[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
+pub mod color_management_v1 {
+    #[doc = "A singleton global interface used for getting color management extensions"]
+    #[doc = "for wl_surface and wl_output objects, and for creating client defined"]
+    #[doc = "image description objects. The extension interfaces allow"]
+    #[doc = "getting the image description of outputs and setting the image"]
+    #[doc = "description of surfaces."]
+    #[doc = ""]
+    #[doc = "Compositors should never remove this global."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_color_manager_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "request not supported"]
+            UnsupportedFeature = 0u32,
+            #[doc = "color management surface exists already"]
+            SurfaceExists = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::UnsupportedFeature),
+                    1u32 => Ok(Self::SurfaceExists),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "See the ICC.1:2022 specification from the International Color Consortium"]
+        #[doc = "for more details about rendering intents."]
+        #[doc = ""]
+        #[doc = "The principles of ICC defined rendering intents apply with all types of"]
+        #[doc = "image descriptions, not only those with ICC file profiles."]
+        #[doc = ""]
+        #[doc = "Compositors must support the perceptual rendering intent. Other"]
+        #[doc = "rendering intents are optional."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum RenderIntent {
+            #[doc = "perceptual"]
+            Perceptual = 0u32,
+            #[doc = "media-relative colorimetric"]
+            Relative = 1u32,
+            #[doc = "saturation"]
+            Saturation = 2u32,
+            #[doc = "ICC-absolute colorimetric"]
+            Absolute = 3u32,
+            #[doc = "media-relative colorimetric + black point compensation"]
+            RelativeBpc = 4u32,
+        }
+        impl TryFrom<u32> for RenderIntent {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Perceptual),
+                    1u32 => Ok(Self::Relative),
+                    2u32 => Ok(Self::Saturation),
+                    3u32 => Ok(Self::Absolute),
+                    4u32 => Ok(Self::RelativeBpc),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for RenderIntent {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Feature {
+            #[doc = "create_icc_creator request"]
+            IccV2V4 = 0u32,
+            #[doc = "create_parametric_creator request"]
+            Parametric = 1u32,
+            #[doc = "parametric set_primaries request"]
+            SetPrimaries = 2u32,
+            #[doc = "parametric set_tf_power request"]
+            SetTfPower = 3u32,
+            #[doc = "parametric set_luminances request"]
+            SetLuminances = 4u32,
+            SetMasteringDisplayPrimaries = 5u32,
+            ExtendedTargetVolume = 6u32,
+            #[doc = "get_windows_scrgb request"]
+            WindowsScrgb = 7u32,
+        }
+        impl TryFrom<u32> for Feature {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::IccV2V4),
+                    1u32 => Ok(Self::Parametric),
+                    2u32 => Ok(Self::SetPrimaries),
+                    3u32 => Ok(Self::SetTfPower),
+                    4u32 => Ok(Self::SetLuminances),
+                    5u32 => Ok(Self::SetMasteringDisplayPrimaries),
+                    6u32 => Ok(Self::ExtendedTargetVolume),
+                    7u32 => Ok(Self::WindowsScrgb),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Feature {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Named color primaries used to encode well-known sets of primaries. H.273"]
+        #[doc = "is the authority, when it comes to the exact values of primaries and"]
+        #[doc = "authoritative specifications, where an equivalent code point exists."]
+        #[doc = ""]
+        #[doc = "A value of 0 is invalid and will never be present in the list of enums."]
+        #[doc = ""]
+        #[doc = "Descriptions do list the specifications for convenience."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Primaries {
+            Srgb = 1u32,
+            PalM = 2u32,
+            Pal = 3u32,
+            Ntsc = 4u32,
+            GenericFilm = 5u32,
+            Bt2020 = 6u32,
+            Cie1931Xyz = 7u32,
+            DciP3 = 8u32,
+            DisplayP3 = 9u32,
+            AdobeRgb = 10u32,
+        }
+        impl TryFrom<u32> for Primaries {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::Srgb),
+                    2u32 => Ok(Self::PalM),
+                    3u32 => Ok(Self::Pal),
+                    4u32 => Ok(Self::Ntsc),
+                    5u32 => Ok(Self::GenericFilm),
+                    6u32 => Ok(Self::Bt2020),
+                    7u32 => Ok(Self::Cie1931Xyz),
+                    8u32 => Ok(Self::DciP3),
+                    9u32 => Ok(Self::DisplayP3),
+                    10u32 => Ok(Self::AdobeRgb),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Primaries {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Named transfer functions used to represent well-known transfer"]
+        #[doc = "characteristics. H.273 is the authority, when it comes to the exact"]
+        #[doc = "formulas and authoritative specifications, where an equivalent code"]
+        #[doc = "point exists."]
+        #[doc = ""]
+        #[doc = "A value of 0 is invalid and will never be present in the list of enums."]
+        #[doc = ""]
+        #[doc = "Descriptions do list the specifications for convenience."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum TransferFunction {
+            Bt1886 = 1u32,
+            Gamma22 = 2u32,
+            Gamma28 = 3u32,
+            St240 = 4u32,
+            ExtLinear = 5u32,
+            Log100 = 6u32,
+            Log316 = 7u32,
+            Xvycc = 8u32,
+            Srgb = 9u32,
+            ExtSrgb = 10u32,
+            St2084Pq = 11u32,
+            St428 = 12u32,
+            Hlg = 13u32,
+        }
+        impl TryFrom<u32> for TransferFunction {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::Bt1886),
+                    2u32 => Ok(Self::Gamma22),
+                    3u32 => Ok(Self::Gamma28),
+                    4u32 => Ok(Self::St240),
+                    5u32 => Ok(Self::ExtLinear),
+                    6u32 => Ok(Self::Log100),
+                    7u32 => Ok(Self::Log316),
+                    8u32 => Ok(Self::Xvycc),
+                    9u32 => Ok(Self::Srgb),
+                    10u32 => Ok(Self::ExtSrgb),
+                    11u32 => Ok(Self::St2084Pq),
+                    12u32 => Ok(Self::St428),
+                    13u32 => Ok(Self::Hlg),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for TransferFunction {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_color_manager_v1 interface. See the module level documentation for more info"]
+        pub trait WpColorManagerV1 {
+            const INTERFACE: &'static str = "wp_color_manager_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the wp_color_manager_v1 object. This does not affect any other"]
+            #[doc = "objects in any way."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_color_manager_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This creates a new wp_color_management_output_v1 object for the"]
+            #[doc = "given wl_output."]
+            #[doc = ""]
+            #[doc = "See the wp_color_management_output_v1 interface for more details."]
+            async fn get_output(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_color_manager_v1#{}.get_output()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .put_object(Some(output))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "If a wp_color_management_surface_v1 object already exists for the given"]
+            #[doc = "wl_surface, the protocol error surface_exists is raised."]
+            #[doc = ""]
+            #[doc = "This creates a new color wp_color_management_surface_v1 object for the"]
+            #[doc = "given wl_surface."]
+            #[doc = ""]
+            #[doc = "See the wp_color_management_surface_v1 interface for more details."]
+            async fn get_surface(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_color_manager_v1#{}.get_surface()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .put_object(Some(surface))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This creates a new color wp_color_management_surface_feedback_v1 object"]
+            #[doc = "for the given wl_surface."]
+            #[doc = ""]
+            #[doc = "See the wp_color_management_surface_feedback_v1 interface for more"]
+            #[doc = "details."]
+            async fn get_surface_feedback(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_color_manager_v1#{}.get_surface_feedback()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .put_object(Some(surface))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Makes a new ICC-based image description creator object with all"]
+            #[doc = "properties initially unset. The client can then use the object's"]
+            #[doc = "interface to define all the required properties for an image description"]
+            #[doc = "and finally create a wp_image_description_v1 object."]
+            #[doc = ""]
+            #[doc = "This request can be used when the compositor advertises"]
+            #[doc = "wp_color_manager_v1.feature.icc_v2_v4."]
+            #[doc = "Otherwise this request raises the protocol error unsupported_feature."]
+            async fn create_icc_creator(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                obj: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_color_manager_v1#{}.create_icc_creator()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(obj))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Makes a new parametric image description creator object with all"]
+            #[doc = "properties initially unset. The client can then use the object's"]
+            #[doc = "interface to define all the required properties for an image description"]
+            #[doc = "and finally create a wp_image_description_v1 object."]
+            #[doc = ""]
+            #[doc = "This request can be used when the compositor advertises"]
+            #[doc = "wp_color_manager_v1.feature.parametric."]
+            #[doc = "Otherwise this request raises the protocol error unsupported_feature."]
+            async fn create_parametric_creator(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                obj: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_color_manager_v1#{}.create_parametric_creator()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(obj))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This creates a pre-defined image description for the so-called"]
+            #[doc = "Windows-scRGB stimulus encoding. This comes from the Windows 10 handling"]
+            #[doc = "of its own definition of an scRGB color space for an HDR screen"]
+            #[doc = "driven in BT.2100/PQ signalling mode."]
+            #[doc = ""]
+            #[doc = "Windows-scRGB uses sRGB (BT.709) color primaries and white point."]
+            #[doc = "The transfer characteristic is extended linear."]
+            #[doc = ""]
+            #[doc = "The nominal color channel value range is extended, meaning it includes"]
+            #[doc = "negative and greater than 1.0 values. Negative values are used to"]
+            #[doc = "escape the sRGB color gamut boundaries. To make use of the extended"]
+            #[doc = "range, the client needs to use a pixel format that can represent those"]
+            #[doc = "values, e.g. floating-point 16 bits per channel."]
+            #[doc = ""]
+            #[doc = "Nominal color value R=G=B=0.0 corresponds to BT.2100/PQ system"]
+            #[doc = "0 cd/m², and R=G=B=1.0 corresponds to BT.2100/PQ system 80 cd/m²."]
+            #[doc = "The maximum is R=G=B=125.0 corresponding to 10k cd/m²."]
+            #[doc = ""]
+            #[doc = "Windows-scRGB is displayed by Windows 10 by converting it to"]
+            #[doc = "BT.2100/PQ, maintaining the CIE 1931 chromaticity and mapping the"]
+            #[doc = "luminance as above. No adjustment is made to the signal to account"]
+            #[doc = "for the viewing conditions."]
+            #[doc = ""]
+            #[doc = "The reference white level of Windows-scRGB is unknown. If a"]
+            #[doc = "reference white level must be assumed for compositor processing, it"]
+            #[doc = "should be R=G=B=2.5375 corresponding to 203 cd/m² of Report ITU-R"]
+            #[doc = "BT.2408-7."]
+            #[doc = ""]
+            #[doc = "The target color volume of Windows-scRGB is unknown. The color gamut"]
+            #[doc = "may be anything between sRGB and BT.2100."]
+            #[doc = ""]
+            #[doc = "Note: EGL_EXT_gl_colorspace_scrgb_linear definition differs from"]
+            #[doc = "Windows-scRGB by using R=G=B=1.0 as the reference white level, while"]
+            #[doc = "Windows-scRGB reference white level is unknown or varies. However,"]
+            #[doc = "it seems probable that Windows implements both"]
+            #[doc = "EGL_EXT_gl_colorspace_scrgb_linear and Vulkan"]
+            #[doc = "VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT as Windows-scRGB."]
+            #[doc = ""]
+            #[doc = "This request can be used when the compositor advertises"]
+            #[doc = "wp_color_manager_v1.feature.windows_scrgb."]
+            #[doc = "Otherwise this request raises the protocol error unsupported_feature."]
+            #[doc = ""]
+            #[doc = "The resulting image description object does not allow get_information"]
+            #[doc = "request. The wp_image_description_v1.ready event shall be sent."]
+            async fn create_windows_scrgb(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                image_description: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_color_manager_v1#{}.create_windows_scrgb()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(image_description))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 6u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "When this object is created, it shall immediately send this event once"]
+            #[doc = "for each rendering intent the compositor supports."]
+            async fn supported_intent(
+                &self,
+                render_intent: RenderIntent,
+            ) -> crate::client::Result<()>;
+            #[doc = "When this object is created, it shall immediately send this event once"]
+            #[doc = "for each compositor supported feature listed in the enumeration."]
+            async fn supported_feature(&self, feature: Feature) -> crate::client::Result<()>;
+            #[doc = "When this object is created, it shall immediately send this event once"]
+            #[doc = "for each named transfer function the compositor supports with the"]
+            #[doc = "parametric image description creator."]
+            async fn supported_tf_named(&self, tf: TransferFunction) -> crate::client::Result<()>;
+            #[doc = "When this object is created, it shall immediately send this event once"]
+            #[doc = "for each named set of primaries the compositor supports with the"]
+            #[doc = "parametric image description creator."]
+            async fn supported_primaries_named(
+                &self,
+                primaries: Primaries,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent when all supported rendering intents, features,"]
+            #[doc = "transfer functions and named primaries have been sent."]
+            async fn done(&self) -> crate::client::Result<()>;
+        }
+    }
+    #[doc = "A wp_color_management_output_v1 describes the color properties of an"]
+    #[doc = "output."]
+    #[doc = ""]
+    #[doc = "The wp_color_management_output_v1 is associated with the wl_output global"]
+    #[doc = "underlying the wl_output object. Therefore the client destroying the"]
+    #[doc = "wl_output object has no impact, but the compositor removing the output"]
+    #[doc = "global makes the wp_color_management_output_v1 object inert."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_color_management_output_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the wp_color_management_output_v1 interface. See the module level documentation for more info"]
+        pub trait WpColorManagementOutputV1 {
+            const INTERFACE: &'static str = "wp_color_management_output_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the color wp_color_management_output_v1 object. This does not"]
+            #[doc = "affect any remaining protocol objects."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_color_management_output_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This creates a new wp_image_description_v1 object for the current image"]
+            #[doc = "description of the output. There always is exactly one image description"]
+            #[doc = "active for an output so the client should destroy the image description"]
+            #[doc = "created by earlier invocations of this request. This request is usually"]
+            #[doc = "sent as a reaction to the image_description_changed event or when"]
+            #[doc = "creating a wp_color_management_output_v1 object."]
+            #[doc = ""]
+            #[doc = "The image description of an output represents the color encoding the"]
+            #[doc = "output expects. There might be performance and power advantages, as well"]
+            #[doc = "as improved color reproduction, if a content update matches the image"]
+            #[doc = "description of the output it is being shown on. If a content update is"]
+            #[doc = "shown on any other output than the one it matches the image description"]
+            #[doc = "of, then the color reproduction on those outputs might be considerably"]
+            #[doc = "worse."]
+            #[doc = ""]
+            #[doc = "The created wp_image_description_v1 object preserves the image"]
+            #[doc = "description of the output from the time the object was created."]
+            #[doc = ""]
+            #[doc = "The resulting image description object allows get_information request."]
+            #[doc = ""]
+            #[doc = "If this protocol object is inert, the resulting image description object"]
+            #[doc = "shall immediately deliver the wp_image_description_v1.failed event with"]
+            #[doc = "the no_output cause."]
+            #[doc = ""]
+            #[doc = "If the interface version is inadequate for the output's image"]
+            #[doc = "description, meaning that the client does not support all the events"]
+            #[doc = "needed to deliver the crucial information, the resulting image"]
+            #[doc = "description object shall immediately deliver the"]
+            #[doc = "wp_image_description_v1.failed event with the low_version cause."]
+            #[doc = ""]
+            #[doc = "Otherwise the object shall immediately deliver the ready event."]
+            async fn get_image_description(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                image_description: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_color_management_output_v1#{}.get_image_description()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(image_description))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This event is sent whenever the image description of the output changed,"]
+            #[doc = "followed by one wl_output.done event common to output events across all"]
+            #[doc = "extensions."]
+            #[doc = ""]
+            #[doc = "If the client wants to use the updated image description, it needs to do"]
+            #[doc = "get_image_description again, because image description objects are"]
+            #[doc = "immutable."]
+            async fn image_description_changed(&self) -> crate::client::Result<()>;
+        }
+    }
+    #[doc = "A wp_color_management_surface_v1 allows the client to set the color"]
+    #[doc = "space and HDR properties of a surface."]
+    #[doc = ""]
+    #[doc = "If the wl_surface associated with the wp_color_management_surface_v1 is"]
+    #[doc = "destroyed, the wp_color_management_surface_v1 object becomes inert."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_color_management_surface_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "unsupported rendering intent"]
+            RenderIntent = 0u32,
+            #[doc = "invalid image description"]
+            ImageDescription = 1u32,
+            #[doc = "forbidden request on inert object"]
+            Inert = 2u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::RenderIntent),
+                    1u32 => Ok(Self::ImageDescription),
+                    2u32 => Ok(Self::Inert),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_color_management_surface_v1 interface. See the module level documentation for more info"]
+        pub trait WpColorManagementSurfaceV1 {
+            const INTERFACE: &'static str = "wp_color_management_surface_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the wp_color_management_surface_v1 object and do the same as"]
+            #[doc = "unset_image_description."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_color_management_surface_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "If this protocol object is inert, the protocol error inert is raised."]
+            #[doc = ""]
+            #[doc = "Set the image description of the underlying surface. The image"]
+            #[doc = "description and rendering intent are double-buffered state, see"]
+            #[doc = "wl_surface.commit."]
+            #[doc = ""]
+            #[doc = "It is the client's responsibility to understand the image description"]
+            #[doc = "it sets on a surface, and to provide content that matches that image"]
+            #[doc = "description. Compositors might convert images to match their own or any"]
+            #[doc = "other image descriptions."]
+            #[doc = ""]
+            #[doc = "Image descriptions which are not ready (see wp_image_description_v1)"]
+            #[doc = "are forbidden in this request, and in such case the protocol error"]
+            #[doc = "image_description is raised."]
+            #[doc = ""]
+            #[doc = "All image descriptions which are ready (see wp_image_description_v1)"]
+            #[doc = "are allowed and must always be accepted by the compositor."]
+            #[doc = ""]
+            #[doc = "A rendering intent provides the client's preference on how content"]
+            #[doc = "colors should be mapped to each output. The render_intent value must"]
+            #[doc = "be one advertised by the compositor with"]
+            #[doc = "wp_color_manager_v1.render_intent event, otherwise the protocol error"]
+            #[doc = "render_intent is raised."]
+            #[doc = ""]
+            #[doc = "When an image description is set on a surface, the Transfer"]
+            #[doc = "Characteristics of the image description defines the valid range of"]
+            #[doc = "the nominal (real-valued) color channel values. The processing of"]
+            #[doc = "out-of-range color channel values is undefined, but compositors are"]
+            #[doc = "recommended to clamp the values to the valid range when possible."]
+            #[doc = ""]
+            #[doc = "By default, a surface does not have an associated image description"]
+            #[doc = "nor a rendering intent. The handling of color on such surfaces is"]
+            #[doc = "compositor implementation defined. Compositors should handle such"]
+            #[doc = "surfaces as sRGB, but may handle them differently if they have specific"]
+            #[doc = "requirements."]
+            #[doc = ""]
+            #[doc = "Setting the image description has copy semantics; after this request,"]
+            #[doc = "the image description can be immediately destroyed without affecting"]
+            #[doc = "the pending state of the surface."]
+            async fn set_image_description(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                image_description: crate::wire::ObjectId,
+                render_intent : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: RenderIntent,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_color_management_surface_v1#{}.set_image_description()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(image_description))
+                    .put_uint(render_intent as u32)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "If this protocol object is inert, the protocol error inert is raised."]
+            #[doc = ""]
+            #[doc = "This request removes any image description from the surface. See"]
+            #[doc = "set_image_description for how a compositor handles a surface without"]
+            #[doc = "an image description. This is double-buffered state, see"]
+            #[doc = "wl_surface.commit."]
+            async fn unset_image_description(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_color_management_surface_v1#{}.unset_image_description()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "A wp_color_management_surface_feedback_v1 allows the client to get the"]
+    #[doc = "preferred image description of a surface."]
+    #[doc = ""]
+    #[doc = "If the wl_surface associated with this object is destroyed, the"]
+    #[doc = "wp_color_management_surface_feedback_v1 object becomes inert."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_color_management_surface_feedback_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "forbidden request on inert object"]
+            Inert = 0u32,
+            #[doc = "attempted to use an unsupported feature"]
+            UnsupportedFeature = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Inert),
+                    1u32 => Ok(Self::UnsupportedFeature),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_color_management_surface_feedback_v1 interface. See the module level documentation for more info"]
+        pub trait WpColorManagementSurfaceFeedbackV1 {
+            const INTERFACE: &'static str = "wp_color_management_surface_feedback_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the wp_color_management_surface_feedback_v1 object."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_color_management_surface_feedback_v1#{}.destroy()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "If this protocol object is inert, the protocol error inert is raised."]
+            #[doc = ""]
+            #[doc = "The preferred image description represents the compositor's preferred"]
+            #[doc = "color encoding for this wl_surface at the current time. There might be"]
+            #[doc = "performance and power advantages, as well as improved color"]
+            #[doc = "reproduction, if the image description of a content update matches the"]
+            #[doc = "preferred image description."]
+            #[doc = ""]
+            #[doc = "This creates a new wp_image_description_v1 object for the currently"]
+            #[doc = "preferred image description for the wl_surface. The client should"]
+            #[doc = "stop using and destroy the image descriptions created by earlier"]
+            #[doc = "invocations of this request for the associated wl_surface."]
+            #[doc = "This request is usually sent as a reaction to the preferred_changed"]
+            #[doc = "event or when creating a wp_color_management_surface_feedback_v1 object"]
+            #[doc = "if the client is capable of adapting to image descriptions."]
+            #[doc = ""]
+            #[doc = "The created wp_image_description_v1 object preserves the preferred image"]
+            #[doc = "description of the wl_surface from the time the object was created."]
+            #[doc = ""]
+            #[doc = "The resulting image description object allows get_information request."]
+            #[doc = ""]
+            #[doc = "If the image description is parametric, the client should set it on its"]
+            #[doc = "wl_surface only if the image description is an exact match with the"]
+            #[doc = "client content. Particularly if everything else matches, but the target"]
+            #[doc = "color volume is greater than what the client needs, the client should"]
+            #[doc = "create its own parameric image description with its exact parameters."]
+            #[doc = ""]
+            #[doc = "If the interface version is inadequate for the preferred image"]
+            #[doc = "description, meaning that the client does not support all the"]
+            #[doc = "events needed to deliver the crucial information, the resulting image"]
+            #[doc = "description object shall immediately deliver the"]
+            #[doc = "wp_image_description_v1.failed event with the low_version cause,"]
+            #[doc = "otherwise the object shall immediately deliver the ready event."]
+            async fn get_preferred(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                image_description: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_color_management_surface_feedback_v1#{}.get_preferred()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(image_description))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "The same description as for get_preferred applies, except the returned"]
+            #[doc = "image description is guaranteed to be parametric. This is meant for"]
+            #[doc = "clients that can only deal with parametric image descriptions."]
+            #[doc = ""]
+            #[doc = "If the compositor doesn't support parametric image descriptions, the"]
+            #[doc = "unsupported_feature error is emitted."]
+            async fn get_preferred_parametric(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                image_description: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_color_management_surface_feedback_v1#{}.get_preferred_parametric()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(image_description))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "The preferred image description is the one which likely has the most"]
+            #[doc = "performance and/or quality benefits for the compositor if used by the"]
+            #[doc = "client for its wl_surface contents. This event is sent whenever the"]
+            #[doc = "compositor changes the wl_surface's preferred image description."]
+            #[doc = ""]
+            #[doc = "This event sends the identity of the new preferred state as the argument,"]
+            #[doc = "so clients who are aware of the image description already can reuse it."]
+            #[doc = "Otherwise, if the client client wants to know what the preferred image"]
+            #[doc = "description is, it shall use the get_preferred request."]
+            #[doc = ""]
+            #[doc = "The preferred image description is not automatically used for anything."]
+            #[doc = "It is only a hint, and clients may set any valid image description with"]
+            #[doc = "set_image_description, but there might be performance and color accuracy"]
+            #[doc = "improvements by providing the wl_surface contents in the preferred"]
+            #[doc = "image description. Therefore clients that can, should render according"]
+            #[doc = "to the preferred image description"]
+            async fn preferred_changed(&self, identity: u32) -> crate::client::Result<()>;
+        }
+    }
+    #[doc = "This type of object is used for collecting all the information required"]
+    #[doc = "to create a wp_image_description_v1 object from an ICC file. A complete"]
+    #[doc = "set of required parameters consists of these properties:"]
+    #[doc = "- ICC file"]
+    #[doc = ""]
+    #[doc = "Each required property must be set exactly once if the client is to create"]
+    #[doc = "an image description. The set requests verify that a property was not"]
+    #[doc = "already set. The create request verifies that all required properties are"]
+    #[doc = "set. There may be several alternative requests for setting each property,"]
+    #[doc = "and in that case the client must choose one of them."]
+    #[doc = ""]
+    #[doc = "Once all properties have been set, the create request must be used to"]
+    #[doc = "create the image description object, destroying the creator in the"]
+    #[doc = "process."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_image_description_creator_icc_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "incomplete parameter set"]
+            IncompleteSet = 0u32,
+            #[doc = "property already set"]
+            AlreadySet = 1u32,
+            #[doc = "fd not seekable and readable"]
+            BadFd = 2u32,
+            #[doc = "no or too much data"]
+            BadSize = 3u32,
+            #[doc = "offset + length exceeds file size"]
+            OutOfFile = 4u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::IncompleteSet),
+                    1u32 => Ok(Self::AlreadySet),
+                    2u32 => Ok(Self::BadFd),
+                    3u32 => Ok(Self::BadSize),
+                    4u32 => Ok(Self::OutOfFile),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_image_description_creator_icc_v1 interface. See the module level documentation for more info"]
+        pub trait WpImageDescriptionCreatorIccV1 {
+            const INTERFACE: &'static str = "wp_image_description_creator_icc_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Create an image description object based on the ICC information"]
+            #[doc = "previously set on this object. A compositor must parse the ICC data in"]
+            #[doc = "some undefined but finite amount of time."]
+            #[doc = ""]
+            #[doc = "The completeness of the parameter set is verified. If the set is not"]
+            #[doc = "complete, the protocol error incomplete_set is raised. For the"]
+            #[doc = "definition of a complete set, see the description of this interface."]
+            #[doc = ""]
+            #[doc = "If the particular combination of the information is not supported"]
+            #[doc = "by the compositor, the resulting image description object shall"]
+            #[doc = "immediately deliver the wp_image_description_v1.failed event with the"]
+            #[doc = "'unsupported' cause. If a valid image description was created from the"]
+            #[doc = "information, the wp_image_description_v1.ready event will eventually"]
+            #[doc = "be sent instead."]
+            #[doc = ""]
+            #[doc = "This request destroys the wp_image_description_creator_icc_v1 object."]
+            #[doc = ""]
+            #[doc = "The resulting image description object does not allow get_information"]
+            #[doc = "request."]
+            async fn create(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                image_description: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_image_description_creator_icc_v1#{}.create()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(image_description))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Sets the ICC profile file to be used as the basis of the image"]
+            #[doc = "description."]
+            #[doc = ""]
+            #[doc = "The data shall be found through the given fd at the given offset, having"]
+            #[doc = "the given length. The fd must be seekable and readable. Violating these"]
+            #[doc = "requirements raises the bad_fd protocol error."]
+            #[doc = ""]
+            #[doc = "If reading the data fails due to an error independent of the client, the"]
+            #[doc = "compositor shall send the wp_image_description_v1.failed event on the"]
+            #[doc = "created wp_image_description_v1 with the 'operating_system' cause."]
+            #[doc = ""]
+            #[doc = "The maximum size of the ICC profile is 32 MB. If length is greater than"]
+            #[doc = "that or zero, the protocol error bad_size is raised. If offset + length"]
+            #[doc = "exceeds the file size, the protocol error out_of_file is raised."]
+            #[doc = ""]
+            #[doc = "A compositor may read the file at any time starting from this request"]
+            #[doc = "and only until whichever happens first:"]
+            #[doc = "- If create request was issued, the wp_image_description_v1 object"]
+            #[doc = "delivers either failed or ready event; or"]
+            #[doc = "- if create request was not issued, this"]
+            #[doc = "wp_image_description_creator_icc_v1 object is destroyed."]
+            #[doc = ""]
+            #[doc = "A compositor shall not modify the contents of the file, and the fd may"]
+            #[doc = "be sealed for writes and size changes. The client must ensure to its"]
+            #[doc = "best ability that the data does not change while the compositor is"]
+            #[doc = "reading it."]
+            #[doc = ""]
+            #[doc = "The data must represent a valid ICC profile. The ICC profile version"]
+            #[doc = "must be 2 or 4, it must be a 3 channel profile and the class must be"]
+            #[doc = "Display or ColorSpace. Violating these requirements will not result in a"]
+            #[doc = "protocol error, but will eventually send the"]
+            #[doc = "wp_image_description_v1.failed event on the created"]
+            #[doc = "wp_image_description_v1 with the 'unsupported' cause."]
+            #[doc = ""]
+            #[doc = "See the International Color Consortium specification ICC.1:2022 for more"]
+            #[doc = "details about ICC profiles."]
+            #[doc = ""]
+            #[doc = "If ICC file has already been set on this object, the protocol error"]
+            #[doc = "already_set is raised."]
+            async fn set_icc_file(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                icc_profile: rustix::fd::OwnedFd,
+                offset: u32,
+                length: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_image_description_creator_icc_v1#{}.set_icc_file()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fd(icc_profile)
+                    .put_uint(offset)
+                    .put_uint(length)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "This type of object is used for collecting all the parameters required"]
+    #[doc = "to create a wp_image_description_v1 object. A complete set of required"]
+    #[doc = "parameters consists of these properties:"]
+    #[doc = "- transfer characteristic function (tf)"]
+    #[doc = "- chromaticities of primaries and white point (primary color volume)"]
+    #[doc = ""]
+    #[doc = "The following properties are optional and have a well-defined default"]
+    #[doc = "if not explicitly set:"]
+    #[doc = "- primary color volume luminance range"]
+    #[doc = "- reference white luminance level"]
+    #[doc = "- mastering display primaries and white point (target color volume)"]
+    #[doc = "- mastering luminance range"]
+    #[doc = ""]
+    #[doc = "The following properties are optional and will be ignored"]
+    #[doc = "if not explicitly set:"]
+    #[doc = "- maximum content light level"]
+    #[doc = "- maximum frame-average light level"]
+    #[doc = ""]
+    #[doc = "Each required property must be set exactly once if the client is to create"]
+    #[doc = "an image description. The set requests verify that a property was not"]
+    #[doc = "already set. The create request verifies that all required properties are"]
+    #[doc = "set. There may be several alternative requests for setting each property,"]
+    #[doc = "and in that case the client must choose one of them."]
+    #[doc = ""]
+    #[doc = "Once all properties have been set, the create request must be used to"]
+    #[doc = "create the image description object, destroying the creator in the"]
+    #[doc = "process."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_image_description_creator_params_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "incomplete parameter set"]
+            IncompleteSet = 0u32,
+            #[doc = "property already set"]
+            AlreadySet = 1u32,
+            #[doc = "request not supported"]
+            UnsupportedFeature = 2u32,
+            #[doc = "invalid transfer characteristic"]
+            InvalidTf = 3u32,
+            #[doc = "invalid primaries named"]
+            InvalidPrimariesNamed = 4u32,
+            #[doc = "invalid luminance value or range"]
+            InvalidLuminance = 5u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::IncompleteSet),
+                    1u32 => Ok(Self::AlreadySet),
+                    2u32 => Ok(Self::UnsupportedFeature),
+                    3u32 => Ok(Self::InvalidTf),
+                    4u32 => Ok(Self::InvalidPrimariesNamed),
+                    5u32 => Ok(Self::InvalidLuminance),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_image_description_creator_params_v1 interface. See the module level documentation for more info"]
+        pub trait WpImageDescriptionCreatorParamsV1 {
+            const INTERFACE: &'static str = "wp_image_description_creator_params_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Create an image description object based on the parameters previously"]
+            #[doc = "set on this object."]
+            #[doc = ""]
+            #[doc = "The completeness of the parameter set is verified. If the set is not"]
+            #[doc = "complete, the protocol error incomplete_set is raised. For the"]
+            #[doc = "definition of a complete set, see the description of this interface."]
+            #[doc = ""]
+            #[doc = "The protocol error invalid_luminance is raised if any of the following"]
+            #[doc = "requirements is not met:"]
+            #[doc = "- When max_cll is set, it must be greater than min L and less or equal"]
+            #[doc = "to max L of the mastering luminance range."]
+            #[doc = "- When max_fall is set, it must be greater than min L and less or equal"]
+            #[doc = "to max L of the mastering luminance range."]
+            #[doc = "- When both max_cll and max_fall are set, max_fall must be less or equal"]
+            #[doc = "to max_cll."]
+            #[doc = ""]
+            #[doc = "If the particular combination of the parameter set is not supported"]
+            #[doc = "by the compositor, the resulting image description object shall"]
+            #[doc = "immediately deliver the wp_image_description_v1.failed event with the"]
+            #[doc = "'unsupported' cause. If a valid image description was created from the"]
+            #[doc = "parameter set, the wp_image_description_v1.ready event will eventually"]
+            #[doc = "be sent instead."]
+            #[doc = ""]
+            #[doc = "This request destroys the wp_image_description_creator_params_v1"]
+            #[doc = "object."]
+            #[doc = ""]
+            #[doc = "The resulting image description object does not allow get_information"]
+            #[doc = "request."]
+            async fn create(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                image_description: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_image_description_creator_params_v1#{}.create()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(image_description))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Sets the transfer characteristic using explicitly enumerated named"]
+            #[doc = "functions."]
+            #[doc = ""]
+            #[doc = "When the resulting image description is attached to an image, the"]
+            #[doc = "content should be encoded and decoded according to the industry standard"]
+            #[doc = "practices for the transfer characteristic."]
+            #[doc = ""]
+            #[doc = "Only names advertised with wp_color_manager_v1 event supported_tf_named"]
+            #[doc = "are allowed. Other values shall raise the protocol error invalid_tf."]
+            #[doc = ""]
+            #[doc = "If transfer characteristic has already been set on this object, the"]
+            #[doc = "protocol error already_set is raised."]
+            async fn set_tf_named(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                tf : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: TransferFunction,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_image_description_creator_params_v1#{}.set_tf_named()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(tf as u32)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Sets the color component transfer characteristic to a power curve with"]
+            #[doc = "the given exponent. Negative values are handled by mirroring the"]
+            #[doc = "positive half of the curve through the origin. The valid domain and"]
+            #[doc = "range of the curve are all finite real numbers. This curve represents"]
+            #[doc = "the conversion from electrical to optical color channel values."]
+            #[doc = ""]
+            #[doc = "When the resulting image description is attached to an image, the"]
+            #[doc = "content should be encoded with the inverse of the power curve."]
+            #[doc = ""]
+            #[doc = "The curve exponent shall be multiplied by 10000 to get the argument eexp"]
+            #[doc = "value to carry the precision of 4 decimals."]
+            #[doc = ""]
+            #[doc = "The curve exponent must be at least 1.0 and at most 10.0. Otherwise the"]
+            #[doc = "protocol error invalid_tf is raised."]
+            #[doc = ""]
+            #[doc = "If transfer characteristic has already been set on this object, the"]
+            #[doc = "protocol error already_set is raised."]
+            #[doc = ""]
+            #[doc = "This request can be used when the compositor advertises"]
+            #[doc = "wp_color_manager_v1.feature.set_tf_power. Otherwise this request raises"]
+            #[doc = "the protocol error unsupported_feature."]
+            async fn set_tf_power(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                eexp: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_image_description_creator_params_v1#{}.set_tf_power()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(eexp).build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Sets the color primaries and white point using explicitly named sets."]
+            #[doc = "This describes the primary color volume which is the basis for color"]
+            #[doc = "value encoding."]
+            #[doc = ""]
+            #[doc = "Only names advertised with wp_color_manager_v1 event"]
+            #[doc = "supported_primaries_named are allowed. Other values shall raise the"]
+            #[doc = "protocol error invalid_primaries_named."]
+            #[doc = ""]
+            #[doc = "If primaries have already been set on this object, the protocol error"]
+            #[doc = "already_set is raised."]
+            async fn set_primaries_named(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                primaries : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: Primaries,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_image_description_creator_params_v1#{}.set_primaries_named()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(primaries as u32)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Sets the color primaries and white point using CIE 1931 xy chromaticity"]
+            #[doc = "coordinates. This describes the primary color volume which is the basis"]
+            #[doc = "for color value encoding."]
+            #[doc = ""]
+            #[doc = "Each coordinate value is multiplied by 1 million to get the argument"]
+            #[doc = "value to carry precision of 6 decimals."]
+            #[doc = ""]
+            #[doc = "If primaries have already been set on this object, the protocol error"]
+            #[doc = "already_set is raised."]
+            #[doc = ""]
+            #[doc = "This request can be used if the compositor advertises"]
+            #[doc = "wp_color_manager_v1.feature.set_primaries. Otherwise this request raises"]
+            #[doc = "the protocol error unsupported_feature."]
+            async fn set_primaries(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                r_x: i32,
+                r_y: i32,
+                g_x: i32,
+                g_y: i32,
+                b_x: i32,
+                b_y: i32,
+                w_x: i32,
+                w_y: i32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_image_description_creator_params_v1#{}.set_primaries()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(r_x)
+                    .put_int(r_y)
+                    .put_int(g_x)
+                    .put_int(g_y)
+                    .put_int(b_x)
+                    .put_int(b_y)
+                    .put_int(w_x)
+                    .put_int(w_y)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Sets the primary color volume luminance range and the reference white"]
+            #[doc = "luminance level. These values include the minimum display emission"]
+            #[doc = "and ambient flare luminances, assumed to be optically additive and have"]
+            #[doc = "the chromaticity of the primary color volume white point."]
+            #[doc = ""]
+            #[doc = "The default luminances from"]
+            #[doc = "https://www.color.org/chardata/rgb/srgb.xalter are"]
+            #[doc = "- primary color volume minimum: 0.2 cd/m²"]
+            #[doc = "- primary color volume maximum: 80 cd/m²"]
+            #[doc = "- reference white: 80 cd/m²"]
+            #[doc = ""]
+            #[doc = "Setting a named transfer characteristic can imply other default"]
+            #[doc = "luminances."]
+            #[doc = ""]
+            #[doc = "The default luminances get overwritten when this request is used."]
+            #[doc = "With transfer_function.st2084_pq the given 'max_lum' value is ignored,"]
+            #[doc = "and 'max_lum' is taken as 'min_lum' + 10000 cd/m²."]
+            #[doc = ""]
+            #[doc = "'min_lum' and 'max_lum' specify the minimum and maximum luminances of"]
+            #[doc = "the primary color volume as reproduced by the targeted display."]
+            #[doc = ""]
+            #[doc = "'reference_lum' specifies the luminance of the reference white as"]
+            #[doc = "reproduced by the targeted display, and reflects the targeted viewing"]
+            #[doc = "environment."]
+            #[doc = ""]
+            #[doc = "Compositors should make sure that all content is anchored, meaning that"]
+            #[doc = "an input signal level of 'reference_lum' on one image description and"]
+            #[doc = "another input signal level of 'reference_lum' on another image"]
+            #[doc = "description should produce the same output level, even though the"]
+            #[doc = "'reference_lum' on both image representations can be different."]
+            #[doc = ""]
+            #[doc = "'reference_lum' may be higher than 'max_lum'. In that case reaching"]
+            #[doc = "the reference white output level in image content requires the"]
+            #[doc = "'extended_target_volume' feature support."]
+            #[doc = ""]
+            #[doc = "If 'max_lum' or 'reference_lum' are less than or equal to 'min_lum',"]
+            #[doc = "the protocol error invalid_luminance is raised."]
+            #[doc = ""]
+            #[doc = "The minimum luminance is multiplied by 10000 to get the argument"]
+            #[doc = "'min_lum' value and carries precision of 4 decimals. The maximum"]
+            #[doc = "luminance and reference white luminance values are unscaled."]
+            #[doc = ""]
+            #[doc = "If the primary color volume luminance range and the reference white"]
+            #[doc = "luminance level have already been set on this object, the protocol error"]
+            #[doc = "already_set is raised."]
+            #[doc = ""]
+            #[doc = "This request can be used if the compositor advertises"]
+            #[doc = "wp_color_manager_v1.feature.set_luminances. Otherwise this request"]
+            #[doc = "raises the protocol error unsupported_feature."]
+            async fn set_luminances(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                min_lum: u32,
+                max_lum: u32,
+                reference_lum: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_image_description_creator_params_v1#{}.set_luminances()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(min_lum)
+                    .put_uint(max_lum)
+                    .put_uint(reference_lum)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Provides the color primaries and white point of the mastering display"]
+            #[doc = "using CIE 1931 xy chromaticity coordinates. This is compatible with the"]
+            #[doc = "SMPTE ST 2086 definition of HDR static metadata."]
+            #[doc = ""]
+            #[doc = "The mastering display primaries and mastering display luminances define"]
+            #[doc = "the target color volume."]
+            #[doc = ""]
+            #[doc = "If mastering display primaries are not explicitly set, the target color"]
+            #[doc = "volume is assumed to have the same primaries as the primary color volume."]
+            #[doc = ""]
+            #[doc = "The target color volume is defined by all tristimulus values between 0.0"]
+            #[doc = "and 1.0 (inclusive) of the color space defined by the given mastering"]
+            #[doc = "display primaries and white point. The colorimetry is identical between"]
+            #[doc = "the container color space and the mastering display color space,"]
+            #[doc = "including that no chromatic adaptation is applied even if the white"]
+            #[doc = "points differ."]
+            #[doc = ""]
+            #[doc = "The target color volume can exceed the primary color volume to allow for"]
+            #[doc = "a greater color volume with an existing color space definition (for"]
+            #[doc = "example scRGB). It can be smaller than the primary color volume to"]
+            #[doc = "minimize gamut and tone mapping distances for big color spaces (HDR"]
+            #[doc = "metadata)."]
+            #[doc = ""]
+            #[doc = "To make use of the entire target color volume a suitable pixel format"]
+            #[doc = "has to be chosen (e.g. floating point to exceed the primary color"]
+            #[doc = "volume, or abusing limited quantization range as with xvYCC)."]
+            #[doc = ""]
+            #[doc = "Each coordinate value is multiplied by 1 million to get the argument"]
+            #[doc = "value to carry precision of 6 decimals."]
+            #[doc = ""]
+            #[doc = "If mastering display primaries have already been set on this object, the"]
+            #[doc = "protocol error already_set is raised."]
+            #[doc = ""]
+            #[doc = "This request can be used if the compositor advertises"]
+            #[doc = "wp_color_manager_v1.feature.set_mastering_display_primaries. Otherwise"]
+            #[doc = "this request raises the protocol error unsupported_feature. The"]
+            #[doc = "advertisement implies support only for target color volumes fully"]
+            #[doc = "contained within the primary color volume."]
+            #[doc = ""]
+            #[doc = "If a compositor additionally supports target color volume exceeding the"]
+            #[doc = "primary color volume, it must advertise"]
+            #[doc = "wp_color_manager_v1.feature.extended_target_volume. If a client uses"]
+            #[doc = "target color volume exceeding the primary color volume and the"]
+            #[doc = "compositor does not support it, the result is implementation defined."]
+            #[doc = "Compositors are recommended to detect this case and fail the image"]
+            #[doc = "description gracefully, but it may as well result in color artifacts."]
+            async fn set_mastering_display_primaries(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                r_x: i32,
+                r_y: i32,
+                g_x: i32,
+                g_y: i32,
+                b_x: i32,
+                b_y: i32,
+                w_x: i32,
+                w_y: i32,
+            ) -> crate::client::Result<()> {
+                tracing :: debug ! ("-> wp_image_description_creator_params_v1#{}.set_mastering_display_primaries()" , object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(r_x)
+                    .put_int(r_y)
+                    .put_int(g_x)
+                    .put_int(g_y)
+                    .put_int(b_x)
+                    .put_int(b_y)
+                    .put_int(w_x)
+                    .put_int(w_y)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 6u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Sets the luminance range that was used during the content mastering"]
+            #[doc = "process as the minimum and maximum absolute luminance L. These values"]
+            #[doc = "include the minimum display emission and ambient flare luminances,"]
+            #[doc = "assumed to be optically additive and have the chromaticity of the"]
+            #[doc = "primary color volume white point. This should be"]
+            #[doc = "compatible with the SMPTE ST 2086 definition of HDR static metadata."]
+            #[doc = ""]
+            #[doc = "The mastering display primaries and mastering display luminances define"]
+            #[doc = "the target color volume."]
+            #[doc = ""]
+            #[doc = "If mastering luminances are not explicitly set, the target color volume"]
+            #[doc = "is assumed to have the same min and max luminances as the primary color"]
+            #[doc = "volume."]
+            #[doc = ""]
+            #[doc = "If max L is less than or equal to min L, the protocol error"]
+            #[doc = "invalid_luminance is raised."]
+            #[doc = ""]
+            #[doc = "Min L value is multiplied by 10000 to get the argument min_lum value"]
+            #[doc = "and carry precision of 4 decimals. Max L value is unscaled for max_lum."]
+            #[doc = ""]
+            #[doc = "This request can be used if the compositor advertises"]
+            #[doc = "wp_color_manager_v1.feature.set_mastering_display_primaries. Otherwise"]
+            #[doc = "this request raises the protocol error unsupported_feature. The"]
+            #[doc = "advertisement implies support only for target color volumes fully"]
+            #[doc = "contained within the primary color volume."]
+            #[doc = ""]
+            #[doc = "If a compositor additionally supports target color volume exceeding the"]
+            #[doc = "primary color volume, it must advertise"]
+            #[doc = "wp_color_manager_v1.feature.extended_target_volume. If a client uses"]
+            #[doc = "target color volume exceeding the primary color volume and the"]
+            #[doc = "compositor does not support it, the result is implementation defined."]
+            #[doc = "Compositors are recommended to detect this case and fail the image"]
+            #[doc = "description gracefully, but it may as well result in color artifacts."]
+            async fn set_mastering_luminance(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                min_lum: u32,
+                max_lum: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_image_description_creator_params_v1#{}.set_mastering_luminance()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(min_lum)
+                    .put_uint(max_lum)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 7u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Sets the maximum content light level (max_cll) as defined by CTA-861-H."]
+            #[doc = ""]
+            #[doc = "max_cll is undefined by default."]
+            async fn set_max_cll(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                max_cll: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_image_description_creator_params_v1#{}.set_max_cll()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(max_cll).build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 8u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Sets the maximum frame-average light level (max_fall) as defined by"]
+            #[doc = "CTA-861-H."]
+            #[doc = ""]
+            #[doc = "max_fall is undefined by default."]
+            async fn set_max_fall(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                max_fall: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_image_description_creator_params_v1#{}.set_max_fall()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(max_fall)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 9u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "An image description carries information about the color encoding used on"]
+    #[doc = "a surface when attached to a wl_surface via"]
+    #[doc = "wp_color_management_surface_v1.set_image_description. A compositor can use"]
+    #[doc = "this information to decode pixel values into colorimetrically meaningful"]
+    #[doc = "quantities."]
+    #[doc = ""]
+    #[doc = "Note, that the wp_image_description_v1 object is not ready to be used"]
+    #[doc = "immediately after creation. The object eventually delivers either the"]
+    #[doc = "'ready' or the 'failed' event, specified in all requests creating it. The"]
+    #[doc = "object is deemed \"ready\" after receiving the 'ready' event."]
+    #[doc = ""]
+    #[doc = "An object which is not ready is illegal to use, it can only be destroyed."]
+    #[doc = "Any other request in this interface shall result in the 'not_ready'"]
+    #[doc = "protocol error. Attempts to use an object which is not ready through other"]
+    #[doc = "interfaces shall raise protocol errors defined there."]
+    #[doc = ""]
+    #[doc = "Once created and regardless of how it was created, a"]
+    #[doc = "wp_image_description_v1 object always refers to one fixed image"]
+    #[doc = "description. It cannot change after creation."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_image_description_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "attempted to use an object which is not ready"]
+            NotReady = 0u32,
+            #[doc = "get_information not allowed"]
+            NoInformation = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::NotReady),
+                    1u32 => Ok(Self::NoInformation),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Cause {
+            #[doc = "interface version too low"]
+            LowVersion = 0u32,
+            #[doc = "unsupported image description data"]
+            Unsupported = 1u32,
+            #[doc = "error independent of the client"]
+            OperatingSystem = 2u32,
+            #[doc = "the relevant output no longer exists"]
+            NoOutput = 3u32,
+        }
+        impl TryFrom<u32> for Cause {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::LowVersion),
+                    1u32 => Ok(Self::Unsupported),
+                    2u32 => Ok(Self::OperatingSystem),
+                    3u32 => Ok(Self::NoOutput),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Cause {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_image_description_v1 interface. See the module level documentation for more info"]
+        pub trait WpImageDescriptionV1 {
+            const INTERFACE: &'static str = "wp_image_description_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy this object. It is safe to destroy an object which is not ready."]
+            #[doc = ""]
+            #[doc = "Destroying a wp_image_description_v1 object has no side-effects, not"]
+            #[doc = "even if a wp_color_management_surface_v1.set_image_description has not"]
+            #[doc = "yet been followed by a wl_surface.commit."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_image_description_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Creates a wp_image_description_info_v1 object which delivers the"]
+            #[doc = "information that makes up the image description."]
+            #[doc = ""]
+            #[doc = "Not all image description protocol objects allow get_information"]
+            #[doc = "request. Whether it is allowed or not is defined by the request that"]
+            #[doc = "created the object. If get_information is not allowed, the protocol"]
+            #[doc = "error no_information is raised."]
+            async fn get_information(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                information: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wp_image_description_v1#{}.get_information()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(information))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "If creating a wp_image_description_v1 object fails for a reason that is"]
+            #[doc = "not defined as a protocol error, this event is sent."]
+            #[doc = ""]
+            #[doc = "The requests that create image description objects define whether and"]
+            #[doc = "when this can occur. Only such creation requests can trigger this event."]
+            #[doc = "This event cannot be triggered after the image description was"]
+            #[doc = "successfully formed."]
+            #[doc = ""]
+            #[doc = "Once this event has been sent, the wp_image_description_v1 object will"]
+            #[doc = "never become ready and it can only be destroyed."]
+            async fn failed(&self, cause: Cause, msg: String) -> crate::client::Result<()>;
+            #[doc = "Once this event has been sent, the wp_image_description_v1 object is"]
+            #[doc = "deemed \"ready\". Ready objects can be used to send requests and can be"]
+            #[doc = "used through other interfaces."]
+            #[doc = ""]
+            #[doc = "Every ready wp_image_description_v1 protocol object refers to an"]
+            #[doc = "underlying image description record in the compositor. Multiple protocol"]
+            #[doc = "objects may end up referring to the same record. Clients may identify"]
+            #[doc = "these \"copies\" by comparing their id numbers: if the numbers from two"]
+            #[doc = "protocol objects are identical, the protocol objects refer to the same"]
+            #[doc = "image description record. Two different image description records"]
+            #[doc = "cannot have the same id number simultaneously. The id number does not"]
+            #[doc = "change during the lifetime of the image description record."]
+            #[doc = ""]
+            #[doc = "The id number is valid only as long as the protocol object is alive. If"]
+            #[doc = "all protocol objects referring to the same image description record are"]
+            #[doc = "destroyed, the id number may be recycled for a different image"]
+            #[doc = "description record."]
+            #[doc = ""]
+            #[doc = "Image description id number is not a protocol object id. Zero is"]
+            #[doc = "reserved as an invalid id number. It shall not be possible for a client"]
+            #[doc = "to refer to an image description by its id number in protocol. The id"]
+            #[doc = "numbers might not be portable between Wayland connections. A compositor"]
+            #[doc = "shall not send an invalid id number."]
+            #[doc = ""]
+            #[doc = "This identity allows clients to de-duplicate image description records"]
+            #[doc = "and avoid get_information request if they already have the image"]
+            #[doc = "description information."]
+            async fn ready(&self, identity: u32) -> crate::client::Result<()>;
+        }
+    }
+    #[doc = "Sends all matching events describing an image description object exactly"]
+    #[doc = "once and finally sends the 'done' event."]
+    #[doc = ""]
+    #[doc = "This means"]
+    #[doc = "- if the image description is parametric, it must send"]
+    #[doc = "- primaries"]
+    #[doc = "- named_primaries, if applicable"]
+    #[doc = "- at least one of tf_power and tf_named, as applicable"]
+    #[doc = "- luminances"]
+    #[doc = "- target_primaries"]
+    #[doc = "- target_luminance"]
+    #[doc = "- if the image description is parametric, it may send, if applicable,"]
+    #[doc = "- target_max_cll"]
+    #[doc = "- target_max_fall"]
+    #[doc = "- if the image description contains an ICC profile, it must send the"]
+    #[doc = "icc_file event"]
+    #[doc = ""]
+    #[doc = "Once a wp_image_description_info_v1 object has delivered a 'done' event it"]
+    #[doc = "is automatically destroyed."]
+    #[doc = ""]
+    #[doc = "Every wp_image_description_info_v1 created from the same"]
+    #[doc = "wp_image_description_v1 shall always return the exact same data."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_image_description_info_v1 {
+        #[doc = "Trait to implement the wp_image_description_info_v1 interface. See the module level documentation for more info"]
+        pub trait WpImageDescriptionInfoV1 {
+            const INTERFACE: &'static str = "wp_image_description_info_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Signals the end of information events and destroys the object."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "The icc argument provides a file descriptor to the client which may be"]
+            #[doc = "memory-mapped to provide the ICC profile matching the image description."]
+            #[doc = "The fd is read-only, and if mapped then it must be mapped with"]
+            #[doc = "MAP_PRIVATE by the client."]
+            #[doc = ""]
+            #[doc = "The ICC profile version and other details are determined by the"]
+            #[doc = "compositor. There is no provision for a client to ask for a specific"]
+            #[doc = "kind of a profile."]
+            async fn icc_file(
+                &self,
+                icc: rustix::fd::OwnedFd,
+                icc_size: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Delivers the primary color volume primaries and white point using CIE"]
+            #[doc = "1931 xy chromaticity coordinates."]
+            #[doc = ""]
+            #[doc = "Each coordinate value is multiplied by 1 million to get the argument"]
+            #[doc = "value to carry precision of 6 decimals."]
+            async fn primaries(
+                &self,
+                r_x: i32,
+                r_y: i32,
+                g_x: i32,
+                g_y: i32,
+                b_x: i32,
+                b_y: i32,
+                w_x: i32,
+                w_y: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Delivers the primary color volume primaries and white point using an"]
+            #[doc = "explicitly enumerated named set."]
+            async fn primaries_named(
+                &self,
+                primaries : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: Primaries,
+            ) -> crate::client::Result<()>;
+            #[doc = "The color component transfer characteristic of this image description is"]
+            #[doc = "a pure power curve. This event provides the exponent of the power"]
+            #[doc = "function. This curve represents the conversion from electrical to"]
+            #[doc = "optical pixel or color values."]
+            #[doc = ""]
+            #[doc = "The curve exponent has been multiplied by 10000 to get the argument eexp"]
+            #[doc = "value to carry the precision of 4 decimals."]
+            async fn tf_power(&self, eexp: u32) -> crate::client::Result<()>;
+            #[doc = "Delivers the transfer characteristic using an explicitly enumerated"]
+            #[doc = "named function."]
+            async fn tf_named(
+                &self,
+                tf : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: TransferFunction,
+            ) -> crate::client::Result<()>;
+            #[doc = "Delivers the primary color volume luminance range and the reference"]
+            #[doc = "white luminance level. These values include the minimum display emission"]
+            #[doc = "and ambient flare luminances, assumed to be optically additive and have"]
+            #[doc = "the chromaticity of the primary color volume white point."]
+            #[doc = ""]
+            #[doc = "The minimum luminance is multiplied by 10000 to get the argument"]
+            #[doc = "'min_lum' value and carries precision of 4 decimals. The maximum"]
+            #[doc = "luminance and reference white luminance values are unscaled."]
+            async fn luminances(
+                &self,
+                min_lum: u32,
+                max_lum: u32,
+                reference_lum: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Provides the color primaries and white point of the target color volume"]
+            #[doc = "using CIE 1931 xy chromaticity coordinates. This is compatible with the"]
+            #[doc = "SMPTE ST 2086 definition of HDR static metadata for mastering displays."]
+            #[doc = ""]
+            #[doc = "While primary color volume is about how color is encoded, the target"]
+            #[doc = "color volume is the actually displayable color volume. If target color"]
+            #[doc = "volume is equal to the primary color volume, then this event is not"]
+            #[doc = "sent."]
+            #[doc = ""]
+            #[doc = "Each coordinate value is multiplied by 1 million to get the argument"]
+            #[doc = "value to carry precision of 6 decimals."]
+            async fn target_primaries(
+                &self,
+                r_x: i32,
+                r_y: i32,
+                g_x: i32,
+                g_y: i32,
+                b_x: i32,
+                b_y: i32,
+                w_x: i32,
+                w_y: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Provides the luminance range that the image description is targeting as"]
+            #[doc = "the minimum and maximum absolute luminance L. These values include the"]
+            #[doc = "minimum display emission and ambient flare luminances, assumed to be"]
+            #[doc = "optically additive and have the chromaticity of the primary color"]
+            #[doc = "volume white point. This should be compatible with the SMPTE ST 2086"]
+            #[doc = "definition of HDR static metadata."]
+            #[doc = ""]
+            #[doc = "This luminance range is only theoretical and may not correspond to the"]
+            #[doc = "luminance of light emitted on an actual display."]
+            #[doc = ""]
+            #[doc = "Min L value is multiplied by 10000 to get the argument min_lum value and"]
+            #[doc = "carry precision of 4 decimals. Max L value is unscaled for max_lum."]
+            async fn target_luminance(
+                &self,
+                min_lum: u32,
+                max_lum: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "Provides the targeted max_cll of the image description. max_cll is"]
+            #[doc = "defined by CTA-861-H."]
+            #[doc = ""]
+            #[doc = "This luminance is only theoretical and may not correspond to the"]
+            #[doc = "luminance of light emitted on an actual display."]
+            async fn target_max_cll(&self, max_cll: u32) -> crate::client::Result<()>;
+            #[doc = "Provides the targeted max_fall of the image description. max_fall is"]
+            #[doc = "defined by CTA-861-H."]
+            #[doc = ""]
+            #[doc = "This luminance is only theoretical and may not correspond to the"]
+            #[doc = "luminance of light emitted on an actual display."]
+            async fn target_max_fall(&self, max_fall: u32) -> crate::client::Result<()>;
+        }
+    }
+}
 #[allow(clippy::module_inception)]
 pub mod commit_timing_v1 {
     #[doc = "When a compositor latches on to new content updates it will check for"]
