@@ -2320,7 +2320,7 @@ pub mod ext_idle_notify_v1 {
         #[doc = "Trait to implement the ext_idle_notifier_v1 interface. See the module level documentation for more info"]
         pub trait ExtIdleNotifierV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_idle_notifier_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
             where
                 Self: Sized,
@@ -2357,6 +2357,24 @@ pub mod ext_idle_notify_v1 {
                         self.get_idle_notification(object, client, id, timeout, seat)
                             .await
                     }
+                    2u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let timeout = message.uint()?;
+                        let seat = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_idle_notifier_v1#{}.get_input_idle_notification({}, {}, {})",
+                            object.id,
+                            id,
+                            timeout,
+                            seat
+                        );
+                        self.get_input_idle_notification(object, client, id, timeout, seat)
+                            .await
+                    }
                     _ => Err(crate::server::error::Error::UnknownOpcode),
                 }
             }
@@ -2383,6 +2401,24 @@ pub mod ext_idle_notify_v1 {
                 timeout: u32,
                 seat: crate::wire::ObjectId,
             ) -> crate::server::Result<()>;
+            #[doc = "Create a new idle notification object to track input from the"]
+            #[doc = "user, such as keyboard and mouse movement. Because this object is"]
+            #[doc = "meant to track user input alone, it ignores idle inhibitors."]
+            #[doc = ""]
+            #[doc = "The notification object has a minimum timeout duration and is tied to a"]
+            #[doc = "seat. The client will be notified if the seat is inactive for at least"]
+            #[doc = "the provided timeout. See ext_idle_notification_v1 for more details."]
+            #[doc = ""]
+            #[doc = "A zero timeout is valid and means the client wants to be notified as"]
+            #[doc = "soon as possible when the seat is inactive."]
+            async fn get_input_idle_notification(
+                &self,
+                object: &crate::server::Object,
+                client: &mut crate::server::Client,
+                id: crate::wire::ObjectId,
+                timeout: u32,
+                seat: crate::wire::ObjectId,
+            ) -> crate::server::Result<()>;
         }
     }
     #[doc = "This interface is used by the compositor to send idle notification events"]
@@ -2392,9 +2428,17 @@ pub mod ext_idle_notify_v1 {
     #[doc = "becomes idle when no user activity has happened for at least the timeout"]
     #[doc = "duration, starting from the creation of the notification object. User"]
     #[doc = "activity may include input events or a presence sensor, but is"]
-    #[doc = "compositor-specific. If an idle inhibitor is active (e.g. another client"]
-    #[doc = "has created a zwp_idle_inhibitor_v1 on a visible surface), the compositor"]
-    #[doc = "must not make the notification object idle."]
+    #[doc = "compositor-specific."]
+    #[doc = ""]
+    #[doc = "How this notification responds to idle inhibitors depends on how"]
+    #[doc = "it was constructed. If constructed from the"]
+    #[doc = "get_idle_notification request, then if an idle inhibitor is"]
+    #[doc = "active (e.g. another client has created a zwp_idle_inhibitor_v1"]
+    #[doc = "on a visible surface), the compositor must not make the"]
+    #[doc = "notification object idle. However, if constructed from the"]
+    #[doc = "get_input_idle_notification request, then idle inhibitors are"]
+    #[doc = "ignored, and only input from the user, e.g. from a keyboard or"]
+    #[doc = "mouse, counts as activity."]
     #[doc = ""]
     #[doc = "When the notification object becomes idle, an idled event is sent. When"]
     #[doc = "user activity starts again, the notification object stops being idle,"]
@@ -2406,7 +2450,7 @@ pub mod ext_idle_notify_v1 {
         #[doc = "Trait to implement the ext_idle_notification_v1 interface. See the module level documentation for more info"]
         pub trait ExtIdleNotificationV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "ext_idle_notification_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn into_object(self, id: crate::wire::ObjectId) -> crate::server::Object
             where
                 Self: Sized,
