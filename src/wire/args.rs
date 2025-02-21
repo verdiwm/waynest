@@ -38,9 +38,9 @@ impl ObjectId {
 
     /// # Safety
     /// The value must not be zero.
-    pub const unsafe fn from_raw(id: u32) -> Self {
+    pub const unsafe fn from_raw(id: u32) -> Self { unsafe {
         Self(NonZeroU32::new_unchecked(id))
-    }
+    }}
 
     pub const fn new(id: u32) -> Option<Self> {
         if id == 0 {
