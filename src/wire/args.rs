@@ -39,6 +39,7 @@ impl ObjectId {
     /// # Safety
     /// The value must not be zero.
     pub const unsafe fn from_raw(id: u32) -> Self {
+        // Safety is upheld by the caller
         unsafe { Self(NonZeroU32::new_unchecked(id)) }
     }
 
