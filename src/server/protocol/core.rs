@@ -47,7 +47,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -85,7 +85,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 callback: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request creates a registry object that allows the client"]
             #[doc = "to list and bind the global objects available from the"]
             #[doc = "compositor."]
@@ -100,7 +100,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 registry: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The error event is sent out when a fatal (non-recoverable)"]
             #[doc = "error has occurred.  The object_id argument is the object"]
             #[doc = "where the error occurred, most often in response to a request"]
@@ -115,7 +115,7 @@ pub mod wayland {
                 object_id: crate::wire::ObjectId,
                 code: u32,
                 message: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_display#{}.error({}, {}, \"{}\")",
@@ -145,7 +145,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_display#{}.delete_id({})", sender_id, id);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
@@ -190,7 +190,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -212,7 +212,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 name: u32,
                 id: crate::wire::NewId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Notify the client of global objects."]
             #[doc = ""]
             #[doc = "The event notifies the client that a global object with"]
@@ -225,7 +225,7 @@ pub mod wayland {
                 name: u32,
                 interface: String,
                 version: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_registry#{}.global({}, \"{}\", {})",
@@ -260,7 +260,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_registry#{}.global_remove({})", sender_id, name);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(name).build();
@@ -290,7 +290,7 @@ pub mod wayland {
                 _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -304,7 +304,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 callback_data: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_callback#{}.done({})", sender_id, callback_data);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -334,7 +334,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -362,14 +362,14 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Ask the compositor to create a new region."]
             fn create_region(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "The wl_shm_pool object encapsulates a piece of memory shared"]
@@ -392,7 +392,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -461,7 +461,7 @@ pub mod wayland {
                 height: i32,
                 stride: i32,
                 format: super::super::super::core::wayland::wl_shm::Format,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the shared memory pool."]
             #[doc = ""]
             #[doc = "The mmapped memory will be released when all"]
@@ -471,7 +471,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request will cause the server to remap the backing memory"]
             #[doc = "for the pool from the file descriptor passed when the pool was"]
             #[doc = "created, but using the new size.  This request can only be"]
@@ -487,7 +487,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 size: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "A singleton global object that provides support for shared"]
@@ -927,7 +927,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -966,7 +966,7 @@ pub mod wayland {
                 id: crate::wire::ObjectId,
                 fd: rustix::fd::OwnedFd,
                 size: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Using this request a client can tell the server that it is not going to"]
             #[doc = "use the shm object anymore."]
             #[doc = ""]
@@ -975,7 +975,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Informs the client about a valid pixel format that"]
             #[doc = "can be used for buffers. Known formats include"]
             #[doc = "argb8888 and xrgb8888."]
@@ -984,7 +984,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 format: Format,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_shm#{}.format({})", sender_id, format);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1026,7 +1026,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1046,7 +1046,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent when this wl_buffer is no longer used by the compositor."]
             #[doc = "The client is now free to reuse or destroy this buffer and its"]
             #[doc = "backing storage."]
@@ -1063,7 +1063,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_buffer#{}.release()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -1124,7 +1124,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1203,7 +1203,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 mime_type: Option<String>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "To transfer the offered data, the client issues this request"]
             #[doc = "and indicates the mime type it wants to receive.  The transfer"]
             #[doc = "happens through the passed file descriptor (typically created"]
@@ -1225,13 +1225,13 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the data offer."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Notifies the compositor that the drag destination successfully"]
             #[doc = "finished the drag-and-drop operation."]
             #[doc = ""]
@@ -1250,7 +1250,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the actions that the destination side client supports for"]
             #[doc = "this operation. This request may trigger the emission of"]
             #[doc = "wl_data_source.action and wl_data_offer.action events if the compositor"]
@@ -1288,7 +1288,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 dnd_actions: super::super::super::core::wayland::wl_data_device_manager::DndAction,
                 preferred_action : super :: super :: super :: core :: wayland :: wl_data_device_manager :: DndAction,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent immediately after creating the wl_data_offer object.  One"]
             #[doc = "event per offered mime type."]
             fn offer(
@@ -1296,7 +1296,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_data_offer#{}.offer(\"{}\")", sender_id, mime_type);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1317,7 +1317,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 source_actions : super :: super :: super :: core :: wayland :: wl_data_device_manager :: DndAction,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_data_offer#{}.source_actions({})",
@@ -1373,7 +1373,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 dnd_action: super::super::super::core::wayland::wl_data_device_manager::DndAction,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_data_offer#{}.action({})", sender_id, dnd_action);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1428,7 +1428,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1469,13 +1469,13 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the data source."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the actions that the source side client supports for this"]
             #[doc = "operation. This request may trigger wl_data_source.action and"]
             #[doc = "wl_data_offer.action events if the compositor needs to change the"]
@@ -1494,7 +1494,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 dnd_actions: super::super::super::core::wayland::wl_data_device_manager::DndAction,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent when a target accepts pointer_focus or motion events.  If"]
             #[doc = "a target does not accept any of the offered types, type is NULL."]
             #[doc = ""]
@@ -1504,7 +1504,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: Option<String>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_data_source#{}.target(\"{}\")",
@@ -1531,7 +1531,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_data_source#{}.send(\"{}\", {})",
@@ -1573,7 +1573,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_data_source#{}.cancelled()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -1596,7 +1596,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_data_source#{}.dnd_drop_performed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -1616,7 +1616,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_data_source#{}.dnd_finished()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -1656,7 +1656,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 dnd_action: super::super::super::core::wayland::wl_data_device_manager::DndAction,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_data_source#{}.action({})", sender_id, dnd_action);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1712,7 +1712,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1794,7 +1794,7 @@ pub mod wayland {
                 origin: crate::wire::ObjectId,
                 icon: Option<crate::wire::ObjectId>,
                 serial: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request asks the compositor to set the selection"]
             #[doc = "to the data from the source on behalf of the client."]
             #[doc = ""]
@@ -1809,13 +1809,13 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 source: Option<crate::wire::ObjectId>,
                 serial: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request destroys the data device."]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The data_offer event introduces a new wl_data_offer object,"]
             #[doc = "which will subsequently be used in either the"]
             #[doc = "data_device.enter event (for drag-and-drop) or the"]
@@ -1828,7 +1828,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_data_device#{}.data_offer({})", sender_id, id);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1853,7 +1853,7 @@ pub mod wayland {
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
                 id: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_data_device#{}.enter({}, {}, {}, {}, {})",
@@ -1884,7 +1884,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_data_device#{}.leave()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -1905,7 +1905,7 @@ pub mod wayland {
                 time: u32,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_data_device#{}.motion({}, {}, {})",
@@ -1942,7 +1942,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_data_device#{}.drop()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -1969,7 +1969,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_data_device#{}.selection({})",
@@ -2020,7 +2020,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2060,7 +2060,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a new data device for a given seat."]
             fn get_data_device(
                 &self,
@@ -2068,7 +2068,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This interface is implemented by servers that provide"]
@@ -2114,7 +2114,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2148,7 +2148,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "An interface that may be implemented by a wl_surface, for"]
@@ -2232,7 +2232,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2391,7 +2391,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Start a pointer-driven move of the surface."]
             #[doc = ""]
             #[doc = "This request must be used in response to a button press event."]
@@ -2403,7 +2403,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 serial: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Start a pointer-driven resizing of the surface."]
             #[doc = ""]
             #[doc = "This request must be used in response to a button press event."]
@@ -2416,7 +2416,7 @@ pub mod wayland {
                 seat: crate::wire::ObjectId,
                 serial: u32,
                 edges: Resize,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Map the surface as a toplevel surface."]
             #[doc = ""]
             #[doc = "A toplevel surface is not fullscreen, maximized or transient."]
@@ -2424,7 +2424,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Map the surface relative to an existing surface."]
             #[doc = ""]
             #[doc = "The x and y arguments specify the location of the upper left"]
@@ -2440,7 +2440,7 @@ pub mod wayland {
                 x: i32,
                 y: i32,
                 flags: Transient,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Map the surface as a fullscreen surface."]
             #[doc = ""]
             #[doc = "If an output parameter is given then the surface will be made"]
@@ -2481,7 +2481,7 @@ pub mod wayland {
                 method: FullscreenMethod,
                 framerate: u32,
                 output: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Map the surface as a popup."]
             #[doc = ""]
             #[doc = "A popup surface is a transient surface with an added pointer"]
@@ -2511,7 +2511,7 @@ pub mod wayland {
                 x: i32,
                 y: i32,
                 flags: Transient,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Map the surface as a maximized surface."]
             #[doc = ""]
             #[doc = "If an output parameter is given then the surface will be"]
@@ -2535,7 +2535,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set a short title for the surface."]
             #[doc = ""]
             #[doc = "This string may be used to identify the surface in a task bar,"]
@@ -2548,7 +2548,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 title: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set a class for the surface."]
             #[doc = ""]
             #[doc = "The surface class identifies the general class of applications"]
@@ -2560,7 +2560,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 class: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Ping a client to check if it is receiving events and sending"]
             #[doc = "requests. A client is expected to reply with a pong request."]
             fn ping(
@@ -2568,7 +2568,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_shell_surface#{}.ping({})", sender_id, serial);
                     let (payload, fds) =
@@ -2603,7 +2603,7 @@ pub mod wayland {
                 edges: Resize,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_shell_surface#{}.configure({}, {}, {})",
@@ -2630,7 +2630,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_shell_surface#{}.popup_done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -2731,7 +2731,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2848,7 +2848,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set a buffer as the content of this surface."]
             #[doc = ""]
             #[doc = "The new size of the surface is calculated based on the buffer"]
@@ -2920,7 +2920,7 @@ pub mod wayland {
                 buffer: Option<crate::wire::ObjectId>,
                 x: i32,
                 y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request is used to describe the regions where the pending"]
             #[doc = "buffer is different from the current surface contents, and where"]
             #[doc = "the surface therefore needs to be repainted. The compositor"]
@@ -2950,7 +2950,7 @@ pub mod wayland {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request a notification when it is a good time to start drawing a new"]
             #[doc = "frame, by creating a frame callback. This is useful for throttling"]
             #[doc = "redrawing operations, and driving animations."]
@@ -2988,7 +2988,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 callback: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request sets the region of the surface that contains"]
             #[doc = "opaque content."]
             #[doc = ""]
@@ -3018,7 +3018,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request sets the region of the surface that can receive"]
             #[doc = "pointer and touch events."]
             #[doc = ""]
@@ -3046,7 +3046,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Surface state (input, opaque, and damage regions, attached buffers,"]
             #[doc = "etc.) is double-buffered. Protocol requests modify the pending state,"]
             #[doc = "as opposed to the active state in use by the compositor."]
@@ -3070,7 +3070,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request sets the transformation that the client has already applied"]
             #[doc = "to the content of the buffer. The accepted values for the transform"]
             #[doc = "parameter are the values for wl_output.transform."]
@@ -3107,7 +3107,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request sets an optional scaling factor on how the compositor"]
             #[doc = "interprets the contents of the buffer attached to the window."]
             #[doc = ""]
@@ -3136,7 +3136,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 scale: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request is used to describe the regions where the pending"]
             #[doc = "buffer is different from the current surface contents, and where"]
             #[doc = "the surface therefore needs to be repainted. The compositor"]
@@ -3177,7 +3177,7 @@ pub mod wayland {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The x and y arguments specify the location of the new pending"]
             #[doc = "buffer's upper left corner, relative to the current buffer's upper"]
             #[doc = "left corner, in surface-local coordinates. In other words, the"]
@@ -3196,7 +3196,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This is emitted whenever a surface's creation, movement, or resizing"]
             #[doc = "results in some part of it being within the scanout region of an"]
             #[doc = "output."]
@@ -3207,7 +3207,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_surface#{}.enter({})", sender_id, output);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -3233,7 +3233,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_surface#{}.leave({})", sender_id, output);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -3262,7 +3262,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 factor: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_surface#{}.preferred_buffer_scale({})",
@@ -3290,7 +3290,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_surface#{}.preferred_buffer_transform({})",
@@ -3359,7 +3359,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3405,7 +3405,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The ID provided will be initialized to the wl_keyboard interface"]
             #[doc = "for this seat."]
             #[doc = ""]
@@ -3419,7 +3419,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The ID provided will be initialized to the wl_touch interface"]
             #[doc = "for this seat."]
             #[doc = ""]
@@ -3433,14 +3433,14 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Using this request a client can tell the server that it is not going to"]
             #[doc = "use the seat object anymore."]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This is emitted whenever a seat gains or loses the pointer,"]
             #[doc = "keyboard or touch capabilities.  The argument is a capability"]
             #[doc = "enum containing the complete set of capabilities this seat has."]
@@ -3470,7 +3470,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 capabilities: Capability,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_seat#{}.capabilities({})", sender_id, capabilities);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -3503,7 +3503,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_seat#{}.name(\"{}\")", sender_id, name);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -3682,7 +3682,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3755,7 +3755,7 @@ pub mod wayland {
                 surface: Option<crate::wire::ObjectId>,
                 hotspot_x: i32,
                 hotspot_y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Using this request a client can tell the server that it is not going to"]
             #[doc = "use the pointer object anymore."]
             #[doc = ""]
@@ -3765,7 +3765,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Notification that this seat's pointer is focused on a certain"]
             #[doc = "surface."]
             #[doc = ""]
@@ -3780,7 +3780,7 @@ pub mod wayland {
                 surface: crate::wire::ObjectId,
                 surface_x: crate::wire::Fixed,
                 surface_y: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_pointer#{}.enter({}, {}, {}, {})",
@@ -3813,7 +3813,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_pointer#{}.leave({}, {})", sender_id, serial, surface);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -3836,7 +3836,7 @@ pub mod wayland {
                 time: u32,
                 surface_x: crate::wire::Fixed,
                 surface_y: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_pointer#{}.motion({}, {}, {})",
@@ -3878,7 +3878,7 @@ pub mod wayland {
                 time: u32,
                 button: u32,
                 state: ButtonState,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_pointer#{}.button({}, {}, {}, {})",
@@ -3923,7 +3923,7 @@ pub mod wayland {
                 time: u32,
                 axis: Axis,
                 value: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_pointer#{}.axis({}, {}, {})",
@@ -3981,7 +3981,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_pointer#{}.frame()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -4021,7 +4021,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 axis_source: AxisSource,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_pointer#{}.axis_source({})", sender_id, axis_source);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -4053,7 +4053,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 time: u32,
                 axis: Axis,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_pointer#{}.axis_stop({}, {})", sender_id, time, axis);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -4102,7 +4102,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 axis: Axis,
                 discrete: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_pointer#{}.axis_discrete({}, {})",
@@ -4147,7 +4147,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 axis: Axis,
                 value120: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_pointer#{}.axis_value120({}, {})",
@@ -4206,7 +4206,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 axis: Axis,
                 direction: AxisRelativeDirection,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_pointer#{}.axis_relative_direction({}, {})",
@@ -4302,7 +4302,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -4318,7 +4318,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event provides a file descriptor to the client which can be"]
             #[doc = "memory-mapped in read-only mode to provide a keyboard mapping"]
             #[doc = "description."]
@@ -4332,7 +4332,7 @@ pub mod wayland {
                 format: KeymapFormat,
                 fd: rustix::fd::OwnedFd,
                 size: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_keyboard#{}.keymap({}, {}, {})",
@@ -4369,7 +4369,7 @@ pub mod wayland {
                 serial: u32,
                 surface: crate::wire::ObjectId,
                 keys: Vec<u8>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_keyboard#{}.enter({}, {}, array[{}])",
@@ -4405,7 +4405,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_keyboard#{}.leave({}, {})",
@@ -4449,7 +4449,7 @@ pub mod wayland {
                 time: u32,
                 key: u32,
                 state: KeyState,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_keyboard#{}.key({}, {}, {}, {})",
@@ -4493,7 +4493,7 @@ pub mod wayland {
                 mods_latched: u32,
                 mods_locked: u32,
                 group: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_keyboard#{}.modifiers({}, {}, {}, {}, {})",
@@ -4535,7 +4535,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 rate: i32,
                 delay: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_keyboard#{}.repeat_info({}, {})",
@@ -4576,7 +4576,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -4592,7 +4592,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A new touch point has appeared on the surface. This touch point is"]
             #[doc = "assigned a unique ID. Future events from this touch point reference"]
             #[doc = "this ID. The ID ceases to be valid after a touch up event and may be"]
@@ -4607,7 +4607,7 @@ pub mod wayland {
                 id: i32,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_touch#{}.down({}, {}, {}, {}, {}, {})",
@@ -4643,7 +4643,7 @@ pub mod wayland {
                 serial: u32,
                 time: u32,
                 id: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_touch#{}.up({}, {}, {})", sender_id, serial, time, id);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -4666,7 +4666,7 @@ pub mod wayland {
                 id: i32,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_touch#{}.motion({}, {}, {}, {})",
@@ -4700,7 +4700,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_touch#{}.frame()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -4722,7 +4722,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_touch#{}.cancel()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -4764,7 +4764,7 @@ pub mod wayland {
                 id: i32,
                 major: crate::wire::Fixed,
                 minor: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_touch#{}.shape({}, {}, {})",
@@ -4813,7 +4813,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 id: i32,
                 orientation: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_touch#{}.orientation({}, {})",
@@ -4954,7 +4954,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -4972,7 +4972,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The geometry event describes geometric properties of the output."]
             #[doc = "The event is sent when binding to the output object and whenever"]
             #[doc = "any of the properties change."]
@@ -5005,7 +5005,7 @@ pub mod wayland {
                 make: String,
                 model: String,
                 transform: Transform,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_output#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
@@ -5076,7 +5076,7 @@ pub mod wayland {
                 width: i32,
                 height: i32,
                 refresh: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_output#{}.mode({}, {}, {}, {})",
@@ -5107,7 +5107,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_output#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -5140,7 +5140,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 factor: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_output#{}.scale({})", sender_id, factor);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(factor).build();
@@ -5183,7 +5183,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_output#{}.name(\"{}\")", sender_id, name);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -5214,7 +5214,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 description: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_output#{}.description(\"{}\")",
@@ -5249,7 +5249,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -5296,7 +5296,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Add the specified rectangle to the region."]
             fn add(
                 &self,
@@ -5306,7 +5306,7 @@ pub mod wayland {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Subtract the specified rectangle from the region."]
             fn subtract(
                 &self,
@@ -5316,7 +5316,7 @@ pub mod wayland {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "The global interface exposing sub-surface compositing capabilities."]
@@ -5375,7 +5375,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -5414,7 +5414,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a sub-surface interface for the given surface, and"]
             #[doc = "associate it with the given parent surface. This turns a"]
             #[doc = "plain wl_surface into a sub-surface."]
@@ -5441,7 +5441,7 @@ pub mod wayland {
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 parent: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "An additional interface to a wl_surface object, which has been"]
@@ -5530,7 +5530,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -5583,7 +5583,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This schedules a sub-surface position change."]
             #[doc = "The sub-surface will be moved so that its origin (top left"]
             #[doc = "corner pixel) will be at the location x, y of the parent surface"]
@@ -5604,7 +5604,7 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This sub-surface is taken from the stack, and put back just"]
             #[doc = "above the reference surface, changing the z-order of the sub-surfaces."]
             #[doc = "The reference surface must be one of the sibling surfaces, or the"]
@@ -5623,7 +5623,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 sibling: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The sub-surface is placed just below the reference surface."]
             #[doc = "See wl_subsurface.place_above."]
             fn place_below(
@@ -5631,7 +5631,7 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 sibling: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Change the commit behaviour of the sub-surface to synchronized"]
             #[doc = "mode, also described as the parent dependent mode."]
             #[doc = ""]
@@ -5649,7 +5649,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Change the commit behaviour of the sub-surface to desynchronized"]
             #[doc = "mode, also described as independent or freely running mode."]
             #[doc = ""]
@@ -5673,7 +5673,7 @@ pub mod wayland {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }

@@ -250,7 +250,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -336,7 +336,7 @@ pub mod color_management_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This creates a new xx_color_management_output_v4 object for the"]
             #[doc = "given wl_output."]
             #[doc = ""]
@@ -347,7 +347,7 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If a xx_color_management_surface_v4 object already exists for the given"]
             #[doc = "wl_surface, the protocol error surface_exists is raised."]
             #[doc = ""]
@@ -361,7 +361,7 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This creates a new color xx_color_management_feedback_surface_v4 object"]
             #[doc = "for the given wl_surface."]
             #[doc = ""]
@@ -373,7 +373,7 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Makes a new ICC-based image description creator object with all"]
             #[doc = "properties initially unset. The client can then use the object's"]
             #[doc = "interface to define all the required properties for an image description"]
@@ -387,7 +387,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 obj: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Makes a new parametric image description creator object with all"]
             #[doc = "properties initially unset. The client can then use the object's"]
             #[doc = "interface to define all the required properties for an image description"]
@@ -401,7 +401,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 obj: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each rendering intent the compositor supports."]
             fn supported_intent(
@@ -409,7 +409,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 render_intent: RenderIntent,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_color_manager_v4#{}.supported_intent({})",
@@ -432,7 +432,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 feature: Feature,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_color_manager_v4#{}.supported_feature({})",
@@ -456,7 +456,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 tf: TransferFunction,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_color_manager_v4#{}.supported_tf_named({})",
@@ -480,7 +480,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 primaries: Primaries,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_color_manager_v4#{}.supported_primaries_named({})",
@@ -518,7 +518,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -551,7 +551,7 @@ pub mod color_management_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This creates a new xx_image_description_v4 object for the current image"]
             #[doc = "description of the output. There always is exactly one image description"]
             #[doc = "active for an output so the client should destroy the image description"]
@@ -588,7 +588,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent whenever the image description of the output changed,"]
             #[doc = "followed by one wl_output.done event common to output events across all"]
             #[doc = "extensions."]
@@ -600,7 +600,7 @@ pub mod color_management_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_color_management_output_v4#{}.image_description_changed()",
@@ -657,7 +657,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -704,7 +704,7 @@ pub mod color_management_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the image description of the underlying surface. The image"]
             #[doc = "description and rendering intent are double-buffered state, see"]
             #[doc = "wl_surface.commit."]
@@ -739,7 +739,7 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
                 render_intent : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: RenderIntent,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request removes any image description from the surface. See"]
             #[doc = "set_image_description for how a compositor handles a surface without"]
             #[doc = "an image description. This is double-buffered state, see"]
@@ -748,7 +748,7 @@ pub mod color_management_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "A xx_color_management_feedback_surface_v4 allows the client to get the"]
@@ -790,7 +790,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -822,7 +822,7 @@ pub mod color_management_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If this protocol object is inert, the protocol error inert is raised."]
             #[doc = ""]
             #[doc = "The preferred image description represents the compositor's preferred"]
@@ -855,7 +855,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The preferred image description is the one which likely has the most"]
             #[doc = "performance and/or quality benefits for the compositor if used by the"]
             #[doc = "client for its wl_surface contents. This event is sent whenever the"]
@@ -875,7 +875,7 @@ pub mod color_management_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_color_management_feedback_surface_v4#{}.preferred_changed()",
@@ -950,7 +950,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1007,7 +1007,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the ICC profile file to be used as the basis of the image"]
             #[doc = "description."]
             #[doc = ""]
@@ -1054,7 +1054,7 @@ pub mod color_management_v1 {
                 icc_profile: rustix::fd::OwnedFd,
                 offset: u32,
                 length: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This type of object is used for collecting all the parameters required"]
@@ -1136,7 +1136,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1306,7 +1306,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the transfer characteristic using explicitly enumerated named"]
             #[doc = "functions."]
             #[doc = ""]
@@ -1324,7 +1324,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 tf : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: TransferFunction,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the color component transfer characteristic to a power curve with"]
             #[doc = "the given exponent. This curve represents the conversion from electrical"]
             #[doc = "to optical pixel or color values."]
@@ -1349,7 +1349,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 eexp: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the color primaries and white point using explicitly named sets."]
             #[doc = "This describes the primary color volume which is the basis for color"]
             #[doc = "value encoding."]
@@ -1365,7 +1365,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 primaries : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: Primaries,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the color primaries and white point using CIE 1931 xy chromaticity"]
             #[doc = "coordinates. This describes the primary color volume which is the basis"]
             #[doc = "for color value encoding."]
@@ -1391,7 +1391,7 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the primary color volume luminance range and the reference white"]
             #[doc = "luminance level."]
             #[doc = ""]
@@ -1440,7 +1440,7 @@ pub mod color_management_v1 {
                 min_lum: u32,
                 max_lum: u32,
                 reference_lum: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Provides the color primaries and white point of the mastering display"]
             #[doc = "using CIE 1931 xy chromaticity coordinates. This is compatible with the"]
             #[doc = "SMPTE ST 2086 definition of HDR static metadata."]
@@ -1498,7 +1498,7 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the luminance range that was used during the content mastering"]
             #[doc = "process as the minimum and maximum absolute luminance L. This is"]
             #[doc = "compatible with the SMPTE ST 2086 definition of HDR static metadata."]
@@ -1516,7 +1516,7 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the maximum content light level (max_cll) as defined by CTA-861-H."]
             #[doc = ""]
             #[doc = "This can only be set when set_tf_cicp is used to set the transfer"]
@@ -1530,7 +1530,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 max_cll: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the maximum frame-average light level (max_fall) as defined by"]
             #[doc = "CTA-861-H."]
             #[doc = ""]
@@ -1544,7 +1544,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 max_fall: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "An image description carries information about the color encoding used on"]
@@ -1633,7 +1633,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1665,7 +1665,7 @@ pub mod color_management_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Creates a xx_image_description_info_v4 object which delivers the"]
             #[doc = "information that makes up the image description."]
             #[doc = ""]
@@ -1678,7 +1678,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 information: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If creating a xx_image_description_v4 object fails for a reason that is"]
             #[doc = "not defined as a protocol error, this event is sent."]
             #[doc = ""]
@@ -1695,7 +1695,7 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 cause: Cause,
                 msg: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_image_description_v4#{}.failed({}, \"{}\")",
@@ -1744,7 +1744,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 identity: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_image_description_v4#{}.ready({})",
@@ -1783,7 +1783,7 @@ pub mod color_management_v1 {
                 _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1796,7 +1796,7 @@ pub mod color_management_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> xx_image_description_info_v4#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -1820,7 +1820,7 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 icc: rustix::fd::OwnedFd,
                 icc_size: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_image_description_info_v4#{}.icc_file({}, {})",
@@ -1855,7 +1855,7 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_image_description_info_v4#{}.primaries({}, {}, {}, {}, {}, {}, {}, {})",
@@ -1892,7 +1892,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 primaries : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: Primaries,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_image_description_info_v4#{}.primaries_named({})",
@@ -1920,7 +1920,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 eexp: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_image_description_info_v4#{}.tf_power({})",
@@ -1941,7 +1941,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 tf : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: TransferFunction,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_image_description_info_v4#{}.tf_named({})",
@@ -1970,7 +1970,7 @@ pub mod color_management_v1 {
                 min_lum: u32,
                 max_lum: u32,
                 reference_lum: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_image_description_info_v4#{}.luminances({}, {}, {})",
@@ -2013,7 +2013,7 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_image_description_info_v4#{}.target_primaries({}, {}, {}, {}, {}, {}, {}, {})",
@@ -2058,7 +2058,7 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_image_description_info_v4#{}.target_luminance({}, {})",
@@ -2086,7 +2086,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 max_cll: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_image_description_info_v4#{}.target_max_cll({})",
@@ -2111,7 +2111,7 @@ pub mod color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 max_fall: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_image_description_info_v4#{}.target_max_fall({})",
@@ -2145,7 +2145,7 @@ pub mod ivi_application {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2163,7 +2163,7 @@ pub mod ivi_application {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The configure event asks the client to resize its surface."]
             #[doc = ""]
             #[doc = "The size is a hint, in the sense that the client is free to"]
@@ -2181,7 +2181,7 @@ pub mod ivi_application {
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_surface#{}.configure({}, {})",
@@ -2241,7 +2241,7 @@ pub mod ivi_application {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2295,7 +2295,7 @@ pub mod ivi_application {
                 ivi_id: u32,
                 surface: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -2362,7 +2362,7 @@ pub mod ivi_hmi_controller {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2406,7 +2406,7 @@ pub mod ivi_hmi_controller {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Reference protocol to control a surface by server."]
             #[doc = "To control a surface by server, it gives seat to the server"]
             #[doc = "to e.g. control Home screen. Home screen has several workspaces"]
@@ -2422,7 +2422,7 @@ pub mod ivi_hmi_controller {
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 serial: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "hmi-controller loaded to ivi-shall implements 4 types of layout"]
             #[doc = "as a reference; tiling, side by side, full_screen, and random."]
             fn switch_mode(
@@ -2430,7 +2430,7 @@ pub mod ivi_hmi_controller {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layout_mode: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "home screen is a reference implementation of launcher to launch"]
             #[doc = "wayland applications. The home screen has several workspaces to"]
             #[doc = "group wayland applications. By defining the following keys in"]
@@ -2450,13 +2450,13 @@ pub mod ivi_hmi_controller {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 home: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn workspace_end_control(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 is_controlled: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_hmi_controller#{}.workspace_end_control({})",
@@ -2490,7 +2490,7 @@ pub mod text_cursor_position {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2520,7 +2520,7 @@ pub mod text_cursor_position {
                 surface: crate::wire::ObjectId,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -2608,7 +2608,7 @@ pub mod weston_content_protection {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2642,7 +2642,7 @@ pub mod weston_content_protection {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Instantiate an interface extension for the given wl_surface to"]
             #[doc = "provide surface protection. If the given wl_surface already has"]
             #[doc = "a weston_protected_surface associated, the surface_exists protocol"]
@@ -2653,7 +2653,7 @@ pub mod weston_content_protection {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "An additional interface to a wl_surface object, which allows a client to"]
@@ -2760,7 +2760,7 @@ pub mod weston_content_protection {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2796,7 +2796,7 @@ pub mod weston_content_protection {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Informs the server about the type of content. The level of"]
             #[doc = "content-protection depends upon the content-type set by the client"]
             #[doc = "through this request. Initially, this is set to 'unprotected'."]
@@ -2813,7 +2813,7 @@ pub mod weston_content_protection {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 r#type: Type,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Censor the visibility of the wl_surface contents on non-secure outputs."]
             #[doc = "See weston_protected_surface for the description."]
             #[doc = ""]
@@ -2822,7 +2822,7 @@ pub mod weston_content_protection {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Do not enforce censored-visibility of the wl_surface contents on"]
             #[doc = "non-secure-outputs. See weston_protected_surface for the description."]
             #[doc = ""]
@@ -2834,7 +2834,7 @@ pub mod weston_content_protection {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent to the client to inform about the actual protection"]
             #[doc = "level for its surface in the relax mode."]
             #[doc = ""]
@@ -2864,7 +2864,7 @@ pub mod weston_content_protection {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 r#type: Type,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_protected_surface#{}.status({})",
@@ -2917,7 +2917,7 @@ pub mod weston_debug {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2952,7 +2952,7 @@ pub mod weston_debug {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Subscribe to a named debug stream. The server will start printing"]
             #[doc = "to the given file descriptor."]
             #[doc = ""]
@@ -2970,7 +2970,7 @@ pub mod weston_debug {
                 name: String,
                 streamfd: rustix::fd::OwnedFd,
                 stream: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Advertises an available debug scope which the client may be able to"]
             #[doc = "bind to. No information is provided by the server about the content"]
             #[doc = "contained within the debug streams provided by the scope, once a"]
@@ -2981,7 +2981,7 @@ pub mod weston_debug {
                 sender_id: crate::wire::ObjectId,
                 name: String,
                 description: Option<String>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_debug_v1#{}.available(\"{}\", \"{}\")",
@@ -3021,7 +3021,7 @@ pub mod weston_debug {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3043,7 +3043,7 @@ pub mod weston_debug {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The server has successfully finished writing to and has closed the"]
             #[doc = "associated file descriptor."]
             #[doc = ""]
@@ -3054,7 +3054,7 @@ pub mod weston_debug {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> weston_debug_stream_v1#{}.complete()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -3076,7 +3076,7 @@ pub mod weston_debug {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: Option<String>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_debug_stream_v1#{}.failure(\"{}\")",
@@ -3204,7 +3204,7 @@ pub mod weston_desktop {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3288,25 +3288,25 @@ pub mod weston_desktop {
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_panel(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_lock_surface(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn unlock(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The surface set by this request will receive a fake"]
             #[doc = "pointer.enter event during grabs at position 0, 0 and is"]
             #[doc = "expected to set an appropriate cursor image as described by"]
@@ -3316,7 +3316,7 @@ pub mod weston_desktop {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Tell the server, that enough desktop elements have been drawn"]
             #[doc = "to make the desktop look ready for use. During start-up, the"]
             #[doc = "server can wait for this request with a black screen before"]
@@ -3327,7 +3327,7 @@ pub mod weston_desktop {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Tell the shell which side of the screen the panel is"]
             #[doc = "located. This is so that new windows do not overlap the panel"]
             #[doc = "and maximized windows maximize properly."]
@@ -3336,7 +3336,7 @@ pub mod weston_desktop {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 position: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn configure(
                 &self,
                 client: &mut crate::server::Client,
@@ -3345,7 +3345,7 @@ pub mod weston_desktop {
                 surface: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_desktop_shell#{}.configure({}, {}, {}, {})",
@@ -3376,7 +3376,7 @@ pub mod weston_desktop {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_desktop_shell#{}.prepare_lock_surface()",
@@ -3396,7 +3396,7 @@ pub mod weston_desktop {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 cursor: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_desktop_shell#{}.grab_cursor({})",
@@ -3427,7 +3427,7 @@ pub mod weston_desktop {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3458,7 +3458,7 @@ pub mod weston_desktop {
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -3504,7 +3504,7 @@ pub mod weston_direct_display {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3542,13 +3542,13 @@ pub mod weston_direct_display {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 dmabuf: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the factory object, but does not affect any other objects."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -3622,7 +3622,7 @@ pub mod weston_output_capture {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3663,7 +3663,7 @@ pub mod weston_output_capture {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This creates a weston_capture_source_v1 object corresponding to the"]
             #[doc = "given wl_output. The object delivers information for allocating"]
             #[doc = "suitable buffers, and exposes the capture function."]
@@ -3699,7 +3699,7 @@ pub mod weston_output_capture {
                 output: crate::wire::ObjectId,
                 source: Source,
                 capture_source_new_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "An object representing image capturing functionality for a single"]
@@ -3743,7 +3743,7 @@ pub mod weston_output_capture {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3774,7 +3774,7 @@ pub mod weston_output_capture {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the given wl_buffer is compatible, the associated output will go"]
             #[doc = "through a repaint some time after this request has been processed,"]
             #[doc = "and that repaint will execute the capture."]
@@ -3807,7 +3807,7 @@ pub mod weston_output_capture {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event delivers the pixel format that should be used for the"]
             #[doc = "image buffer. Any buffer is incompatible if it does not have"]
             #[doc = "this pixel format."]
@@ -3821,7 +3821,7 @@ pub mod weston_output_capture {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 drm_format: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_capture_source_v1#{}.format({})",
@@ -3852,7 +3852,7 @@ pub mod weston_output_capture {
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_capture_source_v1#{}.size({}, {})",
@@ -3879,7 +3879,7 @@ pub mod weston_output_capture {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> weston_capture_source_v1#{}.complete()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -3897,7 +3897,7 @@ pub mod weston_output_capture {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> weston_capture_source_v1#{}.retry()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -3920,7 +3920,7 @@ pub mod weston_output_capture {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 msg: Option<String>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_capture_source_v1#{}.failed(\"{}\")",
@@ -4001,7 +4001,7 @@ pub mod weston_test {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -4182,7 +4182,7 @@ pub mod weston_test {
                 surface: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn move_pointer(
                 &self,
                 client: &mut crate::server::Client,
@@ -4192,7 +4192,7 @@ pub mod weston_test {
                 tv_nsec: u32,
                 x: i32,
                 y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn send_button(
                 &self,
                 client: &mut crate::server::Client,
@@ -4202,7 +4202,7 @@ pub mod weston_test {
                 tv_nsec: u32,
                 button: i32,
                 state: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn send_axis(
                 &self,
                 client: &mut crate::server::Client,
@@ -4212,13 +4212,13 @@ pub mod weston_test {
                 tv_nsec: u32,
                 axis: u32,
                 value: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn activate_surface(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn send_key(
                 &self,
                 client: &mut crate::server::Client,
@@ -4228,19 +4228,19 @@ pub mod weston_test {
                 tv_nsec: u32,
                 key: u32,
                 state: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn device_release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 device: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn device_add(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 device: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn send_touch(
                 &self,
                 client: &mut crate::server::Client,
@@ -4252,7 +4252,7 @@ pub mod weston_test {
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
                 touch_type: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request that the compositor pauses execution at a certain point. When"]
             #[doc = "execution is paused, the compositor will signal the shared semaphore"]
             #[doc = "to the client."]
@@ -4262,14 +4262,14 @@ pub mod weston_test {
                 sender_id: crate::wire::ObjectId,
                 breakpoint: Breakpoint,
                 resource_id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn pointer_position(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_test#{}.pointer_position({}, {})",
@@ -4343,7 +4343,7 @@ pub mod weston_test {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -4370,18 +4370,18 @@ pub mod weston_test {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn run(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 test_name: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn finished(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> weston_test_runner#{}.finished()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -4463,7 +4463,7 @@ pub mod weston_touch_calibration {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -4514,7 +4514,7 @@ pub mod weston_touch_calibration {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This gives the calibrator role to the surface and ties it with the"]
             #[doc = "given touch input device."]
             #[doc = ""]
@@ -4533,7 +4533,7 @@ pub mod weston_touch_calibration {
                 surface: crate::wire::ObjectId,
                 device: String,
                 cal: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request asks the compositor to save the calibration data for the"]
             #[doc = "given touch input device. The compositor may ignore this request."]
             #[doc = ""]
@@ -4557,7 +4557,7 @@ pub mod weston_touch_calibration {
                 sender_id: crate::wire::ObjectId,
                 device: String,
                 matrix: Vec<u8>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "When a client binds to weston_touch_calibration, one touch_device event"]
             #[doc = "is sent for each touchscreen that is available to be calibrated. This"]
             #[doc = "is the only time the event is sent. Touch devices added in the"]
@@ -4575,7 +4575,7 @@ pub mod weston_touch_calibration {
                 sender_id: crate::wire::ObjectId,
                 device: String,
                 head: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_touch_calibration#{}.touch_device(\"{}\", \"{}\")",
@@ -4663,7 +4663,7 @@ pub mod weston_touch_calibration {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -4697,7 +4697,7 @@ pub mod weston_touch_calibration {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request asks the compositor to convert the surface-local"]
             #[doc = "coordinates into the expected touch input coordinates appropriate for"]
             #[doc = "the associated touch device. The intention is that a client uses this"]
@@ -4722,7 +4722,7 @@ pub mod weston_touch_calibration {
                 x: i32,
                 y: i32,
                 reply: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event tells the client what size to make the surface. The client"]
             #[doc = "must obey the size exactly on the next commit with a wl_buffer."]
             #[doc = ""]
@@ -4734,7 +4734,7 @@ pub mod weston_touch_calibration {
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_touch_calibrator#{}.configure({}, {})",
@@ -4762,7 +4762,7 @@ pub mod weston_touch_calibration {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_touch_calibrator#{}.cancel_calibration()",
@@ -4791,7 +4791,7 @@ pub mod weston_touch_calibration {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> weston_touch_calibrator#{}.invalid_touch()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -4815,7 +4815,7 @@ pub mod weston_touch_calibration {
                 id: i32,
                 x: u32,
                 y: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_touch_calibrator#{}.down({}, {}, {}, {})",
@@ -4846,7 +4846,7 @@ pub mod weston_touch_calibration {
                 sender_id: crate::wire::ObjectId,
                 time: u32,
                 id: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_touch_calibrator#{}.up({}, {})",
@@ -4875,7 +4875,7 @@ pub mod weston_touch_calibration {
                 id: i32,
                 x: u32,
                 y: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_touch_calibrator#{}.motion({}, {}, {}, {})",
@@ -4909,7 +4909,7 @@ pub mod weston_touch_calibration {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> weston_touch_calibrator#{}.frame()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -4929,7 +4929,7 @@ pub mod weston_touch_calibration {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> weston_touch_calibrator#{}.cancel()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -4954,7 +4954,7 @@ pub mod weston_touch_calibration {
                 _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -4975,7 +4975,7 @@ pub mod weston_touch_calibration {
                 sender_id: crate::wire::ObjectId,
                 x: u32,
                 y: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_touch_coordinate#{}.result({}, {})",

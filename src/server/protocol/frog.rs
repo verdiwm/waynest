@@ -19,7 +19,7 @@ pub mod frog_color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -54,14 +54,14 @@ pub mod frog_color_management_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn get_color_managed_surface(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 callback: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "Interface for changing surface color management and HDR state."]
@@ -171,7 +171,7 @@ pub mod frog_color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -275,19 +275,19 @@ pub mod frog_color_management_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_known_transfer_function(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 transfer_function: TransferFunction,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_known_container_color_volume(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 primaries: Primaries,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "NOTE: On a surface with \"perceptual\" (default) render intent, handling of the container's color volume"]
             #[doc = "is implementation-specific, and may differ between different transfer functions it is paired with:"]
             #[doc = "ie. sRGB + 709 rendering may have it's primaries widened to more of the available display's gamut"]
@@ -299,7 +299,7 @@ pub mod frog_color_management_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 render_intent: RenderIntent,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Forwards HDR metadata from the client to the compositor."]
             #[doc = ""]
             #[doc = "HDR Metadata Infoframe as per CTA 861.G spec."]
@@ -322,7 +322,7 @@ pub mod frog_color_management_v1 {
                 min_display_mastering_luminance: u32,
                 max_cll: u32,
                 max_fall: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Current preferred metadata for a surface."]
             #[doc = "The application should use this information to tone-map its buffers"]
             #[doc = "to this target before committing."]
@@ -345,7 +345,7 @@ pub mod frog_color_management_v1 {
                 max_luminance: u32,
                 min_luminance: u32,
                 max_full_frame_luminance: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> frog_color_managed_surface#{}.preferred_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
@@ -435,7 +435,7 @@ pub mod frog_fifo_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -469,7 +469,7 @@ pub mod frog_fifo_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Establish a fifo object for a surface that may be used to add"]
             #[doc = "display refresh constraints to content updates."]
             #[doc = ""]
@@ -484,7 +484,7 @@ pub mod frog_fifo_v1 {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "A fifo object for a surface that may be used to add"]
@@ -525,7 +525,7 @@ pub mod frog_fifo_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -563,7 +563,7 @@ pub mod frog_fifo_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Indicate that this content update is not ready while a"]
             #[doc = "\"fifo_barrier\" condition is present on the surface."]
             #[doc = ""]
@@ -581,7 +581,7 @@ pub mod frog_fifo_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Informs the server that the client will no longer be using"]
             #[doc = "this protocol object."]
             #[doc = ""]
@@ -591,7 +591,7 @@ pub mod frog_fifo_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }

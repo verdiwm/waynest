@@ -27,7 +27,7 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -71,7 +71,7 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a data device that can be used to manage a seat's selection."]
             fn get_data_device(
                 &self,
@@ -79,14 +79,14 @@ pub mod wlr_data_control_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This interface allows a client to manage a seat's selection."]
@@ -126,7 +126,7 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -173,13 +173,13 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 source: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the data device object."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request asks the compositor to set the primary selection to the"]
             #[doc = "data from the source on behalf of the client."]
             #[doc = ""]
@@ -196,7 +196,7 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 source: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The data_offer event introduces a new wlr_data_control_offer object,"]
             #[doc = "which will subsequently be used in either the"]
             #[doc = "wlr_data_control_device.selection event (for the regular clipboard"]
@@ -210,7 +210,7 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_data_control_device_v1#{}.data_offer({})",
@@ -243,7 +243,7 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_data_control_device_v1#{}.selection({})",
@@ -263,7 +263,7 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_data_control_device_v1#{}.finished()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -291,7 +291,7 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_data_control_device_v1#{}.primary_selection({})",
@@ -345,7 +345,7 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -378,13 +378,13 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the data source object."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request for data from the client. Send the data as the specified MIME"]
             #[doc = "type over the passed file descriptor, then close it."]
             fn send(
@@ -393,7 +393,7 @@ pub mod wlr_data_control_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_data_control_source_v1#{}.send(\"{}\", {})",
@@ -419,7 +419,7 @@ pub mod wlr_data_control_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_data_control_source_v1#{}.cancelled()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -448,7 +448,7 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -489,13 +489,13 @@ pub mod wlr_data_control_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the data offer object."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent immediately after creating the wlr_data_control_offer object."]
             #[doc = "One event per offered MIME type."]
             fn offer(
@@ -503,7 +503,7 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_data_control_offer_v1#{}.offer(\"{}\")",
@@ -548,7 +548,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -589,14 +589,14 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 frame: crate::wire::ObjectId,
                 overlay_cursor: i32,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This object represents a single DMA-BUF frame."]
@@ -676,7 +676,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -697,7 +697,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Main event supplying the client with information about the frame. If the"]
             #[doc = "capture didn't fail, this event is always emitted first before any other"]
             #[doc = "events."]
@@ -718,7 +718,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 mod_high: u32,
                 mod_low: u32,
                 num_objects: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_export_dmabuf_frame_v1#{}.frame({}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
@@ -767,7 +767,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 offset: u32,
                 stride: u32,
                 plane_index: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_export_dmabuf_frame_v1#{}.object({}, {}, {}, {}, {}, {})",
@@ -812,7 +812,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_export_dmabuf_frame_v1#{}.ready({}, {}, {})",
@@ -846,7 +846,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 reason: CancelReason,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_export_dmabuf_frame_v1#{}.cancel({})",
@@ -886,7 +886,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -910,7 +910,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is emitted whenever a new toplevel window is created. It"]
             #[doc = "is emitted for all toplevels, regardless of the app that has created"]
             #[doc = "them."]
@@ -923,7 +923,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_foreign_toplevel_manager_v1#{}.toplevel({})",
@@ -947,7 +947,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_foreign_toplevel_manager_v1#{}.finished()",
@@ -1033,7 +1033,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1138,28 +1138,28 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests that the toplevel be unmaximized. If the maximized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
             fn unset_maximized(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests that the toplevel be minimized. If the minimized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
             fn set_minimized(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests that the toplevel be unminimized. If the minimized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
             fn unset_minimized(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request that this toplevel be activated on the given seat."]
             #[doc = "There is no guarantee the toplevel will be actually activated."]
             fn activate(
@@ -1167,7 +1167,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Send a request to the toplevel to close itself. The compositor would"]
             #[doc = "typically use a shell-specific method to carry out this request, for"]
             #[doc = "example by sending the xdg_toplevel.close event. However, this gives"]
@@ -1178,7 +1178,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The rectangle of the surface specified in this request corresponds to"]
             #[doc = "the place where the app using this protocol represents the given toplevel."]
             #[doc = "It can be used by the compositor as a hint for some operations, e.g"]
@@ -1199,7 +1199,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the zwlr_foreign_toplevel_handle_v1 object."]
             #[doc = ""]
             #[doc = "This request should be called either when the client does not want to"]
@@ -1209,7 +1209,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests that the toplevel be fullscreened on the given output. If the"]
             #[doc = "fullscreen state and/or the outputs the toplevel is visible on actually"]
             #[doc = "change, this will be indicated by the state and output_enter/leave"]
@@ -1223,21 +1223,21 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests that the toplevel be unfullscreened. If the fullscreen state"]
             #[doc = "actually changes, this will be indicated by the state event."]
             fn unset_fullscreen(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is emitted whenever the title of the toplevel changes."]
             fn title(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 title: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_foreign_toplevel_handle_v1#{}.title(\"{}\")",
@@ -1259,7 +1259,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 app_id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_foreign_toplevel_handle_v1#{}.app_id(\"{}\")",
@@ -1282,7 +1282,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_foreign_toplevel_handle_v1#{}.output_enter({})",
@@ -1306,7 +1306,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_foreign_toplevel_handle_v1#{}.output_leave({})",
@@ -1330,7 +1330,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state: Vec<u8>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_foreign_toplevel_handle_v1#{}.state(array[{}])",
@@ -1354,7 +1354,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -1372,7 +1372,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.closed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -1390,7 +1390,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 parent: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_foreign_toplevel_handle_v1#{}.parent({})",
@@ -1439,7 +1439,7 @@ pub mod wlr_gamma_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1477,14 +1477,14 @@ pub mod wlr_gamma_control_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This interface allows a client to adjust gamma tables for a particular"]
@@ -1531,7 +1531,7 @@ pub mod wlr_gamma_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1564,14 +1564,14 @@ pub mod wlr_gamma_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 fd: rustix::fd::OwnedFd,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the gamma control object. If the object is still valid, this"]
             #[doc = "restores the original gamma tables."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Advertise the size of each gamma ramp."]
             #[doc = ""]
             #[doc = "This event is sent immediately when the gamma control object is created."]
@@ -1580,7 +1580,7 @@ pub mod wlr_gamma_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 size: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_gamma_control_v1#{}.gamma_size({})",
@@ -1606,7 +1606,7 @@ pub mod wlr_gamma_control_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_gamma_control_v1#{}.failed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -1662,7 +1662,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1688,7 +1688,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "While this resource exists, input to clients other than the owner of the"]
@@ -1713,7 +1713,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1730,7 +1730,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -1815,7 +1815,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1891,7 +1891,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 output: Option<crate::wire::ObjectId>,
                 layer: Layer,
                 namespace: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request indicates that the client will not use the layer_shell"]
             #[doc = "object any more. Objects that have been created through this instance"]
             #[doc = "are not affected."]
@@ -1899,7 +1899,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "An interface that may be implemented by a wl_surface, for surfaces that"]
@@ -2004,7 +2004,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2130,7 +2130,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 width: u32,
                 height: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests that the compositor anchor the surface to the specified edges"]
             #[doc = "and corners. If two orthogonal edges are specified (e.g. 'top' and"]
             #[doc = "'left'), then the anchor point will be the intersection of the edges"]
@@ -2143,7 +2143,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 anchor: Anchor,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests that the compositor avoids occluding an area with other"]
             #[doc = "surfaces. The compositor's use of this information is"]
             #[doc = "implementation-dependent - do not assume that this region will not"]
@@ -2181,7 +2181,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 zone: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests that the surface be placed some distance away from the anchor"]
             #[doc = "point on the output, in surface-local coordinates. Setting this value"]
             #[doc = "for edges you are not anchored to has no effect."]
@@ -2197,7 +2197,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 right: i32,
                 bottom: i32,
                 left: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set how keyboard events are delivered to this surface. By default,"]
             #[doc = "layer shell surfaces do not receive keyboard events; this request can"]
             #[doc = "be used to change this."]
@@ -2215,7 +2215,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 keyboard_interactivity: KeyboardInteractivity,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This assigns an xdg_popup's parent to this layer_surface.  This popup"]
             #[doc = "should have been created via xdg_surface::get_popup with the parent set"]
             #[doc = "to NULL, and this request must be invoked before committing the popup's"]
@@ -2228,7 +2228,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 popup: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "When a configure event is received, if a client commits the"]
             #[doc = "surface in response to the configure event, then the client"]
             #[doc = "must make an ack_configure request sometime before the commit"]
@@ -2249,13 +2249,13 @@ pub mod wlr_layer_shell_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request destroys the layer surface."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Change the layer that the surface is rendered on."]
             #[doc = ""]
             #[doc = "Layer is double-buffered, see wl_surface.commit."]
@@ -2264,7 +2264,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer : super :: super :: super :: wlr :: wlr_layer_shell_unstable_v1 :: zwlr_layer_shell_v1 :: Layer,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests an edge for the exclusive zone to apply. The exclusive"]
             #[doc = "edge will be automatically deduced from anchor points when possible,"]
             #[doc = "but when the surface is anchored to a corner, it will be necessary"]
@@ -2278,7 +2278,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 edge: Anchor,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The configure event asks the client to resize its surface."]
             #[doc = ""]
             #[doc = "Clients should arrange their surface for the new states, and then send"]
@@ -2306,7 +2306,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 serial: u32,
                 width: u32,
                 height: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_layer_surface_v1#{}.configure({}, {}, {})",
@@ -2335,7 +2335,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_layer_surface_v1#{}.closed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -2401,7 +2401,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2435,7 +2435,7 @@ pub mod wlr_output_management_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 serial: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Indicates the client no longer wishes to receive events for output"]
             #[doc = "configuration changes. However the compositor may emit further events,"]
             #[doc = "until the finished event is emitted."]
@@ -2445,7 +2445,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event introduces a new head. This happens whenever a new head"]
             #[doc = "appears (e.g. a monitor is plugged in) or after the output manager is"]
             #[doc = "bound."]
@@ -2454,7 +2454,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 head: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_manager_v1#{}.head({})", sender_id, head);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2482,7 +2482,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_manager_v1#{}.done({})", sender_id, serial);
                     let (payload, fds) =
@@ -2501,7 +2501,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_manager_v1#{}.finished()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -2563,7 +2563,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2581,7 +2581,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event describes the head name."]
             #[doc = ""]
             #[doc = "The naming convention is compositor defined, but limited to alphanumeric"]
@@ -2605,7 +2605,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_head_v1#{}.name(\"{}\")", sender_id, name);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2636,7 +2636,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 description: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_output_head_v1#{}.description(\"{}\")",
@@ -2665,7 +2665,7 @@ pub mod wlr_output_management_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_output_head_v1#{}.physical_size({}, {})",
@@ -2690,7 +2690,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mode: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_head_v1#{}.mode({})", sender_id, mode);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2712,7 +2712,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 enabled: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_head_v1#{}.enabled({})", sender_id, enabled);
                     let (payload, fds) =
@@ -2730,7 +2730,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mode: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_output_head_v1#{}.current_mode({})",
@@ -2754,7 +2754,7 @@ pub mod wlr_output_management_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_output_head_v1#{}.position({}, {})",
@@ -2779,7 +2779,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_output_head_v1#{}.transform({})",
@@ -2802,7 +2802,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 scale: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_head_v1#{}.scale({})", sender_id, scale);
                     let (payload, fds) =
@@ -2820,7 +2820,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_head_v1#{}.finished()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -2857,7 +2857,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 make: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_head_v1#{}.make(\"{}\")", sender_id, make);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2896,7 +2896,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 model: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_head_v1#{}.model(\"{}\")", sender_id, model);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2933,7 +2933,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial_number: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_output_head_v1#{}.serial_number(\"{}\")",
@@ -2957,7 +2957,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state: AdaptiveSyncState,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_output_head_v1#{}.adaptive_sync({})",
@@ -2996,7 +2996,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3014,7 +3014,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event describes the mode size. The size is given in physical"]
             #[doc = "hardware units of the output device. This is not necessarily the same as"]
             #[doc = "the output size in the global compositor space. For instance, the output"]
@@ -3025,7 +3025,7 @@ pub mod wlr_output_management_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_output_mode_v1#{}.size({}, {})",
@@ -3050,7 +3050,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 refresh: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_mode_v1#{}.refresh({})", sender_id, refresh);
                     let (payload, fds) =
@@ -3066,7 +3066,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_mode_v1#{}.preferred()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -3083,7 +3083,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_mode_v1#{}.finished()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -3145,7 +3145,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3199,14 +3199,14 @@ pub mod wlr_output_management_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 head: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Disable a head."]
             fn disable_head(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 head: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Apply the new output configuration."]
             #[doc = ""]
             #[doc = "In case the configuration is successfully applied, there is no guarantee"]
@@ -3221,7 +3221,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Test the new output configuration. The configuration won't be applied,"]
             #[doc = "but will only be validated."]
             #[doc = ""]
@@ -3235,7 +3235,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Using this request a client can tell the compositor that it is not going"]
             #[doc = "to use the configuration object anymore. Any changes to the outputs"]
             #[doc = "that have not been applied will be discarded."]
@@ -3246,7 +3246,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent after the compositor has successfully applied the changes or"]
             #[doc = "tested them."]
             #[doc = ""]
@@ -3258,7 +3258,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_configuration_v1#{}.succeeded()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -3277,7 +3277,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_configuration_v1#{}.failed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -3299,7 +3299,7 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_configuration_v1#{}.cancelled()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -3363,7 +3363,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3442,7 +3442,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mode: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request assigns a custom mode to the head. The size is given in"]
             #[doc = "physical hardware units of the output device. If set to zero, the"]
             #[doc = "refresh rate is unspecified."]
@@ -3455,7 +3455,7 @@ pub mod wlr_output_management_unstable_v1 {
                 width: i32,
                 height: i32,
                 refresh: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request sets the head's position in the global compositor space."]
             fn set_position(
                 &self,
@@ -3463,21 +3463,21 @@ pub mod wlr_output_management_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request sets the head's transform."]
             fn set_transform(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request sets the head's scale."]
             fn set_scale(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 scale: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request enables/disables adaptive sync. Adaptive sync is also"]
             #[doc = "known as Variable Refresh Rate or VRR."]
             fn set_adaptive_sync(
@@ -3485,7 +3485,7 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state : super :: super :: super :: wlr :: wlr_output_management_unstable_v1 :: zwlr_output_head_v1 :: AdaptiveSyncState,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -3522,7 +3522,7 @@ pub mod wlr_output_power_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3557,14 +3557,14 @@ pub mod wlr_output_power_management_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This object offers requests to set the power management mode of"]
@@ -3627,7 +3627,7 @@ pub mod wlr_output_power_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3656,13 +3656,13 @@ pub mod wlr_output_power_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mode: Mode,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the output power management mode control object."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Report the power management mode change of an output."]
             #[doc = ""]
             #[doc = "The mode event is sent after an output changed its power"]
@@ -3675,7 +3675,7 @@ pub mod wlr_output_power_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mode: Mode,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_power_v1#{}.mode({})", sender_id, mode);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -3700,7 +3700,7 @@ pub mod wlr_output_power_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_output_power_v1#{}.failed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -3741,7 +3741,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3815,7 +3815,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 frame: crate::wire::ObjectId,
                 overlay_cursor: i32,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Capture the next frame of an output's region."]
             #[doc = ""]
             #[doc = "The region is given in output logical coordinates, see"]
@@ -3832,14 +3832,14 @@ pub mod wlr_screencopy_unstable_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This object represents a single frame."]
@@ -3907,7 +3907,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3953,20 +3953,20 @@ pub mod wlr_screencopy_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the frame. This request can be sent at any time by the client."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Same as copy, except it waits until there is damage to copy."]
             fn copy_with_damage(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Provides information about wl_shm buffer parameters that need to be"]
             #[doc = "used for this frame. This event is sent once after the frame is created"]
             #[doc = "if wl_shm buffers are supported."]
@@ -3978,7 +3978,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 width: u32,
                 height: u32,
                 stride: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_screencopy_frame_v1#{}.buffer({}, {}, {}, {})",
@@ -4007,7 +4007,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 flags: Flags,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_screencopy_frame_v1#{}.flags({})", sender_id, flags);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -4038,7 +4038,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_screencopy_frame_v1#{}.ready({}, {}, {})",
@@ -4065,7 +4065,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_screencopy_frame_v1#{}.failed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -4093,7 +4093,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 y: u32,
                 width: u32,
                 height: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_screencopy_frame_v1#{}.damage({}, {}, {}, {})",
@@ -4125,7 +4125,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 format: u32,
                 width: u32,
                 height: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwlr_screencopy_frame_v1#{}.linux_dmabuf({}, {}, {})",
@@ -4153,7 +4153,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwlr_screencopy_frame_v1#{}.buffer_done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -4207,7 +4207,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -4337,7 +4337,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 time: u32,
                 dx: crate::wire::Fixed,
                 dy: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The pointer has moved in an absolute coordinate frame."]
             #[doc = ""]
             #[doc = "Value of x can range from 0 to x_extent, value of y can range from 0"]
@@ -4351,7 +4351,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 y: u32,
                 x_extent: u32,
                 y_extent: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A button was pressed or released."]
             fn button(
                 &self,
@@ -4360,7 +4360,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 time: u32,
                 button: u32,
                 state: super::super::super::core::wayland::wl_pointer::ButtonState,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Scroll and other axis requests."]
             fn axis(
                 &self,
@@ -4369,20 +4369,20 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 time: u32,
                 axis: super::super::super::core::wayland::wl_pointer::Axis,
                 value: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Indicates the set of events that logically belong together."]
             fn frame(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Source information for scroll and other axis."]
             fn axis_source(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 axis_source: super::super::super::core::wayland::wl_pointer::AxisSource,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Stop notification for scroll and other axes."]
             fn axis_stop(
                 &self,
@@ -4390,7 +4390,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 time: u32,
                 axis: super::super::super::core::wayland::wl_pointer::Axis,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Discrete step information for scroll and other axes."]
             #[doc = ""]
             #[doc = "This event allows the client to extend data normally sent using the axis"]
@@ -4403,12 +4403,12 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 axis: super::super::super::core::wayland::wl_pointer::Axis,
                 value: crate::wire::Fixed,
                 discrete: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This object allows clients to create individual virtual pointer objects."]
@@ -4425,7 +4425,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -4482,12 +4482,12 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 seat: Option<crate::wire::ObjectId>,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Creates a new virtual pointer. The seat and the output arguments are"]
             #[doc = "optional. If the seat argument is set, the compositor should assign the"]
             #[doc = "input device to the requested seat. If the output argument is set, the"]
@@ -4499,7 +4499,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 seat: Option<crate::wire::ObjectId>,
                 output: Option<crate::wire::ObjectId>,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }

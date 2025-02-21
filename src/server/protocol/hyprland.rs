@@ -41,7 +41,7 @@ pub mod hyprland_ctm_control_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -123,13 +123,13 @@ pub mod hyprland_ctm_control_v1 {
                 mat6: crate::wire::Fixed,
                 mat7: crate::wire::Fixed,
                 mat8: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Commits the pending state(s) set by set_ctm_for_output."]
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
             #[doc = ""]
@@ -138,7 +138,7 @@ pub mod hyprland_ctm_control_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -161,7 +161,7 @@ pub mod hyprland_focus_grab_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -193,14 +193,14 @@ pub mod hyprland_focus_grab_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 grab: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the focus grab manager."]
             #[doc = "This doesn't destroy existing focus grab objects."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This interface restricts input focus to a specified whitelist of"]
@@ -231,7 +231,7 @@ pub mod hyprland_focus_grab_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -279,7 +279,7 @@ pub mod hyprland_focus_grab_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Remove a surface from the whitelist. Destroying the surface is treated"]
             #[doc = "the same as an explicit call to this function."]
             #[doc = ""]
@@ -292,7 +292,7 @@ pub mod hyprland_focus_grab_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Commit pending changes to the surface whitelist."]
             #[doc = ""]
             #[doc = "If the list previously had no entries and now has at least one, the grab"]
@@ -302,20 +302,20 @@ pub mod hyprland_focus_grab_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the grab object and remove the grab if active."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent when an active grab is cancelled by the compositor,"]
             #[doc = "regardless of cause."]
             fn cleared(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> hyprland_focus_grab_v1#{}.cleared()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -367,7 +367,7 @@ pub mod hyprland_global_shortcuts_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -434,14 +434,14 @@ pub mod hyprland_global_shortcuts_v1 {
                 app_id: String,
                 description: String,
                 trigger_description: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This object represents a single shortcut."]
@@ -458,7 +458,7 @@ pub mod hyprland_global_shortcuts_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -475,7 +475,7 @@ pub mod hyprland_global_shortcuts_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The keystroke was pressed."]
             #[doc = ""]
             #[doc = "tv_ values hold the timestamp of the occurrence."]
@@ -486,7 +486,7 @@ pub mod hyprland_global_shortcuts_v1 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> hyprland_global_shortcut_v1#{}.pressed({}, {}, {})",
@@ -516,7 +516,7 @@ pub mod hyprland_global_shortcuts_v1 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> hyprland_global_shortcut_v1#{}.released({}, {}, {})",
@@ -577,7 +577,7 @@ pub mod hyprland_surface_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -615,14 +615,14 @@ pub mod hyprland_surface_v1 {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the surface manager."]
             #[doc = "This does not destroy existing surface objects."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This interface allows access to hyprland-specific properties of a wl_surface."]
@@ -666,7 +666,7 @@ pub mod hyprland_surface_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -699,14 +699,14 @@ pub mod hyprland_surface_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 opacity: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the hyprland surface object, resetting properties provided"]
             #[doc = "by this interface to their default values on the next wl_surface.commit."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -731,7 +731,7 @@ pub mod hyprland_toplevel_export_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -803,14 +803,14 @@ pub mod hyprland_toplevel_export_v1 {
                 frame: crate::wire::ObjectId,
                 overlay_cursor: i32,
                 handle: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Same as capture_toplevel, but with a zwlr_foreign_toplevel_handle_v1 handle."]
             fn capture_toplevel_with_wlr_toplevel_handle(
                 &self,
@@ -819,7 +819,7 @@ pub mod hyprland_toplevel_export_v1 {
                 frame: crate::wire::ObjectId,
                 overlay_cursor: i32,
                 handle: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This object represents a single frame."]
@@ -886,7 +886,7 @@ pub mod hyprland_toplevel_export_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -930,13 +930,13 @@ pub mod hyprland_toplevel_export_v1 {
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
                 ignore_damage: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the frame. This request can be sent at any time by the client."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Provides information about wl_shm buffer parameters that need to be"]
             #[doc = "used for this frame. This event is sent once after the frame is created"]
             #[doc = "if wl_shm buffers are supported."]
@@ -948,7 +948,7 @@ pub mod hyprland_toplevel_export_v1 {
                 width: u32,
                 height: u32,
                 stride: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> hyprland_toplevel_export_frame_v1#{}.buffer({}, {}, {}, {})",
@@ -988,7 +988,7 @@ pub mod hyprland_toplevel_export_v1 {
                 y: u32,
                 width: u32,
                 height: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> hyprland_toplevel_export_frame_v1#{}.damage({}, {}, {}, {})",
@@ -1017,7 +1017,7 @@ pub mod hyprland_toplevel_export_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 flags: Flags,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> hyprland_toplevel_export_frame_v1#{}.flags({})",
@@ -1052,7 +1052,7 @@ pub mod hyprland_toplevel_export_v1 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> hyprland_toplevel_export_frame_v1#{}.ready({}, {}, {})",
@@ -1079,7 +1079,7 @@ pub mod hyprland_toplevel_export_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> hyprland_toplevel_export_frame_v1#{}.failed()",
@@ -1102,7 +1102,7 @@ pub mod hyprland_toplevel_export_v1 {
                 format: u32,
                 width: u32,
                 height: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> hyprland_toplevel_export_frame_v1#{}.linux_dmabuf({}, {}, {})",
@@ -1130,7 +1130,7 @@ pub mod hyprland_toplevel_export_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> hyprland_toplevel_export_frame_v1#{}.buffer_done()",

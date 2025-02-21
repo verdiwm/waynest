@@ -65,7 +65,7 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                             &self,
                             #handler_args
                             message: &mut crate::wire::Message,
-                        ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+                        ) -> impl Future<Output = crate::server::Result<()>> + Send {
                             async move {
                                 #[allow(clippy::match_single_binding)]
                                 match message.opcode {
@@ -206,7 +206,7 @@ fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Tok
 
         requests.push(quote! {
             #(#docs)*
-            fn #name(#(#args),*) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            fn #name(#(#args),*) -> impl Future<Output = crate::server::Result<()>> + Send;
         });
     }
 
@@ -319,7 +319,7 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
 
         events.push(quote! {
             #(#docs)*
-            fn #name(#(#args),*) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            fn #name(#(#args),*) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
 

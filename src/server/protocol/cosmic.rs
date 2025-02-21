@@ -20,7 +20,7 @@ pub mod cosmic_atspi_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -79,7 +79,7 @@ pub mod cosmic_atspi_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Grab the given key combination, so it will not be sent to clients."]
             fn add_key_grab(
                 &self,
@@ -88,7 +88,7 @@ pub mod cosmic_atspi_v1 {
                 mods: u32,
                 virtual_mods: Vec<u8>,
                 key: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Disables a grab added with add_key_grab."]
             fn remove_key_grab(
                 &self,
@@ -97,26 +97,26 @@ pub mod cosmic_atspi_v1 {
                 mods: u32,
                 virtual_mods: Vec<u8>,
                 key: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Grab keyboard, so key input will not be sent to clients."]
             fn grab_keyboard(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Disables a grab added with grab_keyboard."]
             fn ungrab_keyboard(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Produces an fd that can be used with libei to monitor keyboard input."]
             fn key_events_eis(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 fd: rustix::fd::OwnedFd,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> cosmic_atspi_manager_v1#{}.key_events_eis({})",
@@ -166,7 +166,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -184,7 +184,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "A manager for creating image source objects for wl_output objects."]
@@ -201,7 +201,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -241,7 +241,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the manager. This request may be sent at any time by the client"]
             #[doc = "and objects created by the manager will remain valid after its"]
             #[doc = "destruction."]
@@ -249,7 +249,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "A manager for creating image source objects for wl_output objects."]
@@ -266,7 +266,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -306,7 +306,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the manager. This request may be sent at any time by the client"]
             #[doc = "and objects created by the manager will remain valid after its"]
             #[doc = "destruction."]
@@ -314,7 +314,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "A manager for creating image source objects for"]
@@ -332,7 +332,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -371,7 +371,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 toplevel_handle: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the manager. This request may be sent at any time by the client"]
             #[doc = "and objects created by the manager will remain valid after its"]
             #[doc = "destruction."]
@@ -379,7 +379,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -427,7 +427,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -503,7 +503,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 extended: crate::wire::ObjectId,
                 head: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Gets an extension object for zwlr_output_configuration_v1."]
             #[doc = ""]
             #[doc = "Trying to create more than one zcosmic_output_configuration_v1 per zwlr_output_configuration_v1"]
@@ -514,7 +514,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 extended: crate::wire::ObjectId,
                 config: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Gets an extension object for zwlr_output_configuration_head_v1."]
             #[doc = ""]
             #[doc = "Trying to create more than one zcosmic_output_configuration_head_v1 per"]
@@ -525,13 +525,13 @@ pub mod cosmic_output_management_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 extended: crate::wire::ObjectId,
                 config_head: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys this global. All previously created objects remain valid."]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "Extension to zwlr_output_head_v1."]
@@ -607,7 +607,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -625,7 +625,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This events describes the scale of the head in the global compositor"]
             #[doc = "space multiplied by 1000 for additional precision."]
             #[doc = ""]
@@ -635,7 +635,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 scale_1000: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_output_head_v1#{}.scale_1000({})",
@@ -663,7 +663,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: Option<String>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_output_head_v1#{}.mirroring(\"{}\")",
@@ -686,7 +686,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 available: AdaptiveSyncAvailability,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_output_head_v1#{}.adaptive_sync_available({})",
@@ -710,7 +710,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state: AdaptiveSyncStateExt,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_output_head_v1#{}.adaptive_sync_ext({})",
@@ -768,7 +768,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -823,7 +823,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 id: crate::wire::ObjectId,
                 head: crate::wire::ObjectId,
                 mirroring: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Using this request a client can tell the compositor that it is not going"]
             #[doc = "to use the configuration object anymore. Any changes to the outputs"]
             #[doc = "will still be attached to the original `zwlr_output_configuration_head_v1`"]
@@ -832,7 +832,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event indicates that the configuration is no longer available."]
             #[doc = ""]
             #[doc = "This usually happens when the original configuration was `cancelled`, `suceeded` or `failed`."]
@@ -844,7 +844,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_output_configuration_v1#{}.finished()",
@@ -878,7 +878,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -924,7 +924,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 scale_1000: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Using this request a client can tell the compositor that it is not going"]
             #[doc = "to use the configuration object anymore. Already issued requests will"]
             #[doc = "still be attached to the original `zwlr_output_configuration_head_v1`"]
@@ -933,7 +933,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request requests a new adaptive sync state."]
             #[doc = ""]
             #[doc = "This request is meant to be used in place of `zwlr_output_configuration_head_v1::set_adaptive_sync`."]
@@ -946,7 +946,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state : super :: super :: super :: cosmic :: cosmic_output_management_unstable_v1 :: zcosmic_output_head_v1 :: AdaptiveSyncStateExt,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -971,7 +971,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1012,7 +1012,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 overlap_notification: crate::wire::ObjectId,
                 layer_surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -1028,7 +1028,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1049,7 +1049,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A ext_foreign_toplevel_handle_v1 has entered the surface area."]
             #[doc = ""]
             #[doc = "This event will be emitted once for every ext_foreign_toplevel_handle_v1"]
@@ -1067,7 +1067,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_overlap_notification_v1#{}.toplevel_enter({}, {}, {}, {}, {})",
@@ -1100,7 +1100,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_overlap_notification_v1#{}.toplevel_leave({})",
@@ -1136,7 +1136,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_overlap_notification_v1#{}.layer_enter(\"{}\", \"{}\", {}, {}, {}, {}, {}, {})",
@@ -1172,7 +1172,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 identifier: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_overlap_notification_v1#{}.layer_leave(\"{}\")",
@@ -1248,7 +1248,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1323,7 +1323,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 session: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 options: Options,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a cursor capturing session for the pointer of an image source."]
             #[doc = ""]
             #[doc = "The options argument has no effect and must be set to 0. This is"]
@@ -1336,7 +1336,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 source: crate::wire::ObjectId,
                 pointer: crate::wire::ObjectId,
                 options: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the manager object."]
             #[doc = ""]
             #[doc = "Other objects created via this interface are unaffected."]
@@ -1344,7 +1344,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This object represents an active screencopy session."]
@@ -1376,7 +1376,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1408,7 +1408,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 frame: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the session. This request can be sent at any time by the"]
             #[doc = "client."]
             #[doc = ""]
@@ -1418,7 +1418,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Provides the dimensions of the source image in buffer pixel coordinates."]
             #[doc = ""]
             #[doc = "The client must attach buffers that match this size."]
@@ -1428,7 +1428,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 width: u32,
                 height: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_screencopy_session_v2#{}.buffer_size({}, {})",
@@ -1455,7 +1455,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 format: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_screencopy_session_v2#{}.shm_format({})",
@@ -1482,7 +1482,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 device: Vec<u8>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_screencopy_session_v2#{}.dmabuf_device(array[{}])",
@@ -1510,7 +1510,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 format: u32,
                 modifiers: Vec<u8>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_screencopy_session_v2#{}.dmabuf_format({}, array[{}])",
@@ -1538,7 +1538,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zcosmic_screencopy_session_v2#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -1558,7 +1558,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zcosmic_screencopy_session_v2#{}.stopped()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -1644,7 +1644,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1693,7 +1693,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Attach a buffer to the session."]
             #[doc = ""]
             #[doc = "The wl_buffer.release request is unused."]
@@ -1705,7 +1705,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Apply damage to the buffer which is to be captured next. This request"]
             #[doc = "may be sent multiple times to describe a region."]
             #[doc = ""]
@@ -1735,7 +1735,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Capture a frame."]
             #[doc = ""]
             #[doc = "Unless this is the first successful captured frame performed in this"]
@@ -1749,7 +1749,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent before the ready event and holds the transform of"]
             #[doc = "the source buffer."]
             fn transform(
@@ -1757,7 +1757,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_screencopy_frame_v2#{}.transform({})",
@@ -1789,7 +1789,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_screencopy_frame_v2#{}.damage({}, {}, {}, {})",
@@ -1827,7 +1827,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_screencopy_frame_v2#{}.presentation_time({}, {}, {})",
@@ -1857,7 +1857,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zcosmic_screencopy_frame_v2#{}.ready()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -1875,7 +1875,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 reason: FailureReason,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_screencopy_frame_v2#{}.failed({})",
@@ -1929,7 +1929,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1965,7 +1965,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Gets the screencopy session for this cursor session."]
             #[doc = ""]
             #[doc = "The session will produce frames of the cursor image. The compositor may"]
@@ -1978,7 +1978,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 session: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent when a cursor enters the captured area. It shall be generated"]
             #[doc = "before the \"position\" and \"hotspot\" events when and only when a cursor"]
             #[doc = "enters the area."]
@@ -1990,7 +1990,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_screencopy_cursor_session_v2#{}.enter()",
@@ -2010,7 +2010,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_screencopy_cursor_session_v2#{}.leave()",
@@ -2039,7 +2039,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_screencopy_cursor_session_v2#{}.position({}, {})",
@@ -2071,7 +2071,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_screencopy_cursor_session_v2#{}.hotspot({}, {})",
@@ -2113,7 +2113,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2158,7 +2158,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request a zcosmic_toplevel_handle_v1 extension object for an existing"]
             #[doc = "ext_foreign_toplevel_handle_v1."]
             #[doc = ""]
@@ -2171,7 +2171,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 cosmic_toplevel: crate::wire::ObjectId,
                 foreign_toplevel: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is never emitted for clients binding version 2"]
             #[doc = "of this protocol, they should use `get_cosmic_toplevel` instead."]
             #[doc = ""]
@@ -2187,7 +2187,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_toplevel_info_v1#{}.toplevel({})",
@@ -2214,7 +2214,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zcosmic_toplevel_info_v1#{}.finished()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -2234,7 +2234,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zcosmic_toplevel_info_v1#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -2299,7 +2299,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2317,7 +2317,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The server will emit no further events on the"]
             #[doc = "zcosmic_toplevel_handle_v1 after this event. Any requests received"]
             #[doc = "aside from the destroy request will be ignored. Upon receiving this"]
@@ -2331,7 +2331,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zcosmic_toplevel_handle_v1#{}.closed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -2356,7 +2356,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zcosmic_toplevel_handle_v1#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -2376,7 +2376,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 title: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_toplevel_handle_v1#{}.title(\"{}\")",
@@ -2402,7 +2402,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 app_id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_toplevel_handle_v1#{}.app_id(\"{}\")",
@@ -2425,7 +2425,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_toplevel_handle_v1#{}.output_enter({})",
@@ -2449,7 +2449,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_toplevel_handle_v1#{}.output_leave({})",
@@ -2472,7 +2472,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_toplevel_handle_v1#{}.workspace_enter({})",
@@ -2496,7 +2496,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_toplevel_handle_v1#{}.workspace_leave({})",
@@ -2520,7 +2520,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state: Vec<u8>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_toplevel_handle_v1#{}.state(array[{}])",
@@ -2550,7 +2550,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_toplevel_handle_v1#{}.geometry({}, {}, {}, {}, {})",
@@ -2655,7 +2655,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2839,7 +2839,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.closed event will be sent."]
             fn close(
@@ -2847,7 +2847,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             fn activate(
@@ -2856,7 +2856,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             fn set_maximized(
@@ -2864,7 +2864,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             fn unset_maximized(
@@ -2872,7 +2872,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             fn set_minimized(
@@ -2880,7 +2880,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             fn unset_minimized(
@@ -2888,7 +2888,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state and potentially the"]
             #[doc = "zcosmic_toplevel_handle_v1.output_enter/output_leave events will"]
@@ -2903,7 +2903,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 output: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             fn unset_fullscreen(
@@ -2911,7 +2911,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If a client using this protocol displays UI elements corresponding"]
             #[doc = "to toplevels, it may use this request to inform the server about such"]
             #[doc = "a relation. This information may be used by the server, for example as"]
@@ -2933,7 +2933,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Move window to workspace, on given output."]
             fn move_to_workspace(
                 &self,
@@ -2942,7 +2942,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 toplevel: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             fn set_sticky(
@@ -2950,7 +2950,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
             fn unset_sticky(
@@ -2958,7 +2958,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
             #[doc = "a capability isn't supported, clients should hide or disable the UI"]
             #[doc = "elements that expose this functionality. For instance, if the"]
@@ -2980,7 +2980,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 capabilities: Vec<u8>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zcosmic_toplevel_manager_v1#{}.capabilities(array[{}])",

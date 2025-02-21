@@ -15,7 +15,7 @@ pub mod appmenu {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -48,12 +48,12 @@ pub mod appmenu {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "The DBus service name and object path where the appmenu interface is present"]
@@ -72,7 +72,7 @@ pub mod appmenu {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -108,12 +108,12 @@ pub mod appmenu {
                 sender_id: crate::wire::ObjectId,
                 service_name: String,
                 object_path: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -132,7 +132,7 @@ pub mod blur {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -172,13 +172,13 @@ pub mod blur {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn unset(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -194,7 +194,7 @@ pub mod blur {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -225,18 +225,18 @@ pub mod blur {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_region(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -255,7 +255,7 @@ pub mod contrast {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -295,13 +295,13 @@ pub mod contrast {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn unset(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -317,7 +317,7 @@ pub mod contrast {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -395,36 +395,36 @@ pub mod contrast {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_region(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_contrast(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 contrast: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_intensity(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 intensity: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_saturation(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 saturation: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "enables 'frost' variant of contrast effect."]
             #[doc = ""]
             #[doc = "'frost' is an enhanced version of the contrast effect that"]
@@ -441,12 +441,12 @@ pub mod contrast {
                 green: i32,
                 blue: i32,
                 alpha: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn unset_frost(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -475,7 +475,7 @@ pub mod dpms {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -505,7 +505,7 @@ pub mod dpms {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This interface provides information about the VESA DPMS state for a wl_output."]
@@ -554,7 +554,7 @@ pub mod dpms {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -582,12 +582,12 @@ pub mod dpms {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mode: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event gets pushed on binding the resource and indicates whether the wl_output"]
             #[doc = "supports DPMS. There are operation modes of a Wayland server where DPMS might not"]
             #[doc = "make sense (e.g. nested compositors)."]
@@ -596,7 +596,7 @@ pub mod dpms {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 supported: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_dpms#{}.supported({})",
@@ -622,7 +622,7 @@ pub mod dpms {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mode: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_kwin_dpms#{}.mode({})", sender_id, mode);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(mode).build();
@@ -640,7 +640,7 @@ pub mod dpms {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_kwin_dpms#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -680,7 +680,7 @@ pub mod fake_input {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -818,28 +818,28 @@ pub mod fake_input {
                 sender_id: crate::wire::ObjectId,
                 application: String,
                 reason: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn pointer_motion(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 delta_x: crate::wire::Fixed,
                 delta_y: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn button(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 button: u32,
                 state: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn axis(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 axis: u32,
                 value: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A client should use this request to send touch down event at specific"]
             #[doc = "coordinates."]
             fn touch_down(
@@ -849,7 +849,7 @@ pub mod fake_input {
                 id: u32,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A client should use this request to send touch motion to specific position."]
             fn touch_motion(
                 &self,
@@ -858,46 +858,46 @@ pub mod fake_input {
                 id: u32,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A client should use this request to send touch up event."]
             fn touch_up(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A client should use this request to cancel the current"]
             #[doc = "touch event."]
             fn touch_cancel(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A client should use this request to send touch frame event."]
             fn touch_frame(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn pointer_motion_absolute(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn keyboard_key(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 button: u32,
                 state: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -1043,7 +1043,7 @@ pub mod fullscreen_shell {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1106,7 +1106,7 @@ pub mod fullscreen_shell {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Present a surface on the given output."]
             #[doc = ""]
             #[doc = "If the output is null, the compositor will present the surface on"]
@@ -1131,7 +1131,7 @@ pub mod fullscreen_shell {
                 surface: Option<crate::wire::ObjectId>,
                 method: u32,
                 output: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Presents a surface on the given output for a particular mode."]
             #[doc = ""]
             #[doc = "If the current size of the output differs from that of the surface,"]
@@ -1177,7 +1177,7 @@ pub mod fullscreen_shell {
                 output: crate::wire::ObjectId,
                 framerate: i32,
                 feedback: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Advertises a single capability of the compositor."]
             #[doc = ""]
             #[doc = "When the wl_fullscreen_shell interface is bound, this event is emitted"]
@@ -1191,7 +1191,7 @@ pub mod fullscreen_shell {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 capability: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> _wl_fullscreen_shell#{}.capability({})",
@@ -1222,7 +1222,7 @@ pub mod fullscreen_shell {
                 _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1240,7 +1240,7 @@ pub mod fullscreen_shell {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> _wl_fullscreen_shell_mode_feedback#{}.mode_successful()",
@@ -1263,7 +1263,7 @@ pub mod fullscreen_shell {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> _wl_fullscreen_shell_mode_feedback#{}.mode_failed()",
@@ -1286,7 +1286,7 @@ pub mod fullscreen_shell {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> _wl_fullscreen_shell_mode_feedback#{}.present_cancelled()",
@@ -1324,7 +1324,7 @@ pub mod idle {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1357,7 +1357,7 @@ pub mod idle {
                 id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 timeout: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -1373,7 +1373,7 @@ pub mod idle {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1396,17 +1396,17 @@ pub mod idle {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn simulate_user_activity(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn idle(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_kwin_idle_timeout#{}.idle()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -1420,7 +1420,7 @@ pub mod idle {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_kwin_idle_timeout#{}.resumed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -1452,7 +1452,7 @@ pub mod kde_external_brightness_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1479,13 +1479,13 @@ pub mod kde_external_brightness_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn create_brightness_control(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "After creating this object, the client should issue all relevant setup requests"]
@@ -1505,7 +1505,7 @@ pub mod kde_external_brightness_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1569,30 +1569,30 @@ pub mod kde_external_brightness_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_internal(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 internal: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_edid(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 string: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_max_brightness(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 value: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The client can set this to notify the compositor of the device's initial brightness."]
             #[doc = "It can also set this again after the initial commit to notify the compositor that"]
             #[doc = "the brightness level has changed due to external factors."]
@@ -1602,7 +1602,7 @@ pub mod kde_external_brightness_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 value: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The client must ensure that if the brightness level changes due to external factors,"]
             #[doc = "that it either overwrites those changes with what the compositor last requested,"]
             #[doc = "or commit again with set_observed_brightness specifying the changed brightness."]
@@ -1611,7 +1611,7 @@ pub mod kde_external_brightness_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 value: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_external_brightness_device_v1#{}.requested_brightness({})",
@@ -1672,7 +1672,7 @@ pub mod kde_lockscreen_overlay_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1701,13 +1701,13 @@ pub mod kde_lockscreen_overlay_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This won't affect the surface previously marked with the allow request."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -1961,7 +1961,7 @@ pub mod kde_output_device_v2 {
                 _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1984,7 +1984,7 @@ pub mod kde_output_device_v2 {
                 make: String,
                 model: String,
                 transform: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
@@ -2021,7 +2021,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mode: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.current_mode({})",
@@ -2060,7 +2060,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mode: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_device_v2#{}.mode({})", sender_id, mode);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2081,7 +2081,7 @@ pub mod kde_output_device_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_device_v2#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -2114,7 +2114,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 factor: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_device_v2#{}.scale({})", sender_id, factor);
                     let (payload, fds) =
@@ -2136,7 +2136,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 raw: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_device_v2#{}.edid(\"{}\")", sender_id, raw);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2158,7 +2158,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 enabled: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_device_v2#{}.enabled({})", sender_id, enabled);
                     let (payload, fds) =
@@ -2177,7 +2177,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 uuid: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_device_v2#{}.uuid(\"{}\")", sender_id, uuid);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2195,7 +2195,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial_number: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.serial_number(\"{}\")",
@@ -2217,7 +2217,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 eisa_id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.eisa_id(\"{}\")",
@@ -2240,7 +2240,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 flags: Capability,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.capabilities({})",
@@ -2263,7 +2263,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 overscan: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.overscan({})",
@@ -2286,7 +2286,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 vrr_policy: VrrPolicy,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.vrr_policy({})",
@@ -2308,7 +2308,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 rgb_range: RgbRange,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.rgb_range({})",
@@ -2330,7 +2330,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_device_v2#{}.name(\"{}\")", sender_id, name);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -2348,7 +2348,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 hdr_enabled: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.high_dynamic_range({})",
@@ -2372,7 +2372,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 sdr_brightness: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.sdr_brightness({})",
@@ -2394,7 +2394,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 wcg_enabled: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.wide_color_gamut({})",
@@ -2415,7 +2415,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 policy: AutoRotatePolicy,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.auto_rotate_policy({})",
@@ -2436,7 +2436,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 profile_path: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.icc_profile_path(\"{}\")",
@@ -2459,7 +2459,7 @@ pub mod kde_output_device_v2 {
                 max_peak_brightness: u32,
                 max_frame_average_brightness: u32,
                 min_brightness: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.brightness_metadata({}, {}, {})",
@@ -2486,7 +2486,7 @@ pub mod kde_output_device_v2 {
                 max_peak_brightness: i32,
                 max_average_brightness: i32,
                 min_brightness: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.brightness_overrides({}, {}, {})",
@@ -2513,7 +2513,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 gamut_wideness: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.sdr_gamut_wideness({})",
@@ -2534,7 +2534,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 source: ColorProfileSource,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.color_profile_source({})",
@@ -2561,7 +2561,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 brightness: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.brightness({})",
@@ -2582,7 +2582,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 preference: ColorPowerTradeoff,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.color_power_tradeoff({})",
@@ -2609,7 +2609,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 multiplier: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_v2#{}.dimming({})",
@@ -2648,7 +2648,7 @@ pub mod kde_output_device_v2 {
                 _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2666,7 +2666,7 @@ pub mod kde_output_device_v2 {
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_mode_v2#{}.size({}, {})",
@@ -2691,7 +2691,7 @@ pub mod kde_output_device_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 refresh: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_device_mode_v2#{}.refresh({})",
@@ -2711,7 +2711,7 @@ pub mod kde_output_device_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_device_mode_v2#{}.preferred()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -2728,7 +2728,7 @@ pub mod kde_output_device_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_device_mode_v2#{}.removed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -2798,7 +2798,7 @@ pub mod kde_output_management_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -2824,7 +2824,7 @@ pub mod kde_output_management_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "outputconfiguration is a client-specific resource that can be used to ask"]
@@ -3000,7 +3000,7 @@ pub mod kde_output_management_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3352,7 +3352,7 @@ pub mod kde_output_management_v2 {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 enable: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the mode for a given output."]
             fn mode(
                 &self,
@@ -3360,7 +3360,7 @@ pub mod kde_output_management_v2 {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 mode: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the transformation for a given output."]
             fn transform(
                 &self,
@@ -3368,7 +3368,7 @@ pub mod kde_output_management_v2 {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 transform: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the position for this output device. (x,y) describe the top-left corner"]
             #[doc = "of the output in global space, whereby the origin (0,0) of the global space"]
             #[doc = "has to be aligned with the top-left corner of the most left and in case this"]
@@ -3383,7 +3383,7 @@ pub mod kde_output_management_v2 {
                 outputdevice: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the scaling factor for this output device."]
             fn scale(
                 &self,
@@ -3391,7 +3391,7 @@ pub mod kde_output_management_v2 {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 scale: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Asks the server to apply property changes requested through this outputconfiguration"]
             #[doc = "object to all outputs on the server side."]
             #[doc = ""]
@@ -3401,12 +3401,12 @@ pub mod kde_output_management_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the overscan value of this output device with a value in percent."]
             fn overscan(
                 &self,
@@ -3414,7 +3414,7 @@ pub mod kde_output_management_v2 {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 overscan: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set what policy the compositor should employ regarding its use of"]
             #[doc = "variable refresh rate."]
             fn set_vrr_policy(
@@ -3423,7 +3423,7 @@ pub mod kde_output_management_v2 {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 policy: VrrPolicy,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Whether full or limited color range should be used"]
             fn set_rgb_range(
                 &self,
@@ -3431,13 +3431,13 @@ pub mod kde_output_management_v2 {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 rgb_range: RgbRange,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_primary_output(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The order of outputs can be used to assign desktop environment components to a specific screen,"]
             #[doc = "see kde_output_order_v1 for details. The priority is 1-based for outputs that will be enabled after"]
             #[doc = "this changeset is applied, all outputs that are disabled need to have the index set to zero."]
@@ -3447,7 +3447,7 @@ pub mod kde_output_management_v2 {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 priority: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets whether or not the output should be set to HDR mode."]
             fn set_high_dynamic_range(
                 &self,
@@ -3455,7 +3455,7 @@ pub mod kde_output_management_v2 {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 enable_hdr: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the brightness of standard dynamic range content in nits. Only has an effect while the output is in HDR mode."]
             #[doc = "Note that while the value is in nits, that doesn't necessarily translate to the same brightness on the screen."]
             fn set_sdr_brightness(
@@ -3464,7 +3464,7 @@ pub mod kde_output_management_v2 {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 sdr_brightness: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Whether or not the output should use a wide color gamut"]
             fn set_wide_color_gamut(
                 &self,
@@ -3472,21 +3472,21 @@ pub mod kde_output_management_v2 {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 enable_wcg: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_auto_rotate_policy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 policy: AutoRotatePolicy,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_icc_profile_path(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 profile_path: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_brightness_overrides(
                 &self,
                 client: &mut crate::server::Client,
@@ -3495,7 +3495,7 @@ pub mod kde_output_management_v2 {
                 max_peak_brightness: i32,
                 max_frame_average_brightness: i32,
                 min_brightness: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
             #[doc = "default experience on many modern sRGB screens."]
             fn set_sdr_gamut_wideness(
@@ -3504,14 +3504,14 @@ pub mod kde_output_management_v2 {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 gamut_wideness: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_color_profile_source(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 color_profile_source: ColorProfileSource,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the brightness modifier of the output. It doesn't specify"]
             #[doc = "any absolute values, but is merely a multiplier on top of other"]
             #[doc = "brightness values, like sdr_brightness and brightness_metadata."]
@@ -3526,14 +3526,14 @@ pub mod kde_output_management_v2 {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 brightness: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_color_power_tradeoff(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 preference: ColorPowerTradeoff,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the dimming multiplier of the output. This is similar to the"]
             #[doc = "brightness setting, except it's meant to be a temporary setting"]
             #[doc = "only, not persistent and may be implemented differently depending"]
@@ -3549,14 +3549,14 @@ pub mod kde_output_management_v2 {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 multiplier: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent after the server has successfully applied the changes."]
             #[doc = "."]
             fn applied(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_configuration_v2#{}.applied()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -3571,7 +3571,7 @@ pub mod kde_output_management_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_configuration_v2#{}.failed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -3588,7 +3588,7 @@ pub mod kde_output_management_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 reason: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_configuration_v2#{}.failure_reason(\"{}\")",
@@ -3629,7 +3629,7 @@ pub mod kde_output_order_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3645,14 +3645,14 @@ pub mod kde_output_order_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Specifies the output identified by their wl_output.name."]
             fn output(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output_name: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_output_order_v1#{}.output(\"{}\")",
@@ -3673,7 +3673,7 @@ pub mod kde_output_order_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_order_v1#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -3708,7 +3708,7 @@ pub mod kde_primary_output_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3724,14 +3724,14 @@ pub mod kde_primary_output_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Specifies which output is the primary one identified by their uuid. See kde_output_device_v2 uuid event for more information about it."]
             fn primary_output(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output_name: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> kde_primary_output_v1#{}.primary_output(\"{}\")",
@@ -3835,7 +3835,7 @@ pub mod kde_screen_edge_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3877,7 +3877,7 @@ pub mod kde_screen_edge_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a new auto hide screen edge object associated with the specified"]
             #[doc = "surface and the border."]
             #[doc = ""]
@@ -3897,7 +3897,7 @@ pub mod kde_screen_edge_v1 {
                 id: crate::wire::ObjectId,
                 border: Border,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "The auto hide screen edge object allows to hide the surface and make it"]
@@ -3927,7 +3927,7 @@ pub mod kde_screen_edge_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -3959,20 +3959,20 @@ pub mod kde_screen_edge_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Deactivate the screen edge. The surface will be made visible."]
             fn deactivate(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Activate the screen edge. The surface will be hidden until the screen"]
             #[doc = "edge is triggered."]
             fn activate(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -4052,7 +4052,7 @@ pub mod keystate {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -4072,19 +4072,19 @@ pub mod keystate {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn state_changed(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 key: u32,
                 state: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_keystate#{}.state_changed({}, {})",
@@ -4120,7 +4120,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -4182,7 +4182,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 desktop_id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Ask the server to create a new virtual desktop, and position it at a specified position. If the position is zero or less, it will be positioned at the beginning, if the position is the count or more, it will be positioned at the end."]
             fn request_create_virtual_desktop(
                 &self,
@@ -4190,21 +4190,21 @@ pub mod org_kde_plasma_virtual_desktop {
                 sender_id: crate::wire::ObjectId,
                 name: String,
                 position: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Ask the server to get rid of a virtual desktop, the server may or may not acconsent to the request."]
             fn request_remove_virtual_desktop(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 desktop_id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn desktop_created(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 desktop_id: String,
                 position: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_virtual_desktop_management#{}.desktop_created(\"{}\", {})",
@@ -4227,7 +4227,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 desktop_id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_virtual_desktop_management#{}.desktop_removed(\"{}\")",
@@ -4252,7 +4252,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_virtual_desktop_management#{}.done()",
@@ -4270,7 +4270,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 rows: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_virtual_desktop_management#{}.rows({})",
@@ -4299,7 +4299,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -4319,14 +4319,14 @@ pub mod org_kde_plasma_virtual_desktop {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The format of the id is decided by the compositor implementation. A desktop id univocally identifies a virtual desktop and must be guaranteed to never exist two desktops with the same id. The format of the string id is up to the server implementation."]
             fn desktop_id(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 desktop_id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_virtual_desktop#{}.desktop_id(\"{}\")",
@@ -4347,7 +4347,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_virtual_desktop#{}.name(\"{}\")",
@@ -4369,7 +4369,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_virtual_desktop#{}.activated()",
@@ -4387,7 +4387,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_virtual_desktop#{}.deactivated()",
@@ -4409,7 +4409,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -4425,7 +4425,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.removed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -4491,7 +4491,7 @@ pub mod outputmanagement {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -4517,7 +4517,7 @@ pub mod outputmanagement {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "outputconfiguration is a client-specific resource that can be used to ask"]
@@ -4570,7 +4570,7 @@ pub mod outputmanagement {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -4726,7 +4726,7 @@ pub mod outputmanagement {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 enable: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the mode for a given output by its mode size (width and height) and refresh rate."]
             fn mode(
                 &self,
@@ -4734,7 +4734,7 @@ pub mod outputmanagement {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 mode_id: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the transformation for a given output."]
             fn transform(
                 &self,
@@ -4742,7 +4742,7 @@ pub mod outputmanagement {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 transform: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the position for this output device. (x,y) describe the top-left corner"]
             #[doc = "of the output in global space, whereby the origin (0,0) of the global space"]
             #[doc = "has to be aligned with the top-left corner of the most left and in case this"]
@@ -4757,7 +4757,7 @@ pub mod outputmanagement {
                 outputdevice: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the scaling factor for this output device."]
             fn scale(
                 &self,
@@ -4765,14 +4765,14 @@ pub mod outputmanagement {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 scale: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Asks the server to apply property changes requested through this outputconfiguration"]
             #[doc = "object to all outputs on the server side."]
             fn apply(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the scaling factor for this output device."]
             #[doc = "Sending both scale and scalef is undefined."]
             fn scalef(
@@ -4781,7 +4781,7 @@ pub mod outputmanagement {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 scale: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set color curves of output devices through RGB color ramps. Allows color"]
             #[doc = "correction of output device from user space."]
             #[doc = ""]
@@ -4795,12 +4795,12 @@ pub mod outputmanagement {
                 red: Vec<u8>,
                 green: Vec<u8>,
                 blue: Vec<u8>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the overscan value of this output device with a value in percent."]
             fn overscan(
                 &self,
@@ -4808,7 +4808,7 @@ pub mod outputmanagement {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 overscan: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set what policy the compositor should employ regarding its use of"]
             #[doc = "variable refresh rate."]
             fn set_vrr_policy(
@@ -4817,14 +4817,14 @@ pub mod outputmanagement {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 policy: VrrPolicy,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent after the server has successfully applied the changes."]
             #[doc = "."]
             fn applied(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_outputconfiguration#{}.applied()",
@@ -4842,7 +4842,7 @@ pub mod outputmanagement {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_kwin_outputconfiguration#{}.failed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -5050,7 +5050,7 @@ pub mod org_kde_kwin_outputdevice {
                 _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -5073,7 +5073,7 @@ pub mod org_kde_kwin_outputdevice {
                 make: String,
                 model: String,
                 transform: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_outputdevice#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
@@ -5133,7 +5133,7 @@ pub mod org_kde_kwin_outputdevice {
                 height: i32,
                 refresh: i32,
                 mode_id: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_outputdevice#{}.mode({}, {}, {}, {}, {})",
@@ -5166,7 +5166,7 @@ pub mod org_kde_kwin_outputdevice {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_kwin_outputdevice#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -5199,7 +5199,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 factor: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_outputdevice#{}.scale({})",
@@ -5224,7 +5224,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 raw: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_outputdevice#{}.edid(\"{}\")",
@@ -5250,7 +5250,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 enabled: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_outputdevice#{}.enabled({})",
@@ -5273,7 +5273,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 uuid: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_outputdevice#{}.uuid(\"{}\")",
@@ -5315,7 +5315,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 factor: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_outputdevice#{}.scalef({})",
@@ -5344,7 +5344,7 @@ pub mod org_kde_kwin_outputdevice {
                 red: Vec<u8>,
                 green: Vec<u8>,
                 blue: Vec<u8>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_outputdevice#{}.colorcurves(array[{}], array[{}], array[{}])",
@@ -5370,7 +5370,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial_number: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_outputdevice#{}.serial_number(\"{}\")",
@@ -5392,7 +5392,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 eisa_id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_outputdevice#{}.eisa_id(\"{}\")",
@@ -5415,7 +5415,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 flags: Capability,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_outputdevice#{}.capabilities({})",
@@ -5438,7 +5438,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 overscan: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_outputdevice#{}.overscan({})",
@@ -5461,7 +5461,7 @@ pub mod org_kde_kwin_outputdevice {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 vrr_policy: VrrPolicy,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_outputdevice#{}.vrr_policy({})",
@@ -5502,7 +5502,7 @@ pub mod plasma_shell {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -5535,7 +5535,7 @@ pub mod plasma_shell {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "An interface that may be implemented by a wl_surface, for"]
@@ -5642,7 +5642,7 @@ pub mod plasma_shell {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -5751,7 +5751,7 @@ pub mod plasma_shell {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Assign an output to this shell surface."]
             #[doc = "The compositor will use this information to set the position"]
             #[doc = "when org_kde_plasma_surface.set_position request is"]
@@ -5761,7 +5761,7 @@ pub mod plasma_shell {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Move the surface to new coordinates."]
             #[doc = ""]
             #[doc = "Coordinates are global, for example 50,50 for a 1920,0+1920x1080 output"]
@@ -5775,7 +5775,7 @@ pub mod plasma_shell {
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Assign a role to a shell surface."]
             #[doc = ""]
             #[doc = "The compositor handles surfaces depending on their role."]
@@ -5874,7 +5874,7 @@ pub mod plasma_shell {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 role: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set flags bitmask as described by the flag enum."]
             #[doc = "Pass 0 to unset any flag, the surface will adjust its behavior to"]
             #[doc = "the default."]
@@ -5885,14 +5885,14 @@ pub mod plasma_shell {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 flag: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Setting this bit to the window, will make it say it prefers to not be listed in the taskbar. Taskbar implementations may or may not follow this hint."]
             fn set_skip_taskbar(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 skip: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A panel surface with panel_behavior auto_hide can perform this request to hide the panel"]
             #[doc = "on a screen edge without unmapping it. The compositor informs the client about the panel"]
             #[doc = "being hidden with the event auto_hidden_panel_hidden."]
@@ -5907,14 +5907,14 @@ pub mod plasma_shell {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A panel surface with panel_behavior auto_hide can perform this request to show the panel"]
             #[doc = "again which got hidden with panel_auto_hide_hide."]
             fn panel_auto_hide_show(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "By default various org_kde_plasma_surface roles do not take focus and cannot be"]
             #[doc = "activated. With this request the compositor can be instructed to pass focus also to this"]
             #[doc = "org_kde_plasma_surface."]
@@ -5923,27 +5923,27 @@ pub mod plasma_shell {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 takes_focus: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Setting this bit will indicate that the window prefers not to be listed in a switcher."]
             fn set_skip_switcher(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 skip: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request the initial position of this surface to be under the current"]
             #[doc = "cursor position. Has to be called before attaching any buffer to this surface."]
             fn open_under_cursor(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "An auto-hiding panel got hidden by the compositor."]
             fn auto_hidden_panel_hidden(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_surface#{}.auto_hidden_panel_hidden()",
@@ -5961,7 +5961,7 @@ pub mod plasma_shell {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_surface#{}.auto_hidden_panel_shown()",
@@ -6081,7 +6081,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -6146,7 +6146,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Deprecated: use get_window_by_uuid"]
             fn get_window(
                 &self,
@@ -6154,20 +6154,20 @@ pub mod plasma_window_management {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 internal_window_id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn get_window_by_uuid(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 internal_window_uuid: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn get_stacking_order(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 stacking_order: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event will be sent whenever the show desktop mode changes. E.g. when it is entered"]
             #[doc = "or left."]
             #[doc = ""]
@@ -6177,7 +6177,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window_management#{}.show_desktop_changed({})",
@@ -6197,7 +6197,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window_management#{}.window({})",
@@ -6219,7 +6219,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 ids: Vec<u8>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window_management#{}.stacking_order_changed(array[{}])",
@@ -6241,7 +6241,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 uuids: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window_management#{}.stacking_order_uuid_changed(\"{}\")",
@@ -6264,7 +6264,7 @@ pub mod plasma_window_management {
                 sender_id: crate::wire::ObjectId,
                 id: u32,
                 uuid: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window_management#{}.window_with_uuid({}, \"{}\")",
@@ -6287,7 +6287,7 @@ pub mod plasma_window_management {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window_management#{}.stacking_order_changed_2()",
@@ -6318,7 +6318,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -6481,7 +6481,7 @@ pub mod plasma_window_management {
                 sender_id: crate::wire::ObjectId,
                 flags: u32,
                 state: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Deprecated: use enter_virtual_desktop"]
             #[doc = "Maps the window to a different virtual desktop."]
             #[doc = ""]
@@ -6493,7 +6493,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 number: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the geometry of the taskbar entry for this window."]
             #[doc = "The geometry is relative to a panel in particular."]
             fn set_minimized_geometry(
@@ -6505,38 +6505,38 @@ pub mod plasma_window_management {
                 y: u32,
                 width: u32,
                 height: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Remove the task geometry information for a particular panel."]
             fn unset_minimized_geometry(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 panel: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Close this window."]
             fn close(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request an interactive move for this window."]
             fn request_move(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request an interactive resize for this window."]
             fn request_resize(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Removes the resource bound for this org_kde_plasma_window."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The compositor will write the window icon into the provided file descriptor."]
             #[doc = "The data is a serialized QIcon with QDataStream."]
             fn get_icon(
@@ -6544,7 +6544,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 fd: rustix::fd::OwnedFd,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Make the window enter a virtual desktop. A window can enter more"]
             #[doc = "than one virtual desktop. if the id is empty or invalid, no action will be performed."]
             fn request_enter_virtual_desktop(
@@ -6552,7 +6552,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "RFC: do this with an empty id to request_enter_virtual_desktop?"]
             #[doc = "Make the window enter a new virtual desktop. If the server consents the request,"]
             #[doc = "it will create a new virtual desktop and assign the window to it."]
@@ -6560,42 +6560,42 @@ pub mod plasma_window_management {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Make the window exit a virtual desktop. If it exits all desktops it will be considered on all of them."]
             fn request_leave_virtual_desktop(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Make the window enter an activity. A window can enter more activity. If the id is empty or invalid, no action will be performed."]
             fn request_enter_activity(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Make the window exit a an activity. If it exits all activities it will be considered on all of them."]
             fn request_leave_activity(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests this window to be displayed in a specific output."]
             fn send_to_output(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event will be sent as soon as the window title is changed."]
             fn title_changed(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 title: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window#{}.title_changed(\"{}\")",
@@ -6618,7 +6618,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 app_id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window#{}.app_id_changed(\"{}\")",
@@ -6642,7 +6642,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 flags: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window#{}.state_changed({})",
@@ -6666,7 +6666,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 number: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window#{}.virtual_desktop_changed({})",
@@ -6686,7 +6686,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window#{}.themed_icon_name_changed(\"{}\")",
@@ -6708,7 +6708,7 @@ pub mod plasma_window_management {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_plasma_window#{}.unmapped()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -6725,7 +6725,7 @@ pub mod plasma_window_management {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_plasma_window#{}.initial_state()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -6744,7 +6744,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 parent: Option<crate::wire::ObjectId>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window#{}.parent_window({})",
@@ -6772,7 +6772,7 @@ pub mod plasma_window_management {
                 y: i32,
                 width: u32,
                 height: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window#{}.geometry({}, {}, {}, {})",
@@ -6802,7 +6802,7 @@ pub mod plasma_window_management {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_plasma_window#{}.icon_changed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -6819,7 +6819,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 pid: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window#{}.pid_changed({})",
@@ -6839,7 +6839,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window#{}.virtual_desktop_entered(\"{}\")",
@@ -6862,7 +6862,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 is: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window#{}.virtual_desktop_left(\"{}\")",
@@ -6886,7 +6886,7 @@ pub mod plasma_window_management {
                 sender_id: crate::wire::ObjectId,
                 service_name: String,
                 object_path: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window#{}.application_menu(\"{}\", \"{}\")",
@@ -6910,7 +6910,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window#{}.activity_entered(\"{}\")",
@@ -6933,7 +6933,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window#{}.activity_left(\"{}\")",
@@ -6956,7 +6956,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 resource_name: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window#{}.resource_name_changed(\"{}\")",
@@ -6982,7 +6982,7 @@ pub mod plasma_window_management {
                 y: i32,
                 width: u32,
                 height: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_window#{}.client_geometry({}, {}, {}, {})",
@@ -7021,7 +7021,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -7042,7 +7042,7 @@ pub mod plasma_window_management {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Will be issued when an app is set to be activated. It offers"]
             #[doc = "an instance of org_kde_plasma_activation that will tell us the app_id"]
             #[doc = "and the extent of the activation."]
@@ -7051,7 +7051,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_activation_feedback#{}.activation({})",
@@ -7082,7 +7082,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -7100,13 +7100,13 @@ pub mod plasma_window_management {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn app_id(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 app_id: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_activation#{}.app_id(\"{}\")",
@@ -7126,7 +7126,7 @@ pub mod plasma_window_management {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_plasma_activation#{}.finished()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -7154,7 +7154,7 @@ pub mod plasma_window_management {
                 _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -7167,7 +7167,7 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 uuid: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_plasma_stacking_order#{}.window(\"{}\")",
@@ -7187,7 +7187,7 @@ pub mod plasma_window_management {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_plasma_stacking_order#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -7215,7 +7215,7 @@ pub mod remote_access {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -7250,19 +7250,19 @@ pub mod remote_access {
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
                 internal_buffer_id: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn buffer_ready(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: i32,
                 output: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_remote_access_manager#{}.buffer_ready({}, {})",
@@ -7295,7 +7295,7 @@ pub mod remote_access {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -7311,7 +7311,7 @@ pub mod remote_access {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn gbm_handle(
                 &self,
                 client: &mut crate::server::Client,
@@ -7321,7 +7321,7 @@ pub mod remote_access {
                 height: u32,
                 stride: u32,
                 format: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_remote_buffer#{}.gbm_handle({}, {}, {}, {}, {})",
@@ -7364,7 +7364,7 @@ pub mod server_decoration_palette {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -7393,7 +7393,7 @@ pub mod server_decoration_palette {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
@@ -7410,7 +7410,7 @@ pub mod server_decoration_palette {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -7444,12 +7444,12 @@ pub mod server_decoration_palette {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 palette: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -7502,7 +7502,7 @@ pub mod server_decoration {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -7541,7 +7541,7 @@ pub mod server_decoration {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is emitted directly after binding the interface. It contains"]
             #[doc = "the default mode for the decoration. When a new server decoration object"]
             #[doc = "is created this new object will be in the default mode until the first"]
@@ -7553,7 +7553,7 @@ pub mod server_decoration {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mode: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_server_decoration_manager#{}.default_mode({})",
@@ -7609,7 +7609,7 @@ pub mod server_decoration {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -7637,13 +7637,13 @@ pub mod server_decoration {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn request_mode(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mode: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is emitted directly after the decoration is created and"]
             #[doc = "represents the base decoration policy by the server. E.g. a server"]
             #[doc = "which wants all surfaces to be client-side decorated will send Client,"]
@@ -7662,7 +7662,7 @@ pub mod server_decoration {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mode: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> org_kde_kwin_server_decoration#{}.mode({})",
@@ -7694,7 +7694,7 @@ pub mod shadow {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -7738,19 +7738,19 @@ pub mod shadow {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn unset(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the org_kde_kwin_shadow_manager object."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -7766,7 +7766,7 @@ pub mod shadow {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -7910,79 +7910,79 @@ pub mod shadow {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_left(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_top_left(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_top(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_top_right(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_right(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_bottom_right(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_bottom(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_bottom_left(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_left_offset(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 offset: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_top_offset(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 offset: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_right_offset(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 offset: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_bottom_offset(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 offset: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the org_kde_kwin_shadow object. If the org_kde_kwin_shadow is"]
             #[doc = "still set on a wl_surface the shadow will be immediately removed."]
             #[doc = "Prefer to first call the request unset on the org_kde_kwin_shadow_manager and"]
@@ -7991,7 +7991,7 @@ pub mod shadow {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -8010,7 +8010,7 @@ pub mod slide {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -8050,13 +8050,13 @@ pub mod slide {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn unset(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[doc = "Ask the compositor to move the surface from a location to another"]
@@ -8103,7 +8103,7 @@ pub mod slide {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -8141,24 +8141,24 @@ pub mod slide {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_location(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 location: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_offset(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 offset: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -8177,7 +8177,7 @@ pub mod surface_extension {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -8207,7 +8207,7 @@ pub mod surface_extension {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -8275,7 +8275,7 @@ pub mod surface_extension {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -8330,35 +8330,35 @@ pub mod surface_extension {
                 sender_id: crate::wire::ObjectId,
                 name: String,
                 value: Vec<u8>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_content_orientation_mask(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 orientation: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_window_flags(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 flags: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn raise(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn lower(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn onscreen_visibility(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 visible: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> qt_extended_surface#{}.onscreen_visibility({})",
@@ -8379,7 +8379,7 @@ pub mod surface_extension {
                 sender_id: crate::wire::ObjectId,
                 name: String,
                 value: Vec<u8>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> qt_extended_surface#{}.set_generic_property(\"{}\", array[{}])",
@@ -8401,7 +8401,7 @@ pub mod surface_extension {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> qt_extended_surface#{}.close()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -8649,7 +8649,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -8762,7 +8762,7 @@ pub mod text_input_unstable_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Enable text input in a surface (usually when a text entry inside of it"]
             #[doc = "has focus)."]
             #[doc = ""]
@@ -8774,7 +8774,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Disable text input in a surface (typically when there is no focus on any"]
             #[doc = "text entry inside the surface)."]
             fn disable(
@@ -8782,7 +8782,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to show."]
             #[doc = ""]
             #[doc = "This should be used for example to show a virtual keyboard again"]
@@ -8792,13 +8792,13 @@ pub mod text_input_unstable_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to hide."]
             fn hide_input_panel(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the plain surrounding text around the input position. Text is"]
             #[doc = "UTF-8 encoded. Cursor is the byte offset within the surrounding text."]
             #[doc = "Anchor is the byte offset of the selection anchor within the"]
@@ -8821,7 +8821,7 @@ pub mod text_input_unstable_v2 {
                 text: String,
                 cursor: i32,
                 anchor: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the content purpose and content hint. While the purpose is the"]
             #[doc = "basic purpose of an input field, the hint flags allow to modify some"]
             #[doc = "of the behavior."]
@@ -8834,7 +8834,7 @@ pub mod text_input_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 hint: ContentHint,
                 purpose: ContentPurpose,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the cursor outline as a x, y, width, height rectangle in surface"]
             #[doc = "local coordinates."]
             #[doc = ""]
@@ -8848,7 +8848,7 @@ pub mod text_input_unstable_v2 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets a specific language. This allows for example a virtual keyboard to"]
             #[doc = "show a language specific layout. The \"language\" argument is a RFC-3066"]
             #[doc = "format language tag."]
@@ -8861,7 +8861,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 language: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Allows to atomically send state updates from client."]
             #[doc = ""]
             #[doc = "This request should follow after a batch of state updating requests"]
@@ -8889,7 +8889,7 @@ pub mod text_input_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 reason: UpdateState,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Notification that this seat's text-input focus is on a certain surface."]
             #[doc = ""]
             #[doc = "When the seat has the keyboard capability the text-input focus follows"]
@@ -8900,7 +8900,7 @@ pub mod text_input_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwp_text_input_v2#{}.enter({}, {})",
@@ -8932,7 +8932,7 @@ pub mod text_input_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwp_text_input_v2#{}.leave({}, {})",
@@ -8968,7 +8968,7 @@ pub mod text_input_unstable_v2 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwp_text_input_v2#{}.input_panel_state({}, {}, {}, {}, {})",
@@ -9007,7 +9007,7 @@ pub mod text_input_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 text: String,
                 commit: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwp_text_input_v2#{}.preedit_string(\"{}\", \"{}\")",
@@ -9038,7 +9038,7 @@ pub mod text_input_unstable_v2 {
                 index: u32,
                 length: u32,
                 style: PreeditStyle,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwp_text_input_v2#{}.preedit_styling({}, {}, {})",
@@ -9071,7 +9071,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 index: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwp_text_input_v2#{}.preedit_cursor({})",
@@ -9097,7 +9097,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 text: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwp_text_input_v2#{}.commit_string(\"{}\")",
@@ -9125,7 +9125,7 @@ pub mod text_input_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 index: i32,
                 anchor: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwp_text_input_v2#{}.cursor_position({}, {})",
@@ -9156,7 +9156,7 @@ pub mod text_input_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 before_length: u32,
                 after_length: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwp_text_input_v2#{}.delete_surrounding_text({}, {})",
@@ -9182,7 +9182,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 map: Vec<u8>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwp_text_input_v2#{}.modifiers_map(array[{}])",
@@ -9210,7 +9210,7 @@ pub mod text_input_unstable_v2 {
                 sym: u32,
                 state: u32,
                 modifiers: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwp_text_input_v2#{}.keysym({}, {}, {}, {})",
@@ -9239,7 +9239,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 language: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwp_text_input_v2#{}.language(\"{}\")",
@@ -9265,7 +9265,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 direction: TextDirection,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwp_text_input_v2#{}.text_direction({})",
@@ -9290,7 +9290,7 @@ pub mod text_input_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 before_cursor: i32,
                 after_cursor: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwp_text_input_v2#{}.configure_surrounding_text({}, {})",
@@ -9318,7 +9318,7 @@ pub mod text_input_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 flags: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zwp_text_input_v2#{}.input_method_changed({}, {})",
@@ -9352,7 +9352,7 @@ pub mod text_input_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -9384,7 +9384,7 @@ pub mod text_input_unstable_v2 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Creates a new text-input object for a given seat."]
             fn get_text_input(
                 &self,
@@ -9392,7 +9392,7 @@ pub mod text_input_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -9614,7 +9614,7 @@ pub mod text {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -9740,7 +9740,7 @@ pub mod text {
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests the text-input object to be deactivated (typically when the"]
             #[doc = "text entry lost focus). The seat argument is a wl_seat which was used"]
             #[doc = "for activation."]
@@ -9749,19 +9749,19 @@ pub mod text {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to show."]
             fn show_input_panel(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to hide."]
             fn hide_input_panel(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Should be called by an editor widget when the input state should be"]
             #[doc = "reset, for example after the text was changed outside of the normal"]
             #[doc = "input method flow."]
@@ -9769,7 +9769,7 @@ pub mod text {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the plain surrounding text around the input position. Text is"]
             #[doc = "UTF-8 encoded. Cursor is the byte offset within the"]
             #[doc = "surrounding text. Anchor is the byte offset of the"]
@@ -9782,7 +9782,7 @@ pub mod text {
                 text: String,
                 cursor: u32,
                 anchor: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the content purpose and content hint. While the purpose is the"]
             #[doc = "basic purpose of an input field, the hint flags allow to modify some"]
             #[doc = "of the behavior."]
@@ -9796,7 +9796,7 @@ pub mod text {
                 sender_id: crate::wire::ObjectId,
                 hint: u32,
                 purpose: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_cursor_rectangle(
                 &self,
                 client: &mut crate::server::Client,
@@ -9805,7 +9805,7 @@ pub mod text {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets a specific language. This allows for example a virtual keyboard to"]
             #[doc = "show a language specific layout. The \"language\" argument is a RFC-3066"]
             #[doc = "format language tag."]
@@ -9818,20 +9818,20 @@ pub mod text {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 language: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn commit_state(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn invoke_action(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 button: u32,
                 index: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Notify the text-input object when it received focus. Typically in"]
             #[doc = "response to an activate request."]
             fn enter(
@@ -9839,7 +9839,7 @@ pub mod text {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_text_input#{}.enter({})", sender_id, surface);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -9858,7 +9858,7 @@ pub mod text {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_text_input#{}.leave()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
@@ -9876,7 +9876,7 @@ pub mod text {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 map: Vec<u8>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_text_input#{}.modifiers_map(array[{}])",
@@ -9896,7 +9896,7 @@ pub mod text {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_text_input#{}.input_panel_state({})",
@@ -9926,7 +9926,7 @@ pub mod text {
                 serial: u32,
                 text: String,
                 commit: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_text_input#{}.preedit_string({}, \"{}\", \"{}\")",
@@ -9960,7 +9960,7 @@ pub mod text {
                 index: u32,
                 length: u32,
                 style: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_text_input#{}.preedit_styling({}, {}, {})",
@@ -9990,7 +9990,7 @@ pub mod text {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 index: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_text_input#{}.preedit_cursor({})", sender_id, index);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(index).build();
@@ -10013,7 +10013,7 @@ pub mod text {
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 text: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_text_input#{}.commit_string({}, \"{}\")",
@@ -10041,7 +10041,7 @@ pub mod text {
                 sender_id: crate::wire::ObjectId,
                 index: i32,
                 anchor: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_text_input#{}.cursor_position({}, {})",
@@ -10073,7 +10073,7 @@ pub mod text {
                 sender_id: crate::wire::ObjectId,
                 index: i32,
                 length: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_text_input#{}.delete_surrounding_text({}, {})",
@@ -10106,7 +10106,7 @@ pub mod text {
                 sym: u32,
                 state: u32,
                 modifiers: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_text_input#{}.keysym({}, {}, {}, {}, {})",
@@ -10138,7 +10138,7 @@ pub mod text {
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 language: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_text_input#{}.language({}, \"{}\")",
@@ -10167,7 +10167,7 @@ pub mod text {
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 direction: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> wl_text_input#{}.text_direction({}, {})",
@@ -10201,7 +10201,7 @@ pub mod text {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -10226,7 +10226,7 @@ pub mod text {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -10309,7 +10309,7 @@ pub mod wl_eglstream_controller {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -10370,7 +10370,7 @@ pub mod wl_eglstream_controller {
                 sender_id: crate::wire::ObjectId,
                 wl_surface: crate::wire::ObjectId,
                 wl_resource: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Creates the corresponding server side EGLStream from the given wl_buffer"]
             #[doc = "and attaches a consumer to it using the given attributes."]
             fn attach_eglstream_consumer_attribs(
@@ -10380,7 +10380,7 @@ pub mod wl_eglstream_controller {
                 wl_surface: crate::wire::ObjectId,
                 wl_resource: crate::wire::ObjectId,
                 attribs: Vec<u8>,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -10430,7 +10430,7 @@ pub mod zkde_screencast_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -10575,7 +10575,7 @@ pub mod zkde_screencast_unstable_v1 {
                 stream: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
                 pointer: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn stream_window(
                 &self,
                 client: &mut crate::server::Client,
@@ -10583,13 +10583,13 @@ pub mod zkde_screencast_unstable_v1 {
                 stream: crate::wire::ObjectId,
                 window_uuid: String,
                 pointer: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the zkde_screencast_unstable_v1 object."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn stream_virtual_output(
                 &self,
                 client: &mut crate::server::Client,
@@ -10600,7 +10600,7 @@ pub mod zkde_screencast_unstable_v1 {
                 height: i32,
                 scale: crate::wire::Fixed,
                 pointer: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn stream_region(
                 &self,
                 client: &mut crate::server::Client,
@@ -10612,7 +10612,7 @@ pub mod zkde_screencast_unstable_v1 {
                 height: u32,
                 scale: crate::wire::Fixed,
                 pointer: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn stream_virtual_output_with_description(
                 &self,
                 client: &mut crate::server::Client,
@@ -10624,7 +10624,7 @@ pub mod zkde_screencast_unstable_v1 {
                 height: i32,
                 scale: crate::wire::Fixed,
                 pointer: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -10640,7 +10640,7 @@ pub mod zkde_screencast_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -10659,12 +10659,12 @@ pub mod zkde_screencast_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn closed(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zkde_screencast_stream_unstable_v1#{}.closed()",
@@ -10682,7 +10682,7 @@ pub mod zkde_screencast_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 node: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zkde_screencast_stream_unstable_v1#{}.created({})",
@@ -10701,7 +10701,7 @@ pub mod zkde_screencast_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 error: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> zkde_screencast_stream_unstable_v1#{}.failed(\"{}\")",

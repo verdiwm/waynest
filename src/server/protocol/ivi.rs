@@ -13,7 +13,7 @@ pub mod ivi_application {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -31,7 +31,7 @@ pub mod ivi_application {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The configure event asks the client to resize its surface."]
             #[doc = ""]
             #[doc = "The size is a hint, in the sense that the client is free to"]
@@ -49,7 +49,7 @@ pub mod ivi_application {
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_surface#{}.configure({}, {})",
@@ -109,7 +109,7 @@ pub mod ivi_application {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -163,7 +163,7 @@ pub mod ivi_application {
                 ivi_id: u32,
                 surface: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
 }
@@ -184,7 +184,7 @@ pub mod ivi_input {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -235,7 +235,7 @@ pub mod ivi_input {
                 surface: u32,
                 device: u32,
                 enabled: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set input acceptance of one seat for a surface. Surfaces may"]
             #[doc = "accept input acceptance from multiple seats at once."]
             #[doc = "If argument 'accepted' is ILM_TRUE, the given seat's name will"]
@@ -249,7 +249,7 @@ pub mod ivi_input {
                 surface: u32,
                 seat: String,
                 accepted: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn seat_created(
                 &self,
                 client: &mut crate::server::Client,
@@ -257,7 +257,7 @@ pub mod ivi_input {
                 name: String,
                 capabilities: u32,
                 is_default: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_input#{}.seat_created(\"{}\", {}, {})",
@@ -283,7 +283,7 @@ pub mod ivi_input {
                 sender_id: crate::wire::ObjectId,
                 name: String,
                 capabilities: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_input#{}.seat_capabilities(\"{}\", {})",
@@ -306,7 +306,7 @@ pub mod ivi_input {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_input#{}.seat_destroyed(\"{}\")", sender_id, name);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -328,7 +328,7 @@ pub mod ivi_input {
                 surface: u32,
                 device: u32,
                 enabled: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_input#{}.input_focus({}, {}, {})",
@@ -360,7 +360,7 @@ pub mod ivi_input {
                 surface: u32,
                 seat: String,
                 accepted: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_input#{}.input_acceptance({}, \"{}\", {})",
@@ -425,7 +425,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -480,7 +480,7 @@ pub mod ivi_wm {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A screen has no content assigned to itself, it is a container for layers."]
             #[doc = "This request removes all layers from the screen render order."]
             #[doc = "Note: the layers are not destroyed, they are just no longer contained by"]
@@ -489,7 +489,7 @@ pub mod ivi_wm {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A screen has no content assigned to itself, it is a container for layers."]
             #[doc = "This request adds a layers to the topmost position of the screen render order."]
             #[doc = "The added layer will cover all other layers of the screen."]
@@ -498,7 +498,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A screen has no content assigned to itself, it is a container for layers."]
             #[doc = "This request removes a layer."]
             fn remove_layer(
@@ -506,7 +506,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "An ivi_screenshot object is created which will receive the screenshot"]
             #[doc = "data of the specified output."]
             fn screenshot(
@@ -515,21 +515,21 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
                 screenshot: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "After this request, compositor sends the requested parameter."]
             fn get(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 param: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent immediately after creating the ivi_wm_screen object."]
             fn screen_id(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_wm_screen#{}.screen_id({})", sender_id, id);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
@@ -545,7 +545,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_wm_screen#{}.layer_added({})", sender_id, layer_id);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -563,7 +563,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 process_name: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_wm_screen#{}.connector_name(\"{}\")",
@@ -586,7 +586,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 error: u32,
                 message: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_wm_screen#{}.error({}, \"{}\")",
@@ -661,7 +661,7 @@ pub mod ivi_wm {
                 _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -676,7 +676,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 timestamp: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_screenshot#{}.done({})", sender_id, timestamp);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -695,7 +695,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 error: Error,
                 message: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_screenshot#{}.error({}, \"{}\")",
@@ -853,7 +853,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
@@ -1146,7 +1146,7 @@ pub mod ivi_wm {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Ask the ivi-wm to create a ivi-screen for given wl_output."]
             fn create_screen(
                 &self,
@@ -1154,7 +1154,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If visibility argument is 0, the surface in the ivi compositor is set to invisible."]
             #[doc = "If visibility argument is not 0, the surface in the ivi compositor is set to visible."]
             fn set_surface_visibility(
@@ -1163,7 +1163,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 visibility: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If visibility argument is 0, the layer in the ivi compositor is set to invisible."]
             #[doc = "If visibility argument is not 0, the layer in the ivi compositor is set to visible."]
             fn set_layer_visibility(
@@ -1172,7 +1172,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 visibility: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The valid range for opacity is 0.0 (fully transparent) to 1.0 (fully opaque)."]
             fn set_surface_opacity(
                 &self,
@@ -1180,7 +1180,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 opacity: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The valid range for opacity is 0.0 (fully transparent) to 1.0 (fully opaque)."]
             fn set_layer_opacity(
                 &self,
@@ -1188,7 +1188,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 opacity: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The source rectangle defines the part of the surface content, that is used for"]
             #[doc = "compositing the surface. It can be used, if valid content of the surface is smaller"]
             #[doc = "than the surface. Effectively it can be used to zoom the content of the surface."]
@@ -1206,7 +1206,7 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The source rectangle defines the part of the layer content, that is used for"]
             #[doc = "compositing the screen. It can be used, if valid content of the layer is smaller"]
             #[doc = "than the layer. Effectively it can be used to zoom the content of the layer."]
@@ -1224,7 +1224,7 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The destination rectangle defines the position and size of a surface on a layer."]
             #[doc = "The surface will be scaled to this rectangle for rendering."]
             #[doc = "If a parameter is less than 0, that value is not changed."]
@@ -1241,7 +1241,7 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The destination rectangle defines the position and size of a layer on a screen."]
             #[doc = "The layer will be scaled to this rectangle for rendering."]
             #[doc = "If a parameter is less than 0, that value is not changed."]
@@ -1258,7 +1258,7 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "After this request, compositor sends the properties of the surface."]
             #[doc = "If sync_state argument is 0, compositor sends the properties continously."]
             #[doc = "If sync_state argument is not 0, compositor stops sending the properties"]
@@ -1269,7 +1269,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 sync_state: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "After this request, compositor sends the properties of the layer."]
             #[doc = "If sync_state argument is 0, compositor sends the properties continously."]
             #[doc = "If sync_state argument is not 0, compositor stops sending the properties"]
@@ -1280,7 +1280,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 sync_state: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "After this request, compositor sends the requested parameter."]
             fn surface_get(
                 &self,
@@ -1288,7 +1288,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 param: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "After this request, compositor sends the requested parameter."]
             fn layer_get(
                 &self,
@@ -1296,7 +1296,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 param: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "An ivi_screenshot object is created which will receive an image of the"]
             #[doc = "buffer currently attached to the surface with the given id. If there"]
             #[doc = "is no surface with such name the server will respond with an"]
@@ -1308,7 +1308,7 @@ pub mod ivi_wm {
                 buffer: crate::wire::ObjectId,
                 screenshot: crate::wire::ObjectId,
                 surface_id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "After this request, compositor changes the type of the surface."]
             fn set_surface_type(
                 &self,
@@ -1316,7 +1316,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 r#type: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A layer has no content assigned to itself, it is a container for surfaces."]
             #[doc = "This request removes all surfaces from the layer render order."]
             fn layer_clear(
@@ -1324,7 +1324,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A layer has no content assigned to itself, it is a container for surfaces."]
             #[doc = "This request adds a surface to the topmost position of the layer render order."]
             #[doc = "The added surface will cover all other surfaces of the layer."]
@@ -1334,7 +1334,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 surface_id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A layer has no content assigned to itself, it is a container for surfaces."]
             #[doc = "This request removes one surfaces from the layer render order."]
             #[doc = "Note: the surface is not destroyed, it is just no longer contained by"]
@@ -1345,7 +1345,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 surface_id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "After this request, compositor creates an ivi_layout_layer"]
             fn create_layout_layer(
                 &self,
@@ -1354,14 +1354,14 @@ pub mod ivi_wm {
                 layer_id: u32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "After this request, compositor destroyes an existing ivi_layout_layer."]
             fn destroy_layout_layer(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The new visibility state is provided in argument visibility."]
             #[doc = "If visibility is 0, the surface has become invisible."]
             #[doc = "If visibility is not 0, the surface has become visible."]
@@ -1371,7 +1371,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 visibility: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_wm#{}.surface_visibility({}, {})",
@@ -1398,7 +1398,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 visibility: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_wm#{}.layer_visibility({}, {})",
@@ -1424,7 +1424,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 opacity: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_wm#{}.surface_opacity({}, {})",
@@ -1450,7 +1450,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 opacity: crate::wire::Fixed,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_wm#{}.layer_opacity({}, {})",
@@ -1483,7 +1483,7 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_wm#{}.surface_source_rectangle({}, {}, {}, {}, {})",
@@ -1522,7 +1522,7 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_wm#{}.layer_source_rectangle({}, {}, {}, {}, {})",
@@ -1560,7 +1560,7 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_wm#{}.surface_destination_rectangle({}, {}, {}, {}, {})",
@@ -1598,7 +1598,7 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_wm#{}.layer_destination_rectangle({}, {}, {}, {}, {})",
@@ -1627,7 +1627,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_wm#{}.surface_created({})", sender_id, surface_id);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1644,7 +1644,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_wm#{}.layer_created({})", sender_id, layer_id);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1661,7 +1661,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_wm#{}.surface_destroyed({})", sender_id, surface_id);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1678,7 +1678,7 @@ pub mod ivi_wm {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_wm#{}.layer_destroyed({})", sender_id, layer_id);
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
@@ -1698,7 +1698,7 @@ pub mod ivi_wm {
                 object_id: u32,
                 error: u32,
                 message: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_wm#{}.surface_error({}, {}, \"{}\")",
@@ -1726,7 +1726,7 @@ pub mod ivi_wm {
                 object_id: u32,
                 error: u32,
                 message: String,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_wm#{}.layer_error({}, {}, \"{}\")",
@@ -1755,7 +1755,7 @@ pub mod ivi_wm {
                 surface_id: u32,
                 width: i32,
                 height: i32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_wm#{}.surface_size({}, {}, {})",
@@ -1784,7 +1784,7 @@ pub mod ivi_wm {
                 surface_id: u32,
                 frame_count: u32,
                 pid: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_wm#{}.surface_stats({}, {}, {})",
@@ -1811,7 +1811,7 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 surface_id: u32,
-            ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> ivi_wm#{}.layer_surface_added({}, {})",
