@@ -1298,7 +1298,10 @@ pub mod color_management_v1 {
                 w_x: i32,
                 w_y: i32,
             ) -> crate::client::Result<()> {
-                tracing :: debug ! ("-> xx_image_description_creator_params_v4#{}.set_mastering_display_primaries()" , object_id);
+                tracing::debug!(
+                    "-> xx_image_description_creator_params_v4#{}.set_mastering_display_primaries()",
+                    object_id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(r_x)
                     .put_int(r_y)
@@ -3690,7 +3693,7 @@ pub mod weston_touch_calibration {
             #[doc = "On platforms using udev, the device identification is the udev sys"]
             #[doc = "path. It is an absolute path and starts with the sys mount point."]
             async fn touch_device(&self, device: String, head: String)
-                -> crate::client::Result<()>;
+            -> crate::client::Result<()>;
         }
     }
     #[doc = "On creation, this object is tied to a specific touch device. The"]
@@ -3856,7 +3859,7 @@ pub mod weston_touch_calibration {
             #[doc = ""]
             #[doc = "For the coordinate units, see weston_touch_calibrator."]
             async fn motion(&self, time: u32, id: i32, x: u32, y: u32)
-                -> crate::client::Result<()>;
+            -> crate::client::Result<()>;
             #[doc = "Indicates the end of a set of events that logically belong together."]
             #[doc = "A client is expected to accumulate the data in all events within the"]
             #[doc = "frame before proceeding."]

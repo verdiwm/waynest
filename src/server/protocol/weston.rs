@@ -1188,7 +1188,18 @@ pub mod color_management_v1 {
                             let b_y = message.int()?;
                             let w_x = message.int()?;
                             let w_y = message.int()?;
-                            tracing :: debug ! ("xx_image_description_creator_params_v4#{}.set_primaries({}, {}, {}, {}, {}, {}, {}, {})" , sender_id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
+                            tracing::debug!(
+                                "xx_image_description_creator_params_v4#{}.set_primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                r_x,
+                                r_y,
+                                g_x,
+                                g_y,
+                                b_x,
+                                b_y,
+                                w_x,
+                                w_y
+                            );
                             self.set_primaries(
                                 client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
                             )
@@ -1198,7 +1209,13 @@ pub mod color_management_v1 {
                             let min_lum = message.uint()?;
                             let max_lum = message.uint()?;
                             let reference_lum = message.uint()?;
-                            tracing :: debug ! ("xx_image_description_creator_params_v4#{}.set_luminances({}, {}, {})" , sender_id , min_lum , max_lum , reference_lum);
+                            tracing::debug!(
+                                "xx_image_description_creator_params_v4#{}.set_luminances({}, {}, {})",
+                                sender_id,
+                                min_lum,
+                                max_lum,
+                                reference_lum
+                            );
                             self.set_luminances(client, sender_id, min_lum, max_lum, reference_lum)
                                 .await
                         }
@@ -1211,7 +1228,18 @@ pub mod color_management_v1 {
                             let b_y = message.int()?;
                             let w_x = message.int()?;
                             let w_y = message.int()?;
-                            tracing :: debug ! ("xx_image_description_creator_params_v4#{}.set_mastering_display_primaries({}, {}, {}, {}, {}, {}, {}, {})" , sender_id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
+                            tracing::debug!(
+                                "xx_image_description_creator_params_v4#{}.set_mastering_display_primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                r_x,
+                                r_y,
+                                g_x,
+                                g_y,
+                                b_x,
+                                b_y,
+                                w_x,
+                                w_y
+                            );
                             self.set_mastering_display_primaries(
                                 client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
                             )
@@ -1220,7 +1248,12 @@ pub mod color_management_v1 {
                         7u16 => {
                             let min_lum = message.uint()?;
                             let max_lum = message.uint()?;
-                            tracing :: debug ! ("xx_image_description_creator_params_v4#{}.set_mastering_luminance({}, {})" , sender_id , min_lum , max_lum);
+                            tracing::debug!(
+                                "xx_image_description_creator_params_v4#{}.set_mastering_luminance({}, {})",
+                                sender_id,
+                                min_lum,
+                                max_lum
+                            );
                             self.set_mastering_luminance(client, sender_id, min_lum, max_lum)
                                 .await
                         }
@@ -1824,7 +1857,18 @@ pub mod color_management_v1 {
                 w_y: i32,
             ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
                 async move {
-                    tracing :: debug ! ("-> xx_image_description_info_v4#{}.primaries({}, {}, {}, {}, {}, {}, {}, {})" , sender_id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
+                    tracing::debug!(
+                        "-> xx_image_description_info_v4#{}.primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        r_x,
+                        r_y,
+                        g_x,
+                        g_y,
+                        b_x,
+                        b_y,
+                        w_x,
+                        w_y
+                    );
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_int(r_x)
                         .put_int(r_y)
@@ -1971,7 +2015,18 @@ pub mod color_management_v1 {
                 w_y: i32,
             ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
                 async move {
-                    tracing :: debug ! ("-> xx_image_description_info_v4#{}.target_primaries({}, {}, {}, {}, {}, {}, {}, {})" , sender_id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
+                    tracing::debug!(
+                        "-> xx_image_description_info_v4#{}.target_primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        r_x,
+                        r_y,
+                        g_x,
+                        g_y,
+                        b_x,
+                        b_y,
+                        w_x,
+                        w_y
+                    );
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_int(r_x)
                         .put_int(r_y)

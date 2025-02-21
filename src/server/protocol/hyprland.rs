@@ -58,7 +58,20 @@ pub mod hyprland_ctm_control_v1 {
                             let mat6 = message.fixed()?;
                             let mat7 = message.fixed()?;
                             let mat8 = message.fixed()?;
-                            tracing :: debug ! ("hyprland_ctm_control_manager_v1#{}.set_ctm_for_output({}, {}, {}, {}, {}, {}, {}, {}, {}, {})" , sender_id , output , mat0 , mat1 , mat2 , mat3 , mat4 , mat5 , mat6 , mat7 , mat8);
+                            tracing::debug!(
+                                "hyprland_ctm_control_manager_v1#{}.set_ctm_for_output({}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                output,
+                                mat0,
+                                mat1,
+                                mat2,
+                                mat3,
+                                mat4,
+                                mat5,
+                                mat6,
+                                mat7,
+                                mat8
+                            );
                             self.set_ctm_for_output(
                                 client, sender_id, output, mat0, mat1, mat2, mat3, mat4, mat5,
                                 mat6, mat7, mat8,
@@ -374,7 +387,15 @@ pub mod hyprland_global_shortcuts_v1 {
                             let trigger_description = message
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("hyprland_global_shortcuts_manager_v1#{}.register_shortcut({}, \"{}\", \"{}\", \"{}\", \"{}\")" , sender_id , shortcut , id , app_id , description , trigger_description);
+                            tracing::debug!(
+                                "hyprland_global_shortcuts_manager_v1#{}.register_shortcut({}, \"{}\", \"{}\", \"{}\", \"{}\")",
+                                sender_id,
+                                shortcut,
+                                id,
+                                app_id,
+                                description,
+                                trigger_description
+                            );
                             self.register_shortcut(
                                 client,
                                 sender_id,
@@ -720,7 +741,13 @@ pub mod hyprland_toplevel_export_v1 {
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             let overlay_cursor = message.int()?;
                             let handle = message.uint()?;
-                            tracing :: debug ! ("hyprland_toplevel_export_manager_v1#{}.capture_toplevel({}, {}, {})" , sender_id , frame , overlay_cursor , handle);
+                            tracing::debug!(
+                                "hyprland_toplevel_export_manager_v1#{}.capture_toplevel({}, {}, {})",
+                                sender_id,
+                                frame,
+                                overlay_cursor,
+                                handle
+                            );
                             self.capture_toplevel(client, sender_id, frame, overlay_cursor, handle)
                                 .await
                         }
@@ -739,7 +766,13 @@ pub mod hyprland_toplevel_export_v1 {
                             let handle = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("hyprland_toplevel_export_manager_v1#{}.capture_toplevel_with_wlr_toplevel_handle({}, {}, {})" , sender_id , frame , overlay_cursor , handle);
+                            tracing::debug!(
+                                "hyprland_toplevel_export_manager_v1#{}.capture_toplevel_with_wlr_toplevel_handle({}, {}, {})",
+                                sender_id,
+                                frame,
+                                overlay_cursor,
+                                handle
+                            );
                             self.capture_toplevel_with_wlr_toplevel_handle(
                                 client,
                                 sender_id,

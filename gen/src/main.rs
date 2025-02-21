@@ -6,7 +6,7 @@ use std::{
     collections::HashMap,
     fmt::Write as _,
     fs::OpenOptions,
-    io::{stdout, Write as _},
+    io::{Write as _, stdout},
 };
 use tracing::info;
 

@@ -1986,7 +1986,18 @@ pub mod kde_output_device_v2 {
                 transform: i32,
             ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
                 async move {
-                    tracing :: debug ! ("-> kde_output_device_v2#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})" , sender_id , x , y , physical_width , physical_height , subpixel , make , model , transform);
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
+                        sender_id,
+                        x,
+                        y,
+                        physical_width,
+                        physical_height,
+                        subpixel,
+                        make,
+                        model,
+                        transform
+                    );
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
@@ -3227,7 +3238,14 @@ pub mod kde_output_management_v2 {
                             let max_peak_brightness = message.int()?;
                             let max_frame_average_brightness = message.int()?;
                             let min_brightness = message.int()?;
-                            tracing :: debug ! ("kde_output_configuration_v2#{}.set_brightness_overrides({}, {}, {}, {})" , sender_id , outputdevice , max_peak_brightness , max_frame_average_brightness , min_brightness);
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_brightness_overrides({}, {}, {}, {})",
+                                sender_id,
+                                outputdevice,
+                                max_peak_brightness,
+                                max_frame_average_brightness,
+                                min_brightness
+                            );
                             self.set_brightness_overrides(
                                 client,
                                 sender_id,
@@ -3833,7 +3851,13 @@ pub mod kde_screen_edge_v1 {
                             let surface = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("kde_screen_edge_manager_v1#{}.get_auto_hide_screen_edge({}, {}, {})" , sender_id , id , border , surface);
+                            tracing::debug!(
+                                "kde_screen_edge_manager_v1#{}.get_auto_hide_screen_edge({}, {}, {})",
+                                sender_id,
+                                id,
+                                border,
+                                surface
+                            );
                             self.get_auto_hide_screen_edge(
                                 client,
                                 sender_id,
@@ -4107,7 +4131,12 @@ pub mod org_kde_plasma_virtual_desktop {
                             let desktop_id = message
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.get_virtual_desktop({}, \"{}\")" , sender_id , id , desktop_id);
+                            tracing::debug!(
+                                "org_kde_plasma_virtual_desktop_management#{}.get_virtual_desktop({}, \"{}\")",
+                                sender_id,
+                                id,
+                                desktop_id
+                            );
                             self.get_virtual_desktop(client, sender_id, id, desktop_id)
                                 .await
                         }
@@ -4116,7 +4145,12 @@ pub mod org_kde_plasma_virtual_desktop {
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             let position = message.uint()?;
-                            tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.request_create_virtual_desktop(\"{}\", {})" , sender_id , name , position);
+                            tracing::debug!(
+                                "org_kde_plasma_virtual_desktop_management#{}.request_create_virtual_desktop(\"{}\", {})",
+                                sender_id,
+                                name,
+                                position
+                            );
                             self.request_create_virtual_desktop(client, sender_id, name, position)
                                 .await
                         }
@@ -4124,7 +4158,11 @@ pub mod org_kde_plasma_virtual_desktop {
                             let desktop_id = message
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("org_kde_plasma_virtual_desktop_management#{}.request_remove_virtual_desktop(\"{}\")" , sender_id , desktop_id);
+                            tracing::debug!(
+                                "org_kde_plasma_virtual_desktop_management#{}.request_remove_virtual_desktop(\"{}\")",
+                                sender_id,
+                                desktop_id
+                            );
                             self.request_remove_virtual_desktop(client, sender_id, desktop_id)
                                 .await
                         }
@@ -4168,7 +4206,12 @@ pub mod org_kde_plasma_virtual_desktop {
                 position: u32,
             ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
                 async move {
-                    tracing :: debug ! ("-> org_kde_plasma_virtual_desktop_management#{}.desktop_created(\"{}\", {})" , sender_id , desktop_id , position);
+                    tracing::debug!(
+                        "-> org_kde_plasma_virtual_desktop_management#{}.desktop_created(\"{}\", {})",
+                        sender_id,
+                        desktop_id,
+                        position
+                    );
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(desktop_id))
                         .put_uint(position)
@@ -4626,7 +4669,14 @@ pub mod outputmanagement {
                             let red = message.array()?;
                             let green = message.array()?;
                             let blue = message.array()?;
-                            tracing :: debug ! ("org_kde_kwin_outputconfiguration#{}.colorcurves({}, array[{}], array[{}], array[{}])" , sender_id , outputdevice , red . len () , green . len () , blue . len ());
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.colorcurves({}, array[{}], array[{}], array[{}])",
+                                sender_id,
+                                outputdevice,
+                                red.len(),
+                                green.len(),
+                                blue.len()
+                            );
                             self.colorcurves(client, sender_id, outputdevice, red, green, blue)
                                 .await
                         }
@@ -5025,7 +5075,18 @@ pub mod org_kde_kwin_outputdevice {
                 transform: i32,
             ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
                 async move {
-                    tracing :: debug ! ("-> org_kde_kwin_outputdevice#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})" , sender_id , x , y , physical_width , physical_height , subpixel , make , model , transform);
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputdevice#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
+                        sender_id,
+                        x,
+                        y,
+                        physical_width,
+                        physical_height,
+                        subpixel,
+                        make,
+                        model,
+                        transform
+                    );
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
@@ -5285,7 +5346,13 @@ pub mod org_kde_kwin_outputdevice {
                 blue: Vec<u8>,
             ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
                 async move {
-                    tracing :: debug ! ("-> org_kde_kwin_outputdevice#{}.colorcurves(array[{}], array[{}], array[{}])" , sender_id , red . len () , green . len () , blue . len ());
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputdevice#{}.colorcurves(array[{}], array[{}], array[{}])",
+                        sender_id,
+                        red.len(),
+                        green.len(),
+                        blue.len()
+                    );
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_array(red)
                         .put_array(green)
@@ -6048,7 +6115,12 @@ pub mod plasma_window_management {
                             let internal_window_uuid = message
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("org_kde_plasma_window_management#{}.get_window_by_uuid({}, \"{}\")" , sender_id , id , internal_window_uuid);
+                            tracing::debug!(
+                                "org_kde_plasma_window_management#{}.get_window_by_uuid({}, \"{}\")",
+                                sender_id,
+                                id,
+                                internal_window_uuid
+                            );
                             self.get_window_by_uuid(client, sender_id, id, internal_window_uuid)
                                 .await
                         }
@@ -6171,7 +6243,11 @@ pub mod plasma_window_management {
                 uuids: String,
             ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
                 async move {
-                    tracing :: debug ! ("-> org_kde_plasma_window_management#{}.stacking_order_uuid_changed(\"{}\")" , sender_id , uuids);
+                    tracing::debug!(
+                        "-> org_kde_plasma_window_management#{}.stacking_order_uuid_changed(\"{}\")",
+                        sender_id,
+                        uuids
+                    );
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(uuids))
                         .build();
@@ -6274,7 +6350,15 @@ pub mod plasma_window_management {
                             let y = message.uint()?;
                             let width = message.uint()?;
                             let height = message.uint()?;
-                            tracing :: debug ! ("org_kde_plasma_window#{}.set_minimized_geometry({}, {}, {}, {}, {})" , sender_id , panel , x , y , width , height);
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.set_minimized_geometry({}, {}, {}, {}, {})",
+                                sender_id,
+                                panel,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
                             self.set_minimized_geometry(
                                 client, sender_id, panel, x, y, width, height,
                             )
@@ -10258,7 +10342,13 @@ pub mod wl_eglstream_controller {
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             let attribs = message.array()?;
-                            tracing :: debug ! ("wl_eglstream_controller#{}.attach_eglstream_consumer_attribs({}, {}, array[{}])" , sender_id , wl_surface , wl_resource , attribs . len ());
+                            tracing::debug!(
+                                "wl_eglstream_controller#{}.attach_eglstream_consumer_attribs({}, {}, array[{}])",
+                                sender_id,
+                                wl_surface,
+                                wl_resource,
+                                attribs.len()
+                            );
                             self.attach_eglstream_consumer_attribs(
                                 client,
                                 sender_id,
@@ -10395,7 +10485,16 @@ pub mod zkde_screencast_unstable_v1 {
                             let height = message.int()?;
                             let scale = message.fixed()?;
                             let pointer = message.uint()?;
-                            tracing :: debug ! ("zkde_screencast_unstable_v1#{}.stream_virtual_output({}, \"{}\", {}, {}, {}, {})" , sender_id , stream , name , width , height , scale , pointer);
+                            tracing::debug!(
+                                "zkde_screencast_unstable_v1#{}.stream_virtual_output({}, \"{}\", {}, {}, {}, {})",
+                                sender_id,
+                                stream,
+                                name,
+                                width,
+                                height,
+                                scale,
+                                pointer
+                            );
                             self.stream_virtual_output(
                                 client, sender_id, stream, name, width, height, scale, pointer,
                             )
@@ -10411,7 +10510,17 @@ pub mod zkde_screencast_unstable_v1 {
                             let height = message.uint()?;
                             let scale = message.fixed()?;
                             let pointer = message.uint()?;
-                            tracing :: debug ! ("zkde_screencast_unstable_v1#{}.stream_region({}, {}, {}, {}, {}, {}, {})" , sender_id , stream , x , y , width , height , scale , pointer);
+                            tracing::debug!(
+                                "zkde_screencast_unstable_v1#{}.stream_region({}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                stream,
+                                x,
+                                y,
+                                width,
+                                height,
+                                scale,
+                                pointer
+                            );
                             self.stream_region(
                                 client, sender_id, stream, x, y, width, height, scale, pointer,
                             )
@@ -10431,7 +10540,17 @@ pub mod zkde_screencast_unstable_v1 {
                             let height = message.int()?;
                             let scale = message.fixed()?;
                             let pointer = message.uint()?;
-                            tracing :: debug ! ("zkde_screencast_unstable_v1#{}.stream_virtual_output_with_description({}, \"{}\", \"{}\", {}, {}, {}, {})" , sender_id , stream , name , description , width , height , scale , pointer);
+                            tracing::debug!(
+                                "zkde_screencast_unstable_v1#{}.stream_virtual_output_with_description({}, \"{}\", \"{}\", {}, {}, {}, {})",
+                                sender_id,
+                                stream,
+                                name,
+                                description,
+                                width,
+                                height,
+                                scale,
+                                pointer
+                            );
                             self.stream_virtual_output_with_description(
                                 client,
                                 sender_id,

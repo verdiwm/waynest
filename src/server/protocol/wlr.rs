@@ -720,7 +720,20 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 num_objects: u32,
             ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
                 async move {
-                    tracing :: debug ! ("-> zwlr_export_dmabuf_frame_v1#{}.frame({}, {}, {}, {}, {}, {}, {}, {}, {}, {})" , sender_id , width , height , offset_x , offset_y , buffer_flags , flags , format , mod_high , mod_low , num_objects);
+                    tracing::debug!(
+                        "-> zwlr_export_dmabuf_frame_v1#{}.frame({}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        width,
+                        height,
+                        offset_x,
+                        offset_y,
+                        buffer_flags,
+                        flags,
+                        format,
+                        mod_high,
+                        mod_low,
+                        num_objects
+                    );
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(width)
                         .put_uint(height)
@@ -1078,7 +1091,15 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                             let y = message.int()?;
                             let width = message.int()?;
                             let height = message.int()?;
-                            tracing :: debug ! ("zwlr_foreign_toplevel_handle_v1#{}.set_rectangle({}, {}, {}, {}, {})" , sender_id , surface , x , y , width , height);
+                            tracing::debug!(
+                                "zwlr_foreign_toplevel_handle_v1#{}.set_rectangle({}, {}, {}, {}, {})",
+                                sender_id,
+                                surface,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
                             self.set_rectangle(client, sender_id, surface, x, y, width, height)
                                 .await
                         }
@@ -3754,7 +3775,17 @@ pub mod wlr_screencopy_unstable_v1 {
                             let y = message.int()?;
                             let width = message.int()?;
                             let height = message.int()?;
-                            tracing :: debug ! ("zwlr_screencopy_manager_v1#{}.capture_output_region({}, {}, {}, {}, {}, {}, {})" , sender_id , frame , overlay_cursor , output , x , y , width , height);
+                            tracing::debug!(
+                                "zwlr_screencopy_manager_v1#{}.capture_output_region({}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                frame,
+                                overlay_cursor,
+                                output,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
                             self.capture_output_region(
                                 client,
                                 sender_id,
@@ -4425,7 +4456,15 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("zwlr_virtual_pointer_manager_v1#{}.create_virtual_pointer_with_output({}, {}, {})" , sender_id , seat . as_ref () . map_or ("null" . to_string () , | v | v . to_string ()) , output . as_ref () . map_or ("null" . to_string () , | v | v . to_string ()) , id);
+                            tracing::debug!(
+                                "zwlr_virtual_pointer_manager_v1#{}.create_virtual_pointer_with_output({}, {}, {})",
+                                sender_id,
+                                seat.as_ref().map_or("null".to_string(), |v| v.to_string()),
+                                output
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string()),
+                                id
+                            );
                             self.create_virtual_pointer_with_output(
                                 client, sender_id, seat, output, id,
                             )

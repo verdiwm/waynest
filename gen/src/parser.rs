@@ -3,7 +3,7 @@ use std::{fmt::Display, fs, io, path::Path};
 use heck::ToUpperCamelCase;
 use proc_macro2::TokenStream;
 use quick_xml::DeError;
-use quote::{quote, ToTokens};
+use quote::{ToTokens, quote};
 use serde::{Deserialize, Serialize};
 use tracing::debug;
 

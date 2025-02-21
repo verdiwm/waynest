@@ -853,7 +853,7 @@ pub mod input_method_unstable_v1 {
             #[doc = "The input method context should be destroyed after deactivation is"]
             #[doc = "handled."]
             async fn deactivate(&self, context: crate::wire::ObjectId)
-                -> crate::client::Result<()>;
+            -> crate::client::Result<()>;
         }
     }
     #[doc = "Only one client can bind this interface at a time."]
@@ -2356,7 +2356,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             #[doc = ""]
             #[doc = "This event destroys the zwp_linux_buffer_release_v1 object."]
             async fn fenced_release(&self, fence: rustix::fd::OwnedFd)
-                -> crate::client::Result<()>;
+            -> crate::client::Result<()>;
             #[doc = "Sent when the compositor has finalised its usage of the associated"]
             #[doc = "buffer for the relevant commit, and either performed no operations"]
             #[doc = "using it, or has a guarantee that all its operations on that buffer for"]

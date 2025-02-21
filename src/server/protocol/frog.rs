@@ -37,7 +37,12 @@ pub mod frog_color_management_v1 {
                             let callback = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("frog_color_management_factory_v1#{}.get_color_managed_surface({}, {})" , sender_id , surface , callback);
+                            tracing::debug!(
+                                "frog_color_management_factory_v1#{}.get_color_managed_surface({}, {})",
+                                sender_id,
+                                surface,
+                                callback
+                            );
                             self.get_color_managed_surface(client, sender_id, surface, callback)
                                 .await
                         }
@@ -190,7 +195,11 @@ pub mod frog_color_management_v1 {
                         }
                         2u16 => {
                             let primaries = message.uint()?;
-                            tracing :: debug ! ("frog_color_managed_surface#{}.set_known_container_color_volume({})" , sender_id , primaries);
+                            tracing::debug!(
+                                "frog_color_managed_surface#{}.set_known_container_color_volume({})",
+                                sender_id,
+                                primaries
+                            );
                             self.set_known_container_color_volume(
                                 client,
                                 sender_id,
@@ -221,7 +230,22 @@ pub mod frog_color_management_v1 {
                             let min_display_mastering_luminance = message.uint()?;
                             let max_cll = message.uint()?;
                             let max_fall = message.uint()?;
-                            tracing :: debug ! ("frog_color_managed_surface#{}.set_hdr_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})" , sender_id , mastering_display_primary_red_x , mastering_display_primary_red_y , mastering_display_primary_green_x , mastering_display_primary_green_y , mastering_display_primary_blue_x , mastering_display_primary_blue_y , mastering_white_point_x , mastering_white_point_y , max_display_mastering_luminance , min_display_mastering_luminance , max_cll , max_fall);
+                            tracing::debug!(
+                                "frog_color_managed_surface#{}.set_hdr_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                mastering_display_primary_red_x,
+                                mastering_display_primary_red_y,
+                                mastering_display_primary_green_x,
+                                mastering_display_primary_green_y,
+                                mastering_display_primary_blue_x,
+                                mastering_display_primary_blue_y,
+                                mastering_white_point_x,
+                                mastering_white_point_y,
+                                max_display_mastering_luminance,
+                                min_display_mastering_luminance,
+                                max_cll,
+                                max_fall
+                            );
                             self.set_hdr_metadata(
                                 client,
                                 sender_id,
@@ -323,7 +347,22 @@ pub mod frog_color_management_v1 {
                 max_full_frame_luminance: u32,
             ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
                 async move {
-                    tracing :: debug ! ("-> frog_color_managed_surface#{}.preferred_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})" , sender_id , transfer_function , output_display_primary_red_x , output_display_primary_red_y , output_display_primary_green_x , output_display_primary_green_y , output_display_primary_blue_x , output_display_primary_blue_y , output_white_point_x , output_white_point_y , max_luminance , min_luminance , max_full_frame_luminance);
+                    tracing::debug!(
+                        "-> frog_color_managed_surface#{}.preferred_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        transfer_function,
+                        output_display_primary_red_x,
+                        output_display_primary_red_y,
+                        output_display_primary_green_x,
+                        output_display_primary_green_y,
+                        output_display_primary_blue_x,
+                        output_display_primary_blue_y,
+                        output_white_point_x,
+                        output_white_point_y,
+                        max_luminance,
+                        min_luminance,
+                        max_full_frame_luminance
+                    );
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(transfer_function as u32)
                         .put_uint(output_display_primary_red_x)

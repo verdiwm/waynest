@@ -1108,7 +1108,11 @@ pub mod color_management_v1 {
                             let image_description = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("wp_color_management_surface_feedback_v1#{}.get_preferred_parametric({})" , sender_id , image_description);
+                            tracing::debug!(
+                                "wp_color_management_surface_feedback_v1#{}.get_preferred_parametric({})",
+                                sender_id,
+                                image_description
+                            );
                             self.get_preferred_parametric(client, sender_id, image_description)
                                 .await
                         }
@@ -1507,7 +1511,18 @@ pub mod color_management_v1 {
                             let b_y = message.int()?;
                             let w_x = message.int()?;
                             let w_y = message.int()?;
-                            tracing :: debug ! ("wp_image_description_creator_params_v1#{}.set_primaries({}, {}, {}, {}, {}, {}, {}, {})" , sender_id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                r_x,
+                                r_y,
+                                g_x,
+                                g_y,
+                                b_x,
+                                b_y,
+                                w_x,
+                                w_y
+                            );
                             self.set_primaries(
                                 client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
                             )
@@ -1517,7 +1532,13 @@ pub mod color_management_v1 {
                             let min_lum = message.uint()?;
                             let max_lum = message.uint()?;
                             let reference_lum = message.uint()?;
-                            tracing :: debug ! ("wp_image_description_creator_params_v1#{}.set_luminances({}, {}, {})" , sender_id , min_lum , max_lum , reference_lum);
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_luminances({}, {}, {})",
+                                sender_id,
+                                min_lum,
+                                max_lum,
+                                reference_lum
+                            );
                             self.set_luminances(client, sender_id, min_lum, max_lum, reference_lum)
                                 .await
                         }
@@ -1530,7 +1551,18 @@ pub mod color_management_v1 {
                             let b_y = message.int()?;
                             let w_x = message.int()?;
                             let w_y = message.int()?;
-                            tracing :: debug ! ("wp_image_description_creator_params_v1#{}.set_mastering_display_primaries({}, {}, {}, {}, {}, {}, {}, {})" , sender_id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_mastering_display_primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                r_x,
+                                r_y,
+                                g_x,
+                                g_y,
+                                b_x,
+                                b_y,
+                                w_x,
+                                w_y
+                            );
                             self.set_mastering_display_primaries(
                                 client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
                             )
@@ -1539,7 +1571,12 @@ pub mod color_management_v1 {
                         7u16 => {
                             let min_lum = message.uint()?;
                             let max_lum = message.uint()?;
-                            tracing :: debug ! ("wp_image_description_creator_params_v1#{}.set_mastering_luminance({}, {})" , sender_id , min_lum , max_lum);
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_mastering_luminance({}, {})",
+                                sender_id,
+                                min_lum,
+                                max_lum
+                            );
                             self.set_mastering_luminance(client, sender_id, min_lum, max_lum)
                                 .await
                         }
@@ -2188,7 +2225,18 @@ pub mod color_management_v1 {
                 w_y: i32,
             ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
                 async move {
-                    tracing :: debug ! ("-> wp_image_description_info_v1#{}.primaries({}, {}, {}, {}, {}, {}, {}, {})" , sender_id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        r_x,
+                        r_y,
+                        g_x,
+                        g_y,
+                        b_x,
+                        b_y,
+                        w_x,
+                        w_y
+                    );
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_int(r_x)
                         .put_int(r_y)
@@ -2337,7 +2385,18 @@ pub mod color_management_v1 {
                 w_y: i32,
             ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
                 async move {
-                    tracing :: debug ! ("-> wp_image_description_info_v1#{}.target_primaries({}, {}, {}, {}, {}, {}, {}, {})" , sender_id , r_x , r_y , g_x , g_y , b_x , b_y , w_x , w_y);
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.target_primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        r_x,
+                        r_y,
+                        g_x,
+                        g_y,
+                        b_x,
+                        b_y,
+                        w_x,
+                        w_y
+                    );
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_int(r_x)
                         .put_int(r_y)
@@ -4840,7 +4899,12 @@ pub mod ext_image_capture_source_v1 {
                             let output = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("ext_output_image_capture_source_manager_v1#{}.create_source({}, {})" , sender_id , source , output);
+                            tracing::debug!(
+                                "ext_output_image_capture_source_manager_v1#{}.create_source({}, {})",
+                                sender_id,
+                                source,
+                                output
+                            );
                             self.create_source(client, sender_id, source, output).await
                         }
                         1u16 => {
@@ -4901,7 +4965,12 @@ pub mod ext_image_capture_source_v1 {
                             let toplevel_handle = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("ext_foreign_toplevel_image_capture_source_manager_v1#{}.create_source({}, {})" , sender_id , source , toplevel_handle);
+                            tracing::debug!(
+                                "ext_foreign_toplevel_image_capture_source_manager_v1#{}.create_source({}, {})",
+                                sender_id,
+                                source,
+                                toplevel_handle
+                            );
                             self.create_source(client, sender_id, source, toplevel_handle)
                                 .await
                         }
@@ -5031,7 +5100,13 @@ pub mod ext_image_copy_capture_v1 {
                             let pointer = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("ext_image_copy_capture_manager_v1#{}.create_pointer_cursor_session({}, {}, {})" , sender_id , session , source , pointer);
+                            tracing::debug!(
+                                "ext_image_copy_capture_manager_v1#{}.create_pointer_cursor_session({}, {}, {})",
+                                sender_id,
+                                session,
+                                source,
+                                pointer
+                            );
                             self.create_pointer_cursor_session(
                                 client, sender_id, session, source, pointer,
                             )
@@ -5718,7 +5793,11 @@ pub mod ext_image_copy_capture_v1 {
                             let session = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("ext_image_copy_capture_cursor_session_v1#{}.get_capture_session({})" , sender_id , session);
+                            tracing::debug!(
+                                "ext_image_copy_capture_cursor_session_v1#{}.get_capture_session({})",
+                                sender_id,
+                                session
+                            );
                             self.get_capture_session(client, sender_id, session).await
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
@@ -8366,7 +8445,15 @@ pub mod single_pixel_buffer_v1 {
                             let g = message.uint()?;
                             let b = message.uint()?;
                             let a = message.uint()?;
-                            tracing :: debug ! ("wp_single_pixel_buffer_manager_v1#{}.create_u32_rgba_buffer({}, {}, {}, {}, {})" , sender_id , id , r , g , b , a);
+                            tracing::debug!(
+                                "wp_single_pixel_buffer_manager_v1#{}.create_u32_rgba_buffer({}, {}, {}, {}, {})",
+                                sender_id,
+                                id,
+                                r,
+                                g,
+                                b,
+                                a
+                            );
                             self.create_u32_rgba_buffer(client, sender_id, id, r, g, b, a)
                                 .await
                         }

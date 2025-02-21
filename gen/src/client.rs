@@ -21,7 +21,10 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
             let docs = description_to_docs(interface.description.as_ref());
             let module_name = make_ident(&interface.name);
             let trait_name = make_ident(interface.name.to_upper_camel_case());
-            let trait_docs = format!("Trait to implement the {} interface. See the module level documentation for more info", interface.name);
+            let trait_docs = format!(
+                "Trait to implement the {} interface. See the module level documentation for more info",
+                interface.name
+            );
 
             let name = &interface.name;
             let version = &interface.version;

@@ -195,7 +195,14 @@ pub mod fullscreen_shell_unstable_v1 {
                             let feedback = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("zwp_fullscreen_shell_v1#{}.present_surface_for_mode({}, {}, {}, {})" , sender_id , surface , output , framerate , feedback);
+                            tracing::debug!(
+                                "zwp_fullscreen_shell_v1#{}.present_surface_for_mode({}, {}, {}, {})",
+                                sender_id,
+                                surface,
+                                output,
+                                framerate,
+                                feedback
+                            );
                             self.present_surface_for_mode(
                                 client, sender_id, surface, output, framerate, feedback,
                             )
@@ -1311,7 +1318,12 @@ pub mod input_timestamps_unstable_v1 {
                             let keyboard = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("zwp_input_timestamps_manager_v1#{}.get_keyboard_timestamps({}, {})" , sender_id , id , keyboard);
+                            tracing::debug!(
+                                "zwp_input_timestamps_manager_v1#{}.get_keyboard_timestamps({}, {})",
+                                sender_id,
+                                id,
+                                keyboard
+                            );
                             self.get_keyboard_timestamps(client, sender_id, id, keyboard)
                                 .await
                         }
@@ -1558,7 +1570,13 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                             let seat = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("zwp_keyboard_shortcuts_inhibit_manager_v1#{}.inhibit_shortcuts({}, {}, {})" , sender_id , id , surface , seat);
+                            tracing::debug!(
+                                "zwp_keyboard_shortcuts_inhibit_manager_v1#{}.inhibit_shortcuts({}, {}, {})",
+                                sender_id,
+                                id,
+                                surface,
+                                seat
+                            );
                             self.inhibit_shortcuts(client, sender_id, id, surface, seat)
                                 .await
                         }
@@ -2694,7 +2712,12 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                             let surface = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("zwp_linux_explicit_synchronization_v1#{}.get_synchronization({}, {})" , sender_id , id , surface);
+                            tracing::debug!(
+                                "zwp_linux_explicit_synchronization_v1#{}.get_synchronization({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
                             self.get_synchronization(client, sender_id, id, surface)
                                 .await
                         }
@@ -13254,7 +13277,13 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                             let seat = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("zwp_xwayland_keyboard_grab_manager_v1#{}.grab_keyboard({}, {}, {})" , sender_id , id , surface , seat);
+                            tracing::debug!(
+                                "zwp_xwayland_keyboard_grab_manager_v1#{}.grab_keyboard({}, {}, {})",
+                                sender_id,
+                                id,
+                                surface,
+                                seat
+                            );
                             self.grab_keyboard(client, sender_id, id, surface, seat)
                                 .await
                         }

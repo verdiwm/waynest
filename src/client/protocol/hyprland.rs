@@ -683,7 +683,10 @@ pub mod hyprland_toplevel_export_v1 {
                 overlay_cursor: i32,
                 handle: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing :: debug ! ("-> hyprland_toplevel_export_manager_v1#{}.capture_toplevel_with_wlr_toplevel_handle()" , object_id);
+                tracing::debug!(
+                    "-> hyprland_toplevel_export_manager_v1#{}.capture_toplevel_with_wlr_toplevel_handle()",
+                    object_id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(frame))
                     .put_int(overlay_cursor)

@@ -3095,7 +3095,10 @@ pub mod org_kde_plasma_virtual_desktop {
                 name: String,
                 position: u32,
             ) -> crate::client::Result<()> {
-                tracing :: debug ! ("-> org_kde_plasma_virtual_desktop_management#{}.request_create_virtual_desktop()" , object_id);
+                tracing::debug!(
+                    "-> org_kde_plasma_virtual_desktop_management#{}.request_create_virtual_desktop()",
+                    object_id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .put_uint(position)
@@ -3112,7 +3115,10 @@ pub mod org_kde_plasma_virtual_desktop {
                 object_id: crate::wire::ObjectId,
                 desktop_id: String,
             ) -> crate::client::Result<()> {
-                tracing :: debug ! ("-> org_kde_plasma_virtual_desktop_management#{}.request_remove_virtual_desktop()" , object_id);
+                tracing::debug!(
+                    "-> org_kde_plasma_virtual_desktop_management#{}.request_remove_virtual_desktop()",
+                    object_id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(desktop_id))
                     .build();
@@ -4541,7 +4547,7 @@ pub mod plasma_window_management {
             #[doc = ""]
             #[doc = "With version 17 this event is deprecated and will no longer be sent."]
             async fn stacking_order_uuid_changed(&self, uuids: String)
-                -> crate::client::Result<()>;
+            -> crate::client::Result<()>;
             #[doc = "This event will be sent immediately after a window is mapped."]
             async fn window_with_uuid(&self, id: u32, uuid: String) -> crate::client::Result<()>;
             #[doc = "This event will be sent when stacking order changed."]

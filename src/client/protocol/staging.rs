@@ -1613,7 +1613,10 @@ pub mod color_management_v1 {
                 w_x: i32,
                 w_y: i32,
             ) -> crate::client::Result<()> {
-                tracing :: debug ! ("-> wp_image_description_creator_params_v1#{}.set_mastering_display_primaries()" , object_id);
+                tracing::debug!(
+                    "-> wp_image_description_creator_params_v1#{}.set_mastering_display_primaries()",
+                    object_id
+                );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(r_x)
                     .put_int(r_y)

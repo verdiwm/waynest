@@ -5,7 +5,7 @@ use std::{borrow::Cow, collections::HashMap, os::unix::net::UnixStream, path::Pa
 use anyhow::Result;
 use futures_util::TryStreamExt;
 use waynest::{
-    client::{protocol::core::wayland::wl_display::WlDisplay, Dispatcher},
+    client::{Dispatcher, protocol::core::wayland::wl_display::WlDisplay},
     wire::{Message, ObjectId, Socket},
 };
 

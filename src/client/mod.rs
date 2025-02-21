@@ -1,7 +1,7 @@
 mod error;
 pub mod protocol;
 
-use downcast_rs::{impl_downcast, DowncastSync};
+use downcast_rs::{DowncastSync, impl_downcast};
 pub use error::{Error, Result};
 
 use crate::wire::Message;

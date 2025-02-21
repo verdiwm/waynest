@@ -277,7 +277,12 @@ pub mod cosmic_image_source_unstable_v1 {
                             let output = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("zcosmic_workspace_image_source_manager_v1#{}.create_source({}, {})" , sender_id , source , output);
+                            tracing::debug!(
+                                "zcosmic_workspace_image_source_manager_v1#{}.create_source({}, {})",
+                                sender_id,
+                                source,
+                                output
+                            );
                             self.create_source(client, sender_id, source, output).await
                         }
                         1u16 => {
@@ -1133,7 +1138,18 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 height: i32,
             ) -> impl std::future::Future<Output = crate::server::Result<()>> + Send {
                 async move {
-                    tracing :: debug ! ("-> zcosmic_overlap_notification_v1#{}.layer_enter(\"{}\", \"{}\", {}, {}, {}, {}, {}, {})" , sender_id , identifier , namespace , exclusive , layer , x , y , width , height);
+                    tracing::debug!(
+                        "-> zcosmic_overlap_notification_v1#{}.layer_enter(\"{}\", \"{}\", {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        identifier,
+                        namespace,
+                        exclusive,
+                        layer,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(identifier))
                         .put_string(Some(namespace))
@@ -1271,7 +1287,14 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             let options = message.uint()?;
-                            tracing :: debug ! ("zcosmic_screencopy_manager_v2#{}.create_pointer_cursor_session({}, {}, {}, {})" , sender_id , session , source , pointer , options);
+                            tracing::debug!(
+                                "zcosmic_screencopy_manager_v2#{}.create_pointer_cursor_session({}, {}, {}, {})",
+                                sender_id,
+                                session,
+                                source,
+                                pointer,
+                                options
+                            );
                             self.create_pointer_cursor_session(
                                 client, sender_id, session, source, pointer, options,
                             )
@@ -1921,7 +1944,11 @@ pub mod cosmic_screencopy_unstable_v2 {
                             let session = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing :: debug ! ("zcosmic_screencopy_cursor_session_v2#{}.get_screencopy_session({})" , sender_id , session);
+                            tracing::debug!(
+                                "zcosmic_screencopy_cursor_session_v2#{}.get_screencopy_session({})",
+                                sender_id,
+                                session
+                            );
                             self.get_screencopy_session(client, sender_id, session)
                                 .await
                         }
@@ -2744,7 +2771,16 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                             let y = message.int()?;
                             let width = message.int()?;
                             let height = message.int()?;
-                            tracing :: debug ! ("zcosmic_toplevel_manager_v1#{}.set_rectangle({}, {}, {}, {}, {}, {})" , sender_id , toplevel , surface , x , y , width , height);
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.set_rectangle({}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                toplevel,
+                                surface,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
                             self.set_rectangle(
                                 client, sender_id, toplevel, surface, x, y, width, height,
                             )

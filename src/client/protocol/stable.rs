@@ -855,7 +855,7 @@ pub mod presentation_time {
             #[doc = "the synchronized output. If a client has not bound to the"]
             #[doc = "right wl_output global at all, this event is not sent."]
             async fn sync_output(&self, output: crate::wire::ObjectId)
-                -> crate::client::Result<()>;
+            -> crate::client::Result<()>;
             #[doc = "The associated content update was displayed to the user at the"]
             #[doc = "indicated time (tv_sec_hi/lo, tv_nsec). For the interpretation of"]
             #[doc = "the timestamp, see presentation.clock_id event."]
