@@ -331,7 +331,6 @@ pub mod frog_color_management_v1 {
             #[doc = "rather what the compositor thinks would be best for a given surface."]
             fn preferred_metadata(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 transfer_function: TransferFunction,
                 output_display_primary_red_x: u32,
@@ -345,43 +344,38 @@ pub mod frog_color_management_v1 {
                 max_luminance: u32,
                 min_luminance: u32,
                 max_full_frame_luminance: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> frog_color_managed_surface#{}.preferred_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
-                        sender_id,
-                        transfer_function,
-                        output_display_primary_red_x,
-                        output_display_primary_red_y,
-                        output_display_primary_green_x,
-                        output_display_primary_green_y,
-                        output_display_primary_blue_x,
-                        output_display_primary_blue_y,
-                        output_white_point_x,
-                        output_white_point_y,
-                        max_luminance,
-                        min_luminance,
-                        max_full_frame_luminance
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(transfer_function as u32)
-                        .put_uint(output_display_primary_red_x)
-                        .put_uint(output_display_primary_red_y)
-                        .put_uint(output_display_primary_green_x)
-                        .put_uint(output_display_primary_green_y)
-                        .put_uint(output_display_primary_blue_x)
-                        .put_uint(output_display_primary_blue_y)
-                        .put_uint(output_white_point_x)
-                        .put_uint(output_white_point_y)
-                        .put_uint(max_luminance)
-                        .put_uint(min_luminance)
-                        .put_uint(max_full_frame_luminance)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> frog_color_managed_surface#{}.preferred_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                    sender_id,
+                    transfer_function,
+                    output_display_primary_red_x,
+                    output_display_primary_red_y,
+                    output_display_primary_green_x,
+                    output_display_primary_green_y,
+                    output_display_primary_blue_x,
+                    output_display_primary_blue_y,
+                    output_white_point_x,
+                    output_white_point_y,
+                    max_luminance,
+                    min_luminance,
+                    max_full_frame_luminance
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(transfer_function as u32)
+                    .put_uint(output_display_primary_red_x)
+                    .put_uint(output_display_primary_red_y)
+                    .put_uint(output_display_primary_green_x)
+                    .put_uint(output_display_primary_green_y)
+                    .put_uint(output_display_primary_blue_x)
+                    .put_uint(output_display_primary_blue_y)
+                    .put_uint(output_white_point_x)
+                    .put_uint(output_white_point_y)
+                    .put_uint(max_luminance)
+                    .put_uint(min_luminance)
+                    .put_uint(max_full_frame_luminance)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
         }
     }

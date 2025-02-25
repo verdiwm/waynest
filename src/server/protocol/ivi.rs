@@ -45,27 +45,21 @@ pub mod ivi_application {
             #[doc = "in surface local coordinates."]
             fn configure(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_surface#{}.configure({}, {})",
-                        sender_id,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_int(width)
-                        .put_int(height)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_surface#{}.configure({}, {})",
+                    sender_id,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
         }
     }
@@ -252,101 +246,77 @@ pub mod ivi_input {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn seat_created(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: String,
                 capabilities: u32,
                 is_default: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_input#{}.seat_created(\"{}\", {}, {})",
-                        sender_id,
-                        name,
-                        capabilities,
-                        is_default
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(name))
-                        .put_uint(capabilities)
-                        .put_int(is_default)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_input#{}.seat_created(\"{}\", {}, {})",
+                    sender_id,
+                    name,
+                    capabilities,
+                    is_default
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .put_uint(capabilities)
+                    .put_int(is_default)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             fn seat_capabilities(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: String,
                 capabilities: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_input#{}.seat_capabilities(\"{}\", {})",
-                        sender_id,
-                        name,
-                        capabilities
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(name))
-                        .put_uint(capabilities)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_input#{}.seat_capabilities(\"{}\", {})",
+                    sender_id,
+                    name,
+                    capabilities
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .put_uint(capabilities)
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             fn seat_destroyed(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ivi_input#{}.seat_destroyed(\"{}\")", sender_id, name);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(name))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> ivi_input#{}.seat_destroyed(\"{}\")", sender_id, name);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "The new input focus state is provided in argument enabled:"]
             #[doc = "If enabled is ILM_TRUE, this surface now has input focus enabled."]
             #[doc = "If enabled is not ILM_TRUE, this surface no longer has input focus."]
             fn input_focus(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: u32,
                 device: u32,
                 enabled: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_input#{}.input_focus({}, {}, {})",
-                        sender_id,
-                        surface,
-                        device,
-                        enabled
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(surface)
-                        .put_uint(device)
-                        .put_int(enabled)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_input#{}.input_focus({}, {}, {})",
+                    sender_id,
+                    surface,
+                    device,
+                    enabled
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(surface)
+                    .put_uint(device)
+                    .put_int(enabled)
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "A surface has changed its input acceptance for a specific seat."]
             #[doc = "If argument 'accepted' is ILM_TRUE, the surface now accepts"]
@@ -355,30 +325,24 @@ pub mod ivi_input {
             #[doc = "accepts the seat."]
             fn input_acceptance(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: u32,
                 seat: String,
                 accepted: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_input#{}.input_acceptance({}, \"{}\", {})",
-                        sender_id,
-                        surface,
-                        seat,
-                        accepted
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(surface)
-                        .put_string(Some(seat))
-                        .put_int(accepted)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_input#{}.input_acceptance({}, \"{}\", {})",
+                    sender_id,
+                    surface,
+                    seat,
+                    accepted
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(surface)
+                    .put_string(Some(seat))
+                    .put_int(accepted)
+                    .build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
         }
     }
@@ -524,85 +488,57 @@ pub mod ivi_wm {
                 param: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent immediately after creating the ivi_wm_screen object."]
-            fn screen_id(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                id: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ivi_wm_screen#{}.screen_id({})", sender_id, id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn screen_id(&self, sender_id: crate::wire::ObjectId, id: u32) -> crate::wire::Message {
+                tracing::debug!("-> ivi_wm_screen#{}.screen_id({})", sender_id, id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "A layer is added to the render order lisf of the screen"]
             fn layer_added(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ivi_wm_screen#{}.layer_added({})", sender_id, layer_id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(layer_id)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> ivi_wm_screen#{}.layer_added({})", sender_id, layer_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(layer_id)
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "Sent immediately after creating the ivi_wm_screen object."]
             fn connector_name(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 process_name: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_wm_screen#{}.connector_name(\"{}\")",
-                        sender_id,
-                        process_name
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(process_name))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_wm_screen#{}.connector_name(\"{}\")",
+                    sender_id,
+                    process_name
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(process_name))
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "The error event is sent out when an error has occurred."]
             fn error(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 error: u32,
                 message: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_wm_screen#{}.error({}, \"{}\")",
-                        sender_id,
-                        error,
-                        message
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(error)
-                        .put_string(Some(message))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_wm_screen#{}.error({}, \"{}\")",
+                    sender_id,
+                    error,
+                    message
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(error)
+                    .put_string(Some(message))
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
         }
     }
@@ -673,45 +609,33 @@ pub mod ivi_wm {
             #[doc = "can handle the buffer. This also provide the time of dumping data."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 timestamp: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ivi_screenshot#{}.done({})", sender_id, timestamp);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(timestamp)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> ivi_screenshot#{}.done({})", sender_id, timestamp);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(timestamp)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "The error event is sent when the screenshot could not be created."]
             fn error(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 error: Error,
                 message: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_screenshot#{}.error({}, \"{}\")",
-                        sender_id,
-                        error,
-                        message
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(error as u32)
-                        .put_string(Some(message))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_screenshot#{}.error({}, \"{}\")",
+                    sender_id,
+                    error,
+                    message
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(error as u32)
+                    .put_string(Some(message))
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -1367,106 +1291,82 @@ pub mod ivi_wm {
             #[doc = "If visibility is not 0, the surface has become visible."]
             fn surface_visibility(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 visibility: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_wm#{}.surface_visibility({}, {})",
-                        sender_id,
-                        surface_id,
-                        visibility
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(surface_id)
-                        .put_int(visibility)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_wm#{}.surface_visibility({}, {})",
+                    sender_id,
+                    surface_id,
+                    visibility
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(surface_id)
+                    .put_int(visibility)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "The new visibility state is provided in argument visibility."]
             #[doc = "If visibility is 0, the layer has become invisible."]
             #[doc = "If visibility is not 0, the layer has become visible."]
             fn layer_visibility(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 visibility: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_wm#{}.layer_visibility({}, {})",
-                        sender_id,
-                        layer_id,
-                        visibility
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(layer_id)
-                        .put_int(visibility)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_wm#{}.layer_visibility({}, {})",
+                    sender_id,
+                    layer_id,
+                    visibility
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(layer_id)
+                    .put_int(visibility)
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "The new opacity state is provided in argument opacity."]
             #[doc = "The valid range for opactiy is 0.0 (fully transparent) to 1.0 (fully opaque)."]
             fn surface_opacity(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 opacity: crate::wire::Fixed,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_wm#{}.surface_opacity({}, {})",
-                        sender_id,
-                        surface_id,
-                        opacity
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(surface_id)
-                        .put_fixed(opacity)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_wm#{}.surface_opacity({}, {})",
+                    sender_id,
+                    surface_id,
+                    opacity
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(surface_id)
+                    .put_fixed(opacity)
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "The new opacity state is provided in argument opacity."]
             #[doc = "The valid range for opactiy is 0.0 (fully transparent) to 1.0 (fully opaque)."]
             fn layer_opacity(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 opacity: crate::wire::Fixed,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_wm#{}.layer_opacity({}, {})",
-                        sender_id,
-                        layer_id,
-                        opacity
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(layer_id)
-                        .put_fixed(opacity)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_wm#{}.layer_opacity({}, {})",
+                    sender_id,
+                    layer_id,
+                    opacity
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(layer_id)
+                    .put_fixed(opacity)
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "The scanout region of the surface content has changed."]
             #[doc = "The new values for source rectangle are provided by"]
@@ -1476,36 +1376,30 @@ pub mod ivi_wm {
             #[doc = "height: new height of scanout area within the surface"]
             fn surface_source_rectangle(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 x: i32,
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_wm#{}.surface_source_rectangle({}, {}, {}, {}, {})",
-                        sender_id,
-                        surface_id,
-                        x,
-                        y,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(surface_id)
-                        .put_int(x)
-                        .put_int(y)
-                        .put_int(width)
-                        .put_int(height)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_wm#{}.surface_source_rectangle({}, {}, {}, {}, {})",
+                    sender_id,
+                    surface_id,
+                    x,
+                    y,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(surface_id)
+                    .put_int(x)
+                    .put_int(y)
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
             #[doc = "The scanout region of the layer content has changed."]
             #[doc = "The new values for source rectangle are provided by"]
@@ -1515,36 +1409,30 @@ pub mod ivi_wm {
             #[doc = "height: new height of scanout area within the layer"]
             fn layer_source_rectangle(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 x: i32,
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_wm#{}.layer_source_rectangle({}, {}, {}, {}, {})",
-                        sender_id,
-                        layer_id,
-                        x,
-                        y,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(layer_id)
-                        .put_int(x)
-                        .put_int(y)
-                        .put_int(width)
-                        .put_int(height)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_wm#{}.layer_source_rectangle({}, {}, {}, {}, {})",
+                    sender_id,
+                    layer_id,
+                    x,
+                    y,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(layer_id)
+                    .put_int(x)
+                    .put_int(y)
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
+                crate::wire::Message::new(sender_id, 5u16, payload, fds)
             }
             #[doc = "The new values for source rectangle are provided by"]
             #[doc = "x:      new horizontal start position of surface within the layer"]
@@ -1553,36 +1441,30 @@ pub mod ivi_wm {
             #[doc = "height: new height of surface within the layer"]
             fn surface_destination_rectangle(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 x: i32,
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_wm#{}.surface_destination_rectangle({}, {}, {}, {}, {})",
-                        sender_id,
-                        surface_id,
-                        x,
-                        y,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(surface_id)
-                        .put_int(x)
-                        .put_int(y)
-                        .put_int(width)
-                        .put_int(height)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_wm#{}.surface_destination_rectangle({}, {}, {}, {}, {})",
+                    sender_id,
+                    surface_id,
+                    x,
+                    y,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(surface_id)
+                    .put_int(x)
+                    .put_int(y)
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
+                crate::wire::Message::new(sender_id, 6u16, payload, fds)
             }
             #[doc = "The new values for source rectangle are provided by"]
             #[doc = "x:      new horizontal start position of layer within the screen"]
@@ -1591,243 +1473,183 @@ pub mod ivi_wm {
             #[doc = "height: new height of layer within the screen"]
             fn layer_destination_rectangle(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 x: i32,
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_wm#{}.layer_destination_rectangle({}, {}, {}, {}, {})",
-                        sender_id,
-                        layer_id,
-                        x,
-                        y,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(layer_id)
-                        .put_int(x)
-                        .put_int(y)
-                        .put_int(width)
-                        .put_int(height)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_wm#{}.layer_destination_rectangle({}, {}, {}, {}, {})",
+                    sender_id,
+                    layer_id,
+                    x,
+                    y,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(layer_id)
+                    .put_int(x)
+                    .put_int(y)
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
+                crate::wire::Message::new(sender_id, 7u16, payload, fds)
             }
             fn surface_created(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ivi_wm#{}.surface_created({})", sender_id, surface_id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(surface_id)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> ivi_wm#{}.surface_created({})", sender_id, surface_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(surface_id)
+                    .build();
+                crate::wire::Message::new(sender_id, 8u16, payload, fds)
             }
             fn layer_created(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ivi_wm#{}.layer_created({})", sender_id, layer_id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(layer_id)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> ivi_wm#{}.layer_created({})", sender_id, layer_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(layer_id)
+                    .build();
+                crate::wire::Message::new(sender_id, 9u16, payload, fds)
             }
             fn surface_destroyed(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ivi_wm#{}.surface_destroyed({})", sender_id, surface_id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(surface_id)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> ivi_wm#{}.surface_destroyed({})", sender_id, surface_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(surface_id)
+                    .build();
+                crate::wire::Message::new(sender_id, 10u16, payload, fds)
             }
             fn layer_destroyed(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ivi_wm#{}.layer_destroyed({})", sender_id, layer_id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(layer_id)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 11u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> ivi_wm#{}.layer_destroyed({})", sender_id, layer_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(layer_id)
+                    .build();
+                crate::wire::Message::new(sender_id, 11u16, payload, fds)
             }
             #[doc = "The error event is sent out when an error has occurred."]
             fn surface_error(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 object_id: u32,
                 error: u32,
                 message: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_wm#{}.surface_error({}, {}, \"{}\")",
-                        sender_id,
-                        object_id,
-                        error,
-                        message
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(object_id)
-                        .put_uint(error)
-                        .put_string(Some(message))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 12u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_wm#{}.surface_error({}, {}, \"{}\")",
+                    sender_id,
+                    object_id,
+                    error,
+                    message
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(object_id)
+                    .put_uint(error)
+                    .put_string(Some(message))
+                    .build();
+                crate::wire::Message::new(sender_id, 12u16, payload, fds)
             }
             #[doc = "The error event is sent out when an error has occurred."]
             fn layer_error(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 object_id: u32,
                 error: u32,
                 message: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_wm#{}.layer_error({}, {}, \"{}\")",
-                        sender_id,
-                        object_id,
-                        error,
-                        message
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(object_id)
-                        .put_uint(error)
-                        .put_string(Some(message))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 13u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_wm#{}.layer_error({}, {}, \"{}\")",
+                    sender_id,
+                    object_id,
+                    error,
+                    message
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(object_id)
+                    .put_uint(error)
+                    .put_string(Some(message))
+                    .build();
+                crate::wire::Message::new(sender_id, 13u16, payload, fds)
             }
             #[doc = "The client providing content for this surface modified size of the surface."]
             #[doc = "The modified surface size is provided by arguments width and height."]
             fn surface_size(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_wm#{}.surface_size({}, {}, {})",
-                        sender_id,
-                        surface_id,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(surface_id)
-                        .put_int(width)
-                        .put_int(height)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 14u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_wm#{}.surface_size({}, {}, {})",
+                    sender_id,
+                    surface_id,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(surface_id)
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
+                crate::wire::Message::new(sender_id, 14u16, payload, fds)
             }
             #[doc = "The information contained in this event is essential for monitoring, debugging,"]
             #[doc = "logging and tracing support in IVI systems."]
             fn surface_stats(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 frame_count: u32,
                 pid: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_wm#{}.surface_stats({}, {}, {})",
-                        sender_id,
-                        surface_id,
-                        frame_count,
-                        pid
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(surface_id)
-                        .put_uint(frame_count)
-                        .put_uint(pid)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 15u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_wm#{}.surface_stats({}, {}, {})",
+                    sender_id,
+                    surface_id,
+                    frame_count,
+                    pid
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(surface_id)
+                    .put_uint(frame_count)
+                    .put_uint(pid)
+                    .build();
+                crate::wire::Message::new(sender_id, 15u16, payload, fds)
             }
             #[doc = "A surface is added to the render order of the layer"]
             fn layer_surface_added(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 surface_id: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ivi_wm#{}.layer_surface_added({}, {})",
-                        sender_id,
-                        layer_id,
-                        surface_id
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(layer_id)
-                        .put_uint(surface_id)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 16u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ivi_wm#{}.layer_surface_added({}, {})",
+                    sender_id,
+                    layer_id,
+                    surface_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(layer_id)
+                    .put_uint(surface_id)
+                    .build();
+                crate::wire::Message::new(sender_id, 16u16, payload, fds)
             }
         }
     }

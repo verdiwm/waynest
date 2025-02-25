@@ -222,11 +222,7 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
         let docs = description_to_docs(event.description.as_ref());
         let name = make_ident(event.name.to_snek_case());
 
-        let mut args = vec![
-            quote! {&self },
-            quote! {client: &mut crate::server::Client},
-            quote! {sender_id: crate::wire::ObjectId},
-        ];
+        let mut args = vec![quote! {&self }, quote! {sender_id: crate::wire::ObjectId}];
 
         let mut tracing_fmt = Vec::new();
         let mut tracing_args = Vec::new();
@@ -319,19 +315,13 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
 
         events.push(quote! {
             #(#docs)*
-            fn #name(#(#args),*) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
+            fn #name(#(#args),*) -> crate::wire::Message {
                     tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
 
-                    let (payload,fds) = crate::wire::PayloadBuilder::new()
-                        #(#build_args)*
-                        .build();
-
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, #opcode, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+                let (payload,fds) = crate::wire::PayloadBuilder::new()
+                    #(#build_args)*
+                    .build();
+                crate::wire::Message::new(sender_id, #opcode, payload, fds)
             }
         });
     }

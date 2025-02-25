@@ -110,50 +110,34 @@ pub mod wayland {
             #[doc = "of the error, for (debugging) convenience."]
             fn error(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 object_id: crate::wire::ObjectId,
                 code: u32,
                 message: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_display#{}.error({}, {}, \"{}\")",
-                        sender_id,
-                        object_id,
-                        code,
-                        message
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(object_id))
-                        .put_uint(code)
-                        .put_string(Some(message))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_display#{}.error({}, {}, \"{}\")",
+                    sender_id,
+                    object_id,
+                    code,
+                    message
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(object_id))
+                    .put_uint(code)
+                    .put_string(Some(message))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event is used internally by the object ID management"]
             #[doc = "logic. When a client deletes an object that it had created,"]
             #[doc = "the server will send this event to acknowledge that it has"]
             #[doc = "seen the delete request. When the client receives this event,"]
             #[doc = "it will know that it can safely reuse the object ID."]
-            fn delete_id(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                id: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_display#{}.delete_id({})", sender_id, id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn delete_id(&self, sender_id: crate::wire::ObjectId, id: u32) -> crate::wire::Message {
+                tracing::debug!("-> wl_display#{}.delete_id({})", sender_id, id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -220,30 +204,24 @@ pub mod wayland {
             #[doc = "given version of the given interface."]
             fn global(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: u32,
                 interface: String,
                 version: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_registry#{}.global({}, \"{}\", {})",
-                        sender_id,
-                        name,
-                        interface,
-                        version
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(name)
-                        .put_string(Some(interface))
-                        .put_uint(version)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_registry#{}.global({}, \"{}\", {})",
+                    sender_id,
+                    name,
+                    interface,
+                    version
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(name)
+                    .put_string(Some(interface))
+                    .put_uint(version)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "Notify the client of removed global objects."]
             #[doc = ""]
@@ -257,18 +235,12 @@ pub mod wayland {
             #[doc = "the global going away and a client sending a request to it."]
             fn global_remove(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_registry#{}.global_remove({})", sender_id, name);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(name).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> wl_registry#{}.global_remove({})", sender_id, name);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(name).build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -301,20 +273,14 @@ pub mod wayland {
             #[doc = "Notify the client when the related request is done."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 callback_data: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_callback#{}.done({})", sender_id, callback_data);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(callback_data)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> wl_callback#{}.done({})", sender_id, callback_data);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(callback_data)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
         }
     }
@@ -981,20 +947,14 @@ pub mod wayland {
             #[doc = "argb8888 and xrgb8888."]
             fn format(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 format: Format,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_shm#{}.format({})", sender_id, format);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(format as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> wl_shm#{}.format({})", sender_id, format);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(format as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
         }
     }
@@ -1059,19 +1019,10 @@ pub mod wayland {
             #[doc = "this is possible, when the compositor maintains a copy of the"]
             #[doc = "wl_surface contents, e.g. as a GL texture. This is an important"]
             #[doc = "optimization for GL(ES) compositors with wl_shm clients."]
-            fn release(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_buffer#{}.release()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn release(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wl_buffer#{}.release()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
         }
     }
@@ -1293,20 +1244,14 @@ pub mod wayland {
             #[doc = "event per offered mime type."]
             fn offer(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_data_offer#{}.offer(\"{}\")", sender_id, mime_type);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(mime_type))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> wl_data_offer#{}.offer(\"{}\")", sender_id, mime_type);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(mime_type))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event indicates the actions offered by the data source. It"]
             #[doc = "will be sent immediately after creating the wl_data_offer object,"]
@@ -1314,24 +1259,18 @@ pub mod wayland {
             #[doc = "wl_data_source.set_actions."]
             fn source_actions(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 source_actions : super :: super :: super :: core :: wayland :: wl_data_device_manager :: DndAction,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_data_offer#{}.source_actions({})",
-                        sender_id,
-                        source_actions
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(source_actions.bits())
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_data_offer#{}.source_actions({})",
+                    sender_id,
+                    source_actions
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(source_actions.bits())
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This event indicates the action selected by the compositor after"]
             #[doc = "matching the source/destination side actions. Only one action (or"]
@@ -1370,20 +1309,14 @@ pub mod wayland {
             #[doc = "must happen before the call to wl_data_offer.finish."]
             fn action(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 dnd_action: super::super::super::core::wayland::wl_data_device_manager::DndAction,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_data_offer#{}.action({})", sender_id, dnd_action);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(dnd_action.bits())
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> wl_data_offer#{}.action({})", sender_id, dnd_action);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(dnd_action.bits())
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
         }
     }
@@ -1501,53 +1434,41 @@ pub mod wayland {
             #[doc = "Used for feedback during drag-and-drop."]
             fn target(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: Option<String>,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_data_source#{}.target(\"{}\")",
-                        sender_id,
-                        mime_type
-                            .as_ref()
-                            .map_or("null".to_string(), |v| v.to_string())
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(mime_type)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_data_source#{}.target(\"{}\")",
+                    sender_id,
+                    mime_type
+                        .as_ref()
+                        .map_or("null".to_string(), |v| v.to_string())
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(mime_type)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "Request for data from the client.  Send the data as the"]
             #[doc = "specified mime type over the passed file descriptor, then"]
             #[doc = "close it."]
             fn send(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_data_source#{}.send(\"{}\", {})",
-                        sender_id,
-                        mime_type,
-                        fd.as_raw_fd()
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(mime_type))
-                        .put_fd(fd)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_data_source#{}.send(\"{}\", {})",
+                    sender_id,
+                    mime_type,
+                    fd.as_raw_fd()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(mime_type))
+                    .put_fd(fd)
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This data source is no longer valid. There are several reasons why"]
             #[doc = "this could happen:"]
@@ -1569,19 +1490,10 @@ pub mod wayland {
             #[doc = "For objects of version 2 or older, wl_data_source.cancelled will"]
             #[doc = "only be emitted if the data source was replaced by another data"]
             #[doc = "source."]
-            fn cancelled(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_data_source#{}.cancelled()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn cancelled(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wl_data_source#{}.cancelled()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "The user performed the drop action. This event does not indicate"]
             #[doc = "acceptance, wl_data_source.cancelled may still be emitted afterwards"]
@@ -1592,19 +1504,10 @@ pub mod wayland {
             #[doc = ""]
             #[doc = "Note that the data_source may still be used in the future and should"]
             #[doc = "not be destroyed here."]
-            fn dnd_drop_performed(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_data_source#{}.dnd_drop_performed()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn dnd_drop_performed(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wl_data_source#{}.dnd_drop_performed()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "The drop destination finished interoperating with this data"]
             #[doc = "source, so the client is now free to destroy this data source and"]
@@ -1612,19 +1515,10 @@ pub mod wayland {
             #[doc = ""]
             #[doc = "If the action used to perform the operation was \"move\", the"]
             #[doc = "source can now delete the transferred data."]
-            fn dnd_finished(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_data_source#{}.dnd_finished()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn dnd_finished(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wl_data_source#{}.dnd_finished()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
             #[doc = "This event indicates the action selected by the compositor after"]
             #[doc = "matching the source/destination side actions. Only one action (or"]
@@ -1653,20 +1547,14 @@ pub mod wayland {
             #[doc = "they reflect the current action."]
             fn action(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 dnd_action: super::super::super::core::wayland::wl_data_device_manager::DndAction,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_data_source#{}.action({})", sender_id, dnd_action);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(dnd_action.bits())
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> wl_data_source#{}.action({})", sender_id, dnd_action);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(dnd_action.bits())
+                    .build();
+                crate::wire::Message::new(sender_id, 5u16, payload, fds)
             }
         }
     }
@@ -1825,20 +1713,14 @@ pub mod wayland {
             #[doc = "mime types it offers."]
             fn data_offer(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_data_device#{}.data_offer({})", sender_id, id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(id))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> wl_data_device#{}.data_offer({})", sender_id, id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event is sent when an active drag-and-drop pointer enters"]
             #[doc = "a surface owned by the client.  The position of the pointer at"]
@@ -1846,53 +1728,38 @@ pub mod wayland {
             #[doc = "coordinates."]
             fn enter(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
                 id: Option<crate::wire::ObjectId>,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_data_device#{}.enter({}, {}, {}, {}, {})",
-                        sender_id,
-                        serial,
-                        surface,
-                        x,
-                        y,
-                        id.as_ref().map_or("null".to_string(), |v| v.to_string())
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(serial)
-                        .put_object(Some(surface))
-                        .put_fixed(x)
-                        .put_fixed(y)
-                        .put_object(id)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_data_device#{}.enter({}, {}, {}, {}, {})",
+                    sender_id,
+                    serial,
+                    surface,
+                    x,
+                    y,
+                    id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(surface))
+                    .put_fixed(x)
+                    .put_fixed(y)
+                    .put_object(id)
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This event is sent when the drag-and-drop pointer leaves the"]
             #[doc = "surface and the session ends.  The client must destroy the"]
             #[doc = "wl_data_offer introduced at enter time at this point."]
-            fn leave(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_data_device#{}.leave()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn leave(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wl_data_device#{}.leave()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "This event is sent when the drag-and-drop pointer moves within"]
             #[doc = "the currently focused surface. The new position of the pointer"]
@@ -1900,30 +1767,24 @@ pub mod wayland {
             #[doc = "coordinates."]
             fn motion(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 time: u32,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_data_device#{}.motion({}, {}, {})",
-                        sender_id,
-                        time,
-                        x,
-                        y
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(time)
-                        .put_fixed(x)
-                        .put_fixed(y)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_data_device#{}.motion({}, {}, {})",
+                    sender_id,
+                    time,
+                    x,
+                    y
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_fixed(x)
+                    .put_fixed(y)
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "The event is sent when a drag-and-drop operation is ended"]
             #[doc = "because the implicit grab is removed."]
@@ -1938,19 +1799,10 @@ pub mod wayland {
             #[doc = "final. The drag-and-drop destination is expected to perform one last"]
             #[doc = "wl_data_offer.set_actions request, or wl_data_offer.destroy in order"]
             #[doc = "to cancel the operation."]
-            fn drop(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_data_device#{}.drop()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn drop(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wl_data_device#{}.drop()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
             #[doc = "The selection event is sent out to notify the client of a new"]
             #[doc = "wl_data_offer for the selection for this device.  The"]
@@ -1966,22 +1818,16 @@ pub mod wayland {
             #[doc = "data_offer, if any, upon receiving this event."]
             fn selection(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: Option<crate::wire::ObjectId>,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_data_device#{}.selection({})",
-                        sender_id,
-                        id.as_ref().map_or("null".to_string(), |v| v.to_string())
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_data_device#{}.selection({})",
+                    sender_id,
+                    id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
+                crate::wire::Message::new(sender_id, 5u16, payload, fds)
             }
         }
     }
@@ -2563,21 +2409,10 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Ping a client to check if it is receiving events and sending"]
             #[doc = "requests. A client is expected to reply with a pong request."]
-            fn ping(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                serial: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_shell_surface#{}.ping({})", sender_id, serial);
-                    let (payload, fds) =
-                        crate::wire::PayloadBuilder::new().put_uint(serial).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn ping(&self, sender_id: crate::wire::ObjectId, serial: u32) -> crate::wire::Message {
+                tracing::debug!("-> wl_shell_surface#{}.ping({})", sender_id, serial);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "The configure event asks the client to resize its surface."]
             #[doc = ""]
@@ -2598,47 +2433,32 @@ pub mod wayland {
             #[doc = "in surface-local coordinates."]
             fn configure(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 edges: Resize,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_shell_surface#{}.configure({}, {}, {})",
-                        sender_id,
-                        edges,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(edges.bits())
-                        .put_int(width)
-                        .put_int(height)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_shell_surface#{}.configure({}, {}, {})",
+                    sender_id,
+                    edges,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(edges.bits())
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "The popup_done event is sent out when a popup grab is broken,"]
             #[doc = "that is, when the user clicks a surface that doesn't belong"]
             #[doc = "to the client owning the popup surface."]
-            fn popup_done(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_shell_surface#{}.popup_done()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn popup_done(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wl_shell_surface#{}.popup_done()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
         }
     }
@@ -3204,20 +3024,14 @@ pub mod wayland {
             #[doc = "Note that a surface may be overlapping with zero or more outputs."]
             fn enter(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_surface#{}.enter({})", sender_id, output);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(output))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> wl_surface#{}.enter({})", sender_id, output);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This is emitted whenever a surface's creation, movement, or resizing"]
             #[doc = "results in it no longer having any part of it within the scanout region"]
@@ -3230,20 +3044,14 @@ pub mod wayland {
             #[doc = "used instead."]
             fn leave(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_surface#{}.leave({})", sender_id, output);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(output))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> wl_surface#{}.leave({})", sender_id, output);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This event indicates the preferred buffer scale for this surface. It is"]
             #[doc = "sent whenever the compositor's preference changes."]
@@ -3259,22 +3067,16 @@ pub mod wayland {
             #[doc = "The compositor shall emit a scale value greater than 0."]
             fn preferred_buffer_scale(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 factor: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_surface#{}.preferred_buffer_scale({})",
-                        sender_id,
-                        factor
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(factor).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_surface#{}.preferred_buffer_scale({})",
+                    sender_id,
+                    factor
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(factor).build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "This event indicates the preferred buffer transform for this surface."]
             #[doc = "It is sent whenever the compositor's preference changes."]
@@ -3287,24 +3089,18 @@ pub mod wayland {
             #[doc = "surface buffer more efficiently."]
             fn preferred_buffer_transform(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_surface#{}.preferred_buffer_transform({})",
-                        sender_id,
-                        transform
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(transform as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_surface#{}.preferred_buffer_transform({})",
+                    sender_id,
+                    transform
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(transform as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
         }
     }
@@ -3467,20 +3263,14 @@ pub mod wayland {
             #[doc = "keyboard and touch capabilities, respectively."]
             fn capabilities(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 capabilities: Capability,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_seat#{}.capabilities({})", sender_id, capabilities);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(capabilities.bits())
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> wl_seat#{}.capabilities({})", sender_id, capabilities);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(capabilities.bits())
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "In a multi-seat configuration the seat name can be used by clients to"]
             #[doc = "help identify which physical devices the seat represents."]
@@ -3498,22 +3288,12 @@ pub mod wayland {
             #[doc = ""]
             #[doc = "Compositors may re-use the same seat name if the wl_seat global is"]
             #[doc = "destroyed and re-created later."]
-            fn name(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                name: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_seat#{}.name(\"{}\")", sender_id, name);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(name))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn name(&self, sender_id: crate::wire::ObjectId, name: String) -> crate::wire::Message {
+                tracing::debug!("-> wl_seat#{}.name(\"{}\")", sender_id, name);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -3774,33 +3554,27 @@ pub mod wayland {
             #[doc = "an appropriate pointer image with the set_cursor request."]
             fn enter(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
                 surface_x: crate::wire::Fixed,
                 surface_y: crate::wire::Fixed,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_pointer#{}.enter({}, {}, {}, {})",
-                        sender_id,
-                        serial,
-                        surface,
-                        surface_x,
-                        surface_y
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(serial)
-                        .put_object(Some(surface))
-                        .put_fixed(surface_x)
-                        .put_fixed(surface_y)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_pointer#{}.enter({}, {}, {}, {})",
+                    sender_id,
+                    serial,
+                    surface,
+                    surface_x,
+                    surface_y
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(surface))
+                    .put_fixed(surface_x)
+                    .put_fixed(surface_y)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "Notification that this seat's pointer is no longer focused on"]
             #[doc = "a certain surface."]
@@ -3809,52 +3583,40 @@ pub mod wayland {
             #[doc = "for the new focus."]
             fn leave(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_pointer#{}.leave({}, {})", sender_id, serial, surface);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(serial)
-                        .put_object(Some(surface))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> wl_pointer#{}.leave({}, {})", sender_id, serial, surface);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(surface))
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "Notification of pointer location change. The arguments"]
             #[doc = "surface_x and surface_y are the location relative to the"]
             #[doc = "focused surface."]
             fn motion(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 time: u32,
                 surface_x: crate::wire::Fixed,
                 surface_y: crate::wire::Fixed,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_pointer#{}.motion({}, {}, {})",
-                        sender_id,
-                        time,
-                        surface_x,
-                        surface_y
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(time)
-                        .put_fixed(surface_x)
-                        .put_fixed(surface_y)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_pointer#{}.motion({}, {}, {})",
+                    sender_id,
+                    time,
+                    surface_x,
+                    surface_y
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_fixed(surface_x)
+                    .put_fixed(surface_y)
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "Mouse button click and release notifications."]
             #[doc = ""]
@@ -3872,33 +3634,27 @@ pub mod wayland {
             #[doc = "protocol."]
             fn button(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
                 button: u32,
                 state: ButtonState,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_pointer#{}.button({}, {}, {}, {})",
-                        sender_id,
-                        serial,
-                        time,
-                        button,
-                        state
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(serial)
-                        .put_uint(time)
-                        .put_uint(button)
-                        .put_uint(state as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_pointer#{}.button({}, {}, {}, {})",
+                    sender_id,
+                    serial,
+                    time,
+                    button,
+                    state
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(time)
+                    .put_uint(button)
+                    .put_uint(state as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "Scroll and other axis notifications."]
             #[doc = ""]
@@ -3918,30 +3674,24 @@ pub mod wayland {
             #[doc = "scroll distance."]
             fn axis(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 time: u32,
                 axis: Axis,
                 value: crate::wire::Fixed,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_pointer#{}.axis({}, {}, {})",
-                        sender_id,
-                        time,
-                        axis,
-                        value
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(time)
-                        .put_uint(axis as u32)
-                        .put_fixed(value)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_pointer#{}.axis({}, {}, {})",
+                    sender_id,
+                    time,
+                    axis,
+                    value
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_uint(axis as u32)
+                    .put_fixed(value)
+                    .build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
             #[doc = "Indicates the end of a set of events that logically belong together."]
             #[doc = "A client is expected to accumulate the data in all events within the"]
@@ -3977,19 +3727,10 @@ pub mod wayland {
             #[doc = "Compositor-specific policies may require the wl_pointer.leave and"]
             #[doc = "wl_pointer.enter event being split across multiple wl_pointer.frame"]
             #[doc = "groups."]
-            fn frame(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_pointer#{}.frame()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn frame(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wl_pointer#{}.frame()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 5u16, payload, fds)
             }
             #[doc = "Source information for scroll and other axes."]
             #[doc = ""]
@@ -4018,20 +3759,14 @@ pub mod wayland {
             #[doc = "not guaranteed."]
             fn axis_source(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 axis_source: AxisSource,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_pointer#{}.axis_source({})", sender_id, axis_source);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(axis_source as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> wl_pointer#{}.axis_source({})", sender_id, axis_source);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(axis_source as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 6u16, payload, fds)
             }
             #[doc = "Stop notification for scroll and other axes."]
             #[doc = ""]
@@ -4049,22 +3784,16 @@ pub mod wayland {
             #[doc = "preceding wl_pointer.axis event."]
             fn axis_stop(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 time: u32,
                 axis: Axis,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_pointer#{}.axis_stop({}, {})", sender_id, time, axis);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(time)
-                        .put_uint(axis as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> wl_pointer#{}.axis_stop({}, {})", sender_id, time, axis);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_uint(axis as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 7u16, payload, fds)
             }
             #[doc = "Discrete step information for scroll and other axes."]
             #[doc = ""]
@@ -4098,27 +3827,21 @@ pub mod wayland {
             #[doc = "not guaranteed."]
             fn axis_discrete(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 axis: Axis,
                 discrete: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_pointer#{}.axis_discrete({}, {})",
-                        sender_id,
-                        axis,
-                        discrete
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(axis as u32)
-                        .put_int(discrete)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_pointer#{}.axis_discrete({}, {})",
+                    sender_id,
+                    axis,
+                    discrete
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(axis as u32)
+                    .put_int(discrete)
+                    .build();
+                crate::wire::Message::new(sender_id, 8u16, payload, fds)
             }
             #[doc = "Discrete high-resolution scroll information."]
             #[doc = ""]
@@ -4143,27 +3866,21 @@ pub mod wayland {
             #[doc = "not guaranteed."]
             fn axis_value120(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 axis: Axis,
                 value120: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_pointer#{}.axis_value120({}, {})",
-                        sender_id,
-                        axis,
-                        value120
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(axis as u32)
-                        .put_int(value120)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_pointer#{}.axis_value120({}, {})",
+                    sender_id,
+                    axis,
+                    value120
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(axis as u32)
+                    .put_int(value120)
+                    .build();
+                crate::wire::Message::new(sender_id, 9u16, payload, fds)
             }
             #[doc = "Relative directional information of the entity causing the axis"]
             #[doc = "motion."]
@@ -4202,27 +3919,21 @@ pub mod wayland {
             #[doc = "guaranteed."]
             fn axis_relative_direction(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 axis: Axis,
                 direction: AxisRelativeDirection,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_pointer#{}.axis_relative_direction({}, {})",
-                        sender_id,
-                        axis,
-                        direction
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(axis as u32)
-                        .put_uint(direction as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_pointer#{}.axis_relative_direction({}, {})",
+                    sender_id,
+                    axis,
+                    direction
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(axis as u32)
+                    .put_uint(direction as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 10u16, payload, fds)
             }
         }
     }
@@ -4327,30 +4038,24 @@ pub mod wayland {
             #[doc = "the recipient, as MAP_SHARED may fail."]
             fn keymap(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 format: KeymapFormat,
                 fd: rustix::fd::OwnedFd,
                 size: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_keyboard#{}.keymap({}, {}, {})",
-                        sender_id,
-                        format,
-                        fd.as_raw_fd(),
-                        size
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(format as u32)
-                        .put_fd(fd)
-                        .put_uint(size)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_keyboard#{}.keymap({}, {}, {})",
+                    sender_id,
+                    format,
+                    fd.as_raw_fd(),
+                    size
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(format as u32)
+                    .put_fd(fd)
+                    .put_uint(size)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "Notification that this seat's keyboard focus is on a certain"]
             #[doc = "surface."]
@@ -4364,30 +4069,24 @@ pub mod wayland {
             #[doc = "wl_keyboard already had an active surface immediately before this event."]
             fn enter(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
                 keys: Vec<u8>,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_keyboard#{}.enter({}, {}, array[{}])",
-                        sender_id,
-                        serial,
-                        surface,
-                        keys.len()
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(serial)
-                        .put_object(Some(surface))
-                        .put_array(keys)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_keyboard#{}.enter({}, {}, array[{}])",
+                    sender_id,
+                    serial,
+                    surface,
+                    keys.len()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(surface))
+                    .put_array(keys)
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "Notification that this seat's keyboard focus is no longer on"]
             #[doc = "a certain surface."]
@@ -4401,27 +4100,21 @@ pub mod wayland {
             #[doc = "before this event."]
             fn leave(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_keyboard#{}.leave({}, {})",
-                        sender_id,
-                        serial,
-                        surface
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(serial)
-                        .put_object(Some(surface))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_keyboard#{}.leave({}, {})",
+                    sender_id,
+                    serial,
+                    surface
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_object(Some(surface))
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "A key was pressed or released."]
             #[doc = "The time argument is a timestamp with millisecond"]
@@ -4443,33 +4136,27 @@ pub mod wayland {
             #[doc = "immediately before this event."]
             fn key(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
                 key: u32,
                 state: KeyState,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_keyboard#{}.key({}, {}, {}, {})",
-                        sender_id,
-                        serial,
-                        time,
-                        key,
-                        state
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(serial)
-                        .put_uint(time)
-                        .put_uint(key)
-                        .put_uint(state as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_keyboard#{}.key({}, {}, {}, {})",
+                    sender_id,
+                    serial,
+                    time,
+                    key,
+                    state
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(time)
+                    .put_uint(key)
+                    .put_uint(state as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "Notifies clients that the modifier and/or group state has"]
             #[doc = "changed, and it should update its local state."]
@@ -4486,36 +4173,30 @@ pub mod wayland {
             #[doc = "group."]
             fn modifiers(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 mods_depressed: u32,
                 mods_latched: u32,
                 mods_locked: u32,
                 group: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_keyboard#{}.modifiers({}, {}, {}, {}, {})",
-                        sender_id,
-                        serial,
-                        mods_depressed,
-                        mods_latched,
-                        mods_locked,
-                        group
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(serial)
-                        .put_uint(mods_depressed)
-                        .put_uint(mods_latched)
-                        .put_uint(mods_locked)
-                        .put_uint(group)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_keyboard#{}.modifiers({}, {}, {}, {}, {})",
+                    sender_id,
+                    serial,
+                    mods_depressed,
+                    mods_latched,
+                    mods_locked,
+                    group
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(mods_depressed)
+                    .put_uint(mods_latched)
+                    .put_uint(mods_locked)
+                    .put_uint(group)
+                    .build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
             #[doc = "Informs the client about the keyboard's repeat rate and delay."]
             #[doc = ""]
@@ -4531,27 +4212,21 @@ pub mod wayland {
             #[doc = "of wl_keyboard."]
             fn repeat_info(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 rate: i32,
                 delay: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_keyboard#{}.repeat_info({}, {})",
-                        sender_id,
-                        rate,
-                        delay
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_int(rate)
-                        .put_int(delay)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_keyboard#{}.repeat_info({}, {})",
+                    sender_id,
+                    rate,
+                    delay
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(rate)
+                    .put_int(delay)
+                    .build();
+                crate::wire::Message::new(sender_id, 5u16, payload, fds)
             }
         }
     }
@@ -4599,7 +4274,6 @@ pub mod wayland {
             #[doc = "reused in the future."]
             fn down(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
@@ -4607,86 +4281,69 @@ pub mod wayland {
                 id: i32,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_touch#{}.down({}, {}, {}, {}, {}, {})",
-                        sender_id,
-                        serial,
-                        time,
-                        surface,
-                        id,
-                        x,
-                        y
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(serial)
-                        .put_uint(time)
-                        .put_object(Some(surface))
-                        .put_int(id)
-                        .put_fixed(x)
-                        .put_fixed(y)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_touch#{}.down({}, {}, {}, {}, {}, {})",
+                    sender_id,
+                    serial,
+                    time,
+                    surface,
+                    id,
+                    x,
+                    y
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(time)
+                    .put_object(Some(surface))
+                    .put_int(id)
+                    .put_fixed(x)
+                    .put_fixed(y)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "The touch point has disappeared. No further events will be sent for"]
             #[doc = "this touch point and the touch point's ID is released and may be"]
             #[doc = "reused in a future touch down event."]
             fn up(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
                 id: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_touch#{}.up({}, {}, {})", sender_id, serial, time, id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(serial)
-                        .put_uint(time)
-                        .put_int(id)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> wl_touch#{}.up({}, {}, {})", sender_id, serial, time, id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(time)
+                    .put_int(id)
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "A touch point has changed coordinates."]
             fn motion(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 time: u32,
                 id: i32,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_touch#{}.motion({}, {}, {}, {})",
-                        sender_id,
-                        time,
-                        id,
-                        x,
-                        y
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(time)
-                        .put_int(id)
-                        .put_fixed(x)
-                        .put_fixed(y)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_touch#{}.motion({}, {}, {}, {})",
+                    sender_id,
+                    time,
+                    id,
+                    x,
+                    y
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(time)
+                    .put_int(id)
+                    .put_fixed(x)
+                    .put_fixed(y)
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "Indicates the end of a set of events that logically belong together."]
             #[doc = "A client is expected to accumulate the data in all events within the"]
@@ -4696,19 +4353,10 @@ pub mod wayland {
             #[doc = "guarantee is provided about the set of events within a frame. A client"]
             #[doc = "must assume that any state not updated in a frame is unchanged from the"]
             #[doc = "previously known state."]
-            fn frame(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_touch#{}.frame()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn frame(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wl_touch#{}.frame()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "Sent if the compositor decides the touch stream is a global"]
             #[doc = "gesture. No further events are sent to the clients from that"]
@@ -4718,19 +4366,10 @@ pub mod wayland {
             #[doc = "this surface may reuse the touch point ID."]
             #[doc = ""]
             #[doc = "No frame event is required after the cancel event."]
-            fn cancel(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_touch#{}.cancel()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn cancel(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wl_touch#{}.cancel()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
             #[doc = "Sent when a touchpoint has changed its shape."]
             #[doc = ""]
@@ -4759,30 +4398,24 @@ pub mod wayland {
             #[doc = "shape if it did not receive this event."]
             fn shape(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: i32,
                 major: crate::wire::Fixed,
                 minor: crate::wire::Fixed,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_touch#{}.shape({}, {}, {})",
-                        sender_id,
-                        id,
-                        major,
-                        minor
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_int(id)
-                        .put_fixed(major)
-                        .put_fixed(minor)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_touch#{}.shape({}, {}, {})",
+                    sender_id,
+                    id,
+                    major,
+                    minor
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(id)
+                    .put_fixed(major)
+                    .put_fixed(minor)
+                    .build();
+                crate::wire::Message::new(sender_id, 5u16, payload, fds)
             }
             #[doc = "Sent when a touchpoint has changed its orientation."]
             #[doc = ""]
@@ -4809,27 +4442,21 @@ pub mod wayland {
             #[doc = "orientation reports."]
             fn orientation(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: i32,
                 orientation: crate::wire::Fixed,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_touch#{}.orientation({}, {})",
-                        sender_id,
-                        id,
-                        orientation
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_int(id)
-                        .put_fixed(orientation)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_touch#{}.orientation({}, {})",
+                    sender_id,
+                    id,
+                    orientation
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(id)
+                    .put_fixed(orientation)
+                    .build();
+                crate::wire::Message::new(sender_id, 6u16, payload, fds)
             }
         }
     }
@@ -4995,7 +4622,6 @@ pub mod wayland {
             #[doc = "clients should use name and description."]
             fn geometry(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -5005,35 +4631,30 @@ pub mod wayland {
                 make: String,
                 model: String,
                 transform: Transform,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_output#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
-                        sender_id,
-                        x,
-                        y,
-                        physical_width,
-                        physical_height,
-                        subpixel,
-                        make,
-                        model,
-                        transform
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_int(x)
-                        .put_int(y)
-                        .put_int(physical_width)
-                        .put_int(physical_height)
-                        .put_uint(subpixel as u32)
-                        .put_string(Some(make))
-                        .put_string(Some(model))
-                        .put_uint(transform as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_output#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
+                    sender_id,
+                    x,
+                    y,
+                    physical_width,
+                    physical_height,
+                    subpixel,
+                    make,
+                    model,
+                    transform
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .put_int(physical_width)
+                    .put_int(physical_height)
+                    .put_uint(subpixel as u32)
+                    .put_string(Some(make))
+                    .put_string(Some(model))
+                    .put_uint(transform as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "The mode event describes an available mode for the output."]
             #[doc = ""]
@@ -5070,52 +4691,37 @@ pub mod wayland {
             #[doc = "refresh rate or the size."]
             fn mode(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 flags: Mode,
                 width: i32,
                 height: i32,
                 refresh: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_output#{}.mode({}, {}, {}, {})",
-                        sender_id,
-                        flags,
-                        width,
-                        height,
-                        refresh
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(flags.bits())
-                        .put_int(width)
-                        .put_int(height)
-                        .put_int(refresh)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_output#{}.mode({}, {}, {}, {})",
+                    sender_id,
+                    flags,
+                    width,
+                    height,
+                    refresh
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(flags.bits())
+                    .put_int(width)
+                    .put_int(height)
+                    .put_int(refresh)
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This event is sent after all other properties have been"]
             #[doc = "sent after binding to the output object and after any"]
             #[doc = "other property changes done after that. This allows"]
             #[doc = "changes to the output properties to be seen as"]
             #[doc = "atomic, even if they happen via multiple events."]
-            fn done(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_output#{}.done()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn done(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wl_output#{}.done()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "This event contains scaling geometry information"]
             #[doc = "that is not in the geometry event. It may be sent after"]
@@ -5135,20 +4741,10 @@ pub mod wayland {
             #[doc = "scale to use for a surface."]
             #[doc = ""]
             #[doc = "The scale event will be followed by a done event."]
-            fn scale(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                factor: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_output#{}.scale({})", sender_id, factor);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(factor).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn scale(&self, sender_id: crate::wire::ObjectId, factor: i32) -> crate::wire::Message {
+                tracing::debug!("-> wl_output#{}.scale({})", sender_id, factor);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(factor).build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "Many compositors will assign user-friendly names to their outputs, show"]
             #[doc = "them to the user, allow the user to refer to an output, etc. The client"]
@@ -5178,22 +4774,12 @@ pub mod wayland {
             #[doc = "same name if possible."]
             #[doc = ""]
             #[doc = "The name event will be followed by a done event."]
-            fn name(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                name: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wl_output#{}.name(\"{}\")", sender_id, name);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(name))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn name(&self, sender_id: crate::wire::ObjectId, name: String) -> crate::wire::Message {
+                tracing::debug!("-> wl_output#{}.name(\"{}\")", sender_id, name);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
             #[doc = "Many compositors can produce human-readable descriptions of their"]
             #[doc = "outputs. The client may wish to know this description as well, e.g. for"]
@@ -5211,24 +4797,18 @@ pub mod wayland {
             #[doc = "The description event will be followed by a done event."]
             fn description(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 description: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wl_output#{}.description(\"{}\")",
-                        sender_id,
-                        description
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(description))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wl_output#{}.description(\"{}\")",
+                    sender_id,
+                    description
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(description))
+                    .build();
+                crate::wire::Message::new(sender_id, 5u16, payload, fds)
             }
         }
     }

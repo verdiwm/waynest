@@ -662,111 +662,78 @@ pub mod color_management_v1 {
             #[doc = "for each rendering intent the compositor supports."]
             fn supported_intent(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 render_intent: RenderIntent,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_color_manager_v1#{}.supported_intent({})",
-                        sender_id,
-                        render_intent
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(render_intent as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_color_manager_v1#{}.supported_intent({})",
+                    sender_id,
+                    render_intent
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(render_intent as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each compositor supported feature listed in the enumeration."]
             fn supported_feature(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 feature: Feature,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_color_manager_v1#{}.supported_feature({})",
-                        sender_id,
-                        feature
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(feature as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_color_manager_v1#{}.supported_feature({})",
+                    sender_id,
+                    feature
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(feature as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each named transfer function the compositor supports with the"]
             #[doc = "parametric image description creator."]
             fn supported_tf_named(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 tf: TransferFunction,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_color_manager_v1#{}.supported_tf_named({})",
-                        sender_id,
-                        tf
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(tf as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_color_manager_v1#{}.supported_tf_named({})",
+                    sender_id,
+                    tf
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(tf as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each named set of primaries the compositor supports with the"]
             #[doc = "parametric image description creator."]
             fn supported_primaries_named(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 primaries: Primaries,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_color_manager_v1#{}.supported_primaries_named({})",
-                        sender_id,
-                        primaries
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(primaries as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_color_manager_v1#{}.supported_primaries_named({})",
+                    sender_id,
+                    primaries
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(primaries as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "This event is sent when all supported rendering intents, features,"]
             #[doc = "transfer functions and named primaries have been sent."]
-            fn done(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wp_color_manager_v1#{}.done()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn done(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wp_color_manager_v1#{}.done()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
         }
     }
@@ -870,20 +837,14 @@ pub mod color_management_v1 {
             #[doc = "immutable."]
             fn image_description_changed(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_color_management_output_v1#{}.image_description_changed()",
-                        sender_id,
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_color_management_output_v1#{}.image_description_changed()",
+                    sender_id,
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
         }
     }
@@ -1195,24 +1156,18 @@ pub mod color_management_v1 {
             #[doc = "to the preferred image description"]
             fn preferred_changed(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 identity: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_color_management_surface_feedback_v1#{}.preferred_changed({})",
-                        sender_id,
-                        identity
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(identity)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_color_management_surface_feedback_v1#{}.preferred_changed({})",
+                    sender_id,
+                    identity
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(identity)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
         }
     }
@@ -2044,27 +1999,21 @@ pub mod color_management_v1 {
             #[doc = "never become ready and it can only be destroyed."]
             fn failed(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 cause: Cause,
                 msg: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_image_description_v1#{}.failed({}, \"{}\")",
-                        sender_id,
-                        cause,
-                        msg
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(cause as u32)
-                        .put_string(Some(msg))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_image_description_v1#{}.failed({}, \"{}\")",
+                    sender_id,
+                    cause,
+                    msg
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(cause as u32)
+                    .put_string(Some(msg))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "Once this event has been sent, the wp_image_description_v1 object is"]
             #[doc = "deemed \"ready\". Ready objects can be used to send requests and can be"]
@@ -2095,24 +2044,18 @@ pub mod color_management_v1 {
             #[doc = "description information."]
             fn ready(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 identity: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_image_description_v1#{}.ready({})",
-                        sender_id,
-                        identity
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(identity)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_image_description_v1#{}.ready({})",
+                    sender_id,
+                    identity
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(identity)
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -2160,19 +2103,10 @@ pub mod color_management_v1 {
                 }
             }
             #[doc = "Signals the end of information events and destroys the object."]
-            fn done(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wp_image_description_info_v1#{}.done()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn done(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wp_image_description_info_v1#{}.done()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "The icc argument provides a file descriptor to the client which may be"]
             #[doc = "memory-mapped to provide the ICC profile matching the image description."]
@@ -2184,27 +2118,21 @@ pub mod color_management_v1 {
             #[doc = "kind of a profile."]
             fn icc_file(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 icc: rustix::fd::OwnedFd,
                 icc_size: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_image_description_info_v1#{}.icc_file({}, {})",
-                        sender_id,
-                        icc.as_raw_fd(),
-                        icc_size
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_fd(icc)
-                        .put_uint(icc_size)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_image_description_info_v1#{}.icc_file({}, {})",
+                    sender_id,
+                    icc.as_raw_fd(),
+                    icc_size
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_fd(icc)
+                    .put_uint(icc_size)
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "Delivers the primary color volume primaries and white point using CIE"]
             #[doc = "1931 xy chromaticity coordinates."]
@@ -2213,7 +2141,6 @@ pub mod color_management_v1 {
             #[doc = "value to carry precision of 6 decimals."]
             fn primaries(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 r_x: i32,
                 r_y: i32,
@@ -2223,58 +2150,47 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_image_description_info_v1#{}.primaries({}, {}, {}, {}, {}, {}, {}, {})",
-                        sender_id,
-                        r_x,
-                        r_y,
-                        g_x,
-                        g_y,
-                        b_x,
-                        b_y,
-                        w_x,
-                        w_y
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_int(r_x)
-                        .put_int(r_y)
-                        .put_int(g_x)
-                        .put_int(g_y)
-                        .put_int(b_x)
-                        .put_int(b_y)
-                        .put_int(w_x)
-                        .put_int(w_y)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_image_description_info_v1#{}.primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                    sender_id,
+                    r_x,
+                    r_y,
+                    g_x,
+                    g_y,
+                    b_x,
+                    b_y,
+                    w_x,
+                    w_y
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(r_x)
+                    .put_int(r_y)
+                    .put_int(g_x)
+                    .put_int(g_y)
+                    .put_int(b_x)
+                    .put_int(b_y)
+                    .put_int(w_x)
+                    .put_int(w_y)
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "Delivers the primary color volume primaries and white point using an"]
             #[doc = "explicitly enumerated named set."]
             fn primaries_named(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 primaries : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: Primaries,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_image_description_info_v1#{}.primaries_named({})",
-                        sender_id,
-                        primaries
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(primaries as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_image_description_info_v1#{}.primaries_named({})",
+                    sender_id,
+                    primaries
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(primaries as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "The color component transfer characteristic of this image description is"]
             #[doc = "a pure power curve. This event provides the exponent of the power"]
@@ -2285,45 +2201,33 @@ pub mod color_management_v1 {
             #[doc = "value to carry the precision of 4 decimals."]
             fn tf_power(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 eexp: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_image_description_info_v1#{}.tf_power({})",
-                        sender_id,
-                        eexp
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(eexp).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_image_description_info_v1#{}.tf_power({})",
+                    sender_id,
+                    eexp
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(eexp).build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
             #[doc = "Delivers the transfer characteristic using an explicitly enumerated"]
             #[doc = "named function."]
             fn tf_named(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 tf : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: TransferFunction,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_image_description_info_v1#{}.tf_named({})",
-                        sender_id,
-                        tf
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(tf as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_image_description_info_v1#{}.tf_named({})",
+                    sender_id,
+                    tf
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(tf as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 5u16, payload, fds)
             }
             #[doc = "Delivers the primary color volume luminance range and the reference"]
             #[doc = "white luminance level. These values include the minimum display emission"]
@@ -2335,30 +2239,24 @@ pub mod color_management_v1 {
             #[doc = "luminance and reference white luminance values are unscaled."]
             fn luminances(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
                 reference_lum: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_image_description_info_v1#{}.luminances({}, {}, {})",
-                        sender_id,
-                        min_lum,
-                        max_lum,
-                        reference_lum
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(min_lum)
-                        .put_uint(max_lum)
-                        .put_uint(reference_lum)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_image_description_info_v1#{}.luminances({}, {}, {})",
+                    sender_id,
+                    min_lum,
+                    max_lum,
+                    reference_lum
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(min_lum)
+                    .put_uint(max_lum)
+                    .put_uint(reference_lum)
+                    .build();
+                crate::wire::Message::new(sender_id, 6u16, payload, fds)
             }
             #[doc = "Provides the color primaries and white point of the target color volume"]
             #[doc = "using CIE 1931 xy chromaticity coordinates. This is compatible with the"]
@@ -2373,7 +2271,6 @@ pub mod color_management_v1 {
             #[doc = "value to carry precision of 6 decimals."]
             fn target_primaries(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 r_x: i32,
                 r_y: i32,
@@ -2383,35 +2280,30 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_image_description_info_v1#{}.target_primaries({}, {}, {}, {}, {}, {}, {}, {})",
-                        sender_id,
-                        r_x,
-                        r_y,
-                        g_x,
-                        g_y,
-                        b_x,
-                        b_y,
-                        w_x,
-                        w_y
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_int(r_x)
-                        .put_int(r_y)
-                        .put_int(g_x)
-                        .put_int(g_y)
-                        .put_int(b_x)
-                        .put_int(b_y)
-                        .put_int(w_x)
-                        .put_int(w_y)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_image_description_info_v1#{}.target_primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                    sender_id,
+                    r_x,
+                    r_y,
+                    g_x,
+                    g_y,
+                    b_x,
+                    b_y,
+                    w_x,
+                    w_y
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(r_x)
+                    .put_int(r_y)
+                    .put_int(g_x)
+                    .put_int(g_y)
+                    .put_int(b_x)
+                    .put_int(b_y)
+                    .put_int(w_x)
+                    .put_int(w_y)
+                    .build();
+                crate::wire::Message::new(sender_id, 7u16, payload, fds)
             }
             #[doc = "Provides the luminance range that the image description is targeting as"]
             #[doc = "the minimum and maximum absolute luminance L. These values include the"]
@@ -2427,27 +2319,21 @@ pub mod color_management_v1 {
             #[doc = "carry precision of 4 decimals. Max L value is unscaled for max_lum."]
             fn target_luminance(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_image_description_info_v1#{}.target_luminance({}, {})",
-                        sender_id,
-                        min_lum,
-                        max_lum
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(min_lum)
-                        .put_uint(max_lum)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_image_description_info_v1#{}.target_luminance({}, {})",
+                    sender_id,
+                    min_lum,
+                    max_lum
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(min_lum)
+                    .put_uint(max_lum)
+                    .build();
+                crate::wire::Message::new(sender_id, 8u16, payload, fds)
             }
             #[doc = "Provides the targeted max_cll of the image description. max_cll is"]
             #[doc = "defined by CTA-861-H."]
@@ -2456,23 +2342,16 @@ pub mod color_management_v1 {
             #[doc = "luminance of light emitted on an actual display."]
             fn target_max_cll(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 max_cll: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_image_description_info_v1#{}.target_max_cll({})",
-                        sender_id,
-                        max_cll
-                    );
-                    let (payload, fds) =
-                        crate::wire::PayloadBuilder::new().put_uint(max_cll).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_image_description_info_v1#{}.target_max_cll({})",
+                    sender_id,
+                    max_cll
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(max_cll).build();
+                crate::wire::Message::new(sender_id, 9u16, payload, fds)
             }
             #[doc = "Provides the targeted max_fall of the image description. max_fall is"]
             #[doc = "defined by CTA-861-H."]
@@ -2481,24 +2360,18 @@ pub mod color_management_v1 {
             #[doc = "luminance of light emitted on an actual display."]
             fn target_max_fall(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 max_fall: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_image_description_info_v1#{}.target_max_fall({})",
-                        sender_id,
-                        max_fall
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(max_fall)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_image_description_info_v1#{}.target_max_fall({})",
+                    sender_id,
+                    max_fall
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(max_fall)
+                    .build();
+                crate::wire::Message::new(sender_id, 10u16, payload, fds)
             }
         }
     }
@@ -3313,22 +3186,16 @@ pub mod drm_lease_v1 {
             #[doc = "appropriate DRM device or select the appropriate connectors therein."]
             fn drm_fd(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 fd: rustix::fd::OwnedFd,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_drm_lease_device_v1#{}.drm_fd({})",
-                        sender_id,
-                        fd.as_raw_fd()
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(fd).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_drm_lease_device_v1#{}.drm_fd({})",
+                    sender_id,
+                    fd.as_raw_fd()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(fd).build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "The compositor will use this event to advertise connectors available for"]
             #[doc = "lease by clients. This object may be passed into a lease request to"]
@@ -3342,20 +3209,14 @@ pub mod drm_lease_v1 {
             #[doc = "send additional connectors at any time."]
             fn connector(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wp_drm_lease_device_v1#{}.connector({})", sender_id, id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(id))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> wp_drm_lease_device_v1#{}.connector({})", sender_id, id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "The compositor will send this event to indicate that it has sent all"]
             #[doc = "currently available connectors after the client binds to the global or"]
@@ -3363,38 +3224,20 @@ pub mod drm_lease_v1 {
             #[doc = "change or when a leased connector becomes available again. It will"]
             #[doc = "similarly send this event to group wp_drm_lease_connector_v1.withdrawn"]
             #[doc = "events of connectors of this device."]
-            fn done(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wp_drm_lease_device_v1#{}.done()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn done(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wp_drm_lease_device_v1#{}.done()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "This event is sent in response to the release request and indicates"]
             #[doc = "that the compositor is done sending connector events."]
             #[doc = "The compositor will destroy this object immediately after sending the"]
             #[doc = "event and it will become invalid. The client should release any"]
             #[doc = "resources associated with this device after receiving this event."]
-            fn released(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wp_drm_lease_device_v1#{}.released()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn released(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wp_drm_lease_device_v1#{}.released()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
         }
     }
@@ -3448,26 +3291,16 @@ pub mod drm_lease_v1 {
             #[doc = "If the compositor supports wl_output version 4 and this connector"]
             #[doc = "corresponds to a wl_output, the compositor should use the same name as"]
             #[doc = "for the wl_output."]
-            fn name(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                name: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_drm_lease_connector_v1#{}.name(\"{}\")",
-                        sender_id,
-                        name
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(name))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn name(&self, sender_id: crate::wire::ObjectId, name: String) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_drm_lease_connector_v1#{}.name(\"{}\")",
+                    sender_id,
+                    name
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "The compositor sends this event once the connector is created to provide"]
             #[doc = "a human-readable description for this connector, which may be presented"]
@@ -3475,24 +3308,18 @@ pub mod drm_lease_v1 {
             #[doc = "lifetime of this object to reflect changes in the description."]
             fn description(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 description: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_drm_lease_connector_v1#{}.description(\"{}\")",
-                        sender_id,
-                        description
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(description))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_drm_lease_connector_v1#{}.description(\"{}\")",
+                    sender_id,
+                    description
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(description))
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "The compositor sends this event once the connector is created to"]
             #[doc = "indicate the DRM object ID which represents the underlying connector"]
@@ -3500,41 +3327,26 @@ pub mod drm_lease_v1 {
             #[doc = "object IDs, such as CRTCs and planes."]
             fn connector_id(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 connector_id: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_drm_lease_connector_v1#{}.connector_id({})",
-                        sender_id,
-                        connector_id
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(connector_id)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_drm_lease_connector_v1#{}.connector_id({})",
+                    sender_id,
+                    connector_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(connector_id)
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "This event is sent after all properties of a connector have been sent."]
             #[doc = "This allows changes to the properties to be seen as atomic even if they"]
             #[doc = "happen via multiple events."]
-            fn done(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wp_drm_lease_connector_v1#{}.done()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn done(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wp_drm_lease_connector_v1#{}.done()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "Sent to indicate that the compositor will no longer honor requests for"]
             #[doc = "DRM leases which include this connector. The client may still issue a"]
@@ -3547,19 +3359,10 @@ pub mod drm_lease_v1 {
             #[doc = "If a client holds a lease for the connector, the status of the lease"]
             #[doc = "remains the same. The client should destroy the object after receiving"]
             #[doc = "this event."]
-            fn withdrawn(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wp_drm_lease_connector_v1#{}.withdrawn()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn withdrawn(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wp_drm_lease_connector_v1#{}.withdrawn()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
         }
     }
@@ -3721,23 +3524,16 @@ pub mod drm_lease_v1 {
             #[doc = "lifetime."]
             fn lease_fd(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 leased_fd: rustix::fd::OwnedFd,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_drm_lease_v1#{}.lease_fd({})",
-                        sender_id,
-                        leased_fd.as_raw_fd()
-                    );
-                    let (payload, fds) =
-                        crate::wire::PayloadBuilder::new().put_fd(leased_fd).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_drm_lease_v1#{}.lease_fd({})",
+                    sender_id,
+                    leased_fd.as_raw_fd()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(leased_fd).build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "The compositor uses this event to either reject a lease request, or if"]
             #[doc = "it previously sent a lease_fd, to notify the client that the lease has"]
@@ -3749,19 +3545,10 @@ pub mod drm_lease_v1 {
             #[doc = "compositor loses DRM master. Compositors may advertise the connector"]
             #[doc = "for leasing again, if the resource is available, by sending the"]
             #[doc = "connector event through the wp_drm_lease_device_v1 interface."]
-            fn finished(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> wp_drm_lease_v1#{}.finished()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn finished(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> wp_drm_lease_v1#{}.finished()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -3971,24 +3758,18 @@ pub mod ext_data_control_v1 {
             #[doc = "types it offers."]
             fn data_offer(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_data_control_device_v1#{}.data_offer({})",
-                        sender_id,
-                        id
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(id))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_data_control_device_v1#{}.data_offer({})",
+                    sender_id,
+                    id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "The selection event is sent out to notify the client of a new"]
             #[doc = "ext_data_control_offer for the selection for this device. The"]
@@ -4005,38 +3786,23 @@ pub mod ext_data_control_v1 {
             #[doc = "ext_data_control_device object."]
             fn selection(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: Option<crate::wire::ObjectId>,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_data_control_device_v1#{}.selection({})",
-                        sender_id,
-                        id.as_ref().map_or("null".to_string(), |v| v.to_string())
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_data_control_device_v1#{}.selection({})",
+                    sender_id,
+                    id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This data control object is no longer valid and should be destroyed by"]
             #[doc = "the client."]
-            fn finished(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_data_control_device_v1#{}.finished()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn finished(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_data_control_device_v1#{}.finished()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "The primary_selection event is sent out to notify the client of a new"]
             #[doc = "ext_data_control_offer for the primary selection for this device. The"]
@@ -4055,22 +3821,16 @@ pub mod ext_data_control_v1 {
             #[doc = "ext_data_control_device object."]
             fn primary_selection(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: Option<crate::wire::ObjectId>,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_data_control_device_v1#{}.primary_selection({})",
-                        sender_id,
-                        id.as_ref().map_or("null".to_string(), |v| v.to_string())
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_data_control_device_v1#{}.primary_selection({})",
+                    sender_id,
+                    id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
         }
     }
@@ -4156,45 +3916,30 @@ pub mod ext_data_control_v1 {
             #[doc = "type over the passed file descriptor, then close it."]
             fn send(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_data_control_source_v1#{}.send(\"{}\", {})",
-                        sender_id,
-                        mime_type,
-                        fd.as_raw_fd()
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(mime_type))
-                        .put_fd(fd)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_data_control_source_v1#{}.send(\"{}\", {})",
+                    sender_id,
+                    mime_type,
+                    fd.as_raw_fd()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(mime_type))
+                    .put_fd(fd)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This data source is no longer valid. The data source has been replaced"]
             #[doc = "by another data source."]
             #[doc = ""]
             #[doc = "The client should clean up and destroy this data source."]
-            fn cancelled(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_data_control_source_v1#{}.cancelled()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn cancelled(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_data_control_source_v1#{}.cancelled()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -4267,24 +4012,18 @@ pub mod ext_data_control_v1 {
             #[doc = "One event per offered MIME type."]
             fn offer(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_data_control_offer_v1#{}.offer(\"{}\")",
-                        sender_id,
-                        mime_type
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(mime_type))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_data_control_offer_v1#{}.offer(\"{}\")",
+                    sender_id,
+                    mime_type
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(mime_type))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
         }
     }
@@ -4390,43 +4129,28 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = "been sent."]
             fn toplevel(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_foreign_toplevel_list_v1#{}.toplevel({})",
-                        sender_id,
-                        toplevel
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(toplevel))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_foreign_toplevel_list_v1#{}.toplevel({})",
+                    sender_id,
+                    toplevel
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(toplevel))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event indicates that the compositor is done sending events"]
             #[doc = "to this object. The client should destroy the object."]
             #[doc = "See ext_foreign_toplevel_list_v1.destroy for more information."]
             #[doc = ""]
             #[doc = "The compositor must not send any more toplevel events after this event."]
-            fn finished(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.finished()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn finished(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.finished()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -4484,19 +4208,10 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = ""]
             #[doc = "Other protocols which extend the ext_foreign_toplevel_handle_v1"]
             #[doc = "interface must also ignore requests other than destructors."]
-            fn closed(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.closed()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn closed(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.closed()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event is sent after all changes in the toplevel state have"]
             #[doc = "been sent."]
@@ -4508,19 +4223,10 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = ""]
             #[doc = "This event must not be sent after the ext_foreign_toplevel_handle_v1.closed"]
             #[doc = "event."]
-            fn done(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.done()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn done(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.done()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "The title of the toplevel has changed."]
             #[doc = ""]
@@ -4528,24 +4234,18 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = "ext_foreign_toplevel_handle_v1.done for details."]
             fn title(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 title: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_foreign_toplevel_handle_v1#{}.title(\"{}\")",
-                        sender_id,
-                        title
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(title))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_foreign_toplevel_handle_v1#{}.title(\"{}\")",
+                    sender_id,
+                    title
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(title))
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "The app id of the toplevel has changed."]
             #[doc = ""]
@@ -4553,24 +4253,18 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = "ext_foreign_toplevel_handle_v1.done for details."]
             fn app_id(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 app_id: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_foreign_toplevel_handle_v1#{}.app_id(\"{}\")",
-                        sender_id,
-                        app_id
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(app_id))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_foreign_toplevel_handle_v1#{}.app_id(\"{}\")",
+                    sender_id,
+                    app_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(app_id))
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "This identifier is used to check if two or more toplevel handles belong"]
             #[doc = "to the same toplevel."]
@@ -4594,24 +4288,18 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = "dependent."]
             fn identifier(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 identifier: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_foreign_toplevel_handle_v1#{}.identifier(\"{}\")",
-                        sender_id,
-                        identifier
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(identifier))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_foreign_toplevel_handle_v1#{}.identifier(\"{}\")",
+                    sender_id,
+                    identifier
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(identifier))
+                    .build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
         }
     }
@@ -4783,38 +4471,20 @@ pub mod ext_idle_notify_v1 {
             #[doc = ""]
             #[doc = "It's a compositor protocol error to send this event twice without a"]
             #[doc = "resumed event in-between."]
-            fn idled(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_idle_notification_v1#{}.idled()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn idled(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_idle_notification_v1#{}.idled()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event is sent when the notification object stops being idle."]
             #[doc = ""]
             #[doc = "It's a compositor protocol error to send this event twice without an"]
             #[doc = "idled event in-between. It's a compositor protocol error to send this"]
             #[doc = "event prior to any idled event."]
-            fn resumed(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_idle_notification_v1#{}.resumed()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn resumed(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_idle_notification_v1#{}.resumed()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -5261,27 +4931,21 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "The client must attach buffers that match this size."]
             fn buffer_size(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_image_copy_capture_session_v1#{}.buffer_size({}, {})",
-                        sender_id,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(width)
-                        .put_uint(height)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_session_v1#{}.buffer_size({}, {})",
+                    sender_id,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(width)
+                    .put_uint(height)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "Provides the format that must be used for shared-memory buffers."]
             #[doc = ""]
@@ -5289,24 +4953,18 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "choose any given format."]
             fn shm_format(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 format: super::super::super::core::wayland::wl_shm::Format,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_image_copy_capture_session_v1#{}.shm_format({})",
-                        sender_id,
-                        format
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(format as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_session_v1#{}.shm_format({})",
+                    sender_id,
+                    format
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(format as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This event advertises the device buffers must be allocated on for"]
             #[doc = "dma-buf buffers."]
@@ -5317,23 +4975,16 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "by comparing the dev_t value."]
             fn dmabuf_device(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 device: Vec<u8>,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_image_copy_capture_session_v1#{}.dmabuf_device(array[{}])",
-                        sender_id,
-                        device.len()
-                    );
-                    let (payload, fds) =
-                        crate::wire::PayloadBuilder::new().put_array(device).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_session_v1#{}.dmabuf_device(array[{}])",
+                    sender_id,
+                    device.len()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(device).build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "Provides the format that must be used for dma-buf buffers."]
             #[doc = ""]
@@ -5344,27 +4995,21 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "choose any given format."]
             fn dmabuf_format(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 format: u32,
                 modifiers: Vec<u8>,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_image_copy_capture_session_v1#{}.dmabuf_format({}, array[{}])",
-                        sender_id,
-                        format,
-                        modifiers.len()
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(format)
-                        .put_array(modifiers)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_session_v1#{}.dmabuf_format({}, array[{}])",
+                    sender_id,
+                    format,
+                    modifiers.len()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(format)
+                    .put_array(modifiers)
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "This event is sent once when all buffer constraint events have been"]
             #[doc = "sent."]
@@ -5372,19 +5017,10 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "The compositor must always end a batch of buffer constraint events with"]
             #[doc = "this event, regardless of whether it sends the initial constraints or"]
             #[doc = "an update."]
-            fn done(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_image_copy_capture_session_v1#{}.done()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn done(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_image_copy_capture_session_v1#{}.done()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
             #[doc = "This event indicates that the capture session has stopped and is no"]
             #[doc = "longer available. This can happen in a number of cases, e.g. when the"]
@@ -5392,22 +5028,13 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "capture, or if an unrecoverable runtime error has occurred."]
             #[doc = ""]
             #[doc = "The client should destroy the session after receiving this event."]
-            fn stopped(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_image_copy_capture_session_v1#{}.stopped()",
-                        sender_id,
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn stopped(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_session_v1#{}.stopped()",
+                    sender_id,
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 5u16, payload, fds)
             }
         }
     }
@@ -5603,24 +5230,18 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "the compositor has applied to the buffer contents."]
             fn transform(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_image_copy_capture_frame_v1#{}.transform({})",
-                        sender_id,
-                        transform
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(transform as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_frame_v1#{}.transform({})",
+                    sender_id,
+                    transform
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(transform as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event is sent before the ready event. It may be generated multiple"]
             #[doc = "times to describe a region."]
@@ -5632,33 +5253,27 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "These coordinates originate in the upper left corner of the buffer."]
             fn damage(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_image_copy_capture_frame_v1#{}.damage({}, {}, {}, {})",
-                        sender_id,
-                        x,
-                        y,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_int(x)
-                        .put_int(y)
-                        .put_int(width)
-                        .put_int(height)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_frame_v1#{}.damage({}, {}, {}, {})",
+                    sender_id,
+                    x,
+                    y,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This event indicates the time at which the frame is presented to the"]
             #[doc = "output in system monotonic time. This event is sent before the ready"]
@@ -5671,30 +5286,24 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "for valid timestamps tv_nsec must be in [0, 999999999]."]
             fn presentation_time(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_image_copy_capture_frame_v1#{}.presentation_time({}, {}, {})",
-                        sender_id,
-                        tv_sec_hi,
-                        tv_sec_lo,
-                        tv_nsec
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(tv_sec_hi)
-                        .put_uint(tv_sec_lo)
-                        .put_uint(tv_nsec)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_frame_v1#{}.presentation_time({}, {}, {})",
+                    sender_id,
+                    tv_sec_hi,
+                    tv_sec_lo,
+                    tv_nsec
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(tv_sec_hi)
+                    .put_uint(tv_sec_lo)
+                    .put_uint(tv_nsec)
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "Called as soon as the frame is copied, indicating it is available"]
             #[doc = "for reading."]
@@ -5702,43 +5311,28 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "The buffer may be re-used by the client after this event."]
             #[doc = ""]
             #[doc = "After receiving this event, the client must destroy the object."]
-            fn ready(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.ready()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn ready(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.ready()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "This event indicates that the attempted frame copy has failed."]
             #[doc = ""]
             #[doc = "After receiving this event, the client must destroy the object."]
             fn failed(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 reason: FailureReason,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_image_copy_capture_frame_v1#{}.failed({})",
-                        sender_id,
-                        reason
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(reason as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_frame_v1#{}.failed({})",
+                    sender_id,
+                    reason
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(reason as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
         }
     }
@@ -5834,42 +5428,24 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "The cursor enters the captured area when the cursor image intersects"]
             #[doc = "with the captured area. Note, this is different from e.g."]
             #[doc = "wl_pointer.enter."]
-            fn enter(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_image_copy_capture_cursor_session_v1#{}.enter()",
-                        sender_id,
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn enter(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_cursor_session_v1#{}.enter()",
+                    sender_id,
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "Sent when a cursor leaves the captured area. No \"position\" or \"hotspot\""]
             #[doc = "event is generated for the cursor until the cursor enters the captured"]
             #[doc = "area again."]
-            fn leave(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_image_copy_capture_cursor_session_v1#{}.leave()",
-                        sender_id,
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn leave(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_cursor_session_v1#{}.leave()",
+                    sender_id,
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "Cursors outside the image capture source do not get captured and no"]
             #[doc = "event will be generated for them."]
@@ -5880,27 +5456,21 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "main buffer size."]
             fn position(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_image_copy_capture_cursor_session_v1#{}.position({}, {})",
-                        sender_id,
-                        x,
-                        y
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_int(x)
-                        .put_int(y)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_cursor_session_v1#{}.position({}, {})",
+                    sender_id,
+                    x,
+                    y
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "The hotspot describes the offset between the cursor image and the"]
             #[doc = "position of the input device."]
@@ -5914,27 +5484,21 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "Compositors may delay this event until the client captures a new frame."]
             fn hotspot(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_image_copy_capture_cursor_session_v1#{}.hotspot({}, {})",
-                        sender_id,
-                        x,
-                        y
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_int(x)
-                        .put_int(y)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_image_copy_capture_cursor_session_v1#{}.hotspot({}, {})",
+                    sender_id,
+                    x,
+                    y
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
         }
     }
@@ -6221,19 +5785,10 @@ pub mod ext_session_lock_v1 {
             #[doc = ""]
             #[doc = "If this event is sent, making the destroy request is a protocol error,"]
             #[doc = "the lock object must be destroyed using the unlock_and_destroy request."]
-            fn locked(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_session_lock_v1#{}.locked()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn locked(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_session_lock_v1#{}.locked()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "The compositor has decided that the session lock should be destroyed"]
             #[doc = "as it will no longer be used by the compositor. Exactly when this"]
@@ -6257,19 +5812,10 @@ pub mod ext_session_lock_v1 {
             #[doc = "Upon receiving this event, the client should make either the destroy"]
             #[doc = "request or the unlock_and_destroy request, depending on whether or"]
             #[doc = "not the locked event was received on this object."]
-            fn finished(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_session_lock_v1#{}.finished()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn finished(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_session_lock_v1#{}.finished()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -6404,30 +5950,24 @@ pub mod ext_session_lock_v1 {
             #[doc = "commit after acking a configure is a protocol error."]
             fn configure(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_session_lock_surface_v1#{}.configure({}, {}, {})",
-                        sender_id,
-                        serial,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(serial)
-                        .put_uint(width)
-                        .put_uint(height)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_session_lock_surface_v1#{}.configure({}, {}, {})",
+                    sender_id,
+                    serial,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(width)
+                    .put_uint(height)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
         }
     }
@@ -6556,24 +6096,18 @@ pub mod ext_transient_seat_v1 {
             #[doc = "of the transient seat was allowed."]
             fn ready(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 global_name: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_transient_seat_v1#{}.ready({})",
-                        sender_id,
-                        global_name
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(global_name)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_transient_seat_v1#{}.ready({})",
+                    sender_id,
+                    global_name
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(global_name)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "The event informs the client that the compositor denied its request to"]
             #[doc = "create a transient seat."]
@@ -6582,19 +6116,10 @@ pub mod ext_transient_seat_v1 {
             #[doc = "created, if and only if the creation of the transient seat was denied."]
             #[doc = ""]
             #[doc = "After receiving this event, the client should destroy the object."]
-            fn denied(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_transient_seat_v1#{}.denied()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn denied(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_transient_seat_v1#{}.denied()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -6681,24 +6206,18 @@ pub mod ext_workspace_v1 {
             #[doc = "ext_workspace_group_handle_v1 and ext_workspace_handle_v1."]
             fn workspace_group(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 workspace_group: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_workspace_manager_v1#{}.workspace_group({})",
-                        sender_id,
-                        workspace_group
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(workspace_group))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_workspace_manager_v1#{}.workspace_group({})",
+                    sender_id,
+                    workspace_group
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(workspace_group))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event is emitted whenever a new workspace has been created."]
             #[doc = ""]
@@ -6709,24 +6228,18 @@ pub mod ext_workspace_v1 {
             #[doc = "Workspaces start off unassigned to any workspace group."]
             fn workspace(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_workspace_manager_v1#{}.workspace({})",
-                        sender_id,
-                        workspace
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(workspace))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_workspace_manager_v1#{}.workspace({})",
+                    sender_id,
+                    workspace
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(workspace))
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This event is sent after all changes in all workspaces and workspace groups have been"]
             #[doc = "sent."]
@@ -6739,36 +6252,18 @@ pub mod ext_workspace_v1 {
             #[doc = "ext_workspace_group_handle_v1 objects in question. The compositor sends"]
             #[doc = "the done event only after updating the output information in both"]
             #[doc = "workspace groups."]
-            fn done(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_workspace_manager_v1#{}.done()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn done(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_workspace_manager_v1#{}.done()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "This event indicates that the compositor is done sending events to the"]
             #[doc = "ext_workspace_manager_v1. The server will destroy the object"]
             #[doc = "immediately after sending this request."]
-            fn finished(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_workspace_manager_v1#{}.finished()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn finished(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_workspace_manager_v1#{}.finished()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
         }
     }
@@ -6870,117 +6365,87 @@ pub mod ext_workspace_v1 {
             #[doc = "must send this event again."]
             fn capabilities(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 capabilities: GroupCapabilities,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_workspace_group_handle_v1#{}.capabilities({})",
-                        sender_id,
-                        capabilities
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(capabilities.bits())
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_workspace_group_handle_v1#{}.capabilities({})",
+                    sender_id,
+                    capabilities
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(capabilities.bits())
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event is emitted whenever an output is assigned to the workspace"]
             #[doc = "group or a new `wl_output` object is bound by the client, which was already"]
             #[doc = "assigned to this workspace_group."]
             fn output_enter(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_workspace_group_handle_v1#{}.output_enter({})",
-                        sender_id,
-                        output
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(output))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_workspace_group_handle_v1#{}.output_enter({})",
+                    sender_id,
+                    output
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This event is emitted whenever an output is removed from the workspace"]
             #[doc = "group."]
             fn output_leave(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_workspace_group_handle_v1#{}.output_leave({})",
-                        sender_id,
-                        output
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(output))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_workspace_group_handle_v1#{}.output_leave({})",
+                    sender_id,
+                    output
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "This event is emitted whenever a workspace is assigned to this group."]
             #[doc = "A workspace may only ever be assigned to a single group at a single point"]
             #[doc = "in time, but can be re-assigned during it's lifetime."]
             fn workspace_enter(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_workspace_group_handle_v1#{}.workspace_enter({})",
-                        sender_id,
-                        workspace
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(workspace))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_workspace_group_handle_v1#{}.workspace_enter({})",
+                    sender_id,
+                    workspace
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(workspace))
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "This event is emitted whenever a workspace is removed from this group."]
             fn workspace_leave(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_workspace_group_handle_v1#{}.workspace_leave({})",
-                        sender_id,
-                        workspace
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(workspace))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_workspace_group_handle_v1#{}.workspace_leave({})",
+                    sender_id,
+                    workspace
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(workspace))
+                    .build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
             #[doc = "This event is send when the group associated with the ext_workspace_group_handle_v1"]
             #[doc = "has been removed. After sending this request the compositor will immediately consider"]
@@ -6990,19 +6455,10 @@ pub mod ext_workspace_v1 {
             #[doc = ""]
             #[doc = "The compositor must remove all workspaces belonging to a workspace group"]
             #[doc = "via a workspace_leave event before removing the workspace group."]
-            fn removed(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_workspace_group_handle_v1#{}.removed()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn removed(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_workspace_group_handle_v1#{}.removed()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 5u16, payload, fds)
             }
         }
     }
@@ -7153,48 +6609,28 @@ pub mod ext_workspace_v1 {
             #[doc = "sessions and can be used by clients to store preferences for workspaces. Workspaces without"]
             #[doc = "ids should be considered temporary and any data associated with them should be deleted once"]
             #[doc = "the respective object is lost."]
-            fn id(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                id: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_workspace_handle_v1#{}.id(\"{}\")", sender_id, id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(id))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn id(&self, sender_id: crate::wire::ObjectId, id: String) -> crate::wire::Message {
+                tracing::debug!("-> ext_workspace_handle_v1#{}.id(\"{}\")", sender_id, id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(id))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event is emitted immediately after the ext_workspace_handle_v1 is"]
             #[doc = "created and whenever the name of the workspace changes."]
             #[doc = ""]
             #[doc = "A name is meant to be human-readable and can be displayed to a user."]
             #[doc = "Unlike the id it is neither stable nor unique."]
-            fn name(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                name: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_workspace_handle_v1#{}.name(\"{}\")",
-                        sender_id,
-                        name
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(name))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn name(&self, sender_id: crate::wire::ObjectId, name: String) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_workspace_handle_v1#{}.name(\"{}\")",
+                    sender_id,
+                    name
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This event is used to organize workspaces into an N-dimensional grid"]
             #[doc = "within a workspace group, and if supported, is emitted immediately after"]
@@ -7216,24 +6652,18 @@ pub mod ext_workspace_v1 {
             #[doc = "workspaces must have unique coordinates of equal dimensionality."]
             fn coordinates(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 coordinates: Vec<u8>,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_workspace_handle_v1#{}.coordinates(array[{}])",
-                        sender_id,
-                        coordinates.len()
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_array(coordinates)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_workspace_handle_v1#{}.coordinates(array[{}])",
+                    sender_id,
+                    coordinates.len()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_array(coordinates)
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "This event is emitted immediately after the ext_workspace_handle_v1 is"]
             #[doc = "created and each time the workspace state changes, either because of a"]
@@ -7243,20 +6673,14 @@ pub mod ext_workspace_v1 {
             #[doc = "means the workspace is currently inactive."]
             fn state(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state: State,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_workspace_handle_v1#{}.state({})", sender_id, state);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(state.bits())
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> ext_workspace_handle_v1#{}.state({})", sender_id, state);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(state.bits())
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
             #[doc = "a capability isn't supported, clients should hide or disable the UI"]
@@ -7273,24 +6697,18 @@ pub mod ext_workspace_v1 {
             #[doc = "must send this event again."]
             fn capabilities(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 capabilities: WorkspaceCapabilities,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> ext_workspace_handle_v1#{}.capabilities({})",
-                        sender_id,
-                        capabilities
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(capabilities.bits())
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> ext_workspace_handle_v1#{}.capabilities({})",
+                    sender_id,
+                    capabilities
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(capabilities.bits())
+                    .build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
             #[doc = "This event is send when the workspace associated with the ext_workspace_handle_v1"]
             #[doc = "has been removed. After sending this request, the compositor will immediately consider"]
@@ -7301,19 +6719,10 @@ pub mod ext_workspace_v1 {
             #[doc = ""]
             #[doc = "The compositor must only remove a workspaces not currently belonging to any"]
             #[doc = "workspace_group."]
-            fn removed(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> ext_workspace_handle_v1#{}.removed()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn removed(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> ext_workspace_handle_v1#{}.removed()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 5u16, payload, fds)
             }
         }
     }
@@ -7681,22 +7090,16 @@ pub mod fractional_scale_v1 {
             #[doc = "The sent scale is the numerator of a fraction with a denominator of 120."]
             fn preferred_scale(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 scale: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> wp_fractional_scale_v1#{}.preferred_scale({})",
-                        sender_id,
-                        scale
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(scale).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> wp_fractional_scale_v1#{}.preferred_scale({})",
+                    sender_id,
+                    scale
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(scale).build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
         }
     }
@@ -8966,24 +8369,18 @@ pub mod xdg_activation_v1 {
             #[doc = "and notifies that the provider is done."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 token: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> xdg_activation_token_v1#{}.done(\"{}\")",
-                        sender_id,
-                        token
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(token))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> xdg_activation_token_v1#{}.done(\"{}\")",
+                    sender_id,
+                    token
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(token))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
         }
     }
@@ -9575,37 +8972,22 @@ pub mod xdg_toplevel_icon_v1 {
             #[doc = "'done' event, without any preceding 'icon_size' events."]
             fn icon_size(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 size: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> xdg_toplevel_icon_manager_v1#{}.icon_size({})",
-                        sender_id,
-                        size
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(size).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> xdg_toplevel_icon_manager_v1#{}.icon_size({})",
+                    sender_id,
+                    size
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(size).build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event is sent after all 'icon_size' events have been sent."]
-            fn done(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.done()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            fn done(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.done()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
