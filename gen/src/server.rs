@@ -214,9 +214,18 @@ fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Tok
             args.push(quote! {#name: #ty})
         }
 
+        // if it's a destructor then we really don't need to implement it,
+        // Drop on the dispatcher can do the job
+        let body = if request.ty == Some(MessageType::Destructor) {
+            quote! { { async move { Ok(()) } } }
+        } else {
+            quote!(;)
+        };
+
         requests.push(quote! {
             #(#docs)*
-            fn #name(#(#args),*) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
+            fn #name(#(#args),*) -> impl Future<Output = crate::server::Result<()>> + Send #body
         });
     }
 
