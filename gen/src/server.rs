@@ -30,10 +30,10 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
             let name = &interface.name;
             let version = &interface.version;
 
-            let dispatchers = write_dispatchers(&interface);
-            let requests = write_requests(pairs, pair, &interface);
-            let events = write_events(pairs, pair, &interface);
-            let enums = write_enums(&interface);
+            let dispatchers = write_dispatchers(interface);
+            let requests = write_requests(pairs, pair, interface);
+            let events = write_events(pairs, pair, interface);
+            let enums = write_enums(interface);
 
             let handler_args = if dispatchers.is_empty() {
                 quote! {
@@ -104,7 +104,7 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
 
     for (opcode, request) in interface.requests.iter().enumerate() {
         let opcode = opcode as u16;
-        let name = make_ident(&request.name.to_snek_case());
+        let name = make_ident(request.name.to_snek_case());
 
         let mut tracing_fmt = Vec::new();
         let mut tracing_args = Vec::new();
@@ -228,7 +228,7 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
         let mut tracing_args = Vec::new();
 
         for arg in &event.args {
-            let mut ty = arg.to_rust_type_token(arg.find_protocol(&pairs).as_ref().unwrap_or(pair));
+            let mut ty = arg.to_rust_type_token(arg.find_protocol(pairs).as_ref().unwrap_or(pair));
 
             let mut map_display = quote! {};
 

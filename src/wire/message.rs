@@ -3,6 +3,7 @@ use std::os::fd::RawFd;
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use rustix::fd::{FromRawFd, OwnedFd};
 
+#[cfg(feature = "server")]
 use crate::server::Client;
 
 use super::{DecodeError, Fixed, NewId, ObjectId};
@@ -155,6 +156,7 @@ impl Message {
             .ok_or(DecodeError::MalformedPayload)
     }
 
+    #[cfg(feature = "server")]
     pub async fn send(self, client: &mut Client) -> std::io::Result<()> {
         client.send_message(self).await
     }
