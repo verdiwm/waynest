@@ -315,6 +315,7 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
 
         events.push(quote! {
             #(#docs)*
+            #[must_use]
             fn #name(#(#args),*) -> crate::wire::Message {
                     tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
 
