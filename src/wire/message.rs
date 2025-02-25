@@ -3,6 +3,8 @@ use std::os::fd::RawFd;
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 use rustix::fd::{FromRawFd, OwnedFd};
 
+use crate::server::Client;
+
 use super::{DecodeError, Fixed, NewId, ObjectId};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -151,6 +153,10 @@ impl Message {
             .pop()
             .map(|fd| unsafe { OwnedFd::from_raw_fd(fd) })
             .ok_or(DecodeError::MalformedPayload)
+    }
+
+    pub async fn send(self, client: &mut Client) -> std::io::Result<()> {
+        client.send_message(self).await
     }
 }
 
