@@ -40,7 +40,8 @@ pub mod wlr_data_control_unstable_v1 {
                                 sender_id,
                                 id
                             );
-                            self.create_data_source(client, sender_id, id).await
+                            let result = self.create_data_source(client, sender_id, id).await;
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -55,11 +56,14 @@ pub mod wlr_data_control_unstable_v1 {
                                 id,
                                 seat
                             );
-                            self.get_data_device(client, sender_id, id, seat).await
+                            let result = self.get_data_device(client, sender_id, id, seat).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("zwlr_data_control_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -139,11 +143,14 @@ pub mod wlr_data_control_unstable_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_selection(client, sender_id, source).await
+                            let result = self.set_selection(client, sender_id, source).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwlr_data_control_device_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         2u16 => {
                             let source = message.object()?;
@@ -154,7 +161,9 @@ pub mod wlr_data_control_unstable_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_primary_selection(client, sender_id, source).await
+                            let result =
+                                self.set_primary_selection(client, sender_id, source).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -358,11 +367,14 @@ pub mod wlr_data_control_unstable_v1 {
                                 sender_id,
                                 mime_type
                             );
-                            self.offer(client, sender_id, mime_type).await
+                            let result = self.offer(client, sender_id, mime_type).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwlr_data_control_source_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -463,11 +475,14 @@ pub mod wlr_data_control_unstable_v1 {
                                 mime_type,
                                 fd.as_raw_fd()
                             );
-                            self.receive(client, sender_id, mime_type, fd).await
+                            let result = self.receive(client, sender_id, mime_type, fd).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwlr_data_control_offer_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -567,15 +582,19 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                                 overlay_cursor,
                                 output
                             );
-                            self.capture_output(client, sender_id, frame, overlay_cursor, output)
-                                .await
+                            let result = self
+                                .capture_output(client, sender_id, frame, overlay_cursor, output)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zwlr_export_dmabuf_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -682,7 +701,9 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwlr_export_dmabuf_frame_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -895,7 +916,8 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                                 "zwlr_foreign_toplevel_manager_v1#{}.stop()",
                                 sender_id,
                             );
-                            self.stop(client, sender_id).await
+                            let result = self.stop(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1042,28 +1064,32 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                                 "zwlr_foreign_toplevel_handle_v1#{}.set_maximized()",
                                 sender_id,
                             );
-                            self.set_maximized(client, sender_id).await
+                            let result = self.set_maximized(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zwlr_foreign_toplevel_handle_v1#{}.unset_maximized()",
                                 sender_id,
                             );
-                            self.unset_maximized(client, sender_id).await
+                            let result = self.unset_maximized(client, sender_id).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!(
                                 "zwlr_foreign_toplevel_handle_v1#{}.set_minimized()",
                                 sender_id,
                             );
-                            self.set_minimized(client, sender_id).await
+                            let result = self.set_minimized(client, sender_id).await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!(
                                 "zwlr_foreign_toplevel_handle_v1#{}.unset_minimized()",
                                 sender_id,
                             );
-                            self.unset_minimized(client, sender_id).await
+                            let result = self.unset_minimized(client, sender_id).await;
+                            result
                         }
                         4u16 => {
                             let seat = message
@@ -1074,14 +1100,16 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                                 sender_id,
                                 seat
                             );
-                            self.activate(client, sender_id, seat).await
+                            let result = self.activate(client, sender_id, seat).await;
+                            result
                         }
                         5u16 => {
                             tracing::debug!(
                                 "zwlr_foreign_toplevel_handle_v1#{}.close()",
                                 sender_id,
                             );
-                            self.close(client, sender_id).await
+                            let result = self.close(client, sender_id).await;
+                            result
                         }
                         6u16 => {
                             let surface = message
@@ -1100,15 +1128,19 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                                 width,
                                 height
                             );
-                            self.set_rectangle(client, sender_id, surface, x, y, width, height)
-                                .await
+                            let result = self
+                                .set_rectangle(client, sender_id, surface, x, y, width, height)
+                                .await;
+                            result
                         }
                         7u16 => {
                             tracing::debug!(
                                 "zwlr_foreign_toplevel_handle_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         8u16 => {
                             let output = message.object()?;
@@ -1119,14 +1151,16 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_fullscreen(client, sender_id, output).await
+                            let result = self.set_fullscreen(client, sender_id, output).await;
+                            result
                         }
                         9u16 => {
                             tracing::debug!(
                                 "zwlr_foreign_toplevel_handle_v1#{}.unset_fullscreen()",
                                 sender_id,
                             );
-                            self.unset_fullscreen(client, sender_id).await
+                            let result = self.unset_fullscreen(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1456,14 +1490,18 @@ pub mod wlr_gamma_control_unstable_v1 {
                                 id,
                                 output
                             );
-                            self.get_gamma_control(client, sender_id, id, output).await
+                            let result =
+                                self.get_gamma_control(client, sender_id, id, output).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zwlr_gamma_control_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1542,11 +1580,14 @@ pub mod wlr_gamma_control_unstable_v1 {
                                 sender_id,
                                 fd.as_raw_fd()
                             );
-                            self.set_gamma(client, sender_id, fd).await
+                            let result = self.set_gamma(client, sender_id, fd).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwlr_gamma_control_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1675,7 +1716,8 @@ pub mod wlr_input_inhibit_unstable_v1 {
                                 sender_id,
                                 id
                             );
-                            self.get_inhibitor(client, sender_id, id).await
+                            let result = self.get_inhibitor(client, sender_id, id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1719,7 +1761,9 @@ pub mod wlr_input_inhibit_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwlr_input_inhibitor_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1842,20 +1886,24 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 layer,
                                 namespace
                             );
-                            self.get_layer_surface(
-                                client,
-                                sender_id,
-                                id,
-                                surface,
-                                output,
-                                layer.try_into()?,
-                                namespace,
-                            )
-                            .await
+                            let result = self
+                                .get_layer_surface(
+                                    client,
+                                    sender_id,
+                                    id,
+                                    surface,
+                                    output,
+                                    layer.try_into()?,
+                                    namespace,
+                                )
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwlr_layer_shell_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2017,7 +2065,8 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 width,
                                 height
                             );
-                            self.set_size(client, sender_id, width, height).await
+                            let result = self.set_size(client, sender_id, width, height).await;
+                            result
                         }
                         1u16 => {
                             let anchor = message.uint()?;
@@ -2026,7 +2075,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 sender_id,
                                 anchor
                             );
-                            self.set_anchor(client, sender_id, anchor.try_into()?).await
+                            let result =
+                                self.set_anchor(client, sender_id, anchor.try_into()?).await;
+                            result
                         }
                         2u16 => {
                             let zone = message.int()?;
@@ -2035,7 +2086,8 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 sender_id,
                                 zone
                             );
-                            self.set_exclusive_zone(client, sender_id, zone).await
+                            let result = self.set_exclusive_zone(client, sender_id, zone).await;
+                            result
                         }
                         3u16 => {
                             let top = message.int()?;
@@ -2050,8 +2102,10 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 bottom,
                                 left
                             );
-                            self.set_margin(client, sender_id, top, right, bottom, left)
-                                .await
+                            let result = self
+                                .set_margin(client, sender_id, top, right, bottom, left)
+                                .await;
+                            result
                         }
                         4u16 => {
                             let keyboard_interactivity = message.uint()?;
@@ -2060,12 +2114,14 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 sender_id,
                                 keyboard_interactivity
                             );
-                            self.set_keyboard_interactivity(
-                                client,
-                                sender_id,
-                                keyboard_interactivity.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_keyboard_interactivity(
+                                    client,
+                                    sender_id,
+                                    keyboard_interactivity.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         5u16 => {
                             let popup = message
@@ -2076,7 +2132,8 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 sender_id,
                                 popup
                             );
-                            self.get_popup(client, sender_id, popup).await
+                            let result = self.get_popup(client, sender_id, popup).await;
+                            result
                         }
                         6u16 => {
                             let serial = message.uint()?;
@@ -2085,11 +2142,14 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 sender_id,
                                 serial
                             );
-                            self.ack_configure(client, sender_id, serial).await
+                            let result = self.ack_configure(client, sender_id, serial).await;
+                            result
                         }
                         7u16 => {
                             tracing::debug!("zwlr_layer_surface_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         8u16 => {
                             let layer = message.uint()?;
@@ -2098,7 +2158,8 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 sender_id,
                                 layer
                             );
-                            self.set_layer(client, sender_id, layer.try_into()?).await
+                            let result = self.set_layer(client, sender_id, layer.try_into()?).await;
+                            result
                         }
                         9u16 => {
                             let edge = message.uint()?;
@@ -2107,8 +2168,10 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 sender_id,
                                 edge
                             );
-                            self.set_exclusive_edge(client, sender_id, edge.try_into()?)
-                                .await
+                            let result = self
+                                .set_exclusive_edge(client, sender_id, edge.try_into()?)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2416,12 +2479,15 @@ pub mod wlr_output_management_unstable_v1 {
                                 id,
                                 serial
                             );
-                            self.create_configuration(client, sender_id, id, serial)
-                                .await
+                            let result = self
+                                .create_configuration(client, sender_id, id, serial)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwlr_output_manager_v1#{}.stop()", sender_id,);
-                            self.stop(client, sender_id).await
+                            let result = self.stop(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2569,7 +2635,9 @@ pub mod wlr_output_management_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwlr_output_head_v1#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3002,7 +3070,9 @@ pub mod wlr_output_management_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwlr_output_mode_v1#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3162,7 +3232,8 @@ pub mod wlr_output_management_unstable_v1 {
                                 id,
                                 head
                             );
-                            self.enable_head(client, sender_id, id, head).await
+                            let result = self.enable_head(client, sender_id, id, head).await;
+                            result
                         }
                         1u16 => {
                             let head = message
@@ -3173,19 +3244,24 @@ pub mod wlr_output_management_unstable_v1 {
                                 sender_id,
                                 head
                             );
-                            self.disable_head(client, sender_id, head).await
+                            let result = self.disable_head(client, sender_id, head).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("zwlr_output_configuration_v1#{}.apply()", sender_id,);
-                            self.apply(client, sender_id).await
+                            let result = self.apply(client, sender_id).await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!("zwlr_output_configuration_v1#{}.test()", sender_id,);
-                            self.test(client, sender_id).await
+                            let result = self.test(client, sender_id).await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!("zwlr_output_configuration_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3376,7 +3452,8 @@ pub mod wlr_output_management_unstable_v1 {
                                 sender_id,
                                 mode
                             );
-                            self.set_mode(client, sender_id, mode).await
+                            let result = self.set_mode(client, sender_id, mode).await;
+                            result
                         }
                         1u16 => {
                             let width = message.int()?;
@@ -3389,8 +3466,10 @@ pub mod wlr_output_management_unstable_v1 {
                                 height,
                                 refresh
                             );
-                            self.set_custom_mode(client, sender_id, width, height, refresh)
-                                .await
+                            let result = self
+                                .set_custom_mode(client, sender_id, width, height, refresh)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -3401,7 +3480,8 @@ pub mod wlr_output_management_unstable_v1 {
                                 x,
                                 y
                             );
-                            self.set_position(client, sender_id, x, y).await
+                            let result = self.set_position(client, sender_id, x, y).await;
+                            result
                         }
                         3u16 => {
                             let transform = message.uint()?;
@@ -3410,8 +3490,10 @@ pub mod wlr_output_management_unstable_v1 {
                                 sender_id,
                                 transform
                             );
-                            self.set_transform(client, sender_id, transform.try_into()?)
-                                .await
+                            let result = self
+                                .set_transform(client, sender_id, transform.try_into()?)
+                                .await;
+                            result
                         }
                         4u16 => {
                             let scale = message.fixed()?;
@@ -3420,7 +3502,8 @@ pub mod wlr_output_management_unstable_v1 {
                                 sender_id,
                                 scale
                             );
-                            self.set_scale(client, sender_id, scale).await
+                            let result = self.set_scale(client, sender_id, scale).await;
+                            result
                         }
                         5u16 => {
                             let state = message.uint()?;
@@ -3429,8 +3512,10 @@ pub mod wlr_output_management_unstable_v1 {
                                 sender_id,
                                 state
                             );
-                            self.set_adaptive_sync(client, sender_id, state.try_into()?)
-                                .await
+                            let result = self
+                                .set_adaptive_sync(client, sender_id, state.try_into()?)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3539,11 +3624,14 @@ pub mod wlr_output_power_management_unstable_v1 {
                                 id,
                                 output
                             );
-                            self.get_output_power(client, sender_id, id, output).await
+                            let result = self.get_output_power(client, sender_id, id, output).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwlr_output_power_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3638,11 +3726,14 @@ pub mod wlr_output_power_management_unstable_v1 {
                                 sender_id,
                                 mode
                             );
-                            self.set_mode(client, sender_id, mode.try_into()?).await
+                            let result = self.set_mode(client, sender_id, mode.try_into()?).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwlr_output_power_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3760,8 +3851,10 @@ pub mod wlr_screencopy_unstable_v1 {
                                 overlay_cursor,
                                 output
                             );
-                            self.capture_output(client, sender_id, frame, overlay_cursor, output)
-                                .await
+                            let result = self
+                                .capture_output(client, sender_id, frame, overlay_cursor, output)
+                                .await;
+                            result
                         }
                         1u16 => {
                             let frame = message
@@ -3786,22 +3879,26 @@ pub mod wlr_screencopy_unstable_v1 {
                                 width,
                                 height
                             );
-                            self.capture_output_region(
-                                client,
-                                sender_id,
-                                frame,
-                                overlay_cursor,
-                                output,
-                                x,
-                                y,
-                                width,
-                                height,
-                            )
-                            .await
+                            let result = self
+                                .capture_output_region(
+                                    client,
+                                    sender_id,
+                                    frame,
+                                    overlay_cursor,
+                                    output,
+                                    x,
+                                    y,
+                                    width,
+                                    height,
+                                )
+                                .await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("zwlr_screencopy_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3920,11 +4017,14 @@ pub mod wlr_screencopy_unstable_v1 {
                                 sender_id,
                                 buffer
                             );
-                            self.copy(client, sender_id, buffer).await
+                            let result = self.copy(client, sender_id, buffer).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwlr_screencopy_frame_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         2u16 => {
                             let buffer = message
@@ -3935,7 +4035,8 @@ pub mod wlr_screencopy_unstable_v1 {
                                 sender_id,
                                 buffer
                             );
-                            self.copy_with_damage(client, sender_id, buffer).await
+                            let result = self.copy_with_damage(client, sender_id, buffer).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4222,7 +4323,8 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 dx,
                                 dy
                             );
-                            self.motion(client, sender_id, time, dx, dy).await
+                            let result = self.motion(client, sender_id, time, dx, dy).await;
+                            result
                         }
                         1u16 => {
                             let time = message.uint()?;
@@ -4239,8 +4341,10 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 x_extent,
                                 y_extent
                             );
-                            self.motion_absolute(client, sender_id, time, x, y, x_extent, y_extent)
-                                .await
+                            let result = self
+                                .motion_absolute(client, sender_id, time, x, y, x_extent, y_extent)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let time = message.uint()?;
@@ -4253,8 +4357,10 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 button,
                                 state
                             );
-                            self.button(client, sender_id, time, button, state.try_into()?)
-                                .await
+                            let result = self
+                                .button(client, sender_id, time, button, state.try_into()?)
+                                .await;
+                            result
                         }
                         3u16 => {
                             let time = message.uint()?;
@@ -4267,12 +4373,15 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 axis,
                                 value
                             );
-                            self.axis(client, sender_id, time, axis.try_into()?, value)
-                                .await
+                            let result = self
+                                .axis(client, sender_id, time, axis.try_into()?, value)
+                                .await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!("zwlr_virtual_pointer_v1#{}.frame()", sender_id,);
-                            self.frame(client, sender_id).await
+                            let result = self.frame(client, sender_id).await;
+                            result
                         }
                         5u16 => {
                             let axis_source = message.uint()?;
@@ -4281,8 +4390,10 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 sender_id,
                                 axis_source
                             );
-                            self.axis_source(client, sender_id, axis_source.try_into()?)
-                                .await
+                            let result = self
+                                .axis_source(client, sender_id, axis_source.try_into()?)
+                                .await;
+                            result
                         }
                         6u16 => {
                             let time = message.uint()?;
@@ -4293,8 +4404,10 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 time,
                                 axis
                             );
-                            self.axis_stop(client, sender_id, time, axis.try_into()?)
-                                .await
+                            let result = self
+                                .axis_stop(client, sender_id, time, axis.try_into()?)
+                                .await;
+                            result
                         }
                         7u16 => {
                             let time = message.uint()?;
@@ -4309,19 +4422,23 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 value,
                                 discrete
                             );
-                            self.axis_discrete(
-                                client,
-                                sender_id,
-                                time,
-                                axis.try_into()?,
-                                value,
-                                discrete,
-                            )
-                            .await
+                            let result = self
+                                .axis_discrete(
+                                    client,
+                                    sender_id,
+                                    time,
+                                    axis.try_into()?,
+                                    value,
+                                    discrete,
+                                )
+                                .await;
+                            result
                         }
                         8u16 => {
                             tracing::debug!("zwlr_virtual_pointer_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4440,15 +4557,19 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 seat.as_ref().map_or("null".to_string(), |v| v.to_string()),
                                 id
                             );
-                            self.create_virtual_pointer(client, sender_id, seat, id)
-                                .await
+                            let result = self
+                                .create_virtual_pointer(client, sender_id, seat, id)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zwlr_virtual_pointer_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         2u16 => {
                             let seat = message.object()?;
@@ -4465,10 +4586,12 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                     .map_or("null".to_string(), |v| v.to_string()),
                                 id
                             );
-                            self.create_virtual_pointer_with_output(
-                                client, sender_id, seat, output, id,
-                            )
-                            .await
+                            let result = self
+                                .create_virtual_pointer_with_output(
+                                    client, sender_id, seat, output, id,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }

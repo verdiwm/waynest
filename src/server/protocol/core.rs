@@ -56,14 +56,16 @@ pub mod wayland {
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_display#{}.sync({})", sender_id, callback);
-                            self.sync(client, sender_id, callback).await
+                            let result = self.sync(client, sender_id, callback).await;
+                            result
                         }
                         1u16 => {
                             let registry = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_display#{}.get_registry({})", sender_id, registry);
-                            self.get_registry(client, sender_id, registry).await
+                            let result = self.get_registry(client, sender_id, registry).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -198,7 +200,8 @@ pub mod wayland {
                             let name = message.uint()?;
                             let id = message.new_id()?;
                             tracing::debug!("wl_registry#{}.bind({}, {})", sender_id, name, id);
-                            self.bind(client, sender_id, name, id).await
+                            let result = self.bind(client, sender_id, name, id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -343,14 +346,16 @@ pub mod wayland {
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_compositor#{}.create_surface({})", sender_id, id);
-                            self.create_surface(client, sender_id, id).await
+                            let result = self.create_surface(client, sender_id, id).await;
+                            result
                         }
                         1u16 => {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_compositor#{}.create_region({})", sender_id, id);
-                            self.create_region(client, sender_id, id).await
+                            let result = self.create_region(client, sender_id, id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -415,26 +420,31 @@ pub mod wayland {
                                 stride,
                                 format
                             );
-                            self.create_buffer(
-                                client,
-                                sender_id,
-                                id,
-                                offset,
-                                width,
-                                height,
-                                stride,
-                                format.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .create_buffer(
+                                    client,
+                                    sender_id,
+                                    id,
+                                    offset,
+                                    width,
+                                    height,
+                                    stride,
+                                    format.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wl_shm_pool#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         2u16 => {
                             let size = message.int()?;
                             tracing::debug!("wl_shm_pool#{}.resize({})", sender_id, size);
-                            self.resize(client, sender_id, size).await
+                            let result = self.resize(client, sender_id, size).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -944,11 +954,14 @@ pub mod wayland {
                                 fd.as_raw_fd(),
                                 size
                             );
-                            self.create_pool(client, sender_id, id, fd, size).await
+                            let result = self.create_pool(client, sender_id, id, fd, size).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wl_shm#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1032,7 +1045,9 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_buffer#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1139,7 +1154,8 @@ pub mod wayland {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.accept(client, sender_id, serial, mime_type).await
+                            let result = self.accept(client, sender_id, serial, mime_type).await;
+                            result
                         }
                         1u16 => {
                             let mime_type = message
@@ -1152,15 +1168,19 @@ pub mod wayland {
                                 mime_type,
                                 fd.as_raw_fd()
                             );
-                            self.receive(client, sender_id, mime_type, fd).await
+                            let result = self.receive(client, sender_id, mime_type, fd).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("wl_data_offer#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         3u16 => {
                             tracing::debug!("wl_data_offer#{}.finish()", sender_id,);
-                            self.finish(client, sender_id).await
+                            let result = self.finish(client, sender_id).await;
+                            result
                         }
                         4u16 => {
                             let dnd_actions = message.uint()?;
@@ -1171,13 +1191,15 @@ pub mod wayland {
                                 dnd_actions,
                                 preferred_action
                             );
-                            self.set_actions(
-                                client,
-                                sender_id,
-                                dnd_actions.try_into()?,
-                                preferred_action.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_actions(
+                                    client,
+                                    sender_id,
+                                    dnd_actions.try_into()?,
+                                    preferred_action.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1441,11 +1463,14 @@ pub mod wayland {
                                 sender_id,
                                 mime_type
                             );
-                            self.offer(client, sender_id, mime_type).await
+                            let result = self.offer(client, sender_id, mime_type).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wl_data_source#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         2u16 => {
                             let dnd_actions = message.uint()?;
@@ -1454,8 +1479,10 @@ pub mod wayland {
                                 sender_id,
                                 dnd_actions
                             );
-                            self.set_actions(client, sender_id, dnd_actions.try_into()?)
-                                .await
+                            let result = self
+                                .set_actions(client, sender_id, dnd_actions.try_into()?)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1733,8 +1760,10 @@ pub mod wayland {
                                 icon.as_ref().map_or("null".to_string(), |v| v.to_string()),
                                 serial
                             );
-                            self.start_drag(client, sender_id, source, origin, icon, serial)
-                                .await
+                            let result = self
+                                .start_drag(client, sender_id, source, origin, icon, serial)
+                                .await;
+                            result
                         }
                         1u16 => {
                             let source = message.object()?;
@@ -1747,11 +1776,15 @@ pub mod wayland {
                                     .map_or("null".to_string(), |v| v.to_string()),
                                 serial
                             );
-                            self.set_selection(client, sender_id, source, serial).await
+                            let result =
+                                self.set_selection(client, sender_id, source, serial).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("wl_data_device#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2033,7 +2066,8 @@ pub mod wayland {
                                 sender_id,
                                 id
                             );
-                            self.create_data_source(client, sender_id, id).await
+                            let result = self.create_data_source(client, sender_id, id).await;
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -2048,7 +2082,8 @@ pub mod wayland {
                                 id,
                                 seat
                             );
-                            self.get_data_device(client, sender_id, id, seat).await
+                            let result = self.get_data_device(client, sender_id, id, seat).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2131,7 +2166,9 @@ pub mod wayland {
                                 id,
                                 surface
                             );
-                            self.get_shell_surface(client, sender_id, id, surface).await
+                            let result =
+                                self.get_shell_surface(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2239,7 +2276,8 @@ pub mod wayland {
                         0u16 => {
                             let serial = message.uint()?;
                             tracing::debug!("wl_shell_surface#{}.pong({})", sender_id, serial);
-                            self.pong(client, sender_id, serial).await
+                            let result = self.pong(client, sender_id, serial).await;
+                            result
                         }
                         1u16 => {
                             let seat = message
@@ -2252,7 +2290,8 @@ pub mod wayland {
                                 seat,
                                 serial
                             );
-                            self.r#move(client, sender_id, seat, serial).await
+                            let result = self.r#move(client, sender_id, seat, serial).await;
+                            result
                         }
                         2u16 => {
                             let seat = message
@@ -2267,12 +2306,15 @@ pub mod wayland {
                                 serial,
                                 edges
                             );
-                            self.resize(client, sender_id, seat, serial, edges.try_into()?)
-                                .await
+                            let result = self
+                                .resize(client, sender_id, seat, serial, edges.try_into()?)
+                                .await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!("wl_shell_surface#{}.set_toplevel()", sender_id,);
-                            self.set_toplevel(client, sender_id).await
+                            let result = self.set_toplevel(client, sender_id).await;
+                            result
                         }
                         4u16 => {
                             let parent = message
@@ -2289,8 +2331,10 @@ pub mod wayland {
                                 y,
                                 flags
                             );
-                            self.set_transient(client, sender_id, parent, x, y, flags.try_into()?)
-                                .await
+                            let result = self
+                                .set_transient(client, sender_id, parent, x, y, flags.try_into()?)
+                                .await;
+                            result
                         }
                         5u16 => {
                             let method = message.uint()?;
@@ -2305,14 +2349,16 @@ pub mod wayland {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_fullscreen(
-                                client,
-                                sender_id,
-                                method.try_into()?,
-                                framerate,
-                                output,
-                            )
-                            .await
+                            let result = self
+                                .set_fullscreen(
+                                    client,
+                                    sender_id,
+                                    method.try_into()?,
+                                    framerate,
+                                    output,
+                                )
+                                .await;
+                            result
                         }
                         6u16 => {
                             let seat = message
@@ -2335,17 +2381,19 @@ pub mod wayland {
                                 y,
                                 flags
                             );
-                            self.set_popup(
-                                client,
-                                sender_id,
-                                seat,
-                                serial,
-                                parent,
-                                x,
-                                y,
-                                flags.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_popup(
+                                    client,
+                                    sender_id,
+                                    seat,
+                                    serial,
+                                    parent,
+                                    x,
+                                    y,
+                                    flags.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         7u16 => {
                             let output = message.object()?;
@@ -2356,7 +2404,8 @@ pub mod wayland {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_maximized(client, sender_id, output).await
+                            let result = self.set_maximized(client, sender_id, output).await;
+                            result
                         }
                         8u16 => {
                             let title = message
@@ -2367,7 +2416,8 @@ pub mod wayland {
                                 sender_id,
                                 title
                             );
-                            self.set_title(client, sender_id, title).await
+                            let result = self.set_title(client, sender_id, title).await;
+                            result
                         }
                         9u16 => {
                             let class_ = message
@@ -2378,7 +2428,8 @@ pub mod wayland {
                                 sender_id,
                                 class_
                             );
-                            self.set_class(client, sender_id, class_).await
+                            let result = self.set_class(client, sender_id, class_).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2737,7 +2788,9 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_surface#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let buffer = message.object()?;
@@ -2752,7 +2805,8 @@ pub mod wayland {
                                 x,
                                 y
                             );
-                            self.attach(client, sender_id, buffer, x, y).await
+                            let result = self.attach(client, sender_id, buffer, x, y).await;
+                            result
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -2767,14 +2821,16 @@ pub mod wayland {
                                 width,
                                 height
                             );
-                            self.damage(client, sender_id, x, y, width, height).await
+                            let result = self.damage(client, sender_id, x, y, width, height).await;
+                            result
                         }
                         3u16 => {
                             let callback = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_surface#{}.frame({})", sender_id, callback);
-                            self.frame(client, sender_id, callback).await
+                            let result = self.frame(client, sender_id, callback).await;
+                            result
                         }
                         4u16 => {
                             let region = message.object()?;
@@ -2785,7 +2841,8 @@ pub mod wayland {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_opaque_region(client, sender_id, region).await
+                            let result = self.set_opaque_region(client, sender_id, region).await;
+                            result
                         }
                         5u16 => {
                             let region = message.object()?;
@@ -2796,11 +2853,13 @@ pub mod wayland {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_input_region(client, sender_id, region).await
+                            let result = self.set_input_region(client, sender_id, region).await;
+                            result
                         }
                         6u16 => {
                             tracing::debug!("wl_surface#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         7u16 => {
                             let transform = message.uint()?;
@@ -2809,13 +2868,16 @@ pub mod wayland {
                                 sender_id,
                                 transform
                             );
-                            self.set_buffer_transform(client, sender_id, transform.try_into()?)
-                                .await
+                            let result = self
+                                .set_buffer_transform(client, sender_id, transform.try_into()?)
+                                .await;
+                            result
                         }
                         8u16 => {
                             let scale = message.int()?;
                             tracing::debug!("wl_surface#{}.set_buffer_scale({})", sender_id, scale);
-                            self.set_buffer_scale(client, sender_id, scale).await
+                            let result = self.set_buffer_scale(client, sender_id, scale).await;
+                            result
                         }
                         9u16 => {
                             let x = message.int()?;
@@ -2830,14 +2892,17 @@ pub mod wayland {
                                 width,
                                 height
                             );
-                            self.damage_buffer(client, sender_id, x, y, width, height)
-                                .await
+                            let result = self
+                                .damage_buffer(client, sender_id, x, y, width, height)
+                                .await;
+                            result
                         }
                         10u16 => {
                             let x = message.int()?;
                             let y = message.int()?;
                             tracing::debug!("wl_surface#{}.offset({}, {})", sender_id, x, y);
-                            self.offset(client, sender_id, x, y).await
+                            let result = self.offset(client, sender_id, x, y).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3368,25 +3433,30 @@ pub mod wayland {
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_seat#{}.get_pointer({})", sender_id, id);
-                            self.get_pointer(client, sender_id, id).await
+                            let result = self.get_pointer(client, sender_id, id).await;
+                            result
                         }
                         1u16 => {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_seat#{}.get_keyboard({})", sender_id, id);
-                            self.get_keyboard(client, sender_id, id).await
+                            let result = self.get_keyboard(client, sender_id, id).await;
+                            result
                         }
                         2u16 => {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_seat#{}.get_touch({})", sender_id, id);
-                            self.get_touch(client, sender_id, id).await
+                            let result = self.get_touch(client, sender_id, id).await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!("wl_seat#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3701,14 +3771,18 @@ pub mod wayland {
                                 hotspot_x,
                                 hotspot_y
                             );
-                            self.set_cursor(
-                                client, sender_id, serial, surface, hotspot_x, hotspot_y,
-                            )
-                            .await
+                            let result = self
+                                .set_cursor(
+                                    client, sender_id, serial, surface, hotspot_x, hotspot_y,
+                                )
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wl_pointer#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4308,7 +4382,9 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_keyboard#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4582,7 +4658,9 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_touch#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4960,7 +5038,9 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_output#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5255,7 +5335,9 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_region#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let x = message.int()?;
@@ -5270,7 +5352,8 @@ pub mod wayland {
                                 width,
                                 height
                             );
-                            self.add(client, sender_id, x, y, width, height).await
+                            let result = self.add(client, sender_id, x, y, width, height).await;
+                            result
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -5285,7 +5368,9 @@ pub mod wayland {
                                 width,
                                 height
                             );
-                            self.subtract(client, sender_id, x, y, width, height).await
+                            let result =
+                                self.subtract(client, sender_id, x, y, width, height).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5381,7 +5466,9 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_subcompositor#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -5400,8 +5487,10 @@ pub mod wayland {
                                 surface,
                                 parent
                             );
-                            self.get_subsurface(client, sender_id, id, surface, parent)
-                                .await
+                            let result = self
+                                .get_subsurface(client, sender_id, id, surface, parent)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5536,7 +5625,9 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_subsurface#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let x = message.int()?;
@@ -5547,29 +5638,34 @@ pub mod wayland {
                                 x,
                                 y
                             );
-                            self.set_position(client, sender_id, x, y).await
+                            let result = self.set_position(client, sender_id, x, y).await;
+                            result
                         }
                         2u16 => {
                             let sibling = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_subsurface#{}.place_above({})", sender_id, sibling);
-                            self.place_above(client, sender_id, sibling).await
+                            let result = self.place_above(client, sender_id, sibling).await;
+                            result
                         }
                         3u16 => {
                             let sibling = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_subsurface#{}.place_below({})", sender_id, sibling);
-                            self.place_below(client, sender_id, sibling).await
+                            let result = self.place_below(client, sender_id, sibling).await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!("wl_subsurface#{}.set_sync()", sender_id,);
-                            self.set_sync(client, sender_id).await
+                            let result = self.set_sync(client, sender_id).await;
+                            result
                         }
                         5u16 => {
                             tracing::debug!("wl_subsurface#{}.set_desync()", sender_id,);
-                            self.set_desync(client, sender_id).await
+                            let result = self.set_desync(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }

@@ -28,7 +28,9 @@ pub mod frog_color_management_v1 {
                                 "frog_color_management_factory_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let surface = message
@@ -43,8 +45,10 @@ pub mod frog_color_management_v1 {
                                 surface,
                                 callback
                             );
-                            self.get_color_managed_surface(client, sender_id, surface, callback)
-                                .await
+                            let result = self
+                                .get_color_managed_surface(client, sender_id, surface, callback)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -177,7 +181,9 @@ pub mod frog_color_management_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("frog_color_managed_surface#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let transfer_function = message.uint()?;
@@ -186,12 +192,14 @@ pub mod frog_color_management_v1 {
                                 sender_id,
                                 transfer_function
                             );
-                            self.set_known_transfer_function(
-                                client,
-                                sender_id,
-                                transfer_function.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_known_transfer_function(
+                                    client,
+                                    sender_id,
+                                    transfer_function.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         2u16 => {
                             let primaries = message.uint()?;
@@ -200,12 +208,14 @@ pub mod frog_color_management_v1 {
                                 sender_id,
                                 primaries
                             );
-                            self.set_known_container_color_volume(
-                                client,
-                                sender_id,
-                                primaries.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_known_container_color_volume(
+                                    client,
+                                    sender_id,
+                                    primaries.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         3u16 => {
                             let render_intent = message.uint()?;
@@ -214,8 +224,10 @@ pub mod frog_color_management_v1 {
                                 sender_id,
                                 render_intent
                             );
-                            self.set_render_intent(client, sender_id, render_intent.try_into()?)
-                                .await
+                            let result = self
+                                .set_render_intent(client, sender_id, render_intent.try_into()?)
+                                .await;
+                            result
                         }
                         4u16 => {
                             let mastering_display_primary_red_x = message.uint()?;
@@ -246,23 +258,25 @@ pub mod frog_color_management_v1 {
                                 max_cll,
                                 max_fall
                             );
-                            self.set_hdr_metadata(
-                                client,
-                                sender_id,
-                                mastering_display_primary_red_x,
-                                mastering_display_primary_red_y,
-                                mastering_display_primary_green_x,
-                                mastering_display_primary_green_y,
-                                mastering_display_primary_blue_x,
-                                mastering_display_primary_blue_y,
-                                mastering_white_point_x,
-                                mastering_white_point_y,
-                                max_display_mastering_luminance,
-                                min_display_mastering_luminance,
-                                max_cll,
-                                max_fall,
-                            )
-                            .await
+                            let result = self
+                                .set_hdr_metadata(
+                                    client,
+                                    sender_id,
+                                    mastering_display_primary_red_x,
+                                    mastering_display_primary_red_y,
+                                    mastering_display_primary_green_x,
+                                    mastering_display_primary_green_y,
+                                    mastering_display_primary_blue_x,
+                                    mastering_display_primary_blue_y,
+                                    mastering_white_point_x,
+                                    mastering_white_point_y,
+                                    max_display_mastering_luminance,
+                                    min_display_mastering_luminance,
+                                    max_cll,
+                                    max_fall,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -441,7 +455,9 @@ pub mod frog_fifo_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("frog_fifo_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -456,7 +472,8 @@ pub mod frog_fifo_v1 {
                                 id,
                                 surface
                             );
-                            self.get_fifo(client, sender_id, id, surface).await
+                            let result = self.get_fifo(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -531,15 +548,19 @@ pub mod frog_fifo_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("frog_fifo_surface_v1#{}.set_barrier()", sender_id,);
-                            self.set_barrier(client, sender_id).await
+                            let result = self.set_barrier(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("frog_fifo_surface_v1#{}.wait_barrier()", sender_id,);
-                            self.wait_barrier(client, sender_id).await
+                            let result = self.wait_barrier(client, sender_id).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("frog_fifo_surface_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }

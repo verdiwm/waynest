@@ -48,7 +48,9 @@ pub mod alpha_modifier_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_alpha_modifier_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -63,7 +65,8 @@ pub mod alpha_modifier_v1 {
                                 id,
                                 surface
                             );
-                            self.get_surface(client, sender_id, id, surface).await
+                            let result = self.get_surface(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -135,7 +138,9 @@ pub mod alpha_modifier_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_alpha_modifier_surface_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let factor = message.uint()?;
@@ -144,7 +149,8 @@ pub mod alpha_modifier_v1 {
                                 sender_id,
                                 factor
                             );
-                            self.set_multiplier(client, sender_id, factor).await
+                            let result = self.set_multiplier(client, sender_id, factor).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -450,7 +456,9 @@ pub mod color_management_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_color_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -465,7 +473,8 @@ pub mod color_management_v1 {
                                 id,
                                 output
                             );
-                            self.get_output(client, sender_id, id, output).await
+                            let result = self.get_output(client, sender_id, id, output).await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -480,7 +489,8 @@ pub mod color_management_v1 {
                                 id,
                                 surface
                             );
-                            self.get_surface(client, sender_id, id, surface).await
+                            let result = self.get_surface(client, sender_id, id, surface).await;
+                            result
                         }
                         3u16 => {
                             let id = message
@@ -495,8 +505,10 @@ pub mod color_management_v1 {
                                 id,
                                 surface
                             );
-                            self.get_surface_feedback(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_surface_feedback(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         4u16 => {
                             let obj = message
@@ -507,7 +519,8 @@ pub mod color_management_v1 {
                                 sender_id,
                                 obj
                             );
-                            self.create_icc_creator(client, sender_id, obj).await
+                            let result = self.create_icc_creator(client, sender_id, obj).await;
+                            result
                         }
                         5u16 => {
                             let obj = message
@@ -518,7 +531,9 @@ pub mod color_management_v1 {
                                 sender_id,
                                 obj
                             );
-                            self.create_parametric_creator(client, sender_id, obj).await
+                            let result =
+                                self.create_parametric_creator(client, sender_id, obj).await;
+                            result
                         }
                         6u16 => {
                             let image_description = message
@@ -529,8 +544,10 @@ pub mod color_management_v1 {
                                 sender_id,
                                 image_description
                             );
-                            self.create_windows_scrgb(client, sender_id, image_description)
-                                .await
+                            let result = self
+                                .create_windows_scrgb(client, sender_id, image_description)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -799,7 +816,9 @@ pub mod color_management_v1 {
                                 "wp_color_management_output_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let image_description = message
@@ -810,8 +829,10 @@ pub mod color_management_v1 {
                                 sender_id,
                                 image_description
                             );
-                            self.get_image_description(client, sender_id, image_description)
-                                .await
+                            let result = self
+                                .get_image_description(client, sender_id, image_description)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -941,7 +962,9 @@ pub mod color_management_v1 {
                                 "wp_color_management_surface_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let image_description = message
@@ -954,20 +977,23 @@ pub mod color_management_v1 {
                                 image_description,
                                 render_intent
                             );
-                            self.set_image_description(
-                                client,
-                                sender_id,
-                                image_description,
-                                render_intent.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_image_description(
+                                    client,
+                                    sender_id,
+                                    image_description,
+                                    render_intent.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!(
                                 "wp_color_management_surface_v1#{}.unset_image_description()",
                                 sender_id,
                             );
-                            self.unset_image_description(client, sender_id).await
+                            let result = self.unset_image_description(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1090,7 +1116,9 @@ pub mod color_management_v1 {
                                 "wp_color_management_surface_feedback_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let image_description = message
@@ -1101,8 +1129,10 @@ pub mod color_management_v1 {
                                 sender_id,
                                 image_description
                             );
-                            self.get_preferred(client, sender_id, image_description)
-                                .await
+                            let result = self
+                                .get_preferred(client, sender_id, image_description)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let image_description = message
@@ -1113,8 +1143,10 @@ pub mod color_management_v1 {
                                 sender_id,
                                 image_description
                             );
-                            self.get_preferred_parametric(client, sender_id, image_description)
-                                .await
+                            let result = self
+                                .get_preferred_parametric(client, sender_id, image_description)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1289,7 +1321,9 @@ pub mod color_management_v1 {
                                 sender_id,
                                 image_description
                             );
-                            self.create(client, sender_id, image_description).await
+                            let result = self.create(client, sender_id, image_description).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let icc_profile = message.fd()?;
@@ -1302,8 +1336,10 @@ pub mod color_management_v1 {
                                 offset,
                                 length
                             );
-                            self.set_icc_file(client, sender_id, icc_profile, offset, length)
-                                .await
+                            let result = self
+                                .set_icc_file(client, sender_id, icc_profile, offset, length)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1472,7 +1508,9 @@ pub mod color_management_v1 {
                                 sender_id,
                                 image_description
                             );
-                            self.create(client, sender_id, image_description).await
+                            let result = self.create(client, sender_id, image_description).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let tf = message.uint()?;
@@ -1481,7 +1519,8 @@ pub mod color_management_v1 {
                                 sender_id,
                                 tf
                             );
-                            self.set_tf_named(client, sender_id, tf.try_into()?).await
+                            let result = self.set_tf_named(client, sender_id, tf.try_into()?).await;
+                            result
                         }
                         2u16 => {
                             let eexp = message.uint()?;
@@ -1490,7 +1529,8 @@ pub mod color_management_v1 {
                                 sender_id,
                                 eexp
                             );
-                            self.set_tf_power(client, sender_id, eexp).await
+                            let result = self.set_tf_power(client, sender_id, eexp).await;
+                            result
                         }
                         3u16 => {
                             let primaries = message.uint()?;
@@ -1499,8 +1539,10 @@ pub mod color_management_v1 {
                                 sender_id,
                                 primaries
                             );
-                            self.set_primaries_named(client, sender_id, primaries.try_into()?)
-                                .await
+                            let result = self
+                                .set_primaries_named(client, sender_id, primaries.try_into()?)
+                                .await;
+                            result
                         }
                         4u16 => {
                             let r_x = message.int()?;
@@ -1523,10 +1565,12 @@ pub mod color_management_v1 {
                                 w_x,
                                 w_y
                             );
-                            self.set_primaries(
-                                client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
-                            )
-                            .await
+                            let result = self
+                                .set_primaries(
+                                    client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
+                                )
+                                .await;
+                            result
                         }
                         5u16 => {
                             let min_lum = message.uint()?;
@@ -1539,8 +1583,10 @@ pub mod color_management_v1 {
                                 max_lum,
                                 reference_lum
                             );
-                            self.set_luminances(client, sender_id, min_lum, max_lum, reference_lum)
-                                .await
+                            let result = self
+                                .set_luminances(client, sender_id, min_lum, max_lum, reference_lum)
+                                .await;
+                            result
                         }
                         6u16 => {
                             let r_x = message.int()?;
@@ -1563,10 +1609,12 @@ pub mod color_management_v1 {
                                 w_x,
                                 w_y
                             );
-                            self.set_mastering_display_primaries(
-                                client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
-                            )
-                            .await
+                            let result = self
+                                .set_mastering_display_primaries(
+                                    client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
+                                )
+                                .await;
+                            result
                         }
                         7u16 => {
                             let min_lum = message.uint()?;
@@ -1577,8 +1625,10 @@ pub mod color_management_v1 {
                                 min_lum,
                                 max_lum
                             );
-                            self.set_mastering_luminance(client, sender_id, min_lum, max_lum)
-                                .await
+                            let result = self
+                                .set_mastering_luminance(client, sender_id, min_lum, max_lum)
+                                .await;
+                            result
                         }
                         8u16 => {
                             let max_cll = message.uint()?;
@@ -1587,7 +1637,8 @@ pub mod color_management_v1 {
                                 sender_id,
                                 max_cll
                             );
-                            self.set_max_cll(client, sender_id, max_cll).await
+                            let result = self.set_max_cll(client, sender_id, max_cll).await;
+                            result
                         }
                         9u16 => {
                             let max_fall = message.uint()?;
@@ -1596,7 +1647,8 @@ pub mod color_management_v1 {
                                 sender_id,
                                 max_fall
                             );
-                            self.set_max_fall(client, sender_id, max_fall).await
+                            let result = self.set_max_fall(client, sender_id, max_fall).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1992,7 +2044,9 @@ pub mod color_management_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_image_description_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let information = message
@@ -2003,7 +2057,8 @@ pub mod color_management_v1 {
                                 sender_id,
                                 information
                             );
-                            self.get_information(client, sender_id, information).await
+                            let result = self.get_information(client, sender_id, information).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2566,7 +2621,9 @@ pub mod commit_timing_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_commit_timing_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -2581,7 +2638,8 @@ pub mod commit_timing_v1 {
                                 id,
                                 surface
                             );
-                            self.get_timer(client, sender_id, id, surface).await
+                            let result = self.get_timer(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2664,12 +2722,16 @@ pub mod commit_timing_v1 {
                                 tv_sec_lo,
                                 tv_nsec
                             );
-                            self.set_timestamp(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
-                                .await
+                            let result = self
+                                .set_timestamp(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wp_commit_timer_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2758,7 +2820,9 @@ pub mod content_type_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_content_type_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -2773,8 +2837,10 @@ pub mod content_type_v1 {
                                 id,
                                 surface
                             );
-                            self.get_surface_content_type(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_surface_content_type(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2853,7 +2919,9 @@ pub mod content_type_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_content_type_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let content_type = message.uint()?;
@@ -2862,8 +2930,10 @@ pub mod content_type_v1 {
                                 sender_id,
                                 content_type
                             );
-                            self.set_content_type(client, sender_id, content_type.try_into()?)
-                                .await
+                            let result = self
+                                .set_content_type(client, sender_id, content_type.try_into()?)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2923,7 +2993,9 @@ pub mod cursor_shape_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_cursor_shape_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let cursor_shape_device = message
@@ -2938,8 +3010,10 @@ pub mod cursor_shape_v1 {
                                 cursor_shape_device,
                                 pointer
                             );
-                            self.get_pointer(client, sender_id, cursor_shape_device, pointer)
-                                .await
+                            let result = self
+                                .get_pointer(client, sender_id, cursor_shape_device, pointer)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let cursor_shape_device = message
@@ -2954,13 +3028,15 @@ pub mod cursor_shape_v1 {
                                 cursor_shape_device,
                                 tablet_tool
                             );
-                            self.get_tablet_tool_v2(
-                                client,
-                                sender_id,
-                                cursor_shape_device,
-                                tablet_tool,
-                            )
-                            .await
+                            let result = self
+                                .get_tablet_tool_v2(
+                                    client,
+                                    sender_id,
+                                    cursor_shape_device,
+                                    tablet_tool,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3161,7 +3237,9 @@ pub mod cursor_shape_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_cursor_shape_device_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let serial = message.uint()?;
@@ -3172,8 +3250,10 @@ pub mod cursor_shape_v1 {
                                 serial,
                                 shape
                             );
-                            self.set_shape(client, sender_id, serial, shape.try_into()?)
-                                .await
+                            let result = self
+                                .set_shape(client, sender_id, serial, shape.try_into()?)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3273,11 +3353,13 @@ pub mod drm_lease_v1 {
                                 sender_id,
                                 id
                             );
-                            self.create_lease_request(client, sender_id, id).await
+                            let result = self.create_lease_request(client, sender_id, id).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wp_drm_lease_device_v1#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3424,7 +3506,9 @@ pub mod drm_lease_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_drm_lease_connector_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3620,14 +3704,17 @@ pub mod drm_lease_v1 {
                                 sender_id,
                                 connector
                             );
-                            self.request_connector(client, sender_id, connector).await
+                            let result = self.request_connector(client, sender_id, connector).await;
+                            result
                         }
                         1u16 => {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wp_drm_lease_request_v1#{}.submit({})", sender_id, id);
-                            self.submit(client, sender_id, id).await
+                            let result = self.submit(client, sender_id, id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3691,7 +3778,9 @@ pub mod drm_lease_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_drm_lease_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3804,7 +3893,8 @@ pub mod ext_data_control_v1 {
                                 sender_id,
                                 id
                             );
-                            self.create_data_source(client, sender_id, id).await
+                            let result = self.create_data_source(client, sender_id, id).await;
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -3819,11 +3909,14 @@ pub mod ext_data_control_v1 {
                                 id,
                                 seat
                             );
-                            self.get_data_device(client, sender_id, id, seat).await
+                            let result = self.get_data_device(client, sender_id, id, seat).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("ext_data_control_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3903,11 +3996,14 @@ pub mod ext_data_control_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_selection(client, sender_id, source).await
+                            let result = self.set_selection(client, sender_id, source).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("ext_data_control_device_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         2u16 => {
                             let source = message.object()?;
@@ -3918,7 +4014,9 @@ pub mod ext_data_control_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_primary_selection(client, sender_id, source).await
+                            let result =
+                                self.set_primary_selection(client, sender_id, source).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4125,11 +4223,14 @@ pub mod ext_data_control_v1 {
                                 sender_id,
                                 mime_type
                             );
-                            self.offer(client, sender_id, mime_type).await
+                            let result = self.offer(client, sender_id, mime_type).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("ext_data_control_source_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4230,11 +4331,14 @@ pub mod ext_data_control_v1 {
                                 mime_type,
                                 fd.as_raw_fd()
                             );
-                            self.receive(client, sender_id, mime_type, fd).await
+                            let result = self.receive(client, sender_id, mime_type, fd).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("ext_data_control_offer_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4346,11 +4450,14 @@ pub mod ext_foreign_toplevel_list_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_foreign_toplevel_list_v1#{}.stop()", sender_id,);
-                            self.stop(client, sender_id).await
+                            let result = self.stop(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("ext_foreign_toplevel_list_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4454,7 +4561,9 @@ pub mod ext_foreign_toplevel_list_v1 {
                                 "ext_foreign_toplevel_handle_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4641,7 +4750,9 @@ pub mod ext_idle_notify_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_idle_notifier_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -4658,8 +4769,10 @@ pub mod ext_idle_notify_v1 {
                                 timeout,
                                 seat
                             );
-                            self.get_idle_notification(client, sender_id, id, timeout, seat)
-                                .await
+                            let result = self
+                                .get_idle_notification(client, sender_id, id, timeout, seat)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -4676,8 +4789,10 @@ pub mod ext_idle_notify_v1 {
                                 timeout,
                                 seat
                             );
-                            self.get_input_idle_notification(client, sender_id, id, timeout, seat)
-                                .await
+                            let result = self
+                                .get_input_idle_notification(client, sender_id, id, timeout, seat)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4767,7 +4882,9 @@ pub mod ext_idle_notify_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_idle_notification_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4859,7 +4976,9 @@ pub mod ext_image_capture_source_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_image_capture_source_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4905,14 +5024,18 @@ pub mod ext_image_capture_source_v1 {
                                 source,
                                 output
                             );
-                            self.create_source(client, sender_id, source, output).await
+                            let result =
+                                self.create_source(client, sender_id, source, output).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "ext_output_image_capture_source_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4971,15 +5094,19 @@ pub mod ext_image_capture_source_v1 {
                                 source,
                                 toplevel_handle
                             );
-                            self.create_source(client, sender_id, source, toplevel_handle)
-                                .await
+                            let result = self
+                                .create_source(client, sender_id, source, toplevel_handle)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "ext_foreign_toplevel_image_capture_source_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5081,14 +5208,16 @@ pub mod ext_image_copy_capture_v1 {
                                 source,
                                 options
                             );
-                            self.create_session(
-                                client,
-                                sender_id,
-                                session,
-                                source,
-                                options.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .create_session(
+                                    client,
+                                    sender_id,
+                                    session,
+                                    source,
+                                    options.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         1u16 => {
                             let session = message
@@ -5107,17 +5236,21 @@ pub mod ext_image_copy_capture_v1 {
                                 source,
                                 pointer
                             );
-                            self.create_pointer_cursor_session(
-                                client, sender_id, session, source, pointer,
-                            )
-                            .await
+                            let result = self
+                                .create_pointer_cursor_session(
+                                    client, sender_id, session, source, pointer,
+                                )
+                                .await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!(
                                 "ext_image_copy_capture_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5222,14 +5355,17 @@ pub mod ext_image_copy_capture_v1 {
                                 sender_id,
                                 frame
                             );
-                            self.create_frame(client, sender_id, frame).await
+                            let result = self.create_frame(client, sender_id, frame).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "ext_image_copy_capture_session_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5494,7 +5630,9 @@ pub mod ext_image_copy_capture_v1 {
                                 "ext_image_copy_capture_frame_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let buffer = message
@@ -5505,7 +5643,8 @@ pub mod ext_image_copy_capture_v1 {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_buffer(client, sender_id, buffer).await
+                            let result = self.attach_buffer(client, sender_id, buffer).await;
+                            result
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -5520,15 +5659,18 @@ pub mod ext_image_copy_capture_v1 {
                                 width,
                                 height
                             );
-                            self.damage_buffer(client, sender_id, x, y, width, height)
-                                .await
+                            let result = self
+                                .damage_buffer(client, sender_id, x, y, width, height)
+                                .await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!(
                                 "ext_image_copy_capture_frame_v1#{}.capture()",
                                 sender_id,
                             );
-                            self.capture(client, sender_id).await
+                            let result = self.capture(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5787,7 +5929,9 @@ pub mod ext_image_copy_capture_v1 {
                                 "ext_image_copy_capture_cursor_session_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let session = message
@@ -5798,7 +5942,8 @@ pub mod ext_image_copy_capture_v1 {
                                 sender_id,
                                 session
                             );
-                            self.get_capture_session(client, sender_id, session).await
+                            let result = self.get_capture_session(client, sender_id, session).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5981,7 +6126,9 @@ pub mod ext_session_lock_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_session_lock_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -5992,7 +6139,8 @@ pub mod ext_session_lock_v1 {
                                 sender_id,
                                 id
                             );
-                            self.lock(client, sender_id, id).await
+                            let result = self.lock(client, sender_id, id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6118,7 +6266,9 @@ pub mod ext_session_lock_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_session_lock_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -6137,15 +6287,19 @@ pub mod ext_session_lock_v1 {
                                 surface,
                                 output
                             );
-                            self.get_lock_surface(client, sender_id, id, surface, output)
-                                .await
+                            let result = self
+                                .get_lock_surface(client, sender_id, id, surface, output)
+                                .await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!(
                                 "ext_session_lock_v1#{}.unlock_and_destroy()",
                                 sender_id,
                             );
-                            self.unlock_and_destroy(client, sender_id).await
+                            let result = self.unlock_and_destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6337,7 +6491,9 @@ pub mod ext_session_lock_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_session_lock_surface_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let serial = message.uint()?;
@@ -6346,7 +6502,8 @@ pub mod ext_session_lock_v1 {
                                 sender_id,
                                 serial
                             );
-                            self.ack_configure(client, sender_id, serial).await
+                            let result = self.ack_configure(client, sender_id, serial).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6479,14 +6636,17 @@ pub mod ext_transient_seat_v1 {
                                 sender_id,
                                 seat
                             );
-                            self.create(client, sender_id, seat).await
+                            let result = self.create(client, sender_id, seat).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "ext_transient_seat_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6535,7 +6695,9 @@ pub mod ext_transient_seat_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_transient_seat_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6639,11 +6801,13 @@ pub mod ext_workspace_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_workspace_manager_v1#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("ext_workspace_manager_v1#{}.stop()", sender_id,);
-                            self.stop(client, sender_id).await
+                            let result = self.stop(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6821,14 +6985,17 @@ pub mod ext_workspace_v1 {
                                 sender_id,
                                 workspace
                             );
-                            self.create_workspace(client, sender_id, workspace).await
+                            let result = self.create_workspace(client, sender_id, workspace).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "ext_workspace_group_handle_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7065,15 +7232,19 @@ pub mod ext_workspace_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_workspace_handle_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             tracing::debug!("ext_workspace_handle_v1#{}.activate()", sender_id,);
-                            self.activate(client, sender_id).await
+                            let result = self.activate(client, sender_id).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("ext_workspace_handle_v1#{}.deactivate()", sender_id,);
-                            self.deactivate(client, sender_id).await
+                            let result = self.deactivate(client, sender_id).await;
+                            result
                         }
                         3u16 => {
                             let workspace_group = message
@@ -7084,11 +7255,13 @@ pub mod ext_workspace_v1 {
                                 sender_id,
                                 workspace_group
                             );
-                            self.assign(client, sender_id, workspace_group).await
+                            let result = self.assign(client, sender_id, workspace_group).await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!("ext_workspace_handle_v1#{}.remove()", sender_id,);
-                            self.remove(client, sender_id).await
+                            let result = self.remove(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7373,7 +7546,9 @@ pub mod fifo_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_fifo_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -7388,7 +7563,8 @@ pub mod fifo_v1 {
                                 id,
                                 surface
                             );
-                            self.get_fifo(client, sender_id, id, surface).await
+                            let result = self.get_fifo(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7463,15 +7639,19 @@ pub mod fifo_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_fifo_v1#{}.set_barrier()", sender_id,);
-                            self.set_barrier(client, sender_id).await
+                            let result = self.set_barrier(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wp_fifo_v1#{}.wait_barrier()", sender_id,);
-                            self.wait_barrier(client, sender_id).await
+                            let result = self.wait_barrier(client, sender_id).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("wp_fifo_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7598,7 +7778,9 @@ pub mod fractional_scale_v1 {
                                 "wp_fractional_scale_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -7613,8 +7795,10 @@ pub mod fractional_scale_v1 {
                                 id,
                                 surface
                             );
-                            self.get_fractional_scale(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_fractional_scale(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7662,7 +7846,9 @@ pub mod fractional_scale_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_fractional_scale_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7779,7 +7965,9 @@ pub mod linux_drm_syncobj_v1 {
                                 "wp_linux_drm_syncobj_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -7794,7 +7982,8 @@ pub mod linux_drm_syncobj_v1 {
                                 id,
                                 surface
                             );
-                            self.get_surface(client, sender_id, id, surface).await
+                            let result = self.get_surface(client, sender_id, id, surface).await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -7807,7 +7996,8 @@ pub mod linux_drm_syncobj_v1 {
                                 id,
                                 fd.as_raw_fd()
                             );
-                            self.import_timeline(client, sender_id, id, fd).await
+                            let result = self.import_timeline(client, sender_id, id, fd).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7874,7 +8064,9 @@ pub mod linux_drm_syncobj_v1 {
                                 "wp_linux_drm_syncobj_timeline_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7973,7 +8165,9 @@ pub mod linux_drm_syncobj_v1 {
                                 "wp_linux_drm_syncobj_surface_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let timeline = message
@@ -7988,8 +8182,10 @@ pub mod linux_drm_syncobj_v1 {
                                 point_hi,
                                 point_lo
                             );
-                            self.set_acquire_point(client, sender_id, timeline, point_hi, point_lo)
-                                .await
+                            let result = self
+                                .set_acquire_point(client, sender_id, timeline, point_hi, point_lo)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let timeline = message
@@ -8004,8 +8200,10 @@ pub mod linux_drm_syncobj_v1 {
                                 point_hi,
                                 point_lo
                             );
-                            self.set_release_point(client, sender_id, timeline, point_hi, point_lo)
-                                .await
+                            let result = self
+                                .set_release_point(client, sender_id, timeline, point_hi, point_lo)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8172,7 +8370,9 @@ pub mod security_context_v1 {
                                 "wp_security_context_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -8187,8 +8387,10 @@ pub mod security_context_v1 {
                                 listen_fd.as_raw_fd(),
                                 close_fd.as_raw_fd()
                             );
-                            self.create_listener(client, sender_id, id, listen_fd, close_fd)
-                                .await
+                            let result = self
+                                .create_listener(client, sender_id, id, listen_fd, close_fd)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8282,7 +8484,9 @@ pub mod security_context_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_security_context_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let name = message
@@ -8293,7 +8497,8 @@ pub mod security_context_v1 {
                                 sender_id,
                                 name
                             );
-                            self.set_sandbox_engine(client, sender_id, name).await
+                            let result = self.set_sandbox_engine(client, sender_id, name).await;
+                            result
                         }
                         2u16 => {
                             let app_id = message
@@ -8304,7 +8509,8 @@ pub mod security_context_v1 {
                                 sender_id,
                                 app_id
                             );
-                            self.set_app_id(client, sender_id, app_id).await
+                            let result = self.set_app_id(client, sender_id, app_id).await;
+                            result
                         }
                         3u16 => {
                             let instance_id = message
@@ -8315,11 +8521,13 @@ pub mod security_context_v1 {
                                 sender_id,
                                 instance_id
                             );
-                            self.set_instance_id(client, sender_id, instance_id).await
+                            let result = self.set_instance_id(client, sender_id, instance_id).await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!("wp_security_context_v1#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8435,7 +8643,9 @@ pub mod single_pixel_buffer_v1 {
                                 "wp_single_pixel_buffer_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -8454,8 +8664,10 @@ pub mod single_pixel_buffer_v1 {
                                 b,
                                 a
                             );
-                            self.create_u32_rgba_buffer(client, sender_id, id, r, g, b, a)
-                                .await
+                            let result = self
+                                .create_u32_rgba_buffer(client, sender_id, id, r, g, b, a)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8548,7 +8760,9 @@ pub mod tearing_control_v1 {
                                 "wp_tearing_control_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -8563,8 +8777,10 @@ pub mod tearing_control_v1 {
                                 id,
                                 surface
                             );
-                            self.get_tearing_control(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_tearing_control(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8648,12 +8864,16 @@ pub mod tearing_control_v1 {
                                 sender_id,
                                 hint
                             );
-                            self.set_presentation_hint(client, sender_id, hint.try_into()?)
-                                .await
+                            let result = self
+                                .set_presentation_hint(client, sender_id, hint.try_into()?)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wp_tearing_control_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8743,7 +8963,9 @@ pub mod xdg_activation_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_activation_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -8754,7 +8976,8 @@ pub mod xdg_activation_v1 {
                                 sender_id,
                                 id
                             );
-                            self.get_activation_token(client, sender_id, id).await
+                            let result = self.get_activation_token(client, sender_id, id).await;
+                            result
                         }
                         2u16 => {
                             let token = message
@@ -8769,7 +8992,8 @@ pub mod xdg_activation_v1 {
                                 token,
                                 surface
                             );
-                            self.activate(client, sender_id, token, surface).await
+                            let result = self.activate(client, sender_id, token, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8870,7 +9094,8 @@ pub mod xdg_activation_v1 {
                                 serial,
                                 seat
                             );
-                            self.set_serial(client, sender_id, serial, seat).await
+                            let result = self.set_serial(client, sender_id, serial, seat).await;
+                            result
                         }
                         1u16 => {
                             let app_id = message
@@ -8881,7 +9106,8 @@ pub mod xdg_activation_v1 {
                                 sender_id,
                                 app_id
                             );
-                            self.set_app_id(client, sender_id, app_id).await
+                            let result = self.set_app_id(client, sender_id, app_id).await;
+                            result
                         }
                         2u16 => {
                             let surface = message
@@ -8892,15 +9118,19 @@ pub mod xdg_activation_v1 {
                                 sender_id,
                                 surface
                             );
-                            self.set_surface(client, sender_id, surface).await
+                            let result = self.set_surface(client, sender_id, surface).await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!("xdg_activation_token_v1#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!("xdg_activation_token_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9041,7 +9271,9 @@ pub mod xdg_dialog_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_wm_dialog_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -9056,7 +9288,8 @@ pub mod xdg_dialog_v1 {
                                 id,
                                 toplevel
                             );
-                            self.get_xdg_dialog(client, sender_id, id, toplevel).await
+                            let result = self.get_xdg_dialog(client, sender_id, id, toplevel).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9111,15 +9344,19 @@ pub mod xdg_dialog_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_dialog_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             tracing::debug!("xdg_dialog_v1#{}.set_modal()", sender_id,);
-                            self.set_modal(client, sender_id).await
+                            let result = self.set_modal(client, sender_id).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("xdg_dialog_v1#{}.unset_modal()", sender_id,);
-                            self.unset_modal(client, sender_id).await
+                            let result = self.unset_modal(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9186,7 +9423,9 @@ pub mod xdg_system_bell_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_system_bell_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let surface = message.object()?;
@@ -9197,7 +9436,8 @@ pub mod xdg_system_bell_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.ring(client, sender_id, surface).await
+                            let result = self.ring(client, sender_id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9302,7 +9542,9 @@ pub mod xdg_toplevel_drag_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_toplevel_drag_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -9317,8 +9559,10 @@ pub mod xdg_toplevel_drag_v1 {
                                 id,
                                 data_source
                             );
-                            self.get_xdg_toplevel_drag(client, sender_id, id, data_source)
-                                .await
+                            let result = self
+                                .get_xdg_toplevel_drag(client, sender_id, id, data_source)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9394,7 +9638,9 @@ pub mod xdg_toplevel_drag_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_toplevel_drag_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let toplevel = message
@@ -9409,8 +9655,10 @@ pub mod xdg_toplevel_drag_v1 {
                                 x_offset,
                                 y_offset
                             );
-                            self.attach(client, sender_id, toplevel, x_offset, y_offset)
-                                .await
+                            let result = self
+                                .attach(client, sender_id, toplevel, x_offset, y_offset)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9489,7 +9737,9 @@ pub mod xdg_toplevel_icon_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_toplevel_icon_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -9500,7 +9750,8 @@ pub mod xdg_toplevel_icon_v1 {
                                 sender_id,
                                 id
                             );
-                            self.create_icon(client, sender_id, id).await
+                            let result = self.create_icon(client, sender_id, id).await;
+                            result
                         }
                         2u16 => {
                             let toplevel = message
@@ -9513,7 +9764,8 @@ pub mod xdg_toplevel_icon_v1 {
                                 toplevel,
                                 icon.as_ref().map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_icon(client, sender_id, toplevel, icon).await
+                            let result = self.set_icon(client, sender_id, toplevel, icon).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9663,7 +9915,9 @@ pub mod xdg_toplevel_icon_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_toplevel_icon_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let icon_name = message
@@ -9674,7 +9928,8 @@ pub mod xdg_toplevel_icon_v1 {
                                 sender_id,
                                 icon_name
                             );
-                            self.set_name(client, sender_id, icon_name).await
+                            let result = self.set_name(client, sender_id, icon_name).await;
+                            result
                         }
                         2u16 => {
                             let buffer = message
@@ -9687,7 +9942,8 @@ pub mod xdg_toplevel_icon_v1 {
                                 buffer,
                                 scale
                             );
-                            self.add_buffer(client, sender_id, buffer, scale).await
+                            let result = self.add_buffer(client, sender_id, buffer, scale).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9842,7 +10098,9 @@ pub mod xwayland_shell_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xwayland_shell_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -9857,8 +10115,10 @@ pub mod xwayland_shell_v1 {
                                 id,
                                 surface
                             );
-                            self.get_xwayland_surface(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_xwayland_surface(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9948,12 +10208,16 @@ pub mod xwayland_shell_v1 {
                                 serial_lo,
                                 serial_hi
                             );
-                            self.set_serial(client, sender_id, serial_lo, serial_hi)
-                                .await
+                            let result = self
+                                .set_serial(client, sender_id, serial_lo, serial_hi)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("xwayland_surface_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }

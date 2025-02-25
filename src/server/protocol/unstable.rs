@@ -158,7 +158,9 @@ pub mod fullscreen_shell_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_fullscreen_shell_v1#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let surface = message.object()?;
@@ -175,14 +177,16 @@ pub mod fullscreen_shell_unstable_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.present_surface(
-                                client,
-                                sender_id,
-                                surface,
-                                method.try_into()?,
-                                output,
-                            )
-                            .await
+                            let result = self
+                                .present_surface(
+                                    client,
+                                    sender_id,
+                                    surface,
+                                    method.try_into()?,
+                                    output,
+                                )
+                                .await;
+                            result
                         }
                         2u16 => {
                             let surface = message
@@ -203,10 +207,12 @@ pub mod fullscreen_shell_unstable_v1 {
                                 framerate,
                                 feedback
                             );
-                            self.present_surface_for_mode(
-                                client, sender_id, surface, output, framerate, feedback,
-                            )
-                            .await
+                            let result = self
+                                .present_surface_for_mode(
+                                    client, sender_id, surface, output, framerate, feedback,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -458,7 +464,9 @@ pub mod idle_inhibit_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_idle_inhibit_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -473,7 +481,9 @@ pub mod idle_inhibit_unstable_v1 {
                                 id,
                                 surface
                             );
-                            self.create_inhibitor(client, sender_id, id, surface).await
+                            let result =
+                                self.create_inhibitor(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -526,7 +536,9 @@ pub mod idle_inhibit_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_idle_inhibitor_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -585,7 +597,9 @@ pub mod input_method_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_input_method_context_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let serial = message.uint()?;
@@ -598,7 +612,8 @@ pub mod input_method_unstable_v1 {
                                 serial,
                                 text
                             );
-                            self.commit_string(client, sender_id, serial, text).await
+                            let result = self.commit_string(client, sender_id, serial, text).await;
+                            result
                         }
                         2u16 => {
                             let serial = message.uint()?;
@@ -615,8 +630,10 @@ pub mod input_method_unstable_v1 {
                                 text,
                                 commit
                             );
-                            self.preedit_string(client, sender_id, serial, text, commit)
-                                .await
+                            let result = self
+                                .preedit_string(client, sender_id, serial, text, commit)
+                                .await;
+                            result
                         }
                         3u16 => {
                             let index = message.uint()?;
@@ -629,8 +646,10 @@ pub mod input_method_unstable_v1 {
                                 length,
                                 style
                             );
-                            self.preedit_styling(client, sender_id, index, length, style)
-                                .await
+                            let result = self
+                                .preedit_styling(client, sender_id, index, length, style)
+                                .await;
+                            result
                         }
                         4u16 => {
                             let index = message.int()?;
@@ -639,7 +658,8 @@ pub mod input_method_unstable_v1 {
                                 sender_id,
                                 index
                             );
-                            self.preedit_cursor(client, sender_id, index).await
+                            let result = self.preedit_cursor(client, sender_id, index).await;
+                            result
                         }
                         5u16 => {
                             let index = message.int()?;
@@ -650,8 +670,10 @@ pub mod input_method_unstable_v1 {
                                 index,
                                 length
                             );
-                            self.delete_surrounding_text(client, sender_id, index, length)
-                                .await
+                            let result = self
+                                .delete_surrounding_text(client, sender_id, index, length)
+                                .await;
+                            result
                         }
                         6u16 => {
                             let index = message.int()?;
@@ -662,7 +684,9 @@ pub mod input_method_unstable_v1 {
                                 index,
                                 anchor
                             );
-                            self.cursor_position(client, sender_id, index, anchor).await
+                            let result =
+                                self.cursor_position(client, sender_id, index, anchor).await;
+                            result
                         }
                         7u16 => {
                             let map = message.array()?;
@@ -671,7 +695,8 @@ pub mod input_method_unstable_v1 {
                                 sender_id,
                                 map.len()
                             );
-                            self.modifiers_map(client, sender_id, map).await
+                            let result = self.modifiers_map(client, sender_id, map).await;
+                            result
                         }
                         8u16 => {
                             let serial = message.uint()?;
@@ -688,8 +713,10 @@ pub mod input_method_unstable_v1 {
                                 state,
                                 modifiers
                             );
-                            self.keysym(client, sender_id, serial, time, sym, state, modifiers)
-                                .await
+                            let result = self
+                                .keysym(client, sender_id, serial, time, sym, state, modifiers)
+                                .await;
+                            result
                         }
                         9u16 => {
                             let keyboard = message
@@ -700,7 +727,8 @@ pub mod input_method_unstable_v1 {
                                 sender_id,
                                 keyboard
                             );
-                            self.grab_keyboard(client, sender_id, keyboard).await
+                            let result = self.grab_keyboard(client, sender_id, keyboard).await;
+                            result
                         }
                         10u16 => {
                             let serial = message.uint()?;
@@ -715,7 +743,9 @@ pub mod input_method_unstable_v1 {
                                 key,
                                 state
                             );
-                            self.key(client, sender_id, serial, time, key, state).await
+                            let result =
+                                self.key(client, sender_id, serial, time, key, state).await;
+                            result
                         }
                         11u16 => {
                             let serial = message.uint()?;
@@ -732,16 +762,18 @@ pub mod input_method_unstable_v1 {
                                 mods_locked,
                                 group
                             );
-                            self.modifiers(
-                                client,
-                                sender_id,
-                                serial,
-                                mods_depressed,
-                                mods_latched,
-                                mods_locked,
-                                group,
-                            )
-                            .await
+                            let result = self
+                                .modifiers(
+                                    client,
+                                    sender_id,
+                                    serial,
+                                    mods_depressed,
+                                    mods_latched,
+                                    mods_locked,
+                                    group,
+                                )
+                                .await;
+                            result
                         }
                         12u16 => {
                             let serial = message.uint()?;
@@ -754,7 +786,8 @@ pub mod input_method_unstable_v1 {
                                 serial,
                                 language
                             );
-                            self.language(client, sender_id, serial, language).await
+                            let result = self.language(client, sender_id, serial, language).await;
+                            result
                         }
                         13u16 => {
                             let serial = message.uint()?;
@@ -765,8 +798,10 @@ pub mod input_method_unstable_v1 {
                                 serial,
                                 direction
                             );
-                            self.text_direction(client, sender_id, serial, direction)
-                                .await
+                            let result = self
+                                .text_direction(client, sender_id, serial, direction)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1173,8 +1208,10 @@ pub mod input_method_unstable_v1 {
                                 id,
                                 surface
                             );
-                            self.get_input_panel_surface(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_input_panel_surface(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1237,14 +1274,17 @@ pub mod input_method_unstable_v1 {
                                 output,
                                 position
                             );
-                            self.set_toplevel(client, sender_id, output, position).await
+                            let result =
+                                self.set_toplevel(client, sender_id, output, position).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zwp_input_panel_surface_v1#{}.set_overlay_panel()",
                                 sender_id,
                             );
-                            self.set_overlay_panel(client, sender_id).await
+                            let result = self.set_overlay_panel(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1309,7 +1349,9 @@ pub mod input_timestamps_unstable_v1 {
                                 "zwp_input_timestamps_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -1324,8 +1366,10 @@ pub mod input_timestamps_unstable_v1 {
                                 id,
                                 keyboard
                             );
-                            self.get_keyboard_timestamps(client, sender_id, id, keyboard)
-                                .await
+                            let result = self
+                                .get_keyboard_timestamps(client, sender_id, id, keyboard)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -1340,8 +1384,10 @@ pub mod input_timestamps_unstable_v1 {
                                 id,
                                 pointer
                             );
-                            self.get_pointer_timestamps(client, sender_id, id, pointer)
-                                .await
+                            let result = self
+                                .get_pointer_timestamps(client, sender_id, id, pointer)
+                                .await;
+                            result
                         }
                         3u16 => {
                             let id = message
@@ -1356,8 +1402,10 @@ pub mod input_timestamps_unstable_v1 {
                                 id,
                                 touch
                             );
-                            self.get_touch_timestamps(client, sender_id, id, touch)
-                                .await
+                            let result = self
+                                .get_touch_timestamps(client, sender_id, id, touch)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1440,7 +1488,9 @@ pub mod input_timestamps_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_input_timestamps_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1558,7 +1608,9 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                                 "zwp_keyboard_shortcuts_inhibit_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -1577,8 +1629,10 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                                 surface,
                                 seat
                             );
-                            self.inhibit_shortcuts(client, sender_id, id, surface, seat)
-                                .await
+                            let result = self
+                                .inhibit_shortcuts(client, sender_id, id, surface, seat)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1660,7 +1714,9 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                                 "zwp_keyboard_shortcuts_inhibitor_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1811,7 +1867,9 @@ pub mod linux_dmabuf_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_linux_dmabuf_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let params_id = message
@@ -1822,7 +1880,8 @@ pub mod linux_dmabuf_unstable_v1 {
                                 sender_id,
                                 params_id
                             );
-                            self.create_params(client, sender_id, params_id).await
+                            let result = self.create_params(client, sender_id, params_id).await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -1833,7 +1892,8 @@ pub mod linux_dmabuf_unstable_v1 {
                                 sender_id,
                                 id
                             );
-                            self.get_default_feedback(client, sender_id, id).await
+                            let result = self.get_default_feedback(client, sender_id, id).await;
+                            result
                         }
                         3u16 => {
                             let id = message
@@ -1848,8 +1908,10 @@ pub mod linux_dmabuf_unstable_v1 {
                                 id,
                                 surface
                             );
-                            self.get_surface_feedback(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_surface_feedback(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2062,7 +2124,9 @@ pub mod linux_dmabuf_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_linux_buffer_params_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let fd = message.fd()?;
@@ -2081,17 +2145,19 @@ pub mod linux_dmabuf_unstable_v1 {
                                 modifier_hi,
                                 modifier_lo
                             );
-                            self.add(
-                                client,
-                                sender_id,
-                                fd,
-                                plane_idx,
-                                offset,
-                                stride,
-                                modifier_hi,
-                                modifier_lo,
-                            )
-                            .await
+                            let result = self
+                                .add(
+                                    client,
+                                    sender_id,
+                                    fd,
+                                    plane_idx,
+                                    offset,
+                                    stride,
+                                    modifier_hi,
+                                    modifier_lo,
+                                )
+                                .await;
+                            result
                         }
                         2u16 => {
                             let width = message.int()?;
@@ -2106,8 +2172,10 @@ pub mod linux_dmabuf_unstable_v1 {
                                 format,
                                 flags
                             );
-                            self.create(client, sender_id, width, height, format, flags.try_into()?)
-                                .await
+                            let result = self
+                                .create(client, sender_id, width, height, format, flags.try_into()?)
+                                .await;
+                            result
                         }
                         3u16 => {
                             let buffer_id = message
@@ -2126,16 +2194,18 @@ pub mod linux_dmabuf_unstable_v1 {
                                 format,
                                 flags
                             );
-                            self.create_immed(
-                                client,
-                                sender_id,
-                                buffer_id,
-                                width,
-                                height,
-                                format,
-                                flags.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .create_immed(
+                                    client,
+                                    sender_id,
+                                    buffer_id,
+                                    width,
+                                    height,
+                                    format,
+                                    flags.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2383,7 +2453,9 @@ pub mod linux_dmabuf_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_linux_dmabuf_feedback_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2703,7 +2775,9 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                                 "zwp_linux_explicit_synchronization_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -2718,8 +2792,10 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                                 id,
                                 surface
                             );
-                            self.get_synchronization(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_synchronization(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2841,7 +2917,9 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                                 "zwp_linux_surface_synchronization_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let fd = message.fd()?;
@@ -2850,7 +2928,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                                 sender_id,
                                 fd.as_raw_fd()
                             );
-                            self.set_acquire_fence(client, sender_id, fd).await
+                            let result = self.set_acquire_fence(client, sender_id, fd).await;
+                            result
                         }
                         2u16 => {
                             let release = message
@@ -2861,7 +2940,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                                 sender_id,
                                 release
                             );
-                            self.get_release(client, sender_id, release).await
+                            let result = self.get_release(client, sender_id, release).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3133,7 +3213,9 @@ pub mod pointer_constraints_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_pointer_constraints_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -3158,16 +3240,18 @@ pub mod pointer_constraints_unstable_v1 {
                                     .map_or("null".to_string(), |v| v.to_string()),
                                 lifetime
                             );
-                            self.lock_pointer(
-                                client,
-                                sender_id,
-                                id,
-                                surface,
-                                pointer,
-                                region,
-                                lifetime.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .lock_pointer(
+                                    client,
+                                    sender_id,
+                                    id,
+                                    surface,
+                                    pointer,
+                                    region,
+                                    lifetime.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -3192,16 +3276,18 @@ pub mod pointer_constraints_unstable_v1 {
                                     .map_or("null".to_string(), |v| v.to_string()),
                                 lifetime
                             );
-                            self.confine_pointer(
-                                client,
-                                sender_id,
-                                id,
-                                surface,
-                                pointer,
-                                region,
-                                lifetime.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .confine_pointer(
+                                    client,
+                                    sender_id,
+                                    id,
+                                    surface,
+                                    pointer,
+                                    region,
+                                    lifetime.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3329,7 +3415,9 @@ pub mod pointer_constraints_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_locked_pointer_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let surface_x = message.fixed()?;
@@ -3340,8 +3428,10 @@ pub mod pointer_constraints_unstable_v1 {
                                 surface_x,
                                 surface_y
                             );
-                            self.set_cursor_position_hint(client, sender_id, surface_x, surface_y)
-                                .await
+                            let result = self
+                                .set_cursor_position_hint(client, sender_id, surface_x, surface_y)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let region = message.object()?;
@@ -3352,7 +3442,8 @@ pub mod pointer_constraints_unstable_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_region(client, sender_id, region).await
+                            let result = self.set_region(client, sender_id, region).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3465,7 +3556,9 @@ pub mod pointer_constraints_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_confined_pointer_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let region = message.object()?;
@@ -3476,7 +3569,8 @@ pub mod pointer_constraints_unstable_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_region(client, sender_id, region).await
+                            let result = self.set_region(client, sender_id, region).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3596,7 +3690,9 @@ pub mod pointer_gestures_unstable_v1 {
                                 id,
                                 pointer
                             );
-                            self.get_swipe_gesture(client, sender_id, id, pointer).await
+                            let result =
+                                self.get_swipe_gesture(client, sender_id, id, pointer).await;
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -3611,11 +3707,15 @@ pub mod pointer_gestures_unstable_v1 {
                                 id,
                                 pointer
                             );
-                            self.get_pinch_gesture(client, sender_id, id, pointer).await
+                            let result =
+                                self.get_pinch_gesture(client, sender_id, id, pointer).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("zwp_pointer_gestures_v1#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         3u16 => {
                             let id = message
@@ -3630,7 +3730,9 @@ pub mod pointer_gestures_unstable_v1 {
                                 id,
                                 pointer
                             );
-                            self.get_hold_gesture(client, sender_id, id, pointer).await
+                            let result =
+                                self.get_hold_gesture(client, sender_id, id, pointer).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3706,7 +3808,9 @@ pub mod pointer_gestures_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_pointer_gesture_swipe_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3851,7 +3955,9 @@ pub mod pointer_gestures_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_pointer_gesture_pinch_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4011,7 +4117,9 @@ pub mod pointer_gestures_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_pointer_gesture_hold_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4165,7 +4273,8 @@ pub mod wp_primary_selection_unstable_v1 {
                                 sender_id,
                                 id
                             );
-                            self.create_source(client, sender_id, id).await
+                            let result = self.create_source(client, sender_id, id).await;
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -4180,14 +4289,17 @@ pub mod wp_primary_selection_unstable_v1 {
                                 id,
                                 seat
                             );
-                            self.get_device(client, sender_id, id, seat).await
+                            let result = self.get_device(client, sender_id, id, seat).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!(
                                 "zwp_primary_selection_device_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4244,14 +4356,18 @@ pub mod wp_primary_selection_unstable_v1 {
                                     .map_or("null".to_string(), |v| v.to_string()),
                                 serial
                             );
-                            self.set_selection(client, sender_id, source, serial).await
+                            let result =
+                                self.set_selection(client, sender_id, source, serial).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zwp_primary_selection_device_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4363,14 +4479,17 @@ pub mod wp_primary_selection_unstable_v1 {
                                 mime_type,
                                 fd.as_raw_fd()
                             );
-                            self.receive(client, sender_id, mime_type, fd).await
+                            let result = self.receive(client, sender_id, mime_type, fd).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zwp_primary_selection_offer_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4454,14 +4573,17 @@ pub mod wp_primary_selection_unstable_v1 {
                                 sender_id,
                                 mime_type
                             );
-                            self.offer(client, sender_id, mime_type).await
+                            let result = self.offer(client, sender_id, mime_type).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zwp_primary_selection_source_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4578,7 +4700,9 @@ pub mod relative_pointer_unstable_v1 {
                                 "zwp_relative_pointer_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -4593,8 +4717,10 @@ pub mod relative_pointer_unstable_v1 {
                                 id,
                                 pointer
                             );
-                            self.get_relative_pointer(client, sender_id, id, pointer)
-                                .await
+                            let result = self
+                                .get_relative_pointer(client, sender_id, id, pointer)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4641,7 +4767,9 @@ pub mod relative_pointer_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_relative_pointer_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4841,12 +4969,16 @@ pub mod tablet_unstable_v1 {
                                 tablet_seat,
                                 seat
                             );
-                            self.get_tablet_seat(client, sender_id, tablet_seat, seat)
-                                .await
+                            let result = self
+                                .get_tablet_seat(client, sender_id, tablet_seat, seat)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4892,7 +5024,9 @@ pub mod tablet_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_tablet_seat_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5138,14 +5272,18 @@ pub mod tablet_unstable_v1 {
                                 hotspot_x,
                                 hotspot_y
                             );
-                            self.set_cursor(
-                                client, sender_id, serial, surface, hotspot_x, hotspot_y,
-                            )
-                            .await
+                            let result = self
+                                .set_cursor(
+                                    client, sender_id, serial, surface, hotspot_x, hotspot_y,
+                                )
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_tool_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5735,7 +5873,9 @@ pub mod tablet_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_tablet_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5973,12 +6113,16 @@ pub mod tablet_unstable_v2 {
                                 tablet_seat,
                                 seat
                             );
-                            self.get_tablet_seat(client, sender_id, tablet_seat, seat)
-                                .await
+                            let result = self
+                                .get_tablet_seat(client, sender_id, tablet_seat, seat)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_manager_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6024,7 +6168,9 @@ pub mod tablet_unstable_v2 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_tablet_seat_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6297,14 +6443,18 @@ pub mod tablet_unstable_v2 {
                                 hotspot_x,
                                 hotspot_y
                             );
-                            self.set_cursor(
-                                client, sender_id, serial, surface, hotspot_x, hotspot_y,
-                            )
-                            .await
+                            let result = self
+                                .set_cursor(
+                                    client, sender_id, serial, surface, hotspot_x, hotspot_y,
+                                )
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_tool_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6893,7 +7043,9 @@ pub mod tablet_unstable_v2 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_tablet_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7082,12 +7234,16 @@ pub mod tablet_unstable_v2 {
                                 description,
                                 serial
                             );
-                            self.set_feedback(client, sender_id, description, serial)
-                                .await
+                            let result = self
+                                .set_feedback(client, sender_id, description, serial)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_pad_ring_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7287,12 +7443,16 @@ pub mod tablet_unstable_v2 {
                                 description,
                                 serial
                             );
-                            self.set_feedback(client, sender_id, description, serial)
-                                .await
+                            let result = self
+                                .set_feedback(client, sender_id, description, serial)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_pad_strip_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7484,7 +7644,9 @@ pub mod tablet_unstable_v2 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_tablet_pad_group_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7753,12 +7915,16 @@ pub mod tablet_unstable_v2 {
                                 description,
                                 serial
                             );
-                            self.set_feedback(client, sender_id, button, description, serial)
-                                .await
+                            let result = self
+                                .set_feedback(client, sender_id, button, description, serial)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_pad_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8194,26 +8360,31 @@ pub mod text_input_unstable_v1 {
                                 seat,
                                 surface
                             );
-                            self.activate(client, sender_id, seat, surface).await
+                            let result = self.activate(client, sender_id, seat, surface).await;
+                            result
                         }
                         1u16 => {
                             let seat = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("zwp_text_input_v1#{}.deactivate({})", sender_id, seat);
-                            self.deactivate(client, sender_id, seat).await
+                            let result = self.deactivate(client, sender_id, seat).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("zwp_text_input_v1#{}.show_input_panel()", sender_id,);
-                            self.show_input_panel(client, sender_id).await
+                            let result = self.show_input_panel(client, sender_id).await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!("zwp_text_input_v1#{}.hide_input_panel()", sender_id,);
-                            self.hide_input_panel(client, sender_id).await
+                            let result = self.hide_input_panel(client, sender_id).await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!("zwp_text_input_v1#{}.reset()", sender_id,);
-                            self.reset(client, sender_id).await
+                            let result = self.reset(client, sender_id).await;
+                            result
                         }
                         5u16 => {
                             let text = message
@@ -8228,8 +8399,10 @@ pub mod text_input_unstable_v1 {
                                 cursor,
                                 anchor
                             );
-                            self.set_surrounding_text(client, sender_id, text, cursor, anchor)
-                                .await
+                            let result = self
+                                .set_surrounding_text(client, sender_id, text, cursor, anchor)
+                                .await;
+                            result
                         }
                         6u16 => {
                             let hint = message.uint()?;
@@ -8240,13 +8413,15 @@ pub mod text_input_unstable_v1 {
                                 hint,
                                 purpose
                             );
-                            self.set_content_type(
-                                client,
-                                sender_id,
-                                hint.try_into()?,
-                                purpose.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_content_type(
+                                    client,
+                                    sender_id,
+                                    hint.try_into()?,
+                                    purpose.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         7u16 => {
                             let x = message.int()?;
@@ -8261,8 +8436,10 @@ pub mod text_input_unstable_v1 {
                                 width,
                                 height
                             );
-                            self.set_cursor_rectangle(client, sender_id, x, y, width, height)
-                                .await
+                            let result = self
+                                .set_cursor_rectangle(client, sender_id, x, y, width, height)
+                                .await;
+                            result
                         }
                         8u16 => {
                             let language = message
@@ -8273,8 +8450,10 @@ pub mod text_input_unstable_v1 {
                                 sender_id,
                                 language
                             );
-                            self.set_preferred_language(client, sender_id, language)
-                                .await
+                            let result = self
+                                .set_preferred_language(client, sender_id, language)
+                                .await;
+                            result
                         }
                         9u16 => {
                             let serial = message.uint()?;
@@ -8283,7 +8462,8 @@ pub mod text_input_unstable_v1 {
                                 sender_id,
                                 serial
                             );
-                            self.commit_state(client, sender_id, serial).await
+                            let result = self.commit_state(client, sender_id, serial).await;
+                            result
                         }
                         10u16 => {
                             let button = message.uint()?;
@@ -8294,7 +8474,8 @@ pub mod text_input_unstable_v1 {
                                 button,
                                 index
                             );
-                            self.invoke_action(client, sender_id, button, index).await
+                            let result = self.invoke_action(client, sender_id, button, index).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8791,7 +8972,8 @@ pub mod text_input_unstable_v1 {
                                 sender_id,
                                 id
                             );
-                            self.create_text_input(client, sender_id, id).await
+                            let result = self.create_text_input(client, sender_id, id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8971,15 +9153,19 @@ pub mod text_input_unstable_v3 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_text_input_v3#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwp_text_input_v3#{}.enable()", sender_id,);
-                            self.enable(client, sender_id).await
+                            let result = self.enable(client, sender_id).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("zwp_text_input_v3#{}.disable()", sender_id,);
-                            self.disable(client, sender_id).await
+                            let result = self.disable(client, sender_id).await;
+                            result
                         }
                         3u16 => {
                             let text = message
@@ -8994,8 +9180,10 @@ pub mod text_input_unstable_v3 {
                                 cursor,
                                 anchor
                             );
-                            self.set_surrounding_text(client, sender_id, text, cursor, anchor)
-                                .await
+                            let result = self
+                                .set_surrounding_text(client, sender_id, text, cursor, anchor)
+                                .await;
+                            result
                         }
                         4u16 => {
                             let cause = message.uint()?;
@@ -9004,8 +9192,10 @@ pub mod text_input_unstable_v3 {
                                 sender_id,
                                 cause
                             );
-                            self.set_text_change_cause(client, sender_id, cause.try_into()?)
-                                .await
+                            let result = self
+                                .set_text_change_cause(client, sender_id, cause.try_into()?)
+                                .await;
+                            result
                         }
                         5u16 => {
                             let hint = message.uint()?;
@@ -9016,13 +9206,15 @@ pub mod text_input_unstable_v3 {
                                 hint,
                                 purpose
                             );
-                            self.set_content_type(
-                                client,
-                                sender_id,
-                                hint.try_into()?,
-                                purpose.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_content_type(
+                                    client,
+                                    sender_id,
+                                    hint.try_into()?,
+                                    purpose.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         6u16 => {
                             let x = message.int()?;
@@ -9037,12 +9229,15 @@ pub mod text_input_unstable_v3 {
                                 width,
                                 height
                             );
-                            self.set_cursor_rectangle(client, sender_id, x, y, width, height)
-                                .await
+                            let result = self
+                                .set_cursor_rectangle(client, sender_id, x, y, width, height)
+                                .await;
+                            result
                         }
                         7u16 => {
                             tracing::debug!("zwp_text_input_v3#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9459,7 +9654,9 @@ pub mod text_input_unstable_v3 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_text_input_manager_v3#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -9474,7 +9671,8 @@ pub mod text_input_unstable_v3 {
                                 id,
                                 seat
                             );
-                            self.get_text_input(client, sender_id, id, seat).await
+                            let result = self.get_text_input(client, sender_id, id, seat).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9540,7 +9738,9 @@ pub mod xdg_decoration_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_decoration_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -9555,8 +9755,10 @@ pub mod xdg_decoration_unstable_v1 {
                                 id,
                                 toplevel
                             );
-                            self.get_toplevel_decoration(client, sender_id, id, toplevel)
-                                .await
+                            let result = self
+                                .get_toplevel_decoration(client, sender_id, id, toplevel)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9665,7 +9867,9 @@ pub mod xdg_decoration_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_toplevel_decoration_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let mode = message.uint()?;
@@ -9674,14 +9878,16 @@ pub mod xdg_decoration_unstable_v1 {
                                 sender_id,
                                 mode
                             );
-                            self.set_mode(client, sender_id, mode.try_into()?).await
+                            let result = self.set_mode(client, sender_id, mode.try_into()?).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!(
                                 "zxdg_toplevel_decoration_v1#{}.unset_mode()",
                                 sender_id,
                             );
-                            self.unset_mode(client, sender_id).await
+                            let result = self.unset_mode(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9813,7 +10019,9 @@ pub mod xdg_foreign_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_exporter_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -9828,7 +10036,8 @@ pub mod xdg_foreign_unstable_v1 {
                                 id,
                                 surface
                             );
-                            self.export(client, sender_id, id, surface).await
+                            let result = self.export(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9880,7 +10089,9 @@ pub mod xdg_foreign_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_importer_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -9895,7 +10106,8 @@ pub mod xdg_foreign_unstable_v1 {
                                 id,
                                 handle
                             );
-                            self.import(client, sender_id, id, handle).await
+                            let result = self.import(client, sender_id, id, handle).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9945,7 +10157,9 @@ pub mod xdg_foreign_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_exported_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -10004,7 +10218,9 @@ pub mod xdg_foreign_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_imported_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let surface = message
@@ -10015,7 +10231,8 @@ pub mod xdg_foreign_unstable_v1 {
                                 sender_id,
                                 surface
                             );
-                            self.set_parent_of(client, sender_id, surface).await
+                            let result = self.set_parent_of(client, sender_id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -10135,7 +10352,9 @@ pub mod xdg_foreign_unstable_v2 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_exporter_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -10150,7 +10369,8 @@ pub mod xdg_foreign_unstable_v2 {
                                 id,
                                 surface
                             );
-                            self.export_toplevel(client, sender_id, id, surface).await
+                            let result = self.export_toplevel(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -10203,7 +10423,9 @@ pub mod xdg_foreign_unstable_v2 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_importer_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -10218,7 +10440,8 @@ pub mod xdg_foreign_unstable_v2 {
                                 id,
                                 handle
                             );
-                            self.import_toplevel(client, sender_id, id, handle).await
+                            let result = self.import_toplevel(client, sender_id, id, handle).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -10268,7 +10491,9 @@ pub mod xdg_foreign_unstable_v2 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_exported_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -10350,7 +10575,9 @@ pub mod xdg_foreign_unstable_v2 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_imported_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let surface = message
@@ -10361,7 +10588,8 @@ pub mod xdg_foreign_unstable_v2 {
                                 sender_id,
                                 surface
                             );
-                            self.set_parent_of(client, sender_id, surface).await
+                            let result = self.set_parent_of(client, sender_id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -10456,7 +10684,9 @@ pub mod xdg_output_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_output_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -10471,7 +10701,8 @@ pub mod xdg_output_unstable_v1 {
                                 id,
                                 output
                             );
-                            self.get_xdg_output(client, sender_id, id, output).await
+                            let result = self.get_xdg_output(client, sender_id, id, output).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -10524,7 +10755,9 @@ pub mod xdg_output_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_output_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -10804,7 +11037,9 @@ pub mod xdg_shell_unstable_v5 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_shell#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let version = message.int()?;
@@ -10813,7 +11048,9 @@ pub mod xdg_shell_unstable_v5 {
                                 sender_id,
                                 version
                             );
-                            self.use_unstable_version(client, sender_id, version).await
+                            let result =
+                                self.use_unstable_version(client, sender_id, version).await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -10828,7 +11065,8 @@ pub mod xdg_shell_unstable_v5 {
                                 id,
                                 surface
                             );
-                            self.get_xdg_surface(client, sender_id, id, surface).await
+                            let result = self.get_xdg_surface(client, sender_id, id, surface).await;
+                            result
                         }
                         3u16 => {
                             let id = message
@@ -10857,15 +11095,18 @@ pub mod xdg_shell_unstable_v5 {
                                 x,
                                 y
                             );
-                            self.get_xdg_popup(
-                                client, sender_id, id, surface, parent, seat, serial, x, y,
-                            )
-                            .await
+                            let result = self
+                                .get_xdg_popup(
+                                    client, sender_id, id, surface, parent, seat, serial, x, y,
+                                )
+                                .await;
+                            result
                         }
                         4u16 => {
                             let serial = message.uint()?;
                             tracing::debug!("xdg_shell#{}.pong({})", sender_id, serial);
-                            self.pong(client, sender_id, serial).await
+                            let result = self.pong(client, sender_id, serial).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -11091,7 +11332,9 @@ pub mod xdg_shell_unstable_v5 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_surface#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let parent = message.object()?;
@@ -11102,21 +11345,24 @@ pub mod xdg_shell_unstable_v5 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_parent(client, sender_id, parent).await
+                            let result = self.set_parent(client, sender_id, parent).await;
+                            result
                         }
                         2u16 => {
                             let title = message
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("xdg_surface#{}.set_title(\"{}\")", sender_id, title);
-                            self.set_title(client, sender_id, title).await
+                            let result = self.set_title(client, sender_id, title).await;
+                            result
                         }
                         3u16 => {
                             let app_id = message
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("xdg_surface#{}.set_app_id(\"{}\")", sender_id, app_id);
-                            self.set_app_id(client, sender_id, app_id).await
+                            let result = self.set_app_id(client, sender_id, app_id).await;
+                            result
                         }
                         4u16 => {
                             let seat = message
@@ -11133,8 +11379,10 @@ pub mod xdg_shell_unstable_v5 {
                                 x,
                                 y
                             );
-                            self.show_window_menu(client, sender_id, seat, serial, x, y)
-                                .await
+                            let result = self
+                                .show_window_menu(client, sender_id, seat, serial, x, y)
+                                .await;
+                            result
                         }
                         5u16 => {
                             let seat = message
@@ -11142,7 +11390,8 @@ pub mod xdg_shell_unstable_v5 {
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             let serial = message.uint()?;
                             tracing::debug!("xdg_surface#{}.move({}, {})", sender_id, seat, serial);
-                            self.r#move(client, sender_id, seat, serial).await
+                            let result = self.r#move(client, sender_id, seat, serial).await;
+                            result
                         }
                         6u16 => {
                             let seat = message
@@ -11157,12 +11406,14 @@ pub mod xdg_shell_unstable_v5 {
                                 serial,
                                 edges
                             );
-                            self.resize(client, sender_id, seat, serial, edges).await
+                            let result = self.resize(client, sender_id, seat, serial, edges).await;
+                            result
                         }
                         7u16 => {
                             let serial = message.uint()?;
                             tracing::debug!("xdg_surface#{}.ack_configure({})", sender_id, serial);
-                            self.ack_configure(client, sender_id, serial).await
+                            let result = self.ack_configure(client, sender_id, serial).await;
+                            result
                         }
                         8u16 => {
                             let x = message.int()?;
@@ -11177,16 +11428,20 @@ pub mod xdg_shell_unstable_v5 {
                                 width,
                                 height
                             );
-                            self.set_window_geometry(client, sender_id, x, y, width, height)
-                                .await
+                            let result = self
+                                .set_window_geometry(client, sender_id, x, y, width, height)
+                                .await;
+                            result
                         }
                         9u16 => {
                             tracing::debug!("xdg_surface#{}.set_maximized()", sender_id,);
-                            self.set_maximized(client, sender_id).await
+                            let result = self.set_maximized(client, sender_id).await;
+                            result
                         }
                         10u16 => {
                             tracing::debug!("xdg_surface#{}.unset_maximized()", sender_id,);
-                            self.unset_maximized(client, sender_id).await
+                            let result = self.unset_maximized(client, sender_id).await;
+                            result
                         }
                         11u16 => {
                             let output = message.object()?;
@@ -11197,15 +11452,18 @@ pub mod xdg_shell_unstable_v5 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_fullscreen(client, sender_id, output).await
+                            let result = self.set_fullscreen(client, sender_id, output).await;
+                            result
                         }
                         12u16 => {
                             tracing::debug!("xdg_surface#{}.unset_fullscreen()", sender_id,);
-                            self.unset_fullscreen(client, sender_id).await
+                            let result = self.unset_fullscreen(client, sender_id).await;
+                            result
                         }
                         13u16 => {
                             tracing::debug!("xdg_surface#{}.set_minimized()", sender_id,);
-                            self.set_minimized(client, sender_id).await
+                            let result = self.set_minimized(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -11644,7 +11902,9 @@ pub mod xdg_shell_unstable_v5 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_popup#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -11741,7 +12001,9 @@ pub mod xdg_shell_unstable_v6 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_shell_v6#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -11752,7 +12014,8 @@ pub mod xdg_shell_unstable_v6 {
                                 sender_id,
                                 id
                             );
-                            self.create_positioner(client, sender_id, id).await
+                            let result = self.create_positioner(client, sender_id, id).await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -11767,12 +12030,14 @@ pub mod xdg_shell_unstable_v6 {
                                 id,
                                 surface
                             );
-                            self.get_xdg_surface(client, sender_id, id, surface).await
+                            let result = self.get_xdg_surface(client, sender_id, id, surface).await;
+                            result
                         }
                         3u16 => {
                             let serial = message.uint()?;
                             tracing::debug!("zxdg_shell_v6#{}.pong({})", sender_id, serial);
-                            self.pong(client, sender_id, serial).await
+                            let result = self.pong(client, sender_id, serial).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -11947,7 +12212,9 @@ pub mod xdg_shell_unstable_v6 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_positioner_v6#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let width = message.int()?;
@@ -11958,7 +12225,8 @@ pub mod xdg_shell_unstable_v6 {
                                 width,
                                 height
                             );
-                            self.set_size(client, sender_id, width, height).await
+                            let result = self.set_size(client, sender_id, width, height).await;
+                            result
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -11973,8 +12241,10 @@ pub mod xdg_shell_unstable_v6 {
                                 width,
                                 height
                             );
-                            self.set_anchor_rect(client, sender_id, x, y, width, height)
-                                .await
+                            let result = self
+                                .set_anchor_rect(client, sender_id, x, y, width, height)
+                                .await;
+                            result
                         }
                         3u16 => {
                             let anchor = message.uint()?;
@@ -11983,7 +12253,9 @@ pub mod xdg_shell_unstable_v6 {
                                 sender_id,
                                 anchor
                             );
-                            self.set_anchor(client, sender_id, anchor.try_into()?).await
+                            let result =
+                                self.set_anchor(client, sender_id, anchor.try_into()?).await;
+                            result
                         }
                         4u16 => {
                             let gravity = message.uint()?;
@@ -11992,8 +12264,10 @@ pub mod xdg_shell_unstable_v6 {
                                 sender_id,
                                 gravity
                             );
-                            self.set_gravity(client, sender_id, gravity.try_into()?)
-                                .await
+                            let result = self
+                                .set_gravity(client, sender_id, gravity.try_into()?)
+                                .await;
+                            result
                         }
                         5u16 => {
                             let constraint_adjustment = message.uint()?;
@@ -12002,8 +12276,10 @@ pub mod xdg_shell_unstable_v6 {
                                 sender_id,
                                 constraint_adjustment
                             );
-                            self.set_constraint_adjustment(client, sender_id, constraint_adjustment)
-                                .await
+                            let result = self
+                                .set_constraint_adjustment(client, sender_id, constraint_adjustment)
+                                .await;
+                            result
                         }
                         6u16 => {
                             let x = message.int()?;
@@ -12014,7 +12290,8 @@ pub mod xdg_shell_unstable_v6 {
                                 x,
                                 y
                             );
-                            self.set_offset(client, sender_id, x, y).await
+                            let result = self.set_offset(client, sender_id, x, y).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -12200,14 +12477,17 @@ pub mod xdg_shell_unstable_v6 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_surface_v6#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("zxdg_surface_v6#{}.get_toplevel({})", sender_id, id);
-                            self.get_toplevel(client, sender_id, id).await
+                            let result = self.get_toplevel(client, sender_id, id).await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -12226,8 +12506,10 @@ pub mod xdg_shell_unstable_v6 {
                                 parent,
                                 positioner
                             );
-                            self.get_popup(client, sender_id, id, parent, positioner)
-                                .await
+                            let result = self
+                                .get_popup(client, sender_id, id, parent, positioner)
+                                .await;
+                            result
                         }
                         3u16 => {
                             let x = message.int()?;
@@ -12242,8 +12524,10 @@ pub mod xdg_shell_unstable_v6 {
                                 width,
                                 height
                             );
-                            self.set_window_geometry(client, sender_id, x, y, width, height)
-                                .await
+                            let result = self
+                                .set_window_geometry(client, sender_id, x, y, width, height)
+                                .await;
+                            result
                         }
                         4u16 => {
                             let serial = message.uint()?;
@@ -12252,7 +12536,8 @@ pub mod xdg_shell_unstable_v6 {
                                 sender_id,
                                 serial
                             );
-                            self.ack_configure(client, sender_id, serial).await
+                            let result = self.ack_configure(client, sender_id, serial).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -12485,7 +12770,9 @@ pub mod xdg_shell_unstable_v6 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_toplevel_v6#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let parent = message.object()?;
@@ -12496,7 +12783,8 @@ pub mod xdg_shell_unstable_v6 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_parent(client, sender_id, parent).await
+                            let result = self.set_parent(client, sender_id, parent).await;
+                            result
                         }
                         2u16 => {
                             let title = message
@@ -12507,7 +12795,8 @@ pub mod xdg_shell_unstable_v6 {
                                 sender_id,
                                 title
                             );
-                            self.set_title(client, sender_id, title).await
+                            let result = self.set_title(client, sender_id, title).await;
+                            result
                         }
                         3u16 => {
                             let app_id = message
@@ -12518,7 +12807,8 @@ pub mod xdg_shell_unstable_v6 {
                                 sender_id,
                                 app_id
                             );
-                            self.set_app_id(client, sender_id, app_id).await
+                            let result = self.set_app_id(client, sender_id, app_id).await;
+                            result
                         }
                         4u16 => {
                             let seat = message
@@ -12535,8 +12825,10 @@ pub mod xdg_shell_unstable_v6 {
                                 x,
                                 y
                             );
-                            self.show_window_menu(client, sender_id, seat, serial, x, y)
-                                .await
+                            let result = self
+                                .show_window_menu(client, sender_id, seat, serial, x, y)
+                                .await;
+                            result
                         }
                         5u16 => {
                             let seat = message
@@ -12549,7 +12841,8 @@ pub mod xdg_shell_unstable_v6 {
                                 seat,
                                 serial
                             );
-                            self.r#move(client, sender_id, seat, serial).await
+                            let result = self.r#move(client, sender_id, seat, serial).await;
+                            result
                         }
                         6u16 => {
                             let seat = message
@@ -12564,7 +12857,8 @@ pub mod xdg_shell_unstable_v6 {
                                 serial,
                                 edges
                             );
-                            self.resize(client, sender_id, seat, serial, edges).await
+                            let result = self.resize(client, sender_id, seat, serial, edges).await;
+                            result
                         }
                         7u16 => {
                             let width = message.int()?;
@@ -12575,7 +12869,8 @@ pub mod xdg_shell_unstable_v6 {
                                 width,
                                 height
                             );
-                            self.set_max_size(client, sender_id, width, height).await
+                            let result = self.set_max_size(client, sender_id, width, height).await;
+                            result
                         }
                         8u16 => {
                             let width = message.int()?;
@@ -12586,15 +12881,18 @@ pub mod xdg_shell_unstable_v6 {
                                 width,
                                 height
                             );
-                            self.set_min_size(client, sender_id, width, height).await
+                            let result = self.set_min_size(client, sender_id, width, height).await;
+                            result
                         }
                         9u16 => {
                             tracing::debug!("zxdg_toplevel_v6#{}.set_maximized()", sender_id,);
-                            self.set_maximized(client, sender_id).await
+                            let result = self.set_maximized(client, sender_id).await;
+                            result
                         }
                         10u16 => {
                             tracing::debug!("zxdg_toplevel_v6#{}.unset_maximized()", sender_id,);
-                            self.unset_maximized(client, sender_id).await
+                            let result = self.unset_maximized(client, sender_id).await;
+                            result
                         }
                         11u16 => {
                             let output = message.object()?;
@@ -12605,15 +12903,18 @@ pub mod xdg_shell_unstable_v6 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_fullscreen(client, sender_id, output).await
+                            let result = self.set_fullscreen(client, sender_id, output).await;
+                            result
                         }
                         12u16 => {
                             tracing::debug!("zxdg_toplevel_v6#{}.unset_fullscreen()", sender_id,);
-                            self.unset_fullscreen(client, sender_id).await
+                            let result = self.unset_fullscreen(client, sender_id).await;
+                            result
                         }
                         13u16 => {
                             tracing::debug!("zxdg_toplevel_v6#{}.set_minimized()", sender_id,);
-                            self.set_minimized(client, sender_id).await
+                            let result = self.set_minimized(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -13069,7 +13370,9 @@ pub mod xdg_shell_unstable_v6 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zxdg_popup_v6#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let seat = message
@@ -13082,7 +13385,8 @@ pub mod xdg_shell_unstable_v6 {
                                 seat,
                                 serial
                             );
-                            self.grab(client, sender_id, seat, serial).await
+                            let result = self.grab(client, sender_id, seat, serial).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -13265,7 +13569,9 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                                 "zwp_xwayland_keyboard_grab_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -13284,8 +13590,10 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                                 surface,
                                 seat
                             );
-                            self.grab_keyboard(client, sender_id, id, surface, seat)
-                                .await
+                            let result = self
+                                .grab_keyboard(client, sender_id, id, surface, seat)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -13349,7 +13657,9 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                                 "zwp_xwayland_keyboard_grab_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }

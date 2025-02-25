@@ -10,6 +10,9 @@ pub fn derive_dispatcher(input: TokenStream) -> TokenStream {
     quote! {
         #[waynest::async_trait::async_trait]
         impl waynest::server::Dispatcher for #ident {
+            fn as_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync + 'static> {
+                self
+            }
             async fn dispatch(
                 &self,
                 client: &mut waynest::server::Client,

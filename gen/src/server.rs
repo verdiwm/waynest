@@ -4,7 +4,7 @@ use quote::{format_ident, quote};
 use tracing::debug;
 
 use crate::{
-    parser::{ArgType, Interface, Pair},
+    parser::{ArgType, Interface, MessageType, Pair},
     utils::{description_to_docs, find_enum, make_ident, write_enums},
 };
 
@@ -168,12 +168,22 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
             request = request.name.to_snek_case()
         );
 
+        let destructor = if request.ty == Some(MessageType::Destructor) {
+            quote! {
+                client.remove(sender_id);
+            }
+        } else {
+            Default::default()
+        };
+
         dispatchers.push(quote! {
             #opcode => {
                 #(#setters)*
 
                 tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
-                self.#name(#(#args),*).await
+                let result = self.#name(#(#args),*).await;
+                #destructor
+                result
             }
         });
     }
