@@ -21,7 +21,7 @@
 	url = https://github.com/misyltoad/frog-protocols.git
 [submodule "wayland-ivi-extension"]
 	path = protocols/wayland-ivi-extension
-	url = git@github.com:COVESA/wayland-ivi-extension.git
+	url = https://github.com/COVESA/wayland-ivi-extension.git
 [submodule "hyprland-protocols"]
 	path = protocols/hyprland-protocols
 	url = https://github.com/hyprwm/hyprland-protocols.git
