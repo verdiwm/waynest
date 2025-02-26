@@ -47,11 +47,15 @@ impl Listener {
 
         // FIXME: actually implement this
         Ok(Self {
-            unix_listener: UnixListener::bind(path)?,
+            unix_listener: UnixListener::bind(&path)?,
             // _lock: unsafe { OwnedFd::from_raw_fd(5) },
-            socket_path: PathBuf::new(),
+            socket_path: path.as_ref().to_path_buf(),
             lock_path: PathBuf::new(),
         })
+    }
+
+    pub fn socket_path(&self) -> &Path {
+        &self.socket_path
     }
 }
 
