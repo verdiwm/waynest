@@ -48,7 +48,9 @@ pub mod alpha_modifier_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_alpha_modifier_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -63,7 +65,8 @@ pub mod alpha_modifier_v1 {
                                 id,
                                 surface
                             );
-                            self.get_surface(client, sender_id, id, surface).await
+                            let result = self.get_surface(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -71,14 +74,18 @@ pub mod alpha_modifier_v1 {
             }
             #[doc = "Destroy the alpha modifier manager. This doesn't destroy objects"]
             #[doc = "created with the manager."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Create a new alpha modifier surface object associated with the"]
             #[doc = "given wl_surface. If there is already such an object associated with"]
             #[doc = "the wl_surface, the already_constructed error will be raised."]
+            #[allow(unused)]
             fn get_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -135,7 +142,9 @@ pub mod alpha_modifier_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_alpha_modifier_surface_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let factor = message.uint()?;
@@ -144,7 +153,8 @@ pub mod alpha_modifier_v1 {
                                 sender_id,
                                 factor
                             );
-                            self.set_multiplier(client, sender_id, factor).await
+                            let result = self.set_multiplier(client, sender_id, factor).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -153,11 +163,14 @@ pub mod alpha_modifier_v1 {
             #[doc = "This destroys the object, and is equivalent to set_multiplier with"]
             #[doc = "a value of UINT32_MAX, with the same double-buffered semantics as"]
             #[doc = "set_multiplier."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Sets the alpha multiplier for the surface. The alpha multiplier is"]
             #[doc = "double-buffered state, see wl_surface.commit for details."]
             #[doc = ""]
@@ -171,6 +184,7 @@ pub mod alpha_modifier_v1 {
             #[doc = "of one is used instead."]
             #[doc = ""]
             #[doc = "Zero means completely transparent, UINT32_MAX means completely opaque."]
+            #[allow(unused)]
             fn set_multiplier(
                 &self,
                 client: &mut crate::server::Client,
@@ -450,7 +464,9 @@ pub mod color_management_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_color_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -465,7 +481,8 @@ pub mod color_management_v1 {
                                 id,
                                 output
                             );
-                            self.get_output(client, sender_id, id, output).await
+                            let result = self.get_output(client, sender_id, id, output).await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -480,7 +497,8 @@ pub mod color_management_v1 {
                                 id,
                                 surface
                             );
-                            self.get_surface(client, sender_id, id, surface).await
+                            let result = self.get_surface(client, sender_id, id, surface).await;
+                            result
                         }
                         3u16 => {
                             let id = message
@@ -495,8 +513,10 @@ pub mod color_management_v1 {
                                 id,
                                 surface
                             );
-                            self.get_surface_feedback(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_surface_feedback(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         4u16 => {
                             let obj = message
@@ -507,7 +527,8 @@ pub mod color_management_v1 {
                                 sender_id,
                                 obj
                             );
-                            self.create_icc_creator(client, sender_id, obj).await
+                            let result = self.create_icc_creator(client, sender_id, obj).await;
+                            result
                         }
                         5u16 => {
                             let obj = message
@@ -518,7 +539,9 @@ pub mod color_management_v1 {
                                 sender_id,
                                 obj
                             );
-                            self.create_parametric_creator(client, sender_id, obj).await
+                            let result =
+                                self.create_parametric_creator(client, sender_id, obj).await;
+                            result
                         }
                         6u16 => {
                             let image_description = message
@@ -529,8 +552,10 @@ pub mod color_management_v1 {
                                 sender_id,
                                 image_description
                             );
-                            self.create_windows_scrgb(client, sender_id, image_description)
-                                .await
+                            let result = self
+                                .create_windows_scrgb(client, sender_id, image_description)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -538,15 +563,19 @@ pub mod color_management_v1 {
             }
             #[doc = "Destroy the wp_color_manager_v1 object. This does not affect any other"]
             #[doc = "objects in any way."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This creates a new wp_color_management_output_v1 object for the"]
             #[doc = "given wl_output."]
             #[doc = ""]
             #[doc = "See the wp_color_management_output_v1 interface for more details."]
+            #[allow(unused)]
             fn get_output(
                 &self,
                 client: &mut crate::server::Client,
@@ -561,6 +590,7 @@ pub mod color_management_v1 {
             #[doc = "given wl_surface."]
             #[doc = ""]
             #[doc = "See the wp_color_management_surface_v1 interface for more details."]
+            #[allow(unused)]
             fn get_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -573,6 +603,7 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "See the wp_color_management_surface_feedback_v1 interface for more"]
             #[doc = "details."]
+            #[allow(unused)]
             fn get_surface_feedback(
                 &self,
                 client: &mut crate::server::Client,
@@ -588,6 +619,7 @@ pub mod color_management_v1 {
             #[doc = "This request can be used when the compositor advertises"]
             #[doc = "wp_color_manager_v1.feature.icc_v2_v4."]
             #[doc = "Otherwise this request raises the protocol error unsupported_feature."]
+            #[allow(unused)]
             fn create_icc_creator(
                 &self,
                 client: &mut crate::server::Client,
@@ -602,6 +634,7 @@ pub mod color_management_v1 {
             #[doc = "This request can be used when the compositor advertises"]
             #[doc = "wp_color_manager_v1.feature.parametric."]
             #[doc = "Otherwise this request raises the protocol error unsupported_feature."]
+            #[allow(unused)]
             fn create_parametric_creator(
                 &self,
                 client: &mut crate::server::Client,
@@ -652,6 +685,7 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "The resulting image description object does not allow get_information"]
             #[doc = "request. The wp_image_description_v1.ready event shall be sent."]
+            #[allow(unused)]
             fn create_windows_scrgb(
                 &self,
                 client: &mut crate::server::Client,
@@ -799,7 +833,9 @@ pub mod color_management_v1 {
                                 "wp_color_management_output_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let image_description = message
@@ -810,8 +846,10 @@ pub mod color_management_v1 {
                                 sender_id,
                                 image_description
                             );
-                            self.get_image_description(client, sender_id, image_description)
-                                .await
+                            let result = self
+                                .get_image_description(client, sender_id, image_description)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -819,11 +857,14 @@ pub mod color_management_v1 {
             }
             #[doc = "Destroy the color wp_color_management_output_v1 object. This does not"]
             #[doc = "affect any remaining protocol objects."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This creates a new wp_image_description_v1 object for the current image"]
             #[doc = "description of the output. There always is exactly one image description"]
             #[doc = "active for an output so the client should destroy the image description"]
@@ -855,6 +896,7 @@ pub mod color_management_v1 {
             #[doc = "wp_image_description_v1.failed event with the low_version cause."]
             #[doc = ""]
             #[doc = "Otherwise the object shall immediately deliver the ready event."]
+            #[allow(unused)]
             fn get_image_description(
                 &self,
                 client: &mut crate::server::Client,
@@ -941,7 +983,9 @@ pub mod color_management_v1 {
                                 "wp_color_management_surface_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let image_description = message
@@ -954,20 +998,23 @@ pub mod color_management_v1 {
                                 image_description,
                                 render_intent
                             );
-                            self.set_image_description(
-                                client,
-                                sender_id,
-                                image_description,
-                                render_intent.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_image_description(
+                                    client,
+                                    sender_id,
+                                    image_description,
+                                    render_intent.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!(
                                 "wp_color_management_surface_v1#{}.unset_image_description()",
                                 sender_id,
                             );
-                            self.unset_image_description(client, sender_id).await
+                            let result = self.unset_image_description(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -975,11 +1022,14 @@ pub mod color_management_v1 {
             }
             #[doc = "Destroy the wp_color_management_surface_v1 object and do the same as"]
             #[doc = "unset_image_description."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "If this protocol object is inert, the protocol error inert is raised."]
             #[doc = ""]
             #[doc = "Set the image description of the underlying surface. The image"]
@@ -1019,6 +1069,7 @@ pub mod color_management_v1 {
             #[doc = "Setting the image description has copy semantics; after this request,"]
             #[doc = "the image description can be immediately destroyed without affecting"]
             #[doc = "the pending state of the surface."]
+            #[allow(unused)]
             fn set_image_description(
                 &self,
                 client: &mut crate::server::Client,
@@ -1032,6 +1083,7 @@ pub mod color_management_v1 {
             #[doc = "set_image_description for how a compositor handles a surface without"]
             #[doc = "an image description. This is double-buffered state, see"]
             #[doc = "wl_surface.commit."]
+            #[allow(unused)]
             fn unset_image_description(
                 &self,
                 client: &mut crate::server::Client,
@@ -1090,7 +1142,9 @@ pub mod color_management_v1 {
                                 "wp_color_management_surface_feedback_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let image_description = message
@@ -1101,8 +1155,10 @@ pub mod color_management_v1 {
                                 sender_id,
                                 image_description
                             );
-                            self.get_preferred(client, sender_id, image_description)
-                                .await
+                            let result = self
+                                .get_preferred(client, sender_id, image_description)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let image_description = message
@@ -1113,19 +1169,24 @@ pub mod color_management_v1 {
                                 sender_id,
                                 image_description
                             );
-                            self.get_preferred_parametric(client, sender_id, image_description)
-                                .await
+                            let result = self
+                                .get_preferred_parametric(client, sender_id, image_description)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Destroy the wp_color_management_surface_feedback_v1 object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "If this protocol object is inert, the protocol error inert is raised."]
             #[doc = ""]
             #[doc = "The preferred image description represents the compositor's preferred"]
@@ -1159,6 +1220,7 @@ pub mod color_management_v1 {
             #[doc = "description object shall immediately deliver the"]
             #[doc = "wp_image_description_v1.failed event with the low_version cause,"]
             #[doc = "otherwise the object shall immediately deliver the ready event."]
+            #[allow(unused)]
             fn get_preferred(
                 &self,
                 client: &mut crate::server::Client,
@@ -1171,6 +1233,7 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "If the compositor doesn't support parametric image descriptions, the"]
             #[doc = "unsupported_feature error is emitted."]
+            #[allow(unused)]
             fn get_preferred_parametric(
                 &self,
                 client: &mut crate::server::Client,
@@ -1289,7 +1352,9 @@ pub mod color_management_v1 {
                                 sender_id,
                                 image_description
                             );
-                            self.create(client, sender_id, image_description).await
+                            let result = self.create(client, sender_id, image_description).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let icc_profile = message.fd()?;
@@ -1302,8 +1367,10 @@ pub mod color_management_v1 {
                                 offset,
                                 length
                             );
-                            self.set_icc_file(client, sender_id, icc_profile, offset, length)
-                                .await
+                            let result = self
+                                .set_icc_file(client, sender_id, icc_profile, offset, length)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1328,12 +1395,15 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "The resulting image description object does not allow get_information"]
             #[doc = "request."]
+            #[allow(unused)]
             fn create(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Sets the ICC profile file to be used as the basis of the image"]
             #[doc = "description."]
             #[doc = ""]
@@ -1373,6 +1443,7 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "If ICC file has already been set on this object, the protocol error"]
             #[doc = "already_set is raised."]
+            #[allow(unused)]
             fn set_icc_file(
                 &self,
                 client: &mut crate::server::Client,
@@ -1472,7 +1543,9 @@ pub mod color_management_v1 {
                                 sender_id,
                                 image_description
                             );
-                            self.create(client, sender_id, image_description).await
+                            let result = self.create(client, sender_id, image_description).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let tf = message.uint()?;
@@ -1481,7 +1554,8 @@ pub mod color_management_v1 {
                                 sender_id,
                                 tf
                             );
-                            self.set_tf_named(client, sender_id, tf.try_into()?).await
+                            let result = self.set_tf_named(client, sender_id, tf.try_into()?).await;
+                            result
                         }
                         2u16 => {
                             let eexp = message.uint()?;
@@ -1490,7 +1564,8 @@ pub mod color_management_v1 {
                                 sender_id,
                                 eexp
                             );
-                            self.set_tf_power(client, sender_id, eexp).await
+                            let result = self.set_tf_power(client, sender_id, eexp).await;
+                            result
                         }
                         3u16 => {
                             let primaries = message.uint()?;
@@ -1499,8 +1574,10 @@ pub mod color_management_v1 {
                                 sender_id,
                                 primaries
                             );
-                            self.set_primaries_named(client, sender_id, primaries.try_into()?)
-                                .await
+                            let result = self
+                                .set_primaries_named(client, sender_id, primaries.try_into()?)
+                                .await;
+                            result
                         }
                         4u16 => {
                             let r_x = message.int()?;
@@ -1523,10 +1600,12 @@ pub mod color_management_v1 {
                                 w_x,
                                 w_y
                             );
-                            self.set_primaries(
-                                client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
-                            )
-                            .await
+                            let result = self
+                                .set_primaries(
+                                    client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
+                                )
+                                .await;
+                            result
                         }
                         5u16 => {
                             let min_lum = message.uint()?;
@@ -1539,8 +1618,10 @@ pub mod color_management_v1 {
                                 max_lum,
                                 reference_lum
                             );
-                            self.set_luminances(client, sender_id, min_lum, max_lum, reference_lum)
-                                .await
+                            let result = self
+                                .set_luminances(client, sender_id, min_lum, max_lum, reference_lum)
+                                .await;
+                            result
                         }
                         6u16 => {
                             let r_x = message.int()?;
@@ -1563,10 +1644,12 @@ pub mod color_management_v1 {
                                 w_x,
                                 w_y
                             );
-                            self.set_mastering_display_primaries(
-                                client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
-                            )
-                            .await
+                            let result = self
+                                .set_mastering_display_primaries(
+                                    client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
+                                )
+                                .await;
+                            result
                         }
                         7u16 => {
                             let min_lum = message.uint()?;
@@ -1577,8 +1660,10 @@ pub mod color_management_v1 {
                                 min_lum,
                                 max_lum
                             );
-                            self.set_mastering_luminance(client, sender_id, min_lum, max_lum)
-                                .await
+                            let result = self
+                                .set_mastering_luminance(client, sender_id, min_lum, max_lum)
+                                .await;
+                            result
                         }
                         8u16 => {
                             let max_cll = message.uint()?;
@@ -1587,7 +1672,8 @@ pub mod color_management_v1 {
                                 sender_id,
                                 max_cll
                             );
-                            self.set_max_cll(client, sender_id, max_cll).await
+                            let result = self.set_max_cll(client, sender_id, max_cll).await;
+                            result
                         }
                         9u16 => {
                             let max_fall = message.uint()?;
@@ -1596,7 +1682,8 @@ pub mod color_management_v1 {
                                 sender_id,
                                 max_fall
                             );
-                            self.set_max_fall(client, sender_id, max_fall).await
+                            let result = self.set_max_fall(client, sender_id, max_fall).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1630,12 +1717,15 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "The resulting image description object does not allow get_information"]
             #[doc = "request."]
+            #[allow(unused)]
             fn create(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Sets the transfer characteristic using explicitly enumerated named"]
             #[doc = "functions."]
             #[doc = ""]
@@ -1648,6 +1738,7 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "If transfer characteristic has already been set on this object, the"]
             #[doc = "protocol error already_set is raised."]
+            #[allow(unused)]
             fn set_tf_named(
                 &self,
                 client: &mut crate::server::Client,
@@ -1675,6 +1766,7 @@ pub mod color_management_v1 {
             #[doc = "This request can be used when the compositor advertises"]
             #[doc = "wp_color_manager_v1.feature.set_tf_power. Otherwise this request raises"]
             #[doc = "the protocol error unsupported_feature."]
+            #[allow(unused)]
             fn set_tf_power(
                 &self,
                 client: &mut crate::server::Client,
@@ -1691,6 +1783,7 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "If primaries have already been set on this object, the protocol error"]
             #[doc = "already_set is raised."]
+            #[allow(unused)]
             fn set_primaries_named(
                 &self,
                 client: &mut crate::server::Client,
@@ -1710,6 +1803,7 @@ pub mod color_management_v1 {
             #[doc = "This request can be used if the compositor advertises"]
             #[doc = "wp_color_manager_v1.feature.set_primaries. Otherwise this request raises"]
             #[doc = "the protocol error unsupported_feature."]
+            #[allow(unused)]
             fn set_primaries(
                 &self,
                 client: &mut crate::server::Client,
@@ -1772,6 +1866,7 @@ pub mod color_management_v1 {
             #[doc = "This request can be used if the compositor advertises"]
             #[doc = "wp_color_manager_v1.feature.set_luminances. Otherwise this request"]
             #[doc = "raises the protocol error unsupported_feature."]
+            #[allow(unused)]
             fn set_luminances(
                 &self,
                 client: &mut crate::server::Client,
@@ -1826,6 +1921,7 @@ pub mod color_management_v1 {
             #[doc = "compositor does not support it, the result is implementation defined."]
             #[doc = "Compositors are recommended to detect this case and fail the image"]
             #[doc = "description gracefully, but it may as well result in color artifacts."]
+            #[allow(unused)]
             fn set_mastering_display_primaries(
                 &self,
                 client: &mut crate::server::Client,
@@ -1872,6 +1968,7 @@ pub mod color_management_v1 {
             #[doc = "compositor does not support it, the result is implementation defined."]
             #[doc = "Compositors are recommended to detect this case and fail the image"]
             #[doc = "description gracefully, but it may as well result in color artifacts."]
+            #[allow(unused)]
             fn set_mastering_luminance(
                 &self,
                 client: &mut crate::server::Client,
@@ -1882,6 +1979,7 @@ pub mod color_management_v1 {
             #[doc = "Sets the maximum content light level (max_cll) as defined by CTA-861-H."]
             #[doc = ""]
             #[doc = "max_cll is undefined by default."]
+            #[allow(unused)]
             fn set_max_cll(
                 &self,
                 client: &mut crate::server::Client,
@@ -1892,6 +1990,7 @@ pub mod color_management_v1 {
             #[doc = "CTA-861-H."]
             #[doc = ""]
             #[doc = "max_fall is undefined by default."]
+            #[allow(unused)]
             fn set_max_fall(
                 &self,
                 client: &mut crate::server::Client,
@@ -1992,7 +2091,9 @@ pub mod color_management_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_image_description_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let information = message
@@ -2003,7 +2104,8 @@ pub mod color_management_v1 {
                                 sender_id,
                                 information
                             );
-                            self.get_information(client, sender_id, information).await
+                            let result = self.get_information(client, sender_id, information).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2014,11 +2116,14 @@ pub mod color_management_v1 {
             #[doc = "Destroying a wp_image_description_v1 object has no side-effects, not"]
             #[doc = "even if a wp_color_management_surface_v1.set_image_description has not"]
             #[doc = "yet been followed by a wl_surface.commit."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Creates a wp_image_description_info_v1 object which delivers the"]
             #[doc = "information that makes up the image description."]
             #[doc = ""]
@@ -2026,6 +2131,7 @@ pub mod color_management_v1 {
             #[doc = "request. Whether it is allowed or not is defined by the request that"]
             #[doc = "created the object. If get_information is not allowed, the protocol"]
             #[doc = "error no_information is raised."]
+            #[allow(unused)]
             fn get_information(
                 &self,
                 client: &mut crate::server::Client,
@@ -2566,7 +2672,9 @@ pub mod commit_timing_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_commit_timing_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -2581,7 +2689,8 @@ pub mod commit_timing_v1 {
                                 id,
                                 surface
                             );
-                            self.get_timer(client, sender_id, id, surface).await
+                            let result = self.get_timer(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2590,15 +2699,19 @@ pub mod commit_timing_v1 {
             #[doc = "Informs the server that the client will no longer be using"]
             #[doc = "this protocol object. Existing objects created by this object"]
             #[doc = "are not affected."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Establish a timing controller for a surface."]
             #[doc = ""]
             #[doc = "Only one commit timer can be created for a surface, or a"]
             #[doc = "commit_timer_exists protocol error will be generated."]
+            #[allow(unused)]
             fn get_timer(
                 &self,
                 client: &mut crate::server::Client,
@@ -2664,12 +2777,16 @@ pub mod commit_timing_v1 {
                                 tv_sec_lo,
                                 tv_nsec
                             );
-                            self.set_timestamp(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
-                                .await
+                            let result = self
+                                .set_timestamp(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wp_commit_timer_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2689,6 +2806,7 @@ pub mod commit_timing_v1 {
             #[doc = ""]
             #[doc = "Requesting set_timestamp after the commit_timer object's surface is"]
             #[doc = "destroyed will generate a \"surface_destroyed\" error."]
+            #[allow(unused)]
             fn set_timestamp(
                 &self,
                 client: &mut crate::server::Client,
@@ -2701,11 +2819,14 @@ pub mod commit_timing_v1 {
             #[doc = "this protocol object."]
             #[doc = ""]
             #[doc = "Existing timing constraints are not affected by the destruction."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -2758,7 +2879,9 @@ pub mod content_type_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_content_type_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -2773,8 +2896,10 @@ pub mod content_type_v1 {
                                 id,
                                 surface
                             );
-                            self.get_surface_content_type(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_surface_content_type(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2782,15 +2907,19 @@ pub mod content_type_v1 {
             }
             #[doc = "Destroy the content type manager. This doesn't destroy objects created"]
             #[doc = "with the manager."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Create a new content type object associated with the given surface."]
             #[doc = ""]
             #[doc = "Creating a wp_content_type_v1 from a wl_surface which already has one"]
             #[doc = "attached is a client error: already_constructed."]
+            #[allow(unused)]
             fn get_surface_content_type(
                 &self,
                 client: &mut crate::server::Client,
@@ -2853,7 +2982,9 @@ pub mod content_type_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_content_type_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let content_type = message.uint()?;
@@ -2862,8 +2993,10 @@ pub mod content_type_v1 {
                                 sender_id,
                                 content_type
                             );
-                            self.set_content_type(client, sender_id, content_type.try_into()?)
-                                .await
+                            let result = self
+                                .set_content_type(client, sender_id, content_type.try_into()?)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2872,11 +3005,14 @@ pub mod content_type_v1 {
             #[doc = "Switch back to not specifying the content type of this surface. This is"]
             #[doc = "equivalent to setting the content type to none, including double"]
             #[doc = "buffering semantics. See set_content_type for details."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Set the surface content type. This informs the compositor that the"]
             #[doc = "client believes it is displaying buffers matching this content type."]
             #[doc = ""]
@@ -2885,6 +3021,7 @@ pub mod content_type_v1 {
             #[doc = ""]
             #[doc = "The content type is double-buffered state, see wl_surface.commit for"]
             #[doc = "details."]
+            #[allow(unused)]
             fn set_content_type(
                 &self,
                 client: &mut crate::server::Client,
@@ -2923,7 +3060,9 @@ pub mod cursor_shape_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_cursor_shape_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let cursor_shape_device = message
@@ -2938,8 +3077,10 @@ pub mod cursor_shape_v1 {
                                 cursor_shape_device,
                                 pointer
                             );
-                            self.get_pointer(client, sender_id, cursor_shape_device, pointer)
-                                .await
+                            let result = self
+                                .get_pointer(client, sender_id, cursor_shape_device, pointer)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let cursor_shape_device = message
@@ -2954,28 +3095,34 @@ pub mod cursor_shape_v1 {
                                 cursor_shape_device,
                                 tablet_tool
                             );
-                            self.get_tablet_tool_v2(
-                                client,
-                                sender_id,
-                                cursor_shape_device,
-                                tablet_tool,
-                            )
-                            .await
+                            let result = self
+                                .get_tablet_tool_v2(
+                                    client,
+                                    sender_id,
+                                    cursor_shape_device,
+                                    tablet_tool,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Destroy the cursor shape manager."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Obtain a wp_cursor_shape_device_v1 for a wl_pointer object."]
             #[doc = ""]
             #[doc = "When the pointer capability is removed from the wl_seat, the"]
             #[doc = "wp_cursor_shape_device_v1 object becomes inert."]
+            #[allow(unused)]
             fn get_pointer(
                 &self,
                 client: &mut crate::server::Client,
@@ -2987,6 +3134,7 @@ pub mod cursor_shape_v1 {
             #[doc = ""]
             #[doc = "When the zwp_tablet_tool_v2 is removed, the wp_cursor_shape_device_v1"]
             #[doc = "object becomes inert."]
+            #[allow(unused)]
             fn get_tablet_tool_v2(
                 &self,
                 client: &mut crate::server::Client,
@@ -3161,7 +3309,9 @@ pub mod cursor_shape_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_cursor_shape_device_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let serial = message.uint()?;
@@ -3172,8 +3322,10 @@ pub mod cursor_shape_v1 {
                                 serial,
                                 shape
                             );
-                            self.set_shape(client, sender_id, serial, shape.try_into()?)
-                                .await
+                            let result = self
+                                .set_shape(client, sender_id, serial, shape.try_into()?)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3182,11 +3334,14 @@ pub mod cursor_shape_v1 {
             #[doc = "Destroy the cursor shape device."]
             #[doc = ""]
             #[doc = "The device cursor shape remains unchanged."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Sets the device cursor to the specified shape. The compositor will"]
             #[doc = "change the cursor image based on the specified shape."]
             #[doc = ""]
@@ -3205,6 +3360,7 @@ pub mod cursor_shape_v1 {
             #[doc = "The serial parameter must match the latest wl_pointer.enter or"]
             #[doc = "zwp_tablet_tool_v2.proximity_in serial number sent to the client."]
             #[doc = "Otherwise the request will be ignored."]
+            #[allow(unused)]
             fn set_shape(
                 &self,
                 client: &mut crate::server::Client,
@@ -3273,11 +3429,13 @@ pub mod drm_lease_v1 {
                                 sender_id,
                                 id
                             );
-                            self.create_lease_request(client, sender_id, id).await
+                            let result = self.create_lease_request(client, sender_id, id).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wp_drm_lease_device_v1#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3286,6 +3444,7 @@ pub mod drm_lease_v1 {
             #[doc = "Creates a lease request object."]
             #[doc = ""]
             #[doc = "See the documentation for wp_drm_lease_request_v1 for details."]
+            #[allow(unused)]
             fn create_lease_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3298,6 +3457,7 @@ pub mod drm_lease_v1 {
             #[doc = "connector events before the released event. The client must not send any"]
             #[doc = "requests after this one, doing so will raise a wl_display error."]
             #[doc = "Existing connectors, lease request and leases will not be affected."]
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
@@ -3424,7 +3584,9 @@ pub mod drm_lease_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_drm_lease_connector_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3435,11 +3597,14 @@ pub mod drm_lease_v1 {
             #[doc = "\"withdrawn\" event so that the server can release the resources"]
             #[doc = "associated with this connector offer. Neither existing lease requests"]
             #[doc = "nor leases will be affected."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The compositor sends this event once the connector is created to"]
             #[doc = "indicate the name of this connector. This will not change for the"]
             #[doc = "duration of the Wayland session, but is not guaranteed to be consistent"]
@@ -3620,14 +3785,17 @@ pub mod drm_lease_v1 {
                                 sender_id,
                                 connector
                             );
-                            self.request_connector(client, sender_id, connector).await
+                            let result = self.request_connector(client, sender_id, connector).await;
+                            result
                         }
                         1u16 => {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wp_drm_lease_request_v1#{}.submit({})", sender_id, id);
-                            self.submit(client, sender_id, id).await
+                            let result = self.submit(client, sender_id, id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3643,6 +3811,7 @@ pub mod drm_lease_v1 {
             #[doc = "Requesting a connector that was created from a different lease device"]
             #[doc = "than this lease request raises the wrong_device error. Requesting a"]
             #[doc = "connector twice will raise the duplicate_connector error."]
+            #[allow(unused)]
             fn request_connector(
                 &self,
                 client: &mut crate::server::Client,
@@ -3656,12 +3825,15 @@ pub mod drm_lease_v1 {
             #[doc = "lease object, clients cannot expect an immediate response."]
             #[doc = "Not requesting any connectors before submitting the lease request"]
             #[doc = "will raise the empty_lease error."]
+            #[allow(unused)]
             fn submit(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "A DRM lease object is used to transfer the DRM file descriptor to the"]
@@ -3691,7 +3863,9 @@ pub mod drm_lease_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_drm_lease_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3704,11 +3878,14 @@ pub mod drm_lease_v1 {
             #[doc = "Upon destruction, the compositor should advertise the connector for"]
             #[doc = "leasing again by sending the connector event through the"]
             #[doc = "wp_drm_lease_device_v1 interface."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event returns a file descriptor suitable for use with DRM-related"]
             #[doc = "ioctls. The client should use drmModeGetLease to enumerate the DRM"]
             #[doc = "objects which have been leased to them. The compositor guarantees it"]
@@ -3804,7 +3981,8 @@ pub mod ext_data_control_v1 {
                                 sender_id,
                                 id
                             );
-                            self.create_data_source(client, sender_id, id).await
+                            let result = self.create_data_source(client, sender_id, id).await;
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -3819,17 +3997,21 @@ pub mod ext_data_control_v1 {
                                 id,
                                 seat
                             );
-                            self.get_data_device(client, sender_id, id, seat).await
+                            let result = self.get_data_device(client, sender_id, id, seat).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("ext_data_control_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Create a new data source."]
+            #[allow(unused)]
             fn create_data_source(
                 &self,
                 client: &mut crate::server::Client,
@@ -3837,6 +4019,7 @@ pub mod ext_data_control_v1 {
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a data device that can be used to manage a seat's selection."]
+            #[allow(unused)]
             fn get_data_device(
                 &self,
                 client: &mut crate::server::Client,
@@ -3846,11 +4029,14 @@ pub mod ext_data_control_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "This interface allows a client to manage a seat's selection."]
@@ -3903,11 +4089,14 @@ pub mod ext_data_control_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_selection(client, sender_id, source).await
+                            let result = self.set_selection(client, sender_id, source).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("ext_data_control_device_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         2u16 => {
                             let source = message.object()?;
@@ -3918,7 +4107,9 @@ pub mod ext_data_control_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_primary_selection(client, sender_id, source).await
+                            let result =
+                                self.set_primary_selection(client, sender_id, source).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3932,6 +4123,7 @@ pub mod ext_data_control_v1 {
             #[doc = "source triggers the used_source protocol error."]
             #[doc = ""]
             #[doc = "To unset the selection, set the source to NULL."]
+            #[allow(unused)]
             fn set_selection(
                 &self,
                 client: &mut crate::server::Client,
@@ -3939,11 +4131,14 @@ pub mod ext_data_control_v1 {
                 source: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the data device object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This request asks the compositor to set the primary selection to the"]
             #[doc = "data from the source on behalf of the client."]
             #[doc = ""]
@@ -3955,6 +4150,7 @@ pub mod ext_data_control_v1 {
             #[doc = ""]
             #[doc = "The compositor will ignore this request if it does not support primary"]
             #[doc = "selection."]
+            #[allow(unused)]
             fn set_primary_selection(
                 &self,
                 client: &mut crate::server::Client,
@@ -4125,11 +4321,14 @@ pub mod ext_data_control_v1 {
                                 sender_id,
                                 mime_type
                             );
-                            self.offer(client, sender_id, mime_type).await
+                            let result = self.offer(client, sender_id, mime_type).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("ext_data_control_source_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4140,6 +4339,7 @@ pub mod ext_data_control_v1 {
             #[doc = ""]
             #[doc = "Calling this after ext_data_control_device.set_selection is a protocol"]
             #[doc = "error."]
+            #[allow(unused)]
             fn offer(
                 &self,
                 client: &mut crate::server::Client,
@@ -4147,11 +4347,14 @@ pub mod ext_data_control_v1 {
                 mime_type: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the data source object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Request for data from the client. Send the data as the specified MIME"]
             #[doc = "type over the passed file descriptor, then close it."]
             fn send(
@@ -4230,11 +4433,14 @@ pub mod ext_data_control_v1 {
                                 mime_type,
                                 fd.as_raw_fd()
                             );
-                            self.receive(client, sender_id, mime_type, fd).await
+                            let result = self.receive(client, sender_id, mime_type, fd).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("ext_data_control_offer_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4250,6 +4456,7 @@ pub mod ext_data_control_v1 {
             #[doc = "then closes its end, at which point the transfer is complete."]
             #[doc = ""]
             #[doc = "This request may happen multiple times for different MIME types."]
+            #[allow(unused)]
             fn receive(
                 &self,
                 client: &mut crate::server::Client,
@@ -4258,11 +4465,14 @@ pub mod ext_data_control_v1 {
                 fd: rustix::fd::OwnedFd,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the data offer object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Sent immediately after creating the ext_data_control_offer object."]
             #[doc = "One event per offered MIME type."]
             fn offer(
@@ -4346,11 +4556,14 @@ pub mod ext_foreign_toplevel_list_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_foreign_toplevel_list_v1#{}.stop()", sender_id,);
-                            self.stop(client, sender_id).await
+                            let result = self.stop(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("ext_foreign_toplevel_list_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4363,6 +4576,7 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = "further toplevel events until the stop request is processed."]
             #[doc = "The client should wait for a ext_foreign_toplevel_list_v1.finished"]
             #[doc = "event before destroying this object."]
+            #[allow(unused)]
             fn stop(
                 &self,
                 client: &mut crate::server::Client,
@@ -4375,11 +4589,14 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = "If a client wishes to destroy this object it should send a"]
             #[doc = "ext_foreign_toplevel_list_v1.stop request and wait for a ext_foreign_toplevel_list_v1.finished"]
             #[doc = "event, then destroy the handles and then this object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is emitted whenever a new toplevel window is created. It is"]
             #[doc = "emitted for all toplevels, regardless of the app that has created them."]
             #[doc = ""]
@@ -4454,7 +4671,9 @@ pub mod ext_foreign_toplevel_list_v1 {
                                 "ext_foreign_toplevel_handle_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4473,11 +4692,14 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = "Other protocols which extend the ext_foreign_toplevel_handle_v1"]
             #[doc = "interface should require destructors for extension interfaces be"]
             #[doc = "called before allowing the toplevel handle to be destroyed."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The server will emit no further events on the ext_foreign_toplevel_handle_v1"]
             #[doc = "after this event. Any requests received aside from the destroy request must"]
             #[doc = "be ignored. Upon receiving this event, the client should destroy the handle."]
@@ -4641,7 +4863,9 @@ pub mod ext_idle_notify_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_idle_notifier_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -4658,8 +4882,10 @@ pub mod ext_idle_notify_v1 {
                                 timeout,
                                 seat
                             );
-                            self.get_idle_notification(client, sender_id, id, timeout, seat)
-                                .await
+                            let result = self
+                                .get_idle_notification(client, sender_id, id, timeout, seat)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -4676,8 +4902,10 @@ pub mod ext_idle_notify_v1 {
                                 timeout,
                                 seat
                             );
-                            self.get_input_idle_notification(client, sender_id, id, timeout, seat)
-                                .await
+                            let result = self
+                                .get_input_idle_notification(client, sender_id, id, timeout, seat)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4685,11 +4913,14 @@ pub mod ext_idle_notify_v1 {
             }
             #[doc = "Destroy the manager object. All objects created via this interface"]
             #[doc = "remain valid."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Create a new idle notification object."]
             #[doc = ""]
             #[doc = "The notification object has a minimum timeout duration and is tied to a"]
@@ -4698,6 +4929,7 @@ pub mod ext_idle_notify_v1 {
             #[doc = ""]
             #[doc = "A zero timeout is valid and means the client wants to be notified as"]
             #[doc = "soon as possible when the seat is inactive."]
+            #[allow(unused)]
             fn get_idle_notification(
                 &self,
                 client: &mut crate::server::Client,
@@ -4716,6 +4948,7 @@ pub mod ext_idle_notify_v1 {
             #[doc = ""]
             #[doc = "A zero timeout is valid and means the client wants to be notified as"]
             #[doc = "soon as possible when the seat is inactive."]
+            #[allow(unused)]
             fn get_input_idle_notification(
                 &self,
                 client: &mut crate::server::Client,
@@ -4767,18 +5000,23 @@ pub mod ext_idle_notify_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_idle_notification_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Destroy the notification object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is sent when the notification object becomes idle."]
             #[doc = ""]
             #[doc = "It's a compositor protocol error to send this event twice without a"]
@@ -4859,7 +5097,9 @@ pub mod ext_image_capture_source_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_image_capture_source_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4867,11 +5107,14 @@ pub mod ext_image_capture_source_v1 {
             }
             #[doc = "Destroys the image capture source. This request may be sent at any time"]
             #[doc = "by the client."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "A manager for creating image capture source objects for wl_output objects."]
@@ -4905,14 +5148,18 @@ pub mod ext_image_capture_source_v1 {
                                 source,
                                 output
                             );
-                            self.create_source(client, sender_id, source, output).await
+                            let result =
+                                self.create_source(client, sender_id, source, output).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "ext_output_image_capture_source_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4922,6 +5169,7 @@ pub mod ext_image_capture_source_v1 {
             #[doc = "will show the same content as the output. Some elements may be omitted,"]
             #[doc = "such as cursors and overlays that have been marked as transparent to"]
             #[doc = "capturing."]
+            #[allow(unused)]
             fn create_source(
                 &self,
                 client: &mut crate::server::Client,
@@ -4932,11 +5180,14 @@ pub mod ext_image_capture_source_v1 {
             #[doc = "Destroys the manager. This request may be sent at any time by the client"]
             #[doc = "and objects created by the manager will remain valid after its"]
             #[doc = "destruction."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "A manager for creating image capture source objects for"]
@@ -4971,15 +5222,19 @@ pub mod ext_image_capture_source_v1 {
                                 source,
                                 toplevel_handle
                             );
-                            self.create_source(client, sender_id, source, toplevel_handle)
-                                .await
+                            let result = self
+                                .create_source(client, sender_id, source, toplevel_handle)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "ext_foreign_toplevel_image_capture_source_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4987,6 +5242,7 @@ pub mod ext_image_capture_source_v1 {
             }
             #[doc = "Creates a source object for a foreign toplevel handle. Images captured"]
             #[doc = "from this source will show the same content as the toplevel."]
+            #[allow(unused)]
             fn create_source(
                 &self,
                 client: &mut crate::server::Client,
@@ -4997,11 +5253,14 @@ pub mod ext_image_capture_source_v1 {
             #[doc = "Destroys the manager. This request may be sent at any time by the client"]
             #[doc = "and objects created by the manager will remain valid after its"]
             #[doc = "destruction."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -5081,14 +5340,16 @@ pub mod ext_image_copy_capture_v1 {
                                 source,
                                 options
                             );
-                            self.create_session(
-                                client,
-                                sender_id,
-                                session,
-                                source,
-                                options.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .create_session(
+                                    client,
+                                    sender_id,
+                                    session,
+                                    source,
+                                    options.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         1u16 => {
                             let session = message
@@ -5107,17 +5368,21 @@ pub mod ext_image_copy_capture_v1 {
                                 source,
                                 pointer
                             );
-                            self.create_pointer_cursor_session(
-                                client, sender_id, session, source, pointer,
-                            )
-                            .await
+                            let result = self
+                                .create_pointer_cursor_session(
+                                    client, sender_id, session, source, pointer,
+                                )
+                                .await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!(
                                 "ext_image_copy_capture_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5131,6 +5396,7 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = ""]
             #[doc = "If the options bitfield is invalid, the invalid_option protocol error"]
             #[doc = "is sent."]
+            #[allow(unused)]
             fn create_session(
                 &self,
                 client: &mut crate::server::Client,
@@ -5141,6 +5407,7 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a cursor capturing session for the pointer of an image capture"]
             #[doc = "source."]
+            #[allow(unused)]
             fn create_pointer_cursor_session(
                 &self,
                 client: &mut crate::server::Client,
@@ -5152,11 +5419,14 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "Destroy the manager object."]
             #[doc = ""]
             #[doc = "Other objects created via this interface are unaffected."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "This object represents an active image copy capture session."]
@@ -5222,14 +5492,17 @@ pub mod ext_image_copy_capture_v1 {
                                 sender_id,
                                 frame
                             );
-                            self.create_frame(client, sender_id, frame).await
+                            let result = self.create_frame(client, sender_id, frame).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "ext_image_copy_capture_session_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5240,6 +5513,7 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "At most one frame object can exist for a given session at any time. If"]
             #[doc = "a client sends a create_frame request before a previous frame object"]
             #[doc = "has been destroyed, the duplicate_frame protocol error is raised."]
+            #[allow(unused)]
             fn create_frame(
                 &self,
                 client: &mut crate::server::Client,
@@ -5251,11 +5525,14 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = ""]
             #[doc = "This request doesn't affect ext_image_copy_capture_frame_v1 objects created by"]
             #[doc = "this object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Provides the dimensions of the source image in buffer pixel coordinates."]
             #[doc = ""]
             #[doc = "The client must attach buffers that match this size."]
@@ -5494,7 +5771,9 @@ pub mod ext_image_copy_capture_v1 {
                                 "ext_image_copy_capture_frame_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let buffer = message
@@ -5505,7 +5784,8 @@ pub mod ext_image_copy_capture_v1 {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_buffer(client, sender_id, buffer).await
+                            let result = self.attach_buffer(client, sender_id, buffer).await;
+                            result
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -5520,15 +5800,18 @@ pub mod ext_image_copy_capture_v1 {
                                 width,
                                 height
                             );
-                            self.damage_buffer(client, sender_id, x, y, width, height)
-                                .await
+                            let result = self
+                                .damage_buffer(client, sender_id, x, y, width, height)
+                                .await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!(
                                 "ext_image_copy_capture_frame_v1#{}.capture()",
                                 sender_id,
                             );
-                            self.capture(client, sender_id).await
+                            let result = self.capture(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5536,11 +5819,14 @@ pub mod ext_image_copy_capture_v1 {
             }
             #[doc = "Destroys the frame. This request can be sent at any time by the"]
             #[doc = "client."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Attach a buffer to the session."]
             #[doc = ""]
             #[doc = "The wl_buffer.release request is unused."]
@@ -5549,6 +5835,7 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = ""]
             #[doc = "This request must not be sent after capture, or else the"]
             #[doc = "already_captured protocol error is raised."]
+            #[allow(unused)]
             fn attach_buffer(
                 &self,
                 client: &mut crate::server::Client,
@@ -5576,6 +5863,7 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = ""]
             #[doc = "This request must not be sent after capture, or else the"]
             #[doc = "already_captured protocol error is raised."]
+            #[allow(unused)]
             fn damage_buffer(
                 &self,
                 client: &mut crate::server::Client,
@@ -5594,6 +5882,7 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "This request may only be sent once, or else the already_captured"]
             #[doc = "protocol error is raised. A buffer must be attached before this request"]
             #[doc = "is sent, or else the no_buffer protocol error is raised."]
+            #[allow(unused)]
             fn capture(
                 &self,
                 client: &mut crate::server::Client,
@@ -5787,7 +6076,9 @@ pub mod ext_image_copy_capture_v1 {
                                 "ext_image_copy_capture_cursor_session_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let session = message
@@ -5798,7 +6089,8 @@ pub mod ext_image_copy_capture_v1 {
                                 sender_id,
                                 session
                             );
-                            self.get_capture_session(client, sender_id, session).await
+                            let result = self.get_capture_session(client, sender_id, session).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5809,11 +6101,14 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = ""]
             #[doc = "This request doesn't affect ext_image_copy_capture_frame_v1 objects created by"]
             #[doc = "this object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Gets the image copy capture session for this cursor session."]
             #[doc = ""]
             #[doc = "The session will produce frames of the cursor image. The compositor may"]
@@ -5821,6 +6116,7 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = ""]
             #[doc = "This request must not be sent more than once, or else the"]
             #[doc = "duplicate_session protocol error is raised."]
+            #[allow(unused)]
             fn get_capture_session(
                 &self,
                 client: &mut crate::server::Client,
@@ -5981,7 +6277,9 @@ pub mod ext_session_lock_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_session_lock_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -5992,7 +6290,8 @@ pub mod ext_session_lock_v1 {
                                 sender_id,
                                 id
                             );
-                            self.lock(client, sender_id, id).await
+                            let result = self.lock(client, sender_id, id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6001,15 +6300,19 @@ pub mod ext_session_lock_v1 {
             #[doc = "This informs the compositor that the session lock manager object will"]
             #[doc = "no longer be used. Existing objects created through this interface"]
             #[doc = "remain valid."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This request creates a session lock and asks the compositor to lock the"]
             #[doc = "session. The compositor will send either the ext_session_lock_v1.locked"]
             #[doc = "or ext_session_lock_v1.finished event on the created object in"]
             #[doc = "response to this request."]
+            #[allow(unused)]
             fn lock(
                 &self,
                 client: &mut crate::server::Client,
@@ -6118,7 +6421,9 @@ pub mod ext_session_lock_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_session_lock_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -6137,15 +6442,19 @@ pub mod ext_session_lock_v1 {
                                 surface,
                                 output
                             );
-                            self.get_lock_surface(client, sender_id, id, surface, output)
-                                .await
+                            let result = self
+                                .get_lock_surface(client, sender_id, id, surface, output)
+                                .await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!(
                                 "ext_session_lock_v1#{}.unlock_and_destroy()",
                                 sender_id,
                             );
-                            self.unlock_and_destroy(client, sender_id).await
+                            let result = self.unlock_and_destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6160,11 +6469,14 @@ pub mod ext_session_lock_v1 {
             #[doc = ""]
             #[doc = "It is a protocol error to make this request if the locked event was"]
             #[doc = "sent, the unlock_and_destroy request must be used instead."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The client is expected to create lock surfaces for all outputs"]
             #[doc = "currently present and any new outputs as they are advertised. These"]
             #[doc = "won't be displayed by the compositor unless the lock is successful"]
@@ -6176,6 +6488,7 @@ pub mod ext_session_lock_v1 {
             #[doc = ""]
             #[doc = "Attempting to create more than one lock surface for a given output"]
             #[doc = "is a duplicate_output protocol error."]
+            #[allow(unused)]
             fn get_lock_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -6207,11 +6520,14 @@ pub mod ext_session_lock_v1 {
             #[doc = "to the asynchronous nature of the Wayland protocol. For example,"]
             #[doc = "the server might terminate the client with a protocol error before"]
             #[doc = "it processes the unlock_and_destroy request."]
+            #[allow(unused)]
             fn unlock_and_destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This client is now responsible for displaying graphics while the"]
             #[doc = "session is locked and deciding when to unlock the session."]
             #[doc = ""]
@@ -6337,7 +6653,9 @@ pub mod ext_session_lock_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_session_lock_surface_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let serial = message.uint()?;
@@ -6346,7 +6664,8 @@ pub mod ext_session_lock_v1 {
                                 sender_id,
                                 serial
                             );
-                            self.ack_configure(client, sender_id, serial).await
+                            let result = self.ack_configure(client, sender_id, serial).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6361,11 +6680,14 @@ pub mod ext_session_lock_v1 {
             #[doc = "If a lock surface on an active output is destroyed before the"]
             #[doc = "ext_session_lock_v1.unlock_and_destroy event is sent, the compositor"]
             #[doc = "must fall back to rendering a solid color."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "When a configure event is received, if a client commits the surface"]
             #[doc = "in response to the configure event, then the client must make an"]
             #[doc = "ack_configure request sometime before the commit request, passing"]
@@ -6390,6 +6712,7 @@ pub mod ext_session_lock_v1 {
             #[doc = "referencing the same configure event or to issue an ack_configure"]
             #[doc = "request referencing a configure event older than the last configure"]
             #[doc = "event acked for a given lock surface."]
+            #[allow(unused)]
             fn ack_configure(
                 &self,
                 client: &mut crate::server::Client,
@@ -6479,14 +6802,17 @@ pub mod ext_transient_seat_v1 {
                                 sender_id,
                                 seat
                             );
-                            self.create(client, sender_id, seat).await
+                            let result = self.create(client, sender_id, seat).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "ext_transient_seat_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6497,6 +6823,7 @@ pub mod ext_transient_seat_v1 {
             #[doc = ""]
             #[doc = "The actual seat may be removed sooner, in which case the transient seat"]
             #[doc = "object shall become inert."]
+            #[allow(unused)]
             fn create(
                 &self,
                 client: &mut crate::server::Client,
@@ -6507,11 +6834,14 @@ pub mod ext_transient_seat_v1 {
             #[doc = ""]
             #[doc = "All objects created by the manager will remain valid until they are"]
             #[doc = "destroyed themselves."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "When the transient seat handle is destroyed, the seat itself will also be"]
@@ -6535,7 +6865,9 @@ pub mod ext_transient_seat_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_transient_seat_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6543,11 +6875,14 @@ pub mod ext_transient_seat_v1 {
             }
             #[doc = "When the transient seat object is destroyed by the client, the"]
             #[doc = "associated seat created by the compositor is also destroyed."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event advertises the global name for the wl_seat to be used with"]
             #[doc = "wl_registry_bind."]
             #[doc = ""]
@@ -6639,11 +6974,13 @@ pub mod ext_workspace_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_workspace_manager_v1#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("ext_workspace_manager_v1#{}.stop()", sender_id,);
-                            self.stop(client, sender_id).await
+                            let result = self.stop(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6657,6 +6994,7 @@ pub mod ext_workspace_v1 {
             #[doc = "even if they happen via multiple events, and even if they involve"]
             #[doc = "multiple ext_workspace_handle_v1 objects, for example, deactivating one"]
             #[doc = "workspace and activating another."]
+            #[allow(unused)]
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
@@ -6669,6 +7007,7 @@ pub mod ext_workspace_v1 {
             #[doc = ""]
             #[doc = "The client must not send any requests after this one, doing so will raise a wl_display"]
             #[doc = "invalid_object error."]
+            #[allow(unused)]
             fn stop(
                 &self,
                 client: &mut crate::server::Client,
@@ -6821,14 +7160,17 @@ pub mod ext_workspace_v1 {
                                 sender_id,
                                 workspace
                             );
-                            self.create_workspace(client, sender_id, workspace).await
+                            let result = self.create_workspace(client, sender_id, workspace).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "ext_workspace_group_handle_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6839,6 +7181,7 @@ pub mod ext_workspace_v1 {
             #[doc = ""]
             #[doc = "There is no guarantee that the compositor will create a new workspace,"]
             #[doc = "or that the created workspace will have the provided name."]
+            #[allow(unused)]
             fn create_workspace(
                 &self,
                 client: &mut crate::server::Client,
@@ -6850,11 +7193,14 @@ pub mod ext_workspace_v1 {
             #[doc = "This request should be send either when the client does not want to"]
             #[doc = "use the workspace group object any more or after the removed event to finalize"]
             #[doc = "the destruction of the object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
             #[doc = "a capability isn't supported, clients should hide or disable the UI"]
             #[doc = "elements that expose this functionality. For instance, if the"]
@@ -7065,15 +7411,19 @@ pub mod ext_workspace_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ext_workspace_handle_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             tracing::debug!("ext_workspace_handle_v1#{}.activate()", sender_id,);
-                            self.activate(client, sender_id).await
+                            let result = self.activate(client, sender_id).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("ext_workspace_handle_v1#{}.deactivate()", sender_id,);
-                            self.deactivate(client, sender_id).await
+                            let result = self.deactivate(client, sender_id).await;
+                            result
                         }
                         3u16 => {
                             let workspace_group = message
@@ -7084,11 +7434,13 @@ pub mod ext_workspace_v1 {
                                 sender_id,
                                 workspace_group
                             );
-                            self.assign(client, sender_id, workspace_group).await
+                            let result = self.assign(client, sender_id, workspace_group).await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!("ext_workspace_handle_v1#{}.remove()", sender_id,);
-                            self.remove(client, sender_id).await
+                            let result = self.remove(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7099,17 +7451,21 @@ pub mod ext_workspace_v1 {
             #[doc = "This request should be made either when the client does not want to"]
             #[doc = "use the workspace object any more or after the remove event to finalize"]
             #[doc = "the destruction of the object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Request that this workspace be activated."]
             #[doc = ""]
             #[doc = "There is no guarantee the workspace will be actually activated, and"]
             #[doc = "behaviour may be compositor-dependent. For example, activating a"]
             #[doc = "workspace may or may not deactivate all other workspaces in the same"]
             #[doc = "group."]
+            #[allow(unused)]
             fn activate(
                 &self,
                 client: &mut crate::server::Client,
@@ -7118,6 +7474,7 @@ pub mod ext_workspace_v1 {
             #[doc = "Request that this workspace be deactivated."]
             #[doc = ""]
             #[doc = "There is no guarantee the workspace will be actually deactivated."]
+            #[allow(unused)]
             fn deactivate(
                 &self,
                 client: &mut crate::server::Client,
@@ -7126,6 +7483,7 @@ pub mod ext_workspace_v1 {
             #[doc = "Requests that this workspace is assigned to the given workspace group."]
             #[doc = ""]
             #[doc = "There is no guarantee the workspace will be assigned."]
+            #[allow(unused)]
             fn assign(
                 &self,
                 client: &mut crate::server::Client,
@@ -7135,6 +7493,7 @@ pub mod ext_workspace_v1 {
             #[doc = "Request that this workspace be removed."]
             #[doc = ""]
             #[doc = "There is no guarantee the workspace will be actually removed."]
+            #[allow(unused)]
             fn remove(
                 &self,
                 client: &mut crate::server::Client,
@@ -7373,7 +7732,9 @@ pub mod fifo_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_fifo_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -7388,7 +7749,8 @@ pub mod fifo_v1 {
                                 id,
                                 surface
                             );
-                            self.get_fifo(client, sender_id, id, surface).await
+                            let result = self.get_fifo(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7397,11 +7759,14 @@ pub mod fifo_v1 {
             #[doc = "Informs the server that the client will no longer be using"]
             #[doc = "this protocol object. Existing objects created by this object"]
             #[doc = "are not affected."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Establish a fifo object for a surface that may be used to add"]
             #[doc = "display refresh constraints to content updates."]
             #[doc = ""]
@@ -7410,6 +7775,7 @@ pub mod fifo_v1 {
             #[doc = "protocol error. If a surface is acted on by multiple software"]
             #[doc = "components, general best practice is that only the component"]
             #[doc = "performing wl_surface.attach operations should use this protocol."]
+            #[allow(unused)]
             fn get_fifo(
                 &self,
                 client: &mut crate::server::Client,
@@ -7463,15 +7829,19 @@ pub mod fifo_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_fifo_v1#{}.set_barrier()", sender_id,);
-                            self.set_barrier(client, sender_id).await
+                            let result = self.set_barrier(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wp_fifo_v1#{}.wait_barrier()", sender_id,);
-                            self.wait_barrier(client, sender_id).await
+                            let result = self.wait_barrier(client, sender_id).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("wp_fifo_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7491,6 +7861,7 @@ pub mod fifo_v1 {
             #[doc = ""]
             #[doc = "Requesting set_barrier after the fifo object's surface is"]
             #[doc = "destroyed will generate a \"surface_destroyed\" error."]
+            #[allow(unused)]
             fn set_barrier(
                 &self,
                 client: &mut crate::server::Client,
@@ -7516,6 +7887,7 @@ pub mod fifo_v1 {
             #[doc = ""]
             #[doc = "Requesting \"wait_barrier\" after the fifo object's surface is"]
             #[doc = "destroyed will generate a \"surface_destroyed\" error."]
+            #[allow(unused)]
             fn wait_barrier(
                 &self,
                 client: &mut crate::server::Client,
@@ -7526,11 +7898,14 @@ pub mod fifo_v1 {
             #[doc = ""]
             #[doc = "Surface state changes previously made by this protocol are"]
             #[doc = "unaffected by this object's destruction."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -7598,7 +7973,9 @@ pub mod fractional_scale_v1 {
                                 "wp_fractional_scale_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -7613,8 +7990,10 @@ pub mod fractional_scale_v1 {
                                 id,
                                 surface
                             );
-                            self.get_fractional_scale(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_fractional_scale(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7623,15 +8002,19 @@ pub mod fractional_scale_v1 {
             #[doc = "Informs the server that the client will not be using this protocol"]
             #[doc = "object anymore. This does not affect any other objects,"]
             #[doc = "wp_fractional_scale_v1 objects included."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Create an add-on object for the the wl_surface to let the compositor"]
             #[doc = "request fractional scales. If the given wl_surface already has a"]
             #[doc = "wp_fractional_scale_v1 object associated, the fractional_scale_exists"]
             #[doc = "protocol error is raised."]
+            #[allow(unused)]
             fn get_fractional_scale(
                 &self,
                 client: &mut crate::server::Client,
@@ -7662,7 +8045,9 @@ pub mod fractional_scale_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_fractional_scale_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7670,11 +8055,14 @@ pub mod fractional_scale_v1 {
             }
             #[doc = "Destroy the fractional scale object. When this object is destroyed,"]
             #[doc = "preferred_scale events will no longer be sent."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Notification of a new preferred scale for this surface that the"]
             #[doc = "compositor suggests that the client should use."]
             #[doc = ""]
@@ -7779,7 +8167,9 @@ pub mod linux_drm_syncobj_v1 {
                                 "wp_linux_drm_syncobj_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -7794,7 +8184,8 @@ pub mod linux_drm_syncobj_v1 {
                                 id,
                                 surface
                             );
-                            self.get_surface(client, sender_id, id, surface).await
+                            let result = self.get_surface(client, sender_id, id, surface).await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -7807,7 +8198,8 @@ pub mod linux_drm_syncobj_v1 {
                                 id,
                                 fd.as_raw_fd()
                             );
-                            self.import_timeline(client, sender_id, id, fd).await
+                            let result = self.import_timeline(client, sender_id, id, fd).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7815,11 +8207,14 @@ pub mod linux_drm_syncobj_v1 {
             }
             #[doc = "Destroy this explicit synchronization factory object. Other objects"]
             #[doc = "shall not be affected by this request."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Instantiate an interface extension for the given wl_surface to provide"]
             #[doc = "explicit synchronization."]
             #[doc = ""]
@@ -7831,6 +8226,7 @@ pub mod linux_drm_syncobj_v1 {
             #[doc = "extension internally. If a client is using such an API for a"]
             #[doc = "wl_surface, it should not directly use this extension on that surface,"]
             #[doc = "to avoid raising a surface_exists protocol error."]
+            #[allow(unused)]
             fn get_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -7841,6 +8237,7 @@ pub mod linux_drm_syncobj_v1 {
             #[doc = "Import a DRM synchronization object timeline."]
             #[doc = ""]
             #[doc = "If the FD cannot be imported, the invalid_timeline error is raised."]
+            #[allow(unused)]
             fn import_timeline(
                 &self,
                 client: &mut crate::server::Client,
@@ -7874,7 +8271,9 @@ pub mod linux_drm_syncobj_v1 {
                                 "wp_linux_drm_syncobj_timeline_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7883,11 +8282,14 @@ pub mod linux_drm_syncobj_v1 {
             #[doc = "Destroy the synchronization object timeline. Other objects are not"]
             #[doc = "affected by this request, in particular timeline points set by"]
             #[doc = "set_acquire_point and set_release_point are not unset."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "This object is an add-on interface for wl_surface to enable explicit"]
@@ -7973,7 +8375,9 @@ pub mod linux_drm_syncobj_v1 {
                                 "wp_linux_drm_syncobj_surface_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let timeline = message
@@ -7988,8 +8392,10 @@ pub mod linux_drm_syncobj_v1 {
                                 point_hi,
                                 point_lo
                             );
-                            self.set_acquire_point(client, sender_id, timeline, point_hi, point_lo)
-                                .await
+                            let result = self
+                                .set_acquire_point(client, sender_id, timeline, point_hi, point_lo)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let timeline = message
@@ -8004,8 +8410,10 @@ pub mod linux_drm_syncobj_v1 {
                                 point_hi,
                                 point_lo
                             );
-                            self.set_release_point(client, sender_id, timeline, point_hi, point_lo)
-                                .await
+                            let result = self
+                                .set_release_point(client, sender_id, timeline, point_hi, point_lo)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8017,11 +8425,14 @@ pub mod linux_drm_syncobj_v1 {
             #[doc = "set_release_point since the last commit may be discarded by the"]
             #[doc = "compositor. Any timeline point set by this object before the last"]
             #[doc = "commit will not be affected."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Set the timeline point that must be signalled before the compositor may"]
             #[doc = "sample from the buffer attached with wl_surface.attach."]
             #[doc = ""]
@@ -8044,6 +8455,7 @@ pub mod linux_drm_syncobj_v1 {
             #[doc = "surface commit time there is a pending buffer attached but no pending"]
             #[doc = "acquire timeline point set, the no_acquire_point protocol error is"]
             #[doc = "raised."]
+            #[allow(unused)]
             fn set_acquire_point(
                 &self,
                 client: &mut crate::server::Client,
@@ -8095,6 +8507,7 @@ pub mod linux_drm_syncobj_v1 {
             #[doc = "surface commit time there is a pending buffer attached but no pending"]
             #[doc = "release timeline point set, the no_release_point protocol error is"]
             #[doc = "raised."]
+            #[allow(unused)]
             fn set_release_point(
                 &self,
                 client: &mut crate::server::Client,
@@ -8172,7 +8585,9 @@ pub mod security_context_v1 {
                                 "wp_security_context_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -8187,8 +8602,10 @@ pub mod security_context_v1 {
                                 listen_fd.as_raw_fd(),
                                 close_fd.as_raw_fd()
                             );
-                            self.create_listener(client, sender_id, id, listen_fd, close_fd)
-                                .await
+                            let result = self
+                                .create_listener(client, sender_id, id, listen_fd, close_fd)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8196,11 +8613,14 @@ pub mod security_context_v1 {
             }
             #[doc = "Destroy the manager. This doesn't destroy objects created with the"]
             #[doc = "manager."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Creates a new security context with a socket listening FD."]
             #[doc = ""]
             #[doc = "The compositor will accept new client connections on listen_fd."]
@@ -8216,6 +8636,7 @@ pub mod security_context_v1 {
             #[doc = ""]
             #[doc = "After sending this request, closing listen_fd and close_fd remains the"]
             #[doc = "only valid operation on them."]
+            #[allow(unused)]
             fn create_listener(
                 &self,
                 client: &mut crate::server::Client,
@@ -8282,7 +8703,9 @@ pub mod security_context_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_security_context_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let name = message
@@ -8293,7 +8716,8 @@ pub mod security_context_v1 {
                                 sender_id,
                                 name
                             );
-                            self.set_sandbox_engine(client, sender_id, name).await
+                            let result = self.set_sandbox_engine(client, sender_id, name).await;
+                            result
                         }
                         2u16 => {
                             let app_id = message
@@ -8304,7 +8728,8 @@ pub mod security_context_v1 {
                                 sender_id,
                                 app_id
                             );
-                            self.set_app_id(client, sender_id, app_id).await
+                            let result = self.set_app_id(client, sender_id, app_id).await;
+                            result
                         }
                         3u16 => {
                             let instance_id = message
@@ -8315,22 +8740,27 @@ pub mod security_context_v1 {
                                 sender_id,
                                 instance_id
                             );
-                            self.set_instance_id(client, sender_id, instance_id).await
+                            let result = self.set_instance_id(client, sender_id, instance_id).await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!("wp_security_context_v1#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Destroy the security context object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Attach a unique sandbox engine name to the security context. The name"]
             #[doc = "should follow the reverse-DNS style (e.g. \"org.flatpak\")."]
             #[doc = ""]
@@ -8339,6 +8769,7 @@ pub mod security_context_v1 {
             #[doc = ""]
             #[doc = "It is a protocol error to call this request twice. The already_set"]
             #[doc = "error is sent in this case."]
+            #[allow(unused)]
             fn set_sandbox_engine(
                 &self,
                 client: &mut crate::server::Client,
@@ -8358,6 +8789,7 @@ pub mod security_context_v1 {
             #[doc = ""]
             #[doc = "It is a protocol error to call this request twice. The already_set"]
             #[doc = "error is sent in this case."]
+            #[allow(unused)]
             fn set_app_id(
                 &self,
                 client: &mut crate::server::Client,
@@ -8375,6 +8807,7 @@ pub mod security_context_v1 {
             #[doc = ""]
             #[doc = "It is a protocol error to call this request twice. The already_set"]
             #[doc = "error is sent in this case."]
+            #[allow(unused)]
             fn set_instance_id(
                 &self,
                 client: &mut crate::server::Client,
@@ -8391,6 +8824,7 @@ pub mod security_context_v1 {
             #[doc = ""]
             #[doc = "It's a protocol error to send any request other than \"destroy\" after"]
             #[doc = "this request. In this case, the already_used error is sent."]
+            #[allow(unused)]
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
@@ -8435,7 +8869,9 @@ pub mod single_pixel_buffer_v1 {
                                 "wp_single_pixel_buffer_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -8454,8 +8890,10 @@ pub mod single_pixel_buffer_v1 {
                                 b,
                                 a
                             );
-                            self.create_u32_rgba_buffer(client, sender_id, id, r, g, b, a)
-                                .await
+                            let result = self
+                                .create_u32_rgba_buffer(client, sender_id, id, r, g, b, a)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8464,17 +8902,21 @@ pub mod single_pixel_buffer_v1 {
             #[doc = "Destroy the wp_single_pixel_buffer_manager_v1 object."]
             #[doc = ""]
             #[doc = "The child objects created via this interface are unaffected."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Create a single-pixel buffer from four 32-bit RGBA values."]
             #[doc = ""]
             #[doc = "Unless specified in another protocol extension, the RGBA values use"]
             #[doc = "pre-multiplied alpha."]
             #[doc = ""]
             #[doc = "The width and height of the buffer are 1."]
+            #[allow(unused)]
             fn create_u32_rgba_buffer(
                 &self,
                 client: &mut crate::server::Client,
@@ -8548,7 +8990,9 @@ pub mod tearing_control_v1 {
                                 "wp_tearing_control_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -8563,8 +9007,10 @@ pub mod tearing_control_v1 {
                                 id,
                                 surface
                             );
-                            self.get_tearing_control(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_tearing_control(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8573,16 +9019,20 @@ pub mod tearing_control_v1 {
             #[doc = "Destroy this tearing control factory object. Other objects, including"]
             #[doc = "wp_tearing_control_v1 objects created by this factory, are not affected"]
             #[doc = "by this request."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Instantiate an interface extension for the given wl_surface to request"]
             #[doc = "asynchronous page flips for presentation."]
             #[doc = ""]
             #[doc = "If the given wl_surface already has a wp_tearing_control_v1 object"]
             #[doc = "associated, the tearing_control_exists protocol error is raised."]
+            #[allow(unused)]
             fn get_tearing_control(
                 &self,
                 client: &mut crate::server::Client,
@@ -8648,12 +9098,16 @@ pub mod tearing_control_v1 {
                                 sender_id,
                                 hint
                             );
-                            self.set_presentation_hint(client, sender_id, hint.try_into()?)
-                                .await
+                            let result = self
+                                .set_presentation_hint(client, sender_id, hint.try_into()?)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wp_tearing_control_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8665,6 +9119,7 @@ pub mod tearing_control_v1 {
             #[doc = "The compositor is free to dynamically respect or ignore this hint based"]
             #[doc = "on various conditions like hardware capabilities, surface state and"]
             #[doc = "user preferences."]
+            #[allow(unused)]
             fn set_presentation_hint(
                 &self,
                 client: &mut crate::server::Client,
@@ -8673,11 +9128,14 @@ pub mod tearing_control_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy this surface tearing object and revert the presentation hint to"]
             #[doc = "vsync. The change will be applied on the next wl_surface.commit."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -8743,7 +9201,9 @@ pub mod xdg_activation_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_activation_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -8754,7 +9214,8 @@ pub mod xdg_activation_v1 {
                                 sender_id,
                                 id
                             );
-                            self.get_activation_token(client, sender_id, id).await
+                            let result = self.get_activation_token(client, sender_id, id).await;
+                            result
                         }
                         2u16 => {
                             let token = message
@@ -8769,7 +9230,8 @@ pub mod xdg_activation_v1 {
                                 token,
                                 surface
                             );
-                            self.activate(client, sender_id, token, surface).await
+                            let result = self.activate(client, sender_id, token, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8780,14 +9242,18 @@ pub mod xdg_activation_v1 {
             #[doc = ""]
             #[doc = "The child objects created via this interface are unaffected and should"]
             #[doc = "be destroyed separately."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Creates an xdg_activation_token_v1 object that will provide"]
             #[doc = "the initiating client with a unique token for this activation. This"]
             #[doc = "token should be offered to the clients to be activated."]
+            #[allow(unused)]
             fn get_activation_token(
                 &self,
                 client: &mut crate::server::Client,
@@ -8804,6 +9270,7 @@ pub mod xdg_activation_v1 {
             #[doc = ""]
             #[doc = "Compositors can ignore unknown activation tokens when an invalid"]
             #[doc = "token is passed."]
+            #[allow(unused)]
             fn activate(
                 &self,
                 client: &mut crate::server::Client,
@@ -8870,7 +9337,8 @@ pub mod xdg_activation_v1 {
                                 serial,
                                 seat
                             );
-                            self.set_serial(client, sender_id, serial, seat).await
+                            let result = self.set_serial(client, sender_id, serial, seat).await;
+                            result
                         }
                         1u16 => {
                             let app_id = message
@@ -8881,7 +9349,8 @@ pub mod xdg_activation_v1 {
                                 sender_id,
                                 app_id
                             );
-                            self.set_app_id(client, sender_id, app_id).await
+                            let result = self.set_app_id(client, sender_id, app_id).await;
+                            result
                         }
                         2u16 => {
                             let surface = message
@@ -8892,15 +9361,19 @@ pub mod xdg_activation_v1 {
                                 sender_id,
                                 surface
                             );
-                            self.set_surface(client, sender_id, surface).await
+                            let result = self.set_surface(client, sender_id, surface).await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!("xdg_activation_token_v1#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!("xdg_activation_token_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8918,6 +9391,7 @@ pub mod xdg_activation_v1 {
             #[doc = "doesn't have a valid and recent enough event serial."]
             #[doc = ""]
             #[doc = "Must be sent before commit. This information is optional."]
+            #[allow(unused)]
             fn set_serial(
                 &self,
                 client: &mut crate::server::Client,
@@ -8929,6 +9403,7 @@ pub mod xdg_activation_v1 {
             #[doc = "being created with it."]
             #[doc = ""]
             #[doc = "Must be sent before commit. This information is optional."]
+            #[allow(unused)]
             fn set_app_id(
                 &self,
                 client: &mut crate::server::Client,
@@ -8942,6 +9417,7 @@ pub mod xdg_activation_v1 {
             #[doc = "doesn't have a requesting surface."]
             #[doc = ""]
             #[doc = "Must be sent before commit. This information is optional."]
+            #[allow(unused)]
             fn set_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -8950,6 +9426,7 @@ pub mod xdg_activation_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests an activation token based on the different parameters that"]
             #[doc = "have been offered through set_serial, set_surface and set_app_id."]
+            #[allow(unused)]
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
@@ -8957,11 +9434,14 @@ pub mod xdg_activation_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Notify the compositor that the xdg_activation_token_v1 object will no"]
             #[doc = "longer be used. The received token stays valid."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The 'done' event contains the unique token of this activation request"]
             #[doc = "and notifies that the provider is done."]
             fn done(
@@ -9041,7 +9521,9 @@ pub mod xdg_dialog_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_wm_dialog_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -9056,7 +9538,8 @@ pub mod xdg_dialog_v1 {
                                 id,
                                 toplevel
                             );
-                            self.get_xdg_dialog(client, sender_id, id, toplevel).await
+                            let result = self.get_xdg_dialog(client, sender_id, id, toplevel).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9064,16 +9547,20 @@ pub mod xdg_dialog_v1 {
             }
             #[doc = "Destroys the xdg_wm_dialog_v1 object. This does not affect"]
             #[doc = "the xdg_dialog_v1 objects generated through it."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Creates a xdg_dialog_v1 object for the given toplevel. See the interface"]
             #[doc = "description for more details."]
             #[doc = ""]
             #[doc = "Compositors must raise an already_used error if clients attempt to"]
             #[doc = "create multiple xdg_dialog_v1 objects for the same xdg_toplevel."]
+            #[allow(unused)]
             fn get_xdg_dialog(
                 &self,
                 client: &mut crate::server::Client,
@@ -9111,15 +9598,19 @@ pub mod xdg_dialog_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_dialog_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             tracing::debug!("xdg_dialog_v1#{}.set_modal()", sender_id,);
-                            self.set_modal(client, sender_id).await
+                            let result = self.set_modal(client, sender_id).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("xdg_dialog_v1#{}.unset_modal()", sender_id,);
-                            self.unset_modal(client, sender_id).await
+                            let result = self.unset_modal(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9128,11 +9619,14 @@ pub mod xdg_dialog_v1 {
             #[doc = "Destroys the xdg_dialog_v1 object. If this object is destroyed"]
             #[doc = "before the related xdg_toplevel, the compositor should unapply its"]
             #[doc = "effects."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Hints that the dialog has \"modal\" behavior. Modal dialogs typically"]
             #[doc = "require to be fully addressed by the user (i.e. closed) before resuming"]
             #[doc = "interaction with the parent toplevel, and may require a distinct"]
@@ -9144,6 +9638,7 @@ pub mod xdg_dialog_v1 {
             #[doc = "Compositors may choose any policy in event delivery to the parent"]
             #[doc = "toplevel, from delivering all events unfiltered to using them for"]
             #[doc = "internal consumption."]
+            #[allow(unused)]
             fn set_modal(
                 &self,
                 client: &mut crate::server::Client,
@@ -9151,6 +9646,7 @@ pub mod xdg_dialog_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Drops the hint that this dialog has \"modal\" behavior. See"]
             #[doc = "xdg_dialog_v1.set_modal for more details."]
+            #[allow(unused)]
             fn unset_modal(
                 &self,
                 client: &mut crate::server::Client,
@@ -9186,7 +9682,9 @@ pub mod xdg_system_bell_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_system_bell_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let surface = message.object()?;
@@ -9197,18 +9695,22 @@ pub mod xdg_system_bell_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.ring(client, sender_id, surface).await
+                            let result = self.ring(client, sender_id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Notify that the object will no longer be used."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This requests rings the system bell on behalf of a client. How ringing"]
             #[doc = "the bell is implemented is up to the compositor. It may be an audible"]
             #[doc = "sound, a visual feedback of some kind, or any other thing including"]
@@ -9218,6 +9720,7 @@ pub mod xdg_system_bell_v1 {
             #[doc = "or be null, meaning the client doesn't have a particular toplevel it"]
             #[doc = "wants to associate the bell ringing with. See the xdg-shell protocol"]
             #[doc = "extension for a toplevel like surface role."]
+            #[allow(unused)]
             fn ring(
                 &self,
                 client: &mut crate::server::Client,
@@ -9302,7 +9805,9 @@ pub mod xdg_toplevel_drag_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_toplevel_drag_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -9317,8 +9822,10 @@ pub mod xdg_toplevel_drag_v1 {
                                 id,
                                 data_source
                             );
-                            self.get_xdg_toplevel_drag(client, sender_id, id, data_source)
-                                .await
+                            let result = self
+                                .get_xdg_toplevel_drag(client, sender_id, id, data_source)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9327,11 +9834,14 @@ pub mod xdg_toplevel_drag_v1 {
             #[doc = "Destroy this xdg_toplevel_drag_manager_v1 object. Other objects,"]
             #[doc = "including xdg_toplevel_drag_v1 objects created by this factory, are not"]
             #[doc = "affected by this request."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Create an xdg_toplevel_drag for a drag and drop operation that is going"]
             #[doc = "to be started with data_source."]
             #[doc = ""]
@@ -9342,6 +9852,7 @@ pub mod xdg_toplevel_drag_v1 {
             #[doc = ""]
             #[doc = "Destroying data_source while a toplevel is attached to the"]
             #[doc = "xdg_toplevel_drag is undefined."]
+            #[allow(unused)]
             fn get_xdg_toplevel_drag(
                 &self,
                 client: &mut crate::server::Client,
@@ -9394,7 +9905,9 @@ pub mod xdg_toplevel_drag_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_toplevel_drag_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let toplevel = message
@@ -9409,8 +9922,10 @@ pub mod xdg_toplevel_drag_v1 {
                                 x_offset,
                                 y_offset
                             );
-                            self.attach(client, sender_id, toplevel, x_offset, y_offset)
-                                .await
+                            let result = self
+                                .attach(client, sender_id, toplevel, x_offset, y_offset)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9420,11 +9935,14 @@ pub mod xdg_toplevel_drag_v1 {
             #[doc = "called after the underlying wl_data_source drag has ended, as indicated"]
             #[doc = "by the dnd_drop_performed or cancelled events. In any other case an"]
             #[doc = "ongoing_drag error is raised."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Request that the window will be moved with the cursor during the drag"]
             #[doc = "operation. The offset is a hint to the compositor how the toplevel"]
             #[doc = "should be positioned relative to the cursor hotspot in surface local"]
@@ -9440,6 +9958,7 @@ pub mod xdg_toplevel_drag_v1 {
             #[doc = "This request can be called multiple times but issuing it while a"]
             #[doc = "toplevel with an active role is attached raises a toplevel_attached"]
             #[doc = "error."]
+            #[allow(unused)]
             fn attach(
                 &self,
                 client: &mut crate::server::Client,
@@ -9489,7 +10008,9 @@ pub mod xdg_toplevel_icon_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_toplevel_icon_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -9500,7 +10021,8 @@ pub mod xdg_toplevel_icon_v1 {
                                 sender_id,
                                 id
                             );
-                            self.create_icon(client, sender_id, id).await
+                            let result = self.create_icon(client, sender_id, id).await;
+                            result
                         }
                         2u16 => {
                             let toplevel = message
@@ -9513,7 +10035,8 @@ pub mod xdg_toplevel_icon_v1 {
                                 toplevel,
                                 icon.as_ref().map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_icon(client, sender_id, toplevel, icon).await
+                            let result = self.set_icon(client, sender_id, toplevel, icon).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9521,13 +10044,17 @@ pub mod xdg_toplevel_icon_v1 {
             }
             #[doc = "Destroy the toplevel icon manager."]
             #[doc = "This does not destroy objects created with the manager."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Creates a new icon object. This icon can then be attached to a"]
             #[doc = "xdg_toplevel via the 'set_icon' request."]
+            #[allow(unused)]
             fn create_icon(
                 &self,
                 client: &mut crate::server::Client,
@@ -9554,6 +10081,7 @@ pub mod xdg_toplevel_icon_v1 {
             #[doc = "its desktop-entry file, or a placeholder icon)."]
             #[doc = "If this request is passed an icon with no pixel buffers or icon name"]
             #[doc = "assigned, the icon must be reset just like if 'icon' was null."]
+            #[allow(unused)]
             fn set_icon(
                 &self,
                 client: &mut crate::server::Client,
@@ -9663,7 +10191,9 @@ pub mod xdg_toplevel_icon_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_toplevel_icon_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let icon_name = message
@@ -9674,7 +10204,8 @@ pub mod xdg_toplevel_icon_v1 {
                                 sender_id,
                                 icon_name
                             );
-                            self.set_name(client, sender_id, icon_name).await
+                            let result = self.set_name(client, sender_id, icon_name).await;
+                            result
                         }
                         2u16 => {
                             let buffer = message
@@ -9687,7 +10218,8 @@ pub mod xdg_toplevel_icon_v1 {
                                 buffer,
                                 scale
                             );
-                            self.add_buffer(client, sender_id, buffer, scale).await
+                            let result = self.add_buffer(client, sender_id, buffer, scale).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9696,11 +10228,14 @@ pub mod xdg_toplevel_icon_v1 {
             #[doc = "Destroys the 'xdg_toplevel_icon_v1' object."]
             #[doc = "The icon must still remain set on every toplevel it was assigned to,"]
             #[doc = "until the toplevel icon is reset explicitly."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This request assigns an icon name to this icon."]
             #[doc = "Any previously set name is overridden."]
             #[doc = ""]
@@ -9716,6 +10251,7 @@ pub mod xdg_toplevel_icon_v1 {
             #[doc = "via 'set_icon', a 'immutable' error must be raised."]
             #[doc = ""]
             #[doc = "[1]: https://specifications.freedesktop.org/icon-theme-spec/icon-theme-spec-latest.html"]
+            #[allow(unused)]
             fn set_name(
                 &self,
                 client: &mut crate::server::Client,
@@ -9746,6 +10282,7 @@ pub mod xdg_toplevel_icon_v1 {
             #[doc = ""]
             #[doc = "If this request is made after the icon has been assigned to a toplevel"]
             #[doc = "via 'set_icon', a 'immutable' error must be raised."]
+            #[allow(unused)]
             fn add_buffer(
                 &self,
                 client: &mut crate::server::Client,
@@ -9842,7 +10379,9 @@ pub mod xwayland_shell_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xwayland_shell_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -9857,8 +10396,10 @@ pub mod xwayland_shell_v1 {
                                 id,
                                 surface
                             );
-                            self.get_xwayland_surface(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_xwayland_surface(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9867,11 +10408,14 @@ pub mod xwayland_shell_v1 {
             #[doc = "Destroy the xwayland_shell_v1 object."]
             #[doc = ""]
             #[doc = "The child objects created via this interface are unaffected."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Create an xwayland_surface_v1 interface for a given wl_surface"]
             #[doc = "object and gives it the xwayland_surface role."]
             #[doc = ""]
@@ -9881,6 +10425,7 @@ pub mod xwayland_shell_v1 {
             #[doc = ""]
             #[doc = "See the documentation of xwayland_surface_v1 for more details"]
             #[doc = "about what an xwayland_surface_v1 is and how it is used."]
+            #[allow(unused)]
             fn get_xwayland_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -9948,12 +10493,16 @@ pub mod xwayland_shell_v1 {
                                 serial_lo,
                                 serial_hi
                             );
-                            self.set_serial(client, sender_id, serial_lo, serial_hi)
-                                .await
+                            let result = self
+                                .set_serial(client, sender_id, serial_lo, serial_hi)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("xwayland_surface_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9980,6 +10529,7 @@ pub mod xwayland_shell_v1 {
             #[doc = ""]
             #[doc = "For each wl_surface, this state must not be committed more than once,"]
             #[doc = "otherwise the `already_associated` protocol error will be raised."]
+            #[allow(unused)]
             fn set_serial(
                 &self,
                 client: &mut crate::server::Client,
@@ -9990,11 +10540,14 @@ pub mod xwayland_shell_v1 {
             #[doc = "Destroy the xwayland_surface_v1 object."]
             #[doc = ""]
             #[doc = "Any already existing associations are unaffected by this action."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }

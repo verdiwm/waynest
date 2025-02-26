@@ -72,25 +72,30 @@ pub mod hyprland_ctm_control_v1 {
                                 mat7,
                                 mat8
                             );
-                            self.set_ctm_for_output(
-                                client, sender_id, output, mat0, mat1, mat2, mat3, mat4, mat5,
-                                mat6, mat7, mat8,
-                            )
-                            .await
+                            let result = self
+                                .set_ctm_for_output(
+                                    client, sender_id, output, mat0, mat1, mat2, mat3, mat4, mat5,
+                                    mat6, mat7, mat8,
+                                )
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "hyprland_ctm_control_manager_v1#{}.commit()",
                                 sender_id,
                             );
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!(
                                 "hyprland_ctm_control_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -109,6 +114,7 @@ pub mod hyprland_ctm_control_v1 {
             #[doc = ""]
             #[doc = "If an output doesn't get a CTM set with set_ctm_for_output and commit is called,"]
             #[doc = "that output will get its CTM reset to an identity matrix."]
+            #[allow(unused)]
             fn set_ctm_for_output(
                 &self,
                 client: &mut crate::server::Client,
@@ -125,6 +131,7 @@ pub mod hyprland_ctm_control_v1 {
                 mat8: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Commits the pending state(s) set by set_ctm_for_output."]
+            #[allow(unused)]
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
@@ -134,11 +141,14 @@ pub mod hyprland_ctm_control_v1 {
             #[doc = "appropriate destroy request has been called."]
             #[doc = ""]
             #[doc = "The CTMs of all outputs will be reset to an identity matrix."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -174,20 +184,24 @@ pub mod hyprland_focus_grab_v1 {
                                 sender_id,
                                 grab
                             );
-                            self.create_grab(client, sender_id, grab).await
+                            let result = self.create_grab(client, sender_id, grab).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "hyprland_focus_grab_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Create a surface grab object."]
+            #[allow(unused)]
             fn create_grab(
                 &self,
                 client: &mut crate::server::Client,
@@ -196,11 +210,14 @@ pub mod hyprland_focus_grab_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the focus grab manager."]
             #[doc = "This doesn't destroy existing focus grab objects."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "This interface restricts input focus to a specified whitelist of"]
@@ -244,7 +261,8 @@ pub mod hyprland_focus_grab_v1 {
                                 sender_id,
                                 surface
                             );
-                            self.add_surface(client, sender_id, surface).await
+                            let result = self.add_surface(client, sender_id, surface).await;
+                            result
                         }
                         1u16 => {
                             let surface = message
@@ -255,15 +273,19 @@ pub mod hyprland_focus_grab_v1 {
                                 sender_id,
                                 surface
                             );
-                            self.remove_surface(client, sender_id, surface).await
+                            let result = self.remove_surface(client, sender_id, surface).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("hyprland_focus_grab_v1#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!("hyprland_focus_grab_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -274,6 +296,7 @@ pub mod hyprland_focus_grab_v1 {
             #[doc = "ignored."]
             #[doc = ""]
             #[doc = "Does not take effect until commit is called."]
+            #[allow(unused)]
             fn add_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -287,6 +310,7 @@ pub mod hyprland_focus_grab_v1 {
             #[doc = "keyboard, another surface will be entered on commit."]
             #[doc = ""]
             #[doc = "Does not take effect until commit is called."]
+            #[allow(unused)]
             fn remove_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -298,17 +322,21 @@ pub mod hyprland_focus_grab_v1 {
             #[doc = "If the list previously had no entries and now has at least one, the grab"]
             #[doc = "will start. If it previously had entries and now has none, the grab will"]
             #[doc = "become inert."]
+            #[allow(unused)]
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the grab object and remove the grab if active."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Sent when an active grab is cancelled by the compositor,"]
             #[doc = "regardless of cause."]
             fn cleared(
@@ -396,23 +424,27 @@ pub mod hyprland_global_shortcuts_v1 {
                                 description,
                                 trigger_description
                             );
-                            self.register_shortcut(
-                                client,
-                                sender_id,
-                                shortcut,
-                                id,
-                                app_id,
-                                description,
-                                trigger_description,
-                            )
-                            .await
+                            let result = self
+                                .register_shortcut(
+                                    client,
+                                    sender_id,
+                                    shortcut,
+                                    id,
+                                    app_id,
+                                    description,
+                                    trigger_description,
+                                )
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "hyprland_global_shortcuts_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -425,6 +457,7 @@ pub mod hyprland_global_shortcuts_v1 {
             #[doc = "The shortcut's keybinding shall be dealt with by the compositor."]
             #[doc = ""]
             #[doc = "In the case of a duplicate app_id + id combination, the already_taken protocol error is raised."]
+            #[allow(unused)]
             fn register_shortcut(
                 &self,
                 client: &mut crate::server::Client,
@@ -437,11 +470,14 @@ pub mod hyprland_global_shortcuts_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "This object represents a single shortcut."]
@@ -464,18 +500,23 @@ pub mod hyprland_global_shortcuts_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("hyprland_global_shortcut_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Destroys the shortcut. Can be sent at any time by the client."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The keystroke was pressed."]
             #[doc = ""]
             #[doc = "tv_ values hold the timestamp of the occurrence."]
@@ -594,12 +635,16 @@ pub mod hyprland_surface_v1 {
                                 id,
                                 surface
                             );
-                            self.get_hyprland_surface(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_hyprland_surface(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("hyprland_surface_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -609,6 +654,7 @@ pub mod hyprland_surface_v1 {
             #[doc = ""]
             #[doc = "If the wl_surface already has an associated hyprland_surface_v1 object,"]
             #[doc = "even from a different manager, creation is a protocol error."]
+            #[allow(unused)]
             fn get_hyprland_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -618,11 +664,14 @@ pub mod hyprland_surface_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the surface manager."]
             #[doc = "This does not destroy existing surface objects."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "This interface allows access to hyprland-specific properties of a wl_surface."]
@@ -677,11 +726,14 @@ pub mod hyprland_surface_v1 {
                                 sender_id,
                                 opacity
                             );
-                            self.set_opacity(client, sender_id, opacity).await
+                            let result = self.set_opacity(client, sender_id, opacity).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("hyprland_surface_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -694,6 +746,7 @@ pub mod hyprland_surface_v1 {
             #[doc = "The default value is 1.0."]
             #[doc = "Setting a value outside of the range 0.0 - 1.0 (inclusive) is a protocol error."]
             #[doc = "Does not take effect until wl_surface.commit is called."]
+            #[allow(unused)]
             fn set_opacity(
                 &self,
                 client: &mut crate::server::Client,
@@ -702,11 +755,14 @@ pub mod hyprland_surface_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the hyprland surface object, resetting properties provided"]
             #[doc = "by this interface to their default values on the next wl_surface.commit."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -748,15 +804,19 @@ pub mod hyprland_toplevel_export_v1 {
                                 overlay_cursor,
                                 handle
                             );
-                            self.capture_toplevel(client, sender_id, frame, overlay_cursor, handle)
-                                .await
+                            let result = self
+                                .capture_toplevel(client, sender_id, frame, overlay_cursor, handle)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "hyprland_toplevel_export_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         2u16 => {
                             let frame = message
@@ -773,14 +833,16 @@ pub mod hyprland_toplevel_export_v1 {
                                 overlay_cursor,
                                 handle
                             );
-                            self.capture_toplevel_with_wlr_toplevel_handle(
-                                client,
-                                sender_id,
-                                frame,
-                                overlay_cursor,
-                                handle,
-                            )
-                            .await
+                            let result = self
+                                .capture_toplevel_with_wlr_toplevel_handle(
+                                    client,
+                                    sender_id,
+                                    frame,
+                                    overlay_cursor,
+                                    handle,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -796,6 +858,7 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = ""]
             #[doc = "The handle parameter refers to the address of the window as seen in `hyprctl clients`."]
             #[doc = "For example, for d161e7b0 it would be 3512854448."]
+            #[allow(unused)]
             fn capture_toplevel(
                 &self,
                 client: &mut crate::server::Client,
@@ -806,12 +869,16 @@ pub mod hyprland_toplevel_export_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Same as capture_toplevel, but with a zwlr_foreign_toplevel_handle_v1 handle."]
+            #[allow(unused)]
             fn capture_toplevel_with_wlr_toplevel_handle(
                 &self,
                 client: &mut crate::server::Client,
@@ -901,14 +968,17 @@ pub mod hyprland_toplevel_export_v1 {
                                 buffer,
                                 ignore_damage
                             );
-                            self.copy(client, sender_id, buffer, ignore_damage).await
+                            let result = self.copy(client, sender_id, buffer, ignore_damage).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "hyprland_toplevel_export_frame_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -924,6 +994,7 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = ""]
             #[doc = "This event will wait for appropriate damage to be copied, unless the ignore_damage"]
             #[doc = "arg is set to a non-zero value."]
+            #[allow(unused)]
             fn copy(
                 &self,
                 client: &mut crate::server::Client,
@@ -932,11 +1003,14 @@ pub mod hyprland_toplevel_export_v1 {
                 ignore_damage: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the frame. This request can be sent at any time by the client."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Provides information about wl_shm buffer parameters that need to be"]
             #[doc = "used for this frame. This event is sent once after the frame is created"]
             #[doc = "if wl_shm buffers are supported."]

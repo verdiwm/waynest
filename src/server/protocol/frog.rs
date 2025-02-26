@@ -28,7 +28,9 @@ pub mod frog_color_management_v1 {
                                 "frog_color_management_factory_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let surface = message
@@ -43,18 +45,24 @@ pub mod frog_color_management_v1 {
                                 surface,
                                 callback
                             );
-                            self.get_color_managed_surface(client, sender_id, surface, callback)
-                                .await
+                            let result = self
+                                .get_color_managed_surface(client, sender_id, surface, callback)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
+            #[allow(unused)]
             fn get_color_managed_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -177,7 +185,9 @@ pub mod frog_color_management_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("frog_color_managed_surface#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let transfer_function = message.uint()?;
@@ -186,12 +196,14 @@ pub mod frog_color_management_v1 {
                                 sender_id,
                                 transfer_function
                             );
-                            self.set_known_transfer_function(
-                                client,
-                                sender_id,
-                                transfer_function.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_known_transfer_function(
+                                    client,
+                                    sender_id,
+                                    transfer_function.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         2u16 => {
                             let primaries = message.uint()?;
@@ -200,12 +212,14 @@ pub mod frog_color_management_v1 {
                                 sender_id,
                                 primaries
                             );
-                            self.set_known_container_color_volume(
-                                client,
-                                sender_id,
-                                primaries.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_known_container_color_volume(
+                                    client,
+                                    sender_id,
+                                    primaries.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         3u16 => {
                             let render_intent = message.uint()?;
@@ -214,8 +228,10 @@ pub mod frog_color_management_v1 {
                                 sender_id,
                                 render_intent
                             );
-                            self.set_render_intent(client, sender_id, render_intent.try_into()?)
-                                .await
+                            let result = self
+                                .set_render_intent(client, sender_id, render_intent.try_into()?)
+                                .await;
+                            result
                         }
                         4u16 => {
                             let mastering_display_primary_red_x = message.uint()?;
@@ -246,23 +262,25 @@ pub mod frog_color_management_v1 {
                                 max_cll,
                                 max_fall
                             );
-                            self.set_hdr_metadata(
-                                client,
-                                sender_id,
-                                mastering_display_primary_red_x,
-                                mastering_display_primary_red_y,
-                                mastering_display_primary_green_x,
-                                mastering_display_primary_green_y,
-                                mastering_display_primary_blue_x,
-                                mastering_display_primary_blue_y,
-                                mastering_white_point_x,
-                                mastering_white_point_y,
-                                max_display_mastering_luminance,
-                                min_display_mastering_luminance,
-                                max_cll,
-                                max_fall,
-                            )
-                            .await
+                            let result = self
+                                .set_hdr_metadata(
+                                    client,
+                                    sender_id,
+                                    mastering_display_primary_red_x,
+                                    mastering_display_primary_red_y,
+                                    mastering_display_primary_green_x,
+                                    mastering_display_primary_green_y,
+                                    mastering_display_primary_blue_x,
+                                    mastering_display_primary_blue_y,
+                                    mastering_white_point_x,
+                                    mastering_white_point_y,
+                                    max_display_mastering_luminance,
+                                    min_display_mastering_luminance,
+                                    max_cll,
+                                    max_fall,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -271,17 +289,22 @@ pub mod frog_color_management_v1 {
             #[doc = "Destroying the color managed surface resets all known color"]
             #[doc = "state for the surface back to 'undefined' implementation-specific"]
             #[doc = "values."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
+            #[allow(unused)]
             fn set_known_transfer_function(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 transfer_function: TransferFunction,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_known_container_color_volume(
                 &self,
                 client: &mut crate::server::Client,
@@ -294,6 +317,7 @@ pub mod frog_color_management_v1 {
             #[doc = "to be be more pleasing for the viewer."]
             #[doc = "Compared to scRGB Linear + 709 being treated faithfully as 709"]
             #[doc = "(including utilizing negatives out of the 709 gamut triangle)"]
+            #[allow(unused)]
             fn set_render_intent(
                 &self,
                 client: &mut crate::server::Client,
@@ -306,6 +330,7 @@ pub mod frog_color_management_v1 {
             #[doc = ""]
             #[doc = "Usage of this HDR metadata is implementation specific and"]
             #[doc = "outside of the scope of this protocol."]
+            #[allow(unused)]
             fn set_hdr_metadata(
                 &self,
                 client: &mut crate::server::Client,
@@ -441,7 +466,9 @@ pub mod frog_fifo_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("frog_fifo_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -456,7 +483,8 @@ pub mod frog_fifo_v1 {
                                 id,
                                 surface
                             );
-                            self.get_fifo(client, sender_id, id, surface).await
+                            let result = self.get_fifo(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -465,11 +493,14 @@ pub mod frog_fifo_v1 {
             #[doc = "Informs the server that the client will no longer be using"]
             #[doc = "this protocol object. Existing objects created by this object"]
             #[doc = "are not affected."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Establish a fifo object for a surface that may be used to add"]
             #[doc = "display refresh constraints to content updates."]
             #[doc = ""]
@@ -478,6 +509,7 @@ pub mod frog_fifo_v1 {
             #[doc = "protocol error. If a surface is acted on by multiple software"]
             #[doc = "components, general best practice is that only the component"]
             #[doc = "performing wl_surface.attach operations should use this protocol."]
+            #[allow(unused)]
             fn get_fifo(
                 &self,
                 client: &mut crate::server::Client,
@@ -531,15 +563,19 @@ pub mod frog_fifo_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("frog_fifo_surface_v1#{}.set_barrier()", sender_id,);
-                            self.set_barrier(client, sender_id).await
+                            let result = self.set_barrier(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("frog_fifo_surface_v1#{}.wait_barrier()", sender_id,);
-                            self.wait_barrier(client, sender_id).await
+                            let result = self.wait_barrier(client, sender_id).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("frog_fifo_surface_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -559,6 +595,7 @@ pub mod frog_fifo_v1 {
             #[doc = ""]
             #[doc = "Requesting set_barrier after the fifo object's surface is"]
             #[doc = "destroyed will generate a \"surface_destroyed\" error."]
+            #[allow(unused)]
             fn set_barrier(
                 &self,
                 client: &mut crate::server::Client,
@@ -577,6 +614,7 @@ pub mod frog_fifo_v1 {
             #[doc = ""]
             #[doc = "Requesting \"wait_barrier\" after the fifo object's surface is"]
             #[doc = "destroyed will generate a \"surface_destroyed\" error."]
+            #[allow(unused)]
             fn wait_barrier(
                 &self,
                 client: &mut crate::server::Client,
@@ -587,11 +625,14 @@ pub mod frog_fifo_v1 {
             #[doc = ""]
             #[doc = "Surface state changes previously made by this protocol are"]
             #[doc = "unaffected by this object's destruction."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }

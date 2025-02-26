@@ -19,7 +19,9 @@ pub mod ivi_application {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ivi_surface#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -27,11 +29,14 @@ pub mod ivi_application {
             }
             #[doc = "This removes the link from ivi_id to wl_surface and destroys ivi_surface."]
             #[doc = "The ID, ivi_id, is free and can be used for surface_create again."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The configure event asks the client to resize its surface."]
             #[doc = ""]
             #[doc = "The size is a hint, in the sense that the client is free to"]
@@ -128,8 +133,10 @@ pub mod ivi_application {
                                 surface,
                                 id
                             );
-                            self.surface_create(client, sender_id, ivi_id, surface, id)
-                                .await
+                            let result = self
+                                .surface_create(client, sender_id, ivi_id, surface, id)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -156,6 +163,7 @@ pub mod ivi_application {
             #[doc = ""]
             #[doc = "If client destroys ivi_surface or wl_surface which is assigne to the ivi_surface,"]
             #[doc = "ivi_id which is assigned to the ivi_surface is free for reuse."]
+            #[allow(unused)]
             fn surface_create(
                 &self,
                 client: &mut crate::server::Client,
@@ -199,8 +207,10 @@ pub mod ivi_input {
                                 device,
                                 enabled
                             );
-                            self.set_input_focus(client, sender_id, surface, device, enabled)
-                                .await
+                            let result = self
+                                .set_input_focus(client, sender_id, surface, device, enabled)
+                                .await;
+                            result
                         }
                         1u16 => {
                             let surface = message.uint()?;
@@ -215,8 +225,10 @@ pub mod ivi_input {
                                 seat,
                                 accepted
                             );
-                            self.set_input_acceptance(client, sender_id, surface, seat, accepted)
-                                .await
+                            let result = self
+                                .set_input_acceptance(client, sender_id, surface, seat, accepted)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -228,6 +240,7 @@ pub mod ivi_input {
             #[doc = "Multiple surfaces can have input focus at a time."]
             #[doc = "If argument enabled is ILM_TRUE, input focus for this surface is enabled."]
             #[doc = "If argument enabled is not ILM_TRUE, the input focus from this surface is removed."]
+            #[allow(unused)]
             fn set_input_focus(
                 &self,
                 client: &mut crate::server::Client,
@@ -242,6 +255,7 @@ pub mod ivi_input {
             #[doc = "be added to the list of accepted seats."]
             #[doc = "If argument 'accepted' is not ILM_TRUE, the given seat's name"]
             #[doc = "will be removed from the list of accepted seats."]
+            #[allow(unused)]
             fn set_input_acceptance(
                 &self,
                 client: &mut crate::server::Client,
@@ -431,16 +445,20 @@ pub mod ivi_wm {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ivi_wm_screen#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             tracing::debug!("ivi_wm_screen#{}.clear()", sender_id,);
-                            self.clear(client, sender_id).await
+                            let result = self.clear(client, sender_id).await;
+                            result
                         }
                         2u16 => {
                             let layer_id = message.uint()?;
                             tracing::debug!("ivi_wm_screen#{}.add_layer({})", sender_id, layer_id);
-                            self.add_layer(client, sender_id, layer_id).await
+                            let result = self.add_layer(client, sender_id, layer_id).await;
+                            result
                         }
                         3u16 => {
                             let layer_id = message.uint()?;
@@ -449,7 +467,8 @@ pub mod ivi_wm {
                                 sender_id,
                                 layer_id
                             );
-                            self.remove_layer(client, sender_id, layer_id).await
+                            let result = self.remove_layer(client, sender_id, layer_id).await;
+                            result
                         }
                         4u16 => {
                             let buffer = message
@@ -464,27 +483,34 @@ pub mod ivi_wm {
                                 buffer,
                                 screenshot
                             );
-                            self.screenshot(client, sender_id, buffer, screenshot).await
+                            let result =
+                                self.screenshot(client, sender_id, buffer, screenshot).await;
+                            result
                         }
                         5u16 => {
                             let param = message.int()?;
                             tracing::debug!("ivi_wm_screen#{}.get({})", sender_id, param);
-                            self.get(client, sender_id, param).await
+                            let result = self.get(client, sender_id, param).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Request to destroy the ivi_wm_screen."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "A screen has no content assigned to itself, it is a container for layers."]
             #[doc = "This request removes all layers from the screen render order."]
             #[doc = "Note: the layers are not destroyed, they are just no longer contained by"]
             #[doc = "the screen."]
+            #[allow(unused)]
             fn clear(
                 &self,
                 client: &mut crate::server::Client,
@@ -493,6 +519,7 @@ pub mod ivi_wm {
             #[doc = "A screen has no content assigned to itself, it is a container for layers."]
             #[doc = "This request adds a layers to the topmost position of the screen render order."]
             #[doc = "The added layer will cover all other layers of the screen."]
+            #[allow(unused)]
             fn add_layer(
                 &self,
                 client: &mut crate::server::Client,
@@ -501,6 +528,7 @@ pub mod ivi_wm {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A screen has no content assigned to itself, it is a container for layers."]
             #[doc = "This request removes a layer."]
+            #[allow(unused)]
             fn remove_layer(
                 &self,
                 client: &mut crate::server::Client,
@@ -509,6 +537,7 @@ pub mod ivi_wm {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "An ivi_screenshot object is created which will receive the screenshot"]
             #[doc = "data of the specified output."]
+            #[allow(unused)]
             fn screenshot(
                 &self,
                 client: &mut crate::server::Client,
@@ -517,6 +546,7 @@ pub mod ivi_wm {
                 screenshot: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "After this request, compositor sends the requested parameter."]
+            #[allow(unused)]
             fn get(
                 &self,
                 client: &mut crate::server::Client,
@@ -859,7 +889,8 @@ pub mod ivi_wm {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ivi_wm#{}.commit_changes()", sender_id,);
-                            self.commit_changes(client, sender_id).await
+                            let result = self.commit_changes(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             let output = message
@@ -874,7 +905,8 @@ pub mod ivi_wm {
                                 output,
                                 id
                             );
-                            self.create_screen(client, sender_id, output, id).await
+                            let result = self.create_screen(client, sender_id, output, id).await;
+                            result
                         }
                         2u16 => {
                             let surface_id = message.uint()?;
@@ -885,8 +917,10 @@ pub mod ivi_wm {
                                 surface_id,
                                 visibility
                             );
-                            self.set_surface_visibility(client, sender_id, surface_id, visibility)
-                                .await
+                            let result = self
+                                .set_surface_visibility(client, sender_id, surface_id, visibility)
+                                .await;
+                            result
                         }
                         3u16 => {
                             let layer_id = message.uint()?;
@@ -897,8 +931,10 @@ pub mod ivi_wm {
                                 layer_id,
                                 visibility
                             );
-                            self.set_layer_visibility(client, sender_id, layer_id, visibility)
-                                .await
+                            let result = self
+                                .set_layer_visibility(client, sender_id, layer_id, visibility)
+                                .await;
+                            result
                         }
                         4u16 => {
                             let surface_id = message.uint()?;
@@ -909,8 +945,10 @@ pub mod ivi_wm {
                                 surface_id,
                                 opacity
                             );
-                            self.set_surface_opacity(client, sender_id, surface_id, opacity)
-                                .await
+                            let result = self
+                                .set_surface_opacity(client, sender_id, surface_id, opacity)
+                                .await;
+                            result
                         }
                         5u16 => {
                             let layer_id = message.uint()?;
@@ -921,8 +959,10 @@ pub mod ivi_wm {
                                 layer_id,
                                 opacity
                             );
-                            self.set_layer_opacity(client, sender_id, layer_id, opacity)
-                                .await
+                            let result = self
+                                .set_layer_opacity(client, sender_id, layer_id, opacity)
+                                .await;
+                            result
                         }
                         6u16 => {
                             let surface_id = message.uint()?;
@@ -939,10 +979,12 @@ pub mod ivi_wm {
                                 width,
                                 height
                             );
-                            self.set_surface_source_rectangle(
-                                client, sender_id, surface_id, x, y, width, height,
-                            )
-                            .await
+                            let result = self
+                                .set_surface_source_rectangle(
+                                    client, sender_id, surface_id, x, y, width, height,
+                                )
+                                .await;
+                            result
                         }
                         7u16 => {
                             let layer_id = message.uint()?;
@@ -959,10 +1001,12 @@ pub mod ivi_wm {
                                 width,
                                 height
                             );
-                            self.set_layer_source_rectangle(
-                                client, sender_id, layer_id, x, y, width, height,
-                            )
-                            .await
+                            let result = self
+                                .set_layer_source_rectangle(
+                                    client, sender_id, layer_id, x, y, width, height,
+                                )
+                                .await;
+                            result
                         }
                         8u16 => {
                             let surface_id = message.uint()?;
@@ -979,10 +1023,12 @@ pub mod ivi_wm {
                                 width,
                                 height
                             );
-                            self.set_surface_destination_rectangle(
-                                client, sender_id, surface_id, x, y, width, height,
-                            )
-                            .await
+                            let result = self
+                                .set_surface_destination_rectangle(
+                                    client, sender_id, surface_id, x, y, width, height,
+                                )
+                                .await;
+                            result
                         }
                         9u16 => {
                             let layer_id = message.uint()?;
@@ -999,10 +1045,12 @@ pub mod ivi_wm {
                                 width,
                                 height
                             );
-                            self.set_layer_destination_rectangle(
-                                client, sender_id, layer_id, x, y, width, height,
-                            )
-                            .await
+                            let result = self
+                                .set_layer_destination_rectangle(
+                                    client, sender_id, layer_id, x, y, width, height,
+                                )
+                                .await;
+                            result
                         }
                         10u16 => {
                             let surface_id = message.uint()?;
@@ -1013,8 +1061,10 @@ pub mod ivi_wm {
                                 surface_id,
                                 sync_state
                             );
-                            self.surface_sync(client, sender_id, surface_id, sync_state)
-                                .await
+                            let result = self
+                                .surface_sync(client, sender_id, surface_id, sync_state)
+                                .await;
+                            result
                         }
                         11u16 => {
                             let layer_id = message.uint()?;
@@ -1025,8 +1075,10 @@ pub mod ivi_wm {
                                 layer_id,
                                 sync_state
                             );
-                            self.layer_sync(client, sender_id, layer_id, sync_state)
-                                .await
+                            let result = self
+                                .layer_sync(client, sender_id, layer_id, sync_state)
+                                .await;
+                            result
                         }
                         12u16 => {
                             let surface_id = message.uint()?;
@@ -1037,7 +1089,9 @@ pub mod ivi_wm {
                                 surface_id,
                                 param
                             );
-                            self.surface_get(client, sender_id, surface_id, param).await
+                            let result =
+                                self.surface_get(client, sender_id, surface_id, param).await;
+                            result
                         }
                         13u16 => {
                             let layer_id = message.uint()?;
@@ -1048,7 +1102,8 @@ pub mod ivi_wm {
                                 layer_id,
                                 param
                             );
-                            self.layer_get(client, sender_id, layer_id, param).await
+                            let result = self.layer_get(client, sender_id, layer_id, param).await;
+                            result
                         }
                         14u16 => {
                             let buffer = message
@@ -1065,10 +1120,12 @@ pub mod ivi_wm {
                                 screenshot,
                                 surface_id
                             );
-                            self.surface_screenshot(
-                                client, sender_id, buffer, screenshot, surface_id,
-                            )
-                            .await
+                            let result = self
+                                .surface_screenshot(
+                                    client, sender_id, buffer, screenshot, surface_id,
+                                )
+                                .await;
+                            result
                         }
                         15u16 => {
                             let surface_id = message.uint()?;
@@ -1079,13 +1136,16 @@ pub mod ivi_wm {
                                 surface_id,
                                 r#type
                             );
-                            self.set_surface_type(client, sender_id, surface_id, r#type)
-                                .await
+                            let result = self
+                                .set_surface_type(client, sender_id, surface_id, r#type)
+                                .await;
+                            result
                         }
                         16u16 => {
                             let layer_id = message.uint()?;
                             tracing::debug!("ivi_wm#{}.layer_clear({})", sender_id, layer_id);
-                            self.layer_clear(client, sender_id, layer_id).await
+                            let result = self.layer_clear(client, sender_id, layer_id).await;
+                            result
                         }
                         17u16 => {
                             let layer_id = message.uint()?;
@@ -1096,8 +1156,10 @@ pub mod ivi_wm {
                                 layer_id,
                                 surface_id
                             );
-                            self.layer_add_surface(client, sender_id, layer_id, surface_id)
-                                .await
+                            let result = self
+                                .layer_add_surface(client, sender_id, layer_id, surface_id)
+                                .await;
+                            result
                         }
                         18u16 => {
                             let layer_id = message.uint()?;
@@ -1108,8 +1170,10 @@ pub mod ivi_wm {
                                 layer_id,
                                 surface_id
                             );
-                            self.layer_remove_surface(client, sender_id, layer_id, surface_id)
-                                .await
+                            let result = self
+                                .layer_remove_surface(client, sender_id, layer_id, surface_id)
+                                .await;
+                            result
                         }
                         19u16 => {
                             let layer_id = message.uint()?;
@@ -1122,8 +1186,10 @@ pub mod ivi_wm {
                                 width,
                                 height
                             );
-                            self.create_layout_layer(client, sender_id, layer_id, width, height)
-                                .await
+                            let result = self
+                                .create_layout_layer(client, sender_id, layer_id, width, height)
+                                .await;
+                            result
                         }
                         20u16 => {
                             let layer_id = message.uint()?;
@@ -1132,7 +1198,9 @@ pub mod ivi_wm {
                                 sender_id,
                                 layer_id
                             );
-                            self.destroy_layout_layer(client, sender_id, layer_id).await
+                            let result =
+                                self.destroy_layout_layer(client, sender_id, layer_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1142,12 +1210,14 @@ pub mod ivi_wm {
             #[doc = "can set different properties and apply the changes all at once."]
             #[doc = "Note: there's an exception to this. Creation and destruction of"]
             #[doc = "scene objects is executed immediately."]
+            #[allow(unused)]
             fn commit_changes(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Ask the ivi-wm to create a ivi-screen for given wl_output."]
+            #[allow(unused)]
             fn create_screen(
                 &self,
                 client: &mut crate::server::Client,
@@ -1157,6 +1227,7 @@ pub mod ivi_wm {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If visibility argument is 0, the surface in the ivi compositor is set to invisible."]
             #[doc = "If visibility argument is not 0, the surface in the ivi compositor is set to visible."]
+            #[allow(unused)]
             fn set_surface_visibility(
                 &self,
                 client: &mut crate::server::Client,
@@ -1166,6 +1237,7 @@ pub mod ivi_wm {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If visibility argument is 0, the layer in the ivi compositor is set to invisible."]
             #[doc = "If visibility argument is not 0, the layer in the ivi compositor is set to visible."]
+            #[allow(unused)]
             fn set_layer_visibility(
                 &self,
                 client: &mut crate::server::Client,
@@ -1174,6 +1246,7 @@ pub mod ivi_wm {
                 visibility: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The valid range for opacity is 0.0 (fully transparent) to 1.0 (fully opaque)."]
+            #[allow(unused)]
             fn set_surface_opacity(
                 &self,
                 client: &mut crate::server::Client,
@@ -1182,6 +1255,7 @@ pub mod ivi_wm {
                 opacity: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The valid range for opacity is 0.0 (fully transparent) to 1.0 (fully opaque)."]
+            #[allow(unused)]
             fn set_layer_opacity(
                 &self,
                 client: &mut crate::server::Client,
@@ -1197,6 +1271,7 @@ pub mod ivi_wm {
             #[doc = "y:      vertical start position of scanout area within the surface"]
             #[doc = "width:  width of scanout area within the surface"]
             #[doc = "height: height of scanout area within the surface"]
+            #[allow(unused)]
             fn set_surface_source_rectangle(
                 &self,
                 client: &mut crate::server::Client,
@@ -1215,6 +1290,7 @@ pub mod ivi_wm {
             #[doc = "y:      vertical start position of scanout area within the layer"]
             #[doc = "width:  width of scanout area within the layer"]
             #[doc = "height: height of scanout area within the layer"]
+            #[allow(unused)]
             fn set_layer_source_rectangle(
                 &self,
                 client: &mut crate::server::Client,
@@ -1232,6 +1308,7 @@ pub mod ivi_wm {
             #[doc = "y:      vertical start position of surface within the layer"]
             #[doc = "width : width of surface within the layer"]
             #[doc = "height: height of surface within the layer"]
+            #[allow(unused)]
             fn set_surface_destination_rectangle(
                 &self,
                 client: &mut crate::server::Client,
@@ -1249,6 +1326,7 @@ pub mod ivi_wm {
             #[doc = "y:      vertical start position of layer within the screen"]
             #[doc = "width : width of surface within the screen"]
             #[doc = "height: height of surface within the screen"]
+            #[allow(unused)]
             fn set_layer_destination_rectangle(
                 &self,
                 client: &mut crate::server::Client,
@@ -1263,6 +1341,7 @@ pub mod ivi_wm {
             #[doc = "If sync_state argument is 0, compositor sends the properties continously."]
             #[doc = "If sync_state argument is not 0, compositor stops sending the properties"]
             #[doc = "continously."]
+            #[allow(unused)]
             fn surface_sync(
                 &self,
                 client: &mut crate::server::Client,
@@ -1274,6 +1353,7 @@ pub mod ivi_wm {
             #[doc = "If sync_state argument is 0, compositor sends the properties continously."]
             #[doc = "If sync_state argument is not 0, compositor stops sending the properties"]
             #[doc = "continously."]
+            #[allow(unused)]
             fn layer_sync(
                 &self,
                 client: &mut crate::server::Client,
@@ -1282,6 +1362,7 @@ pub mod ivi_wm {
                 sync_state: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "After this request, compositor sends the requested parameter."]
+            #[allow(unused)]
             fn surface_get(
                 &self,
                 client: &mut crate::server::Client,
@@ -1290,6 +1371,7 @@ pub mod ivi_wm {
                 param: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "After this request, compositor sends the requested parameter."]
+            #[allow(unused)]
             fn layer_get(
                 &self,
                 client: &mut crate::server::Client,
@@ -1301,6 +1383,7 @@ pub mod ivi_wm {
             #[doc = "buffer currently attached to the surface with the given id. If there"]
             #[doc = "is no surface with such name the server will respond with an"]
             #[doc = "ivi_screenshot.error event."]
+            #[allow(unused)]
             fn surface_screenshot(
                 &self,
                 client: &mut crate::server::Client,
@@ -1310,6 +1393,7 @@ pub mod ivi_wm {
                 surface_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "After this request, compositor changes the type of the surface."]
+            #[allow(unused)]
             fn set_surface_type(
                 &self,
                 client: &mut crate::server::Client,
@@ -1319,6 +1403,7 @@ pub mod ivi_wm {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A layer has no content assigned to itself, it is a container for surfaces."]
             #[doc = "This request removes all surfaces from the layer render order."]
+            #[allow(unused)]
             fn layer_clear(
                 &self,
                 client: &mut crate::server::Client,
@@ -1328,6 +1413,7 @@ pub mod ivi_wm {
             #[doc = "A layer has no content assigned to itself, it is a container for surfaces."]
             #[doc = "This request adds a surface to the topmost position of the layer render order."]
             #[doc = "The added surface will cover all other surfaces of the layer."]
+            #[allow(unused)]
             fn layer_add_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -1339,6 +1425,7 @@ pub mod ivi_wm {
             #[doc = "This request removes one surfaces from the layer render order."]
             #[doc = "Note: the surface is not destroyed, it is just no longer contained by"]
             #[doc = "the layer."]
+            #[allow(unused)]
             fn layer_remove_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -1347,6 +1434,7 @@ pub mod ivi_wm {
                 surface_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "After this request, compositor creates an ivi_layout_layer"]
+            #[allow(unused)]
             fn create_layout_layer(
                 &self,
                 client: &mut crate::server::Client,
@@ -1356,6 +1444,7 @@ pub mod ivi_wm {
                 height: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "After this request, compositor destroyes an existing ivi_layout_layer."]
+            #[allow(unused)]
             fn destroy_layout_layer(
                 &self,
                 client: &mut crate::server::Client,

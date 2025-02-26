@@ -81,7 +81,9 @@ pub mod linux_dmabuf_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_linux_dmabuf_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let params_id = message
@@ -92,7 +94,8 @@ pub mod linux_dmabuf_v1 {
                                 sender_id,
                                 params_id
                             );
-                            self.create_params(client, sender_id, params_id).await
+                            let result = self.create_params(client, sender_id, params_id).await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -103,7 +106,8 @@ pub mod linux_dmabuf_v1 {
                                 sender_id,
                                 id
                             );
-                            self.get_default_feedback(client, sender_id, id).await
+                            let result = self.get_default_feedback(client, sender_id, id).await;
+                            result
                         }
                         3u16 => {
                             let id = message
@@ -118,8 +122,10 @@ pub mod linux_dmabuf_v1 {
                                 id,
                                 surface
                             );
-                            self.get_surface_feedback(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_surface_feedback(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -127,15 +133,19 @@ pub mod linux_dmabuf_v1 {
             }
             #[doc = "Objects created through this interface, especially wl_buffers, will"]
             #[doc = "remain valid."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This temporary object is used to collect multiple dmabuf handles into"]
             #[doc = "a single batch to create a wl_buffer. It can only be used once and"]
             #[doc = "should be destroyed after a 'created' or 'failed' event has been"]
             #[doc = "received."]
+            #[allow(unused)]
             fn create_params(
                 &self,
                 client: &mut crate::server::Client,
@@ -146,6 +156,7 @@ pub mod linux_dmabuf_v1 {
             #[doc = "to a particular surface. This object will deliver feedback about dmabuf"]
             #[doc = "parameters to use if the client doesn't support per-surface feedback"]
             #[doc = "(see get_surface_feedback)."]
+            #[allow(unused)]
             fn get_default_feedback(
                 &self,
                 client: &mut crate::server::Client,
@@ -158,6 +169,7 @@ pub mod linux_dmabuf_v1 {
             #[doc = ""]
             #[doc = "If the surface is destroyed before the wp_linux_dmabuf_feedback object,"]
             #[doc = "the feedback object becomes inert."]
+            #[allow(unused)]
             fn get_surface_feedback(
                 &self,
                 client: &mut crate::server::Client,
@@ -334,7 +346,9 @@ pub mod linux_dmabuf_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_linux_buffer_params_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let fd = message.fd()?;
@@ -353,17 +367,19 @@ pub mod linux_dmabuf_v1 {
                                 modifier_hi,
                                 modifier_lo
                             );
-                            self.add(
-                                client,
-                                sender_id,
-                                fd,
-                                plane_idx,
-                                offset,
-                                stride,
-                                modifier_hi,
-                                modifier_lo,
-                            )
-                            .await
+                            let result = self
+                                .add(
+                                    client,
+                                    sender_id,
+                                    fd,
+                                    plane_idx,
+                                    offset,
+                                    stride,
+                                    modifier_hi,
+                                    modifier_lo,
+                                )
+                                .await;
+                            result
                         }
                         2u16 => {
                             let width = message.int()?;
@@ -378,8 +394,10 @@ pub mod linux_dmabuf_v1 {
                                 format,
                                 flags
                             );
-                            self.create(client, sender_id, width, height, format, flags.try_into()?)
-                                .await
+                            let result = self
+                                .create(client, sender_id, width, height, format, flags.try_into()?)
+                                .await;
+                            result
                         }
                         3u16 => {
                             let buffer_id = message
@@ -398,16 +416,18 @@ pub mod linux_dmabuf_v1 {
                                 format,
                                 flags
                             );
-                            self.create_immed(
-                                client,
-                                sender_id,
-                                buffer_id,
-                                width,
-                                height,
-                                format,
-                                flags.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .create_immed(
+                                    client,
+                                    sender_id,
+                                    buffer_id,
+                                    width,
+                                    height,
+                                    format,
+                                    flags.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -415,11 +435,14 @@ pub mod linux_dmabuf_v1 {
             }
             #[doc = "Cleans up the temporary data sent to the server for dmabuf-based"]
             #[doc = "wl_buffer creation."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This request adds one dmabuf to the set in this"]
             #[doc = "zwp_linux_buffer_params_v1."]
             #[doc = ""]
@@ -439,6 +462,7 @@ pub mod linux_dmabuf_v1 {
             #[doc = "This request raises the PLANE_IDX error if plane_idx is too large."]
             #[doc = "The error PLANE_SET is raised if attempting to set a plane that"]
             #[doc = "was already set."]
+            #[allow(unused)]
             fn add(
                 &self,
                 client: &mut crate::server::Client,
@@ -509,6 +533,7 @@ pub mod linux_dmabuf_v1 {
             #[doc = ""]
             #[doc = "It is not mandatory to issue 'create'. If a client wants to"]
             #[doc = "cancel the buffer creation, it can just destroy this object."]
+            #[allow(unused)]
             fn create(
                 &self,
                 client: &mut crate::server::Client,
@@ -541,6 +566,7 @@ pub mod linux_dmabuf_v1 {
             #[doc = ""]
             #[doc = "This takes the same arguments as a 'create' request, and obeys the"]
             #[doc = "same restrictions."]
+            #[allow(unused)]
             fn create_immed(
                 &self,
                 client: &mut crate::server::Client,
@@ -655,7 +681,9 @@ pub mod linux_dmabuf_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_linux_dmabuf_feedback_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -663,11 +691,14 @@ pub mod linux_dmabuf_v1 {
             }
             #[doc = "Using this request a client can tell the server that it is not going to"]
             #[doc = "use the wp_linux_dmabuf_feedback object anymore."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is sent after all parameters of a wp_linux_dmabuf_feedback"]
             #[doc = "object have been sent."]
             #[doc = ""]
@@ -978,7 +1009,9 @@ pub mod presentation_time {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_presentation#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let surface = message
@@ -993,7 +1026,8 @@ pub mod presentation_time {
                                 surface,
                                 callback
                             );
-                            self.feedback(client, sender_id, surface, callback).await
+                            let result = self.feedback(client, sender_id, surface, callback).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1002,11 +1036,14 @@ pub mod presentation_time {
             #[doc = "Informs the server that the client will no longer be using"]
             #[doc = "this protocol object. Existing objects created by this object"]
             #[doc = "are not affected."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Request presentation feedback for the current content submission"]
             #[doc = "on the given surface. This creates a new presentation_feedback"]
             #[doc = "object, which will deliver the feedback information once. If"]
@@ -1015,6 +1052,7 @@ pub mod presentation_time {
             #[doc = ""]
             #[doc = "For details on what information is returned, see the"]
             #[doc = "presentation_feedback interface."]
+            #[allow(unused)]
             fn feedback(
                 &self,
                 client: &mut crate::server::Client,
@@ -1353,12 +1391,16 @@ pub mod tablet_v2 {
                                 tablet_seat,
                                 seat
                             );
-                            self.get_tablet_seat(client, sender_id, tablet_seat, seat)
-                                .await
+                            let result = self
+                                .get_tablet_seat(client, sender_id, tablet_seat, seat)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_manager_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1366,6 +1408,7 @@ pub mod tablet_v2 {
             }
             #[doc = "Get the wp_tablet_seat object for the given seat. This object"]
             #[doc = "provides access to all graphics tablets in this seat."]
+            #[allow(unused)]
             fn get_tablet_seat(
                 &self,
                 client: &mut crate::server::Client,
@@ -1375,11 +1418,14 @@ pub mod tablet_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the wp_tablet_manager object. Objects created from this"]
             #[doc = "object are unaffected and should be destroyed separately."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "An object that provides access to the graphics tablets available on this"]
@@ -1404,7 +1450,9 @@ pub mod tablet_v2 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_tablet_seat_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1412,11 +1460,14 @@ pub mod tablet_v2 {
             }
             #[doc = "Destroy the wp_tablet_seat object. Objects created from this"]
             #[doc = "object are unaffected and should be destroyed separately."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is sent whenever a new tablet becomes available on this"]
             #[doc = "seat. This event only provides the object id of the tablet, any"]
             #[doc = "static information about the tablet (device name, vid/pid, etc.) is"]
@@ -1677,14 +1728,18 @@ pub mod tablet_v2 {
                                 hotspot_x,
                                 hotspot_y
                             );
-                            self.set_cursor(
-                                client, sender_id, serial, surface, hotspot_x, hotspot_y,
-                            )
-                            .await
+                            let result = self
+                                .set_cursor(
+                                    client, sender_id, serial, surface, hotspot_x, hotspot_y,
+                                )
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_tool_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1720,6 +1775,7 @@ pub mod tablet_v2 {
             #[doc = "wp_tablet_tool. If the surface already has another role or has"]
             #[doc = "previously been used as cursor surface for a different tool, a"]
             #[doc = "protocol error is raised."]
+            #[allow(unused)]
             fn set_cursor(
                 &self,
                 client: &mut crate::server::Client,
@@ -1730,11 +1786,14 @@ pub mod tablet_v2 {
                 hotspot_y: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This destroys the client's resource for this tool object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The tool type is the high-level type of the tool and usually decides"]
             #[doc = "the interaction expected from this tool."]
             #[doc = ""]
@@ -2273,18 +2332,23 @@ pub mod tablet_v2 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_tablet_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "This destroys the client's resource for this tablet object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "A descriptive name for the tablet device."]
             #[doc = ""]
             #[doc = "If the device has no descriptive name, this event is not sent."]
@@ -2462,12 +2526,16 @@ pub mod tablet_v2 {
                                 description,
                                 serial
                             );
-                            self.set_feedback(client, sender_id, description, serial)
-                                .await
+                            let result = self
+                                .set_feedback(client, sender_id, description, serial)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_pad_ring_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2492,6 +2560,7 @@ pub mod tablet_v2 {
             #[doc = "wp_tablet_pad_group.mode_switch event received for the group of this"]
             #[doc = "ring. Requests providing other serials than the most recent one will be"]
             #[doc = "ignored."]
+            #[allow(unused)]
             fn set_feedback(
                 &self,
                 client: &mut crate::server::Client,
@@ -2500,11 +2569,14 @@ pub mod tablet_v2 {
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This destroys the client's resource for this ring object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Source information for ring events."]
             #[doc = ""]
             #[doc = "This event does not occur on its own. It is sent before a"]
@@ -2667,12 +2739,16 @@ pub mod tablet_v2 {
                                 description,
                                 serial
                             );
-                            self.set_feedback(client, sender_id, description, serial)
-                                .await
+                            let result = self
+                                .set_feedback(client, sender_id, description, serial)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_pad_strip_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2697,6 +2773,7 @@ pub mod tablet_v2 {
             #[doc = "wp_tablet_pad_group.mode_switch event received for the group of this"]
             #[doc = "strip. Requests providing other serials than the most recent one will be"]
             #[doc = "ignored."]
+            #[allow(unused)]
             fn set_feedback(
                 &self,
                 client: &mut crate::server::Client,
@@ -2705,11 +2782,14 @@ pub mod tablet_v2 {
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This destroys the client's resource for this strip object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Source information for strip events."]
             #[doc = ""]
             #[doc = "This event does not occur on its own. It is sent before a"]
@@ -2864,7 +2944,9 @@ pub mod tablet_v2 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_tablet_pad_group_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2872,11 +2954,14 @@ pub mod tablet_v2 {
             }
             #[doc = "Destroy the wp_tablet_pad_group object. Objects created from this object"]
             #[doc = "are unaffected and should be destroyed separately."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Sent on wp_tablet_pad_group initialization to announce the available"]
             #[doc = "buttons in the group. Button indices start at 0, a button may only be"]
             #[doc = "in one group at a time."]
@@ -3133,12 +3218,16 @@ pub mod tablet_v2 {
                                 description,
                                 serial
                             );
-                            self.set_feedback(client, sender_id, button, description, serial)
-                                .await
+                            let result = self
+                                .set_feedback(client, sender_id, button, description, serial)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_pad_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3168,6 +3257,7 @@ pub mod tablet_v2 {
             #[doc = "wp_tablet_pad_group.mode_switch event received for the group of this"]
             #[doc = "button. Requests providing other serials than the most recent one will"]
             #[doc = "be ignored."]
+            #[allow(unused)]
             fn set_feedback(
                 &self,
                 client: &mut crate::server::Client,
@@ -3178,11 +3268,14 @@ pub mod tablet_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the wp_tablet_pad object. Objects created from this object"]
             #[doc = "are unaffected and should be destroyed separately."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Sent on wp_tablet_pad initialization to announce available groups."]
             #[doc = "One event is sent for each pad group available."]
             #[doc = ""]
@@ -3424,7 +3517,9 @@ pub mod viewporter {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_viewporter#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -3439,7 +3534,8 @@ pub mod viewporter {
                                 id,
                                 surface
                             );
-                            self.get_viewport(client, sender_id, id, surface).await
+                            let result = self.get_viewport(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3448,15 +3544,19 @@ pub mod viewporter {
             #[doc = "Informs the server that the client will not be using this"]
             #[doc = "protocol object anymore. This does not affect any other objects,"]
             #[doc = "wp_viewport objects included."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Instantiate an interface extension for the given wl_surface to"]
             #[doc = "crop and scale its content. If the given wl_surface already has"]
             #[doc = "a wp_viewport object associated, the viewport_exists"]
             #[doc = "protocol error is raised."]
+            #[allow(unused)]
             fn get_viewport(
                 &self,
                 client: &mut crate::server::Client,
@@ -3569,7 +3669,9 @@ pub mod viewporter {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wp_viewport#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let x = message.fixed()?;
@@ -3584,8 +3686,10 @@ pub mod viewporter {
                                 width,
                                 height
                             );
-                            self.set_source(client, sender_id, x, y, width, height)
-                                .await
+                            let result = self
+                                .set_source(client, sender_id, x, y, width, height)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let width = message.int()?;
@@ -3596,7 +3700,9 @@ pub mod viewporter {
                                 width,
                                 height
                             );
-                            self.set_destination(client, sender_id, width, height).await
+                            let result =
+                                self.set_destination(client, sender_id, width, height).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3604,11 +3710,14 @@ pub mod viewporter {
             }
             #[doc = "The associated wl_surface's crop and scale state is removed."]
             #[doc = "The change is applied on the next wl_surface.commit."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Set the source rectangle of the associated wl_surface. See"]
             #[doc = "wp_viewport for the description, and relation to the wl_buffer"]
             #[doc = "size."]
@@ -3619,6 +3728,7 @@ pub mod viewporter {
             #[doc = "error."]
             #[doc = ""]
             #[doc = "The crop and scale state is double-buffered, see wl_surface.commit."]
+            #[allow(unused)]
             fn set_source(
                 &self,
                 client: &mut crate::server::Client,
@@ -3638,6 +3748,7 @@ pub mod viewporter {
             #[doc = "error."]
             #[doc = ""]
             #[doc = "The crop and scale state is double-buffered, see wl_surface.commit."]
+            #[allow(unused)]
             fn set_destination(
                 &self,
                 client: &mut crate::server::Client,
@@ -3713,14 +3824,17 @@ pub mod xdg_shell {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_wm_base#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("xdg_wm_base#{}.create_positioner({})", sender_id, id);
-                            self.create_positioner(client, sender_id, id).await
+                            let result = self.create_positioner(client, sender_id, id).await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -3735,12 +3849,14 @@ pub mod xdg_shell {
                                 id,
                                 surface
                             );
-                            self.get_xdg_surface(client, sender_id, id, surface).await
+                            let result = self.get_xdg_surface(client, sender_id, id, surface).await;
+                            result
                         }
                         3u16 => {
                             let serial = message.uint()?;
                             tracing::debug!("xdg_wm_base#{}.pong({})", sender_id, serial);
-                            self.pong(client, sender_id, serial).await
+                            let result = self.pong(client, sender_id, serial).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3751,14 +3867,18 @@ pub mod xdg_shell {
             #[doc = "Destroying a bound xdg_wm_base object while there are surfaces"]
             #[doc = "still alive created by this xdg_wm_base object instance is illegal"]
             #[doc = "and will result in a defunct_surfaces error."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Create a positioner object. A positioner object is used to position"]
             #[doc = "surfaces relative to some parent surface. See the interface description"]
             #[doc = "and xdg_surface.get_popup for details."]
+            #[allow(unused)]
             fn create_positioner(
                 &self,
                 client: &mut crate::server::Client,
@@ -3778,6 +3898,7 @@ pub mod xdg_shell {
             #[doc = ""]
             #[doc = "See the documentation of xdg_surface for more details about what an"]
             #[doc = "xdg_surface is and how it is used."]
+            #[allow(unused)]
             fn get_xdg_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -3788,6 +3909,7 @@ pub mod xdg_shell {
             #[doc = "A client must respond to a ping event with a pong request or"]
             #[doc = "the client may be deemed unresponsive. See xdg_wm_base.ping"]
             #[doc = "and xdg_wm_base.error.unresponsive."]
+            #[allow(unused)]
             fn pong(
                 &self,
                 client: &mut crate::server::Client,
@@ -3968,7 +4090,9 @@ pub mod xdg_shell {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_positioner#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let width = message.int()?;
@@ -3979,7 +4103,8 @@ pub mod xdg_shell {
                                 width,
                                 height
                             );
-                            self.set_size(client, sender_id, width, height).await
+                            let result = self.set_size(client, sender_id, width, height).await;
+                            result
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -3994,13 +4119,17 @@ pub mod xdg_shell {
                                 width,
                                 height
                             );
-                            self.set_anchor_rect(client, sender_id, x, y, width, height)
-                                .await
+                            let result = self
+                                .set_anchor_rect(client, sender_id, x, y, width, height)
+                                .await;
+                            result
                         }
                         3u16 => {
                             let anchor = message.uint()?;
                             tracing::debug!("xdg_positioner#{}.set_anchor({})", sender_id, anchor);
-                            self.set_anchor(client, sender_id, anchor.try_into()?).await
+                            let result =
+                                self.set_anchor(client, sender_id, anchor.try_into()?).await;
+                            result
                         }
                         4u16 => {
                             let gravity = message.uint()?;
@@ -4009,8 +4138,10 @@ pub mod xdg_shell {
                                 sender_id,
                                 gravity
                             );
-                            self.set_gravity(client, sender_id, gravity.try_into()?)
-                                .await
+                            let result = self
+                                .set_gravity(client, sender_id, gravity.try_into()?)
+                                .await;
+                            result
                         }
                         5u16 => {
                             let constraint_adjustment = message.uint()?;
@@ -4019,12 +4150,14 @@ pub mod xdg_shell {
                                 sender_id,
                                 constraint_adjustment
                             );
-                            self.set_constraint_adjustment(
-                                client,
-                                sender_id,
-                                constraint_adjustment.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_constraint_adjustment(
+                                    client,
+                                    sender_id,
+                                    constraint_adjustment.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         6u16 => {
                             let x = message.int()?;
@@ -4035,11 +4168,13 @@ pub mod xdg_shell {
                                 x,
                                 y
                             );
-                            self.set_offset(client, sender_id, x, y).await
+                            let result = self.set_offset(client, sender_id, x, y).await;
+                            result
                         }
                         7u16 => {
                             tracing::debug!("xdg_positioner#{}.set_reactive()", sender_id,);
-                            self.set_reactive(client, sender_id).await
+                            let result = self.set_reactive(client, sender_id).await;
+                            result
                         }
                         8u16 => {
                             let parent_width = message.int()?;
@@ -4050,8 +4185,10 @@ pub mod xdg_shell {
                                 parent_width,
                                 parent_height
                             );
-                            self.set_parent_size(client, sender_id, parent_width, parent_height)
-                                .await
+                            let result = self
+                                .set_parent_size(client, sender_id, parent_width, parent_height)
+                                .await;
+                            result
                         }
                         9u16 => {
                             let serial = message.uint()?;
@@ -4060,23 +4197,28 @@ pub mod xdg_shell {
                                 sender_id,
                                 serial
                             );
-                            self.set_parent_configure(client, sender_id, serial).await
+                            let result = self.set_parent_configure(client, sender_id, serial).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Notify the compositor that the xdg_positioner will no longer be used."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Set the size of the surface that is to be positioned with the positioner"]
             #[doc = "object. The size is in surface-local coordinates and corresponds to the"]
             #[doc = "window geometry. See xdg_surface.set_window_geometry."]
             #[doc = ""]
             #[doc = "If a zero or negative size is set the invalid_input error is raised."]
+            #[allow(unused)]
             fn set_size(
                 &self,
                 client: &mut crate::server::Client,
@@ -4094,6 +4236,7 @@ pub mod xdg_shell {
             #[doc = "positioned child's parent surface."]
             #[doc = ""]
             #[doc = "If a negative size is set the invalid_input error is raised."]
+            #[allow(unused)]
             fn set_anchor_rect(
                 &self,
                 client: &mut crate::server::Client,
@@ -4109,6 +4252,7 @@ pub mod xdg_shell {
             #[doc = "'bottom_right'), the anchor point will be at the specified corner;"]
             #[doc = "otherwise, the derived anchor point will be centered on the specified"]
             #[doc = "edge, or in the center of the anchor rectangle if no edge is specified."]
+            #[allow(unused)]
             fn set_anchor(
                 &self,
                 client: &mut crate::server::Client,
@@ -4122,6 +4266,7 @@ pub mod xdg_shell {
             #[doc = "surface will be centered over the anchor point on any axis that had no"]
             #[doc = "gravity specified. If the gravity is not in the ‘gravity’ enum, an"]
             #[doc = "invalid_input error is raised."]
+            #[allow(unused)]
             fn set_gravity(
                 &self,
                 client: &mut crate::server::Client,
@@ -4141,6 +4286,7 @@ pub mod xdg_shell {
             #[doc = "are applied is specified in the corresponding adjustment descriptions."]
             #[doc = ""]
             #[doc = "The default adjustment is none."]
+            #[allow(unused)]
             fn set_constraint_adjustment(
                 &self,
                 client: &mut crate::server::Client,
@@ -4158,6 +4304,7 @@ pub mod xdg_shell {
             #[doc = "An example use case is placing a popup menu on top of a user interface"]
             #[doc = "element, while aligning the user interface element of the parent surface"]
             #[doc = "with some user interface element placed somewhere in the popup surface."]
+            #[allow(unused)]
             fn set_offset(
                 &self,
                 client: &mut crate::server::Client,
@@ -4171,6 +4318,7 @@ pub mod xdg_shell {
             #[doc = "If the conditions changed and the popup was reconstrained, an"]
             #[doc = "xdg_popup.configure event is sent with updated geometry, followed by an"]
             #[doc = "xdg_surface.configure event."]
+            #[allow(unused)]
             fn set_reactive(
                 &self,
                 client: &mut crate::server::Client,
@@ -4183,6 +4331,7 @@ pub mod xdg_shell {
             #[doc = "positioned against, the behavior is undefined."]
             #[doc = ""]
             #[doc = "The arguments are given in the surface-local coordinate space."]
+            #[allow(unused)]
             fn set_parent_size(
                 &self,
                 client: &mut crate::server::Client,
@@ -4194,6 +4343,7 @@ pub mod xdg_shell {
             #[doc = "used in response to. The compositor may use this information together"]
             #[doc = "with set_parent_size to determine what future state the popup should be"]
             #[doc = "constrained using."]
+            #[allow(unused)]
             fn set_parent_configure(
                 &self,
                 client: &mut crate::server::Client,
@@ -4305,14 +4455,17 @@ pub mod xdg_shell {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_surface#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("xdg_surface#{}.get_toplevel({})", sender_id, id);
-                            self.get_toplevel(client, sender_id, id).await
+                            let result = self.get_toplevel(client, sender_id, id).await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -4331,8 +4484,10 @@ pub mod xdg_shell {
                                     .map_or("null".to_string(), |v| v.to_string()),
                                 positioner
                             );
-                            self.get_popup(client, sender_id, id, parent, positioner)
-                                .await
+                            let result = self
+                                .get_popup(client, sender_id, id, parent, positioner)
+                                .await;
+                            result
                         }
                         3u16 => {
                             let x = message.int()?;
@@ -4347,13 +4502,16 @@ pub mod xdg_shell {
                                 width,
                                 height
                             );
-                            self.set_window_geometry(client, sender_id, x, y, width, height)
-                                .await
+                            let result = self
+                                .set_window_geometry(client, sender_id, x, y, width, height)
+                                .await;
+                            result
                         }
                         4u16 => {
                             let serial = message.uint()?;
                             tracing::debug!("xdg_surface#{}.ack_configure({})", sender_id, serial);
-                            self.ack_configure(client, sender_id, serial).await
+                            let result = self.ack_configure(client, sender_id, serial).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4362,16 +4520,20 @@ pub mod xdg_shell {
             #[doc = "Destroy the xdg_surface object. An xdg_surface must only be destroyed"]
             #[doc = "after its role object has been destroyed, otherwise"]
             #[doc = "a defunct_role_object error is raised."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This creates an xdg_toplevel object for the given xdg_surface and gives"]
             #[doc = "the associated wl_surface the xdg_toplevel role."]
             #[doc = ""]
             #[doc = "See the documentation of xdg_toplevel for more details about what an"]
             #[doc = "xdg_toplevel is and how it is used."]
+            #[allow(unused)]
             fn get_toplevel(
                 &self,
                 client: &mut crate::server::Client,
@@ -4386,6 +4548,7 @@ pub mod xdg_shell {
             #[doc = ""]
             #[doc = "See the documentation of xdg_popup for more details about what an"]
             #[doc = "xdg_popup is and how it is used."]
+            #[allow(unused)]
             fn get_popup(
                 &self,
                 client: &mut crate::server::Client,
@@ -4431,6 +4594,7 @@ pub mod xdg_shell {
             #[doc = "The width and height of the effective window geometry must be"]
             #[doc = "greater than zero. Setting an invalid size will raise an"]
             #[doc = "invalid_size error."]
+            #[allow(unused)]
             fn set_window_geometry(
                 &self,
                 client: &mut crate::server::Client,
@@ -4472,6 +4636,7 @@ pub mod xdg_shell {
             #[doc = "request referencing a serial from a configure event issued before the"]
             #[doc = "event identified by the last ack_configure request for the same"]
             #[doc = "xdg_surface. Doing so will raise an invalid_serial error."]
+            #[allow(unused)]
             fn ack_configure(
                 &self,
                 client: &mut crate::server::Client,
@@ -4694,7 +4859,9 @@ pub mod xdg_shell {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_toplevel#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let parent = message.object()?;
@@ -4705,14 +4872,16 @@ pub mod xdg_shell {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_parent(client, sender_id, parent).await
+                            let result = self.set_parent(client, sender_id, parent).await;
+                            result
                         }
                         2u16 => {
                             let title = message
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("xdg_toplevel#{}.set_title(\"{}\")", sender_id, title);
-                            self.set_title(client, sender_id, title).await
+                            let result = self.set_title(client, sender_id, title).await;
+                            result
                         }
                         3u16 => {
                             let app_id = message
@@ -4723,7 +4892,8 @@ pub mod xdg_shell {
                                 sender_id,
                                 app_id
                             );
-                            self.set_app_id(client, sender_id, app_id).await
+                            let result = self.set_app_id(client, sender_id, app_id).await;
+                            result
                         }
                         4u16 => {
                             let seat = message
@@ -4740,8 +4910,10 @@ pub mod xdg_shell {
                                 x,
                                 y
                             );
-                            self.show_window_menu(client, sender_id, seat, serial, x, y)
-                                .await
+                            let result = self
+                                .show_window_menu(client, sender_id, seat, serial, x, y)
+                                .await;
+                            result
                         }
                         5u16 => {
                             let seat = message
@@ -4754,7 +4926,8 @@ pub mod xdg_shell {
                                 seat,
                                 serial
                             );
-                            self.r#move(client, sender_id, seat, serial).await
+                            let result = self.r#move(client, sender_id, seat, serial).await;
+                            result
                         }
                         6u16 => {
                             let seat = message
@@ -4769,8 +4942,10 @@ pub mod xdg_shell {
                                 serial,
                                 edges
                             );
-                            self.resize(client, sender_id, seat, serial, edges.try_into()?)
-                                .await
+                            let result = self
+                                .resize(client, sender_id, seat, serial, edges.try_into()?)
+                                .await;
+                            result
                         }
                         7u16 => {
                             let width = message.int()?;
@@ -4781,7 +4956,8 @@ pub mod xdg_shell {
                                 width,
                                 height
                             );
-                            self.set_max_size(client, sender_id, width, height).await
+                            let result = self.set_max_size(client, sender_id, width, height).await;
+                            result
                         }
                         8u16 => {
                             let width = message.int()?;
@@ -4792,15 +4968,18 @@ pub mod xdg_shell {
                                 width,
                                 height
                             );
-                            self.set_min_size(client, sender_id, width, height).await
+                            let result = self.set_min_size(client, sender_id, width, height).await;
+                            result
                         }
                         9u16 => {
                             tracing::debug!("xdg_toplevel#{}.set_maximized()", sender_id,);
-                            self.set_maximized(client, sender_id).await
+                            let result = self.set_maximized(client, sender_id).await;
+                            result
                         }
                         10u16 => {
                             tracing::debug!("xdg_toplevel#{}.unset_maximized()", sender_id,);
-                            self.unset_maximized(client, sender_id).await
+                            let result = self.unset_maximized(client, sender_id).await;
+                            result
                         }
                         11u16 => {
                             let output = message.object()?;
@@ -4811,15 +4990,18 @@ pub mod xdg_shell {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_fullscreen(client, sender_id, output).await
+                            let result = self.set_fullscreen(client, sender_id, output).await;
+                            result
                         }
                         12u16 => {
                             tracing::debug!("xdg_toplevel#{}.unset_fullscreen()", sender_id,);
-                            self.unset_fullscreen(client, sender_id).await
+                            let result = self.unset_fullscreen(client, sender_id).await;
+                            result
                         }
                         13u16 => {
                             tracing::debug!("xdg_toplevel#{}.set_minimized()", sender_id,);
-                            self.set_minimized(client, sender_id).await
+                            let result = self.set_minimized(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4827,11 +5009,14 @@ pub mod xdg_shell {
             }
             #[doc = "This request destroys the role surface and unmaps the surface;"]
             #[doc = "see \"Unmapping\" behavior in interface section for details."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Set the \"parent\" of this surface. This surface should be stacked"]
             #[doc = "above the parent surface and all other ancestor surfaces."]
             #[doc = ""]
@@ -4852,6 +5037,7 @@ pub mod xdg_shell {
             #[doc = "The parent toplevel must not be one of the child toplevel's"]
             #[doc = "descendants, and the parent must be different from the child toplevel,"]
             #[doc = "otherwise the invalid_parent protocol error is raised."]
+            #[allow(unused)]
             fn set_parent(
                 &self,
                 client: &mut crate::server::Client,
@@ -4865,6 +5051,7 @@ pub mod xdg_shell {
             #[doc = "compositor."]
             #[doc = ""]
             #[doc = "The string must be encoded in UTF-8."]
+            #[allow(unused)]
             fn set_title(
                 &self,
                 client: &mut crate::server::Client,
@@ -4894,6 +5081,7 @@ pub mod xdg_shell {
             #[doc = "names and .desktop files."]
             #[doc = ""]
             #[doc = "[0] https://standards.freedesktop.org/desktop-entry-spec/"]
+            #[allow(unused)]
             fn set_app_id(
                 &self,
                 client: &mut crate::server::Client,
@@ -4912,6 +5100,7 @@ pub mod xdg_shell {
             #[doc = ""]
             #[doc = "This request must be used in response to some sort of user action"]
             #[doc = "like a button press, key press, or touch down event."]
+            #[allow(unused)]
             fn show_window_menu(
                 &self,
                 client: &mut crate::server::Client,
@@ -4937,6 +5126,7 @@ pub mod xdg_shell {
             #[doc = "compositor to visually indicate that the move is taking place, such as"]
             #[doc = "updating a pointer cursor, during the move. There is no guarantee"]
             #[doc = "that the device focus will return when the move is completed."]
+            #[allow(unused)]
             fn r#move(
                 &self,
                 client: &mut crate::server::Client,
@@ -4975,6 +5165,7 @@ pub mod xdg_shell {
             #[doc = "for example when dragging the top left corner. The compositor may also"]
             #[doc = "use this information to adapt its behavior, e.g. choose an appropriate"]
             #[doc = "cursor image."]
+            #[allow(unused)]
             fn resize(
                 &self,
                 client: &mut crate::server::Client,
@@ -5016,6 +5207,7 @@ pub mod xdg_shell {
             #[doc = "The width and height must be greater than or equal to zero. Using"]
             #[doc = "strictly negative values for width or height will result in a"]
             #[doc = "invalid_size error."]
+            #[allow(unused)]
             fn set_max_size(
                 &self,
                 client: &mut crate::server::Client,
@@ -5056,6 +5248,7 @@ pub mod xdg_shell {
             #[doc = "The width and height must be greater than or equal to zero. Using"]
             #[doc = "strictly negative values for width and height will result in a"]
             #[doc = "invalid_size error."]
+            #[allow(unused)]
             fn set_min_size(
                 &self,
                 client: &mut crate::server::Client,
@@ -5082,6 +5275,7 @@ pub mod xdg_shell {
             #[doc = "If the surface is in a fullscreen state, this request has no direct"]
             #[doc = "effect. It may alter the state the surface is returned to when"]
             #[doc = "unmaximized unless overridden by the compositor."]
+            #[allow(unused)]
             fn set_maximized(
                 &self,
                 client: &mut crate::server::Client,
@@ -5108,6 +5302,7 @@ pub mod xdg_shell {
             #[doc = "If the surface is in a fullscreen state, this request has no direct"]
             #[doc = "effect. It may alter the state the surface is returned to when"]
             #[doc = "unmaximized unless overridden by the compositor."]
+            #[allow(unused)]
             fn unset_maximized(
                 &self,
                 client: &mut crate::server::Client,
@@ -5136,6 +5331,7 @@ pub mod xdg_shell {
             #[doc = "sure that other screen content not part of the same surface tree (made"]
             #[doc = "up of subsurfaces, popups or similarly coupled surfaces) are not"]
             #[doc = "visible below the fullscreened surface."]
+            #[allow(unused)]
             fn set_fullscreen(
                 &self,
                 client: &mut crate::server::Client,
@@ -5159,6 +5355,7 @@ pub mod xdg_shell {
             #[doc = ""]
             #[doc = "The client must also acknowledge the configure when committing the new"]
             #[doc = "content (see ack_configure)."]
+            #[allow(unused)]
             fn unset_fullscreen(
                 &self,
                 client: &mut crate::server::Client,
@@ -5172,6 +5369,7 @@ pub mod xdg_shell {
             #[doc = "instead use the wl_surface.frame event for this, as this will"]
             #[doc = "also work with live previews on windows in Alt-Tab, Expose or"]
             #[doc = "similar compositor features."]
+            #[allow(unused)]
             fn set_minimized(
                 &self,
                 client: &mut crate::server::Client,
@@ -5391,7 +5589,9 @@ pub mod xdg_shell {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xdg_popup#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let seat = message
@@ -5399,7 +5599,8 @@ pub mod xdg_shell {
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             let serial = message.uint()?;
                             tracing::debug!("xdg_popup#{}.grab({}, {})", sender_id, seat, serial);
-                            self.grab(client, sender_id, seat, serial).await
+                            let result = self.grab(client, sender_id, seat, serial).await;
+                            result
                         }
                         2u16 => {
                             let positioner = message
@@ -5412,7 +5613,9 @@ pub mod xdg_shell {
                                 positioner,
                                 token
                             );
-                            self.reposition(client, sender_id, positioner, token).await
+                            let result =
+                                self.reposition(client, sender_id, positioner, token).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5423,11 +5626,14 @@ pub mod xdg_shell {
             #[doc = ""]
             #[doc = "If this xdg_popup is not the \"topmost\" popup, the"]
             #[doc = "xdg_wm_base.not_the_topmost_popup protocol error will be sent."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This request makes the created popup take an explicit grab. An explicit"]
             #[doc = "grab will be dismissed when the user dismisses the popup, or when the"]
             #[doc = "client destroys the xdg_popup. This can be done by the user clicking"]
@@ -5465,6 +5671,7 @@ pub mod xdg_shell {
             #[doc = "and touch events for all their surfaces as normal (similar to an"]
             #[doc = "\"owner-events\" grab in X11 parlance), while the top most grabbing popup"]
             #[doc = "will always have keyboard focus."]
+            #[allow(unused)]
             fn grab(
                 &self,
                 client: &mut crate::server::Client,
@@ -5495,6 +5702,7 @@ pub mod xdg_shell {
             #[doc = "If the popup is repositioned together with a parent that is being"]
             #[doc = "resized, but not in response to a configure event, the client should"]
             #[doc = "send an xdg_positioner.set_parent_size request."]
+            #[allow(unused)]
             fn reposition(
                 &self,
                 client: &mut crate::server::Client,

@@ -4,7 +4,7 @@ use quote::{format_ident, quote};
 use tracing::debug;
 
 use crate::{
-    parser::{ArgType, Interface, Pair},
+    parser::{ArgType, Interface, MessageType, Pair},
     utils::{description_to_docs, find_enum, make_ident, write_enums},
 };
 
@@ -168,12 +168,22 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
             request = request.name.to_snek_case()
         );
 
+        let destructor = if request.ty == Some(MessageType::Destructor) {
+            quote! {
+                client.remove(sender_id);
+            }
+        } else {
+            Default::default()
+        };
+
         dispatchers.push(quote! {
             #opcode => {
                 #(#setters)*
 
                 tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
-                self.#name(#(#args),*).await
+                let result = self.#name(#(#args),*).await;
+                #destructor
+                result
             }
         });
     }
@@ -204,9 +214,18 @@ fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Tok
             args.push(quote! {#name: #ty})
         }
 
+        // if it's a destructor then we really don't need to implement it,
+        // Drop on the dispatcher can do the job
+        let body = if request.ty == Some(MessageType::Destructor) {
+            quote! { { async move { Ok(()) } } }
+        } else {
+            quote!(;)
+        };
+
         requests.push(quote! {
             #(#docs)*
-            fn #name(#(#args),*) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
+            fn #name(#(#args),*) -> impl Future<Output = crate::server::Result<()>> + Send #body
         });
     }
 

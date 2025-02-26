@@ -26,7 +26,9 @@ pub mod cosmic_atspi_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("cosmic_atspi_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let mods = message.uint()?;
@@ -39,8 +41,10 @@ pub mod cosmic_atspi_v1 {
                                 virtual_mods.len(),
                                 key
                             );
-                            self.add_key_grab(client, sender_id, mods, virtual_mods, key)
-                                .await
+                            let result = self
+                                .add_key_grab(client, sender_id, mods, virtual_mods, key)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let mods = message.uint()?;
@@ -53,34 +57,42 @@ pub mod cosmic_atspi_v1 {
                                 virtual_mods.len(),
                                 key
                             );
-                            self.remove_key_grab(client, sender_id, mods, virtual_mods, key)
-                                .await
+                            let result = self
+                                .remove_key_grab(client, sender_id, mods, virtual_mods, key)
+                                .await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!(
                                 "cosmic_atspi_manager_v1#{}.grab_keyboard()",
                                 sender_id,
                             );
-                            self.grab_keyboard(client, sender_id).await
+                            let result = self.grab_keyboard(client, sender_id).await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!(
                                 "cosmic_atspi_manager_v1#{}.ungrab_keyboard()",
                                 sender_id,
                             );
-                            self.ungrab_keyboard(client, sender_id).await
+                            let result = self.ungrab_keyboard(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Any grabs that are still active will be disabled."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Grab the given key combination, so it will not be sent to clients."]
+            #[allow(unused)]
             fn add_key_grab(
                 &self,
                 client: &mut crate::server::Client,
@@ -90,6 +102,7 @@ pub mod cosmic_atspi_v1 {
                 key: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Disables a grab added with add_key_grab."]
+            #[allow(unused)]
             fn remove_key_grab(
                 &self,
                 client: &mut crate::server::Client,
@@ -99,12 +112,14 @@ pub mod cosmic_atspi_v1 {
                 key: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Grab keyboard, so key input will not be sent to clients."]
+            #[allow(unused)]
             fn grab_keyboard(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Disables a grab added with grab_keyboard."]
+            #[allow(unused)]
             fn ungrab_keyboard(
                 &self,
                 client: &mut crate::server::Client,
@@ -172,7 +187,9 @@ pub mod cosmic_image_source_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zcosmic_image_source_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -180,11 +197,14 @@ pub mod cosmic_image_source_unstable_v1 {
             }
             #[doc = "Destroys the image source. This request may be sent at any time by the"]
             #[doc = "client."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "A manager for creating image source objects for wl_output objects."]
@@ -218,14 +238,18 @@ pub mod cosmic_image_source_unstable_v1 {
                                 source,
                                 output
                             );
-                            self.create_source(client, sender_id, source, output).await
+                            let result =
+                                self.create_source(client, sender_id, source, output).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zcosmic_output_image_source_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -235,6 +259,7 @@ pub mod cosmic_image_source_unstable_v1 {
             #[doc = "will show the same content as the output. Some elements may be omitted,"]
             #[doc = "such as cursors and overlays that have been marked as transparent to"]
             #[doc = "capturing."]
+            #[allow(unused)]
             fn create_source(
                 &self,
                 client: &mut crate::server::Client,
@@ -245,11 +270,14 @@ pub mod cosmic_image_source_unstable_v1 {
             #[doc = "Destroys the manager. This request may be sent at any time by the client"]
             #[doc = "and objects created by the manager will remain valid after its"]
             #[doc = "destruction."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "A manager for creating image source objects for wl_output objects."]
@@ -283,14 +311,18 @@ pub mod cosmic_image_source_unstable_v1 {
                                 source,
                                 output
                             );
-                            self.create_source(client, sender_id, source, output).await
+                            let result =
+                                self.create_source(client, sender_id, source, output).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zcosmic_workspace_image_source_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -300,6 +332,7 @@ pub mod cosmic_image_source_unstable_v1 {
             #[doc = "will show the same content as the workspace. Some elements may be omitted,"]
             #[doc = "such as cursors and overlays that have been marked as transparent to"]
             #[doc = "capturing."]
+            #[allow(unused)]
             fn create_source(
                 &self,
                 client: &mut crate::server::Client,
@@ -310,11 +343,14 @@ pub mod cosmic_image_source_unstable_v1 {
             #[doc = "Destroys the manager. This request may be sent at any time by the client"]
             #[doc = "and objects created by the manager will remain valid after its"]
             #[doc = "destruction."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "A manager for creating image source objects for"]
@@ -349,15 +385,19 @@ pub mod cosmic_image_source_unstable_v1 {
                                 source,
                                 toplevel_handle
                             );
-                            self.create_source(client, sender_id, source, toplevel_handle)
-                                .await
+                            let result = self
+                                .create_source(client, sender_id, source, toplevel_handle)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zcosmic_toplevel_image_source_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -365,6 +405,7 @@ pub mod cosmic_image_source_unstable_v1 {
             }
             #[doc = "Creates a source object for a toplevel handle. Images captured"]
             #[doc = "from this source will show the same content as the toplevel."]
+            #[allow(unused)]
             fn create_source(
                 &self,
                 client: &mut crate::server::Client,
@@ -375,11 +416,14 @@ pub mod cosmic_image_source_unstable_v1 {
             #[doc = "Destroys the manager. This request may be sent at any time by the client"]
             #[doc = "and objects created by the manager will remain valid after its"]
             #[doc = "destruction."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -444,7 +488,8 @@ pub mod cosmic_output_management_unstable_v1 {
                                 extended,
                                 head
                             );
-                            self.get_head(client, sender_id, extended, head).await
+                            let result = self.get_head(client, sender_id, extended, head).await;
+                            result
                         }
                         1u16 => {
                             let extended = message
@@ -459,8 +504,10 @@ pub mod cosmic_output_management_unstable_v1 {
                                 extended,
                                 config
                             );
-                            self.get_configuration(client, sender_id, extended, config)
-                                .await
+                            let result = self
+                                .get_configuration(client, sender_id, extended, config)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let extended = message
@@ -475,12 +522,16 @@ pub mod cosmic_output_management_unstable_v1 {
                                 extended,
                                 config_head
                             );
-                            self.get_configuration_head(client, sender_id, extended, config_head)
-                                .await
+                            let result = self
+                                .get_configuration_head(client, sender_id, extended, config_head)
+                                .await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!("zcosmic_output_manager_v1#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -497,6 +548,7 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = ""]
             #[doc = "Trying to create more than one zcosmic_output_head_v1 per zwlr_output_head_v1 will raise an"]
             #[doc = "\"already_extended\" error."]
+            #[allow(unused)]
             fn get_head(
                 &self,
                 client: &mut crate::server::Client,
@@ -508,6 +560,7 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = ""]
             #[doc = "Trying to create more than one zcosmic_output_configuration_v1 per zwlr_output_configuration_v1"]
             #[doc = "will raise an \"already_extended\" error."]
+            #[allow(unused)]
             fn get_configuration(
                 &self,
                 client: &mut crate::server::Client,
@@ -519,6 +572,7 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = ""]
             #[doc = "Trying to create more than one zcosmic_output_configuration_head_v1 per"]
             #[doc = "zwlr_output_configuration_head_v1 will raise an \"already_extended\" error."]
+            #[allow(unused)]
             fn get_configuration_head(
                 &self,
                 client: &mut crate::server::Client,
@@ -527,11 +581,14 @@ pub mod cosmic_output_management_unstable_v1 {
                 config_head: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys this global. All previously created objects remain valid."]
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "Extension to zwlr_output_head_v1."]
@@ -613,7 +670,9 @@ pub mod cosmic_output_management_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zcosmic_output_head_v1#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -621,11 +680,14 @@ pub mod cosmic_output_management_unstable_v1 {
             }
             #[doc = "Using this request a client can tell the compositor that it is not interested"]
             #[doc = "in the head object anymore."]
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This events describes the scale of the head in the global compositor"]
             #[doc = "space multiplied by 1000 for additional precision."]
             #[doc = ""]
@@ -789,15 +851,19 @@ pub mod cosmic_output_management_unstable_v1 {
                                 head,
                                 mirroring
                             );
-                            self.mirror_head(client, sender_id, id, head, mirroring)
-                                .await
+                            let result = self
+                                .mirror_head(client, sender_id, id, head, mirroring)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zcosmic_output_configuration_v1#{}.release()",
                                 sender_id,
                             );
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -816,6 +882,7 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = ""]
             #[doc = "Trying to set a disabled or mirroring head as `mirroring` or calling `disable_head`/`mirror_head` after using a head"]
             #[doc = "as a `mirroring` argument will raise a `mirrored_head_busy` protocol error."]
+            #[allow(unused)]
             fn mirror_head(
                 &self,
                 client: &mut crate::server::Client,
@@ -828,11 +895,14 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "to use the configuration object anymore. Any changes to the outputs"]
             #[doc = "will still be attached to the original `zwlr_output_configuration_head_v1`"]
             #[doc = "if it isn't destroyed."]
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event indicates that the configuration is no longer available."]
             #[doc = ""]
             #[doc = "This usually happens when the original configuration was `cancelled`, `suceeded` or `failed`."]
@@ -889,14 +959,17 @@ pub mod cosmic_output_management_unstable_v1 {
                                 sender_id,
                                 scale_1000
                             );
-                            self.set_scale_1000(client, sender_id, scale_1000).await
+                            let result = self.set_scale_1000(client, sender_id, scale_1000).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zcosmic_output_configuration_head_v1#{}.release()",
                                 sender_id,
                             );
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         2u16 => {
                             let state = message.uint()?;
@@ -905,8 +978,10 @@ pub mod cosmic_output_management_unstable_v1 {
                                 sender_id,
                                 state
                             );
-                            self.set_adaptive_sync_ext(client, sender_id, state.try_into()?)
-                                .await
+                            let result = self
+                                .set_adaptive_sync_ext(client, sender_id, state.try_into()?)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -919,6 +994,7 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "original `zwlr_output_configuration_head_v1`."]
             #[doc = ""]
             #[doc = "Any request conflicting with `set_scale` will also conflict with `set_scale_1000`."]
+            #[allow(unused)]
             fn set_scale_1000(
                 &self,
                 client: &mut crate::server::Client,
@@ -929,11 +1005,14 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "to use the configuration object anymore. Already issued requests will"]
             #[doc = "still be attached to the original `zwlr_output_configuration_head_v1`"]
             #[doc = "until it is destroyed."]
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This request requests a new adaptive sync state."]
             #[doc = ""]
             #[doc = "This request is meant to be used in place of `zwlr_output_configuration_head_v1::set_adaptive_sync`."]
@@ -941,6 +1020,7 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "original `zwlr_output_configuration_head_v1`."]
             #[doc = ""]
             #[doc = "Any request conflicting with `set_adaptive_sync` will also conflict with `set_adaptive_sync_ext`."]
+            #[allow(unused)]
             fn set_adaptive_sync_ext(
                 &self,
                 client: &mut crate::server::Client,
@@ -988,13 +1068,15 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                                 overlap_notification,
                                 layer_surface
                             );
-                            self.notify_on_overlap(
-                                client,
-                                sender_id,
-                                overlap_notification,
-                                layer_surface,
-                            )
-                            .await
+                            let result = self
+                                .notify_on_overlap(
+                                    client,
+                                    sender_id,
+                                    overlap_notification,
+                                    layer_surface,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1006,6 +1088,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             #[doc = ""]
             #[doc = "To stop receiving notifications, destroy the returned"]
             #[doc = "zcosmic_overlap_notification_v1 object."]
+            #[allow(unused)]
             fn notify_on_overlap(
                 &self,
                 client: &mut crate::server::Client,
@@ -1037,7 +1120,9 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                                 "zcosmic_overlap_notification_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1045,11 +1130,14 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             }
             #[doc = "This request should be called when the client has no interest in overlap"]
             #[doc = "notifications anymore."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "A ext_foreign_toplevel_handle_v1 has entered the surface area."]
             #[doc = ""]
             #[doc = "This event will be emitted once for every ext_foreign_toplevel_handle_v1"]
@@ -1267,14 +1355,16 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 source,
                                 options
                             );
-                            self.create_session(
-                                client,
-                                sender_id,
-                                session,
-                                source,
-                                options.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .create_session(
+                                    client,
+                                    sender_id,
+                                    session,
+                                    source,
+                                    options.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         1u16 => {
                             let session = message
@@ -1295,17 +1385,21 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 pointer,
                                 options
                             );
-                            self.create_pointer_cursor_session(
-                                client, sender_id, session, source, pointer, options,
-                            )
-                            .await
+                            let result = self
+                                .create_pointer_cursor_session(
+                                    client, sender_id, session, source, pointer, options,
+                                )
+                                .await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!(
                                 "zcosmic_screencopy_manager_v2#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1316,6 +1410,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "If the paint_cursors option is set, cursors shall be composited onto"]
             #[doc = "the captured frame. The cursor shall not be composited onto the frame"]
             #[doc = "if this flag is not set."]
+            #[allow(unused)]
             fn create_session(
                 &self,
                 client: &mut crate::server::Client,
@@ -1328,6 +1423,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = ""]
             #[doc = "The options argument has no effect and must be set to 0. This is"]
             #[doc = "intended for any future flags that might be added."]
+            #[allow(unused)]
             fn create_pointer_cursor_session(
                 &self,
                 client: &mut crate::server::Client,
@@ -1340,11 +1436,14 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "Destroy the manager object."]
             #[doc = ""]
             #[doc = "Other objects created via this interface are unaffected."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "This object represents an active screencopy session."]
@@ -1389,20 +1488,24 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 sender_id,
                                 frame
                             );
-                            self.create_frame(client, sender_id, frame).await
+                            let result = self.create_frame(client, sender_id, frame).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zcosmic_screencopy_session_v2#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Create a capture frame for this session."]
+            #[allow(unused)]
             fn create_frame(
                 &self,
                 client: &mut crate::server::Client,
@@ -1414,11 +1517,14 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = ""]
             #[doc = "This request doesn't affect zcosmic_screencopy_frame_v2 objects created by"]
             #[doc = "this object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Provides the dimensions of the source image in buffer pixel coordinates."]
             #[doc = ""]
             #[doc = "The client must attach buffers that match this size."]
@@ -1650,7 +1756,9 @@ pub mod cosmic_screencopy_unstable_v2 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zcosmic_screencopy_frame_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let buffer = message
@@ -1661,7 +1769,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_buffer(client, sender_id, buffer).await
+                            let result = self.attach_buffer(client, sender_id, buffer).await;
+                            result
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -1676,12 +1785,15 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 width,
                                 height
                             );
-                            self.damage_buffer(client, sender_id, x, y, width, height)
-                                .await
+                            let result = self
+                                .damage_buffer(client, sender_id, x, y, width, height)
+                                .await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!("zcosmic_screencopy_frame_v2#{}.capture()", sender_id,);
-                            self.capture(client, sender_id).await
+                            let result = self.capture(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1689,17 +1801,21 @@ pub mod cosmic_screencopy_unstable_v2 {
             }
             #[doc = "Destroys the session. This request can be sent at any time by the"]
             #[doc = "client."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Attach a buffer to the session."]
             #[doc = ""]
             #[doc = "The wl_buffer.release request is unused."]
             #[doc = ""]
             #[doc = "This request must not be sent after capture, or else the"]
             #[doc = "already_captured protocol error is raised."]
+            #[allow(unused)]
             fn attach_buffer(
                 &self,
                 client: &mut crate::server::Client,
@@ -1727,6 +1843,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = ""]
             #[doc = "This request must not be sent after capture, or else the"]
             #[doc = "already_captured protocol error is raised."]
+            #[allow(unused)]
             fn damage_buffer(
                 &self,
                 client: &mut crate::server::Client,
@@ -1745,6 +1862,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "This request may only be sent once, or else the already_captured"]
             #[doc = "protocol error is raised. A buffer must be attached before this request"]
             #[doc = "is sent, or else the no_buffer protocol error is raised."]
+            #[allow(unused)]
             fn capture(
                 &self,
                 client: &mut crate::server::Client,
@@ -1938,7 +2056,9 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 "zcosmic_screencopy_cursor_session_v2#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let session = message
@@ -1949,8 +2069,10 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 sender_id,
                                 session
                             );
-                            self.get_screencopy_session(client, sender_id, session)
-                                .await
+                            let result = self
+                                .get_screencopy_session(client, sender_id, session)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1961,11 +2083,14 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = ""]
             #[doc = "This request doesn't affect zcosmic_screencopy_frame_v2 objects created by"]
             #[doc = "this object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Gets the screencopy session for this cursor session."]
             #[doc = ""]
             #[doc = "The session will produce frames of the cursor image. The compositor may"]
@@ -1973,6 +2098,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = ""]
             #[doc = "This request must not be sent more than once, or else the"]
             #[doc = "duplicate_session protocol error is raised."]
+            #[allow(unused)]
             fn get_screencopy_session(
                 &self,
                 client: &mut crate::server::Client,
@@ -2119,7 +2245,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zcosmic_toplevel_info_v1#{}.stop()", sender_id,);
-                            self.stop(client, sender_id).await
+                            let result = self.stop(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             let cosmic_toplevel = message
@@ -2134,13 +2261,15 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                                 cosmic_toplevel,
                                 foreign_toplevel
                             );
-                            self.get_cosmic_toplevel(
-                                client,
-                                sender_id,
-                                cosmic_toplevel,
-                                foreign_toplevel,
-                            )
-                            .await
+                            let result = self
+                                .get_cosmic_toplevel(
+                                    client,
+                                    sender_id,
+                                    cosmic_toplevel,
+                                    foreign_toplevel,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2154,6 +2283,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = ""]
             #[doc = "Note: This request isn't necessary for clients binding version 2"]
             #[doc = "of this protocol and will be ignored."]
+            #[allow(unused)]
             fn stop(
                 &self,
                 client: &mut crate::server::Client,
@@ -2165,6 +2295,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "All initial properties of the toplevel (states, etc.)"]
             #[doc = "will be sent immediately after this event via the corresponding"]
             #[doc = "events in zcosmic_toplevel_handle_v1."]
+            #[allow(unused)]
             fn get_cosmic_toplevel(
                 &self,
                 client: &mut crate::server::Client,
@@ -2305,7 +2436,9 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zcosmic_toplevel_handle_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2313,11 +2446,14 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             }
             #[doc = "This request should be called either when the client will no longer"]
             #[doc = "use the zcosmic_toplevel_handle_v1."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The server will emit no further events on the"]
             #[doc = "zcosmic_toplevel_handle_v1 after this event. Any requests received"]
             #[doc = "aside from the destroy request will be ignored. Upon receiving this"]
@@ -2661,7 +2797,9 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zcosmic_toplevel_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let toplevel = message
@@ -2672,7 +2810,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.close(client, sender_id, toplevel).await
+                            let result = self.close(client, sender_id, toplevel).await;
+                            result
                         }
                         2u16 => {
                             let toplevel = message
@@ -2687,7 +2826,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 toplevel,
                                 seat
                             );
-                            self.activate(client, sender_id, toplevel, seat).await
+                            let result = self.activate(client, sender_id, toplevel, seat).await;
+                            result
                         }
                         3u16 => {
                             let toplevel = message
@@ -2698,7 +2838,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.set_maximized(client, sender_id, toplevel).await
+                            let result = self.set_maximized(client, sender_id, toplevel).await;
+                            result
                         }
                         4u16 => {
                             let toplevel = message
@@ -2709,7 +2850,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.unset_maximized(client, sender_id, toplevel).await
+                            let result = self.unset_maximized(client, sender_id, toplevel).await;
+                            result
                         }
                         5u16 => {
                             let toplevel = message
@@ -2720,7 +2862,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.set_minimized(client, sender_id, toplevel).await
+                            let result = self.set_minimized(client, sender_id, toplevel).await;
+                            result
                         }
                         6u16 => {
                             let toplevel = message
@@ -2731,7 +2874,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.unset_minimized(client, sender_id, toplevel).await
+                            let result = self.unset_minimized(client, sender_id, toplevel).await;
+                            result
                         }
                         7u16 => {
                             let toplevel = message
@@ -2746,8 +2890,10 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_fullscreen(client, sender_id, toplevel, output)
-                                .await
+                            let result = self
+                                .set_fullscreen(client, sender_id, toplevel, output)
+                                .await;
+                            result
                         }
                         8u16 => {
                             let toplevel = message
@@ -2758,7 +2904,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.unset_fullscreen(client, sender_id, toplevel).await
+                            let result = self.unset_fullscreen(client, sender_id, toplevel).await;
+                            result
                         }
                         9u16 => {
                             let toplevel = message
@@ -2781,10 +2928,12 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 width,
                                 height
                             );
-                            self.set_rectangle(
-                                client, sender_id, toplevel, surface, x, y, width, height,
-                            )
-                            .await
+                            let result = self
+                                .set_rectangle(
+                                    client, sender_id, toplevel, surface, x, y, width, height,
+                                )
+                                .await;
+                            result
                         }
                         10u16 => {
                             let toplevel = message
@@ -2803,8 +2952,10 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 workspace,
                                 output
                             );
-                            self.move_to_workspace(client, sender_id, toplevel, workspace, output)
-                                .await
+                            let result = self
+                                .move_to_workspace(client, sender_id, toplevel, workspace, output)
+                                .await;
+                            result
                         }
                         11u16 => {
                             let toplevel = message
@@ -2815,7 +2966,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.set_sticky(client, sender_id, toplevel).await
+                            let result = self.set_sticky(client, sender_id, toplevel).await;
+                            result
                         }
                         12u16 => {
                             let toplevel = message
@@ -2826,7 +2978,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.unset_sticky(client, sender_id, toplevel).await
+                            let result = self.unset_sticky(client, sender_id, toplevel).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2835,13 +2988,17 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             #[doc = "This request indicates that the client has finished using the"]
             #[doc = "zcosmic_toplevel_manager_v1 object and that it can be safely"]
             #[doc = "destroyed."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.closed event will be sent."]
+            #[allow(unused)]
             fn close(
                 &self,
                 client: &mut crate::server::Client,
@@ -2850,6 +3007,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            #[allow(unused)]
             fn activate(
                 &self,
                 client: &mut crate::server::Client,
@@ -2859,6 +3017,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            #[allow(unused)]
             fn set_maximized(
                 &self,
                 client: &mut crate::server::Client,
@@ -2867,6 +3026,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            #[allow(unused)]
             fn unset_maximized(
                 &self,
                 client: &mut crate::server::Client,
@@ -2875,6 +3035,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            #[allow(unused)]
             fn set_minimized(
                 &self,
                 client: &mut crate::server::Client,
@@ -2883,6 +3044,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            #[allow(unused)]
             fn unset_minimized(
                 &self,
                 client: &mut crate::server::Client,
@@ -2897,6 +3059,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             #[doc = "The output parameter a hint to the compositor and may be ignored. A"]
             #[doc = "value of NULL indicates that the compositor should choose the target"]
             #[doc = "output, if it honors the fullscreen request."]
+            #[allow(unused)]
             fn set_fullscreen(
                 &self,
                 client: &mut crate::server::Client,
@@ -2906,6 +3069,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            #[allow(unused)]
             fn unset_fullscreen(
                 &self,
                 client: &mut crate::server::Client,
@@ -2923,6 +3087,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             #[doc = "The dimensions are given in surface-local coordinates."]
             #[doc = ""]
             #[doc = "Setting width=height=0 removes the current rectangle if one was set."]
+            #[allow(unused)]
             fn set_rectangle(
                 &self,
                 client: &mut crate::server::Client,
@@ -2935,6 +3100,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 height: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Move window to workspace, on given output."]
+            #[allow(unused)]
             fn move_to_workspace(
                 &self,
                 client: &mut crate::server::Client,
@@ -2945,6 +3111,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            #[allow(unused)]
             fn set_sticky(
                 &self,
                 client: &mut crate::server::Client,
@@ -2953,6 +3120,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "If the compositor honors this request, the"]
             #[doc = "zcosmic_toplevel_handle_v1.state event will be sent."]
+            #[allow(unused)]
             fn unset_sticky(
                 &self,
                 client: &mut crate::server::Client,

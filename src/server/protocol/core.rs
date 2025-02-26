@@ -56,14 +56,16 @@ pub mod wayland {
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_display#{}.sync({})", sender_id, callback);
-                            self.sync(client, sender_id, callback).await
+                            let result = self.sync(client, sender_id, callback).await;
+                            result
                         }
                         1u16 => {
                             let registry = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_display#{}.get_registry({})", sender_id, registry);
-                            self.get_registry(client, sender_id, registry).await
+                            let result = self.get_registry(client, sender_id, registry).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -80,6 +82,7 @@ pub mod wayland {
             #[doc = "attempt to use it after that point."]
             #[doc = ""]
             #[doc = "The callback_data passed in the callback is undefined and should be ignored."]
+            #[allow(unused)]
             fn sync(
                 &self,
                 client: &mut crate::server::Client,
@@ -95,6 +98,7 @@ pub mod wayland {
             #[doc = "client disconnects, not when the client side proxy is destroyed."]
             #[doc = "Therefore, clients should invoke get_registry as infrequently as"]
             #[doc = "possible to avoid wasting memory."]
+            #[allow(unused)]
             fn get_registry(
                 &self,
                 client: &mut crate::server::Client,
@@ -198,7 +202,8 @@ pub mod wayland {
                             let name = message.uint()?;
                             let id = message.new_id()?;
                             tracing::debug!("wl_registry#{}.bind({}, {})", sender_id, name, id);
-                            self.bind(client, sender_id, name, id).await
+                            let result = self.bind(client, sender_id, name, id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -206,6 +211,7 @@ pub mod wayland {
             }
             #[doc = "Binds a new, client-created object to the server using the"]
             #[doc = "specified name as the identifier."]
+            #[allow(unused)]
             fn bind(
                 &self,
                 client: &mut crate::server::Client,
@@ -343,20 +349,23 @@ pub mod wayland {
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_compositor#{}.create_surface({})", sender_id, id);
-                            self.create_surface(client, sender_id, id).await
+                            let result = self.create_surface(client, sender_id, id).await;
+                            result
                         }
                         1u16 => {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_compositor#{}.create_region({})", sender_id, id);
-                            self.create_region(client, sender_id, id).await
+                            let result = self.create_region(client, sender_id, id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Ask the compositor to create a new surface."]
+            #[allow(unused)]
             fn create_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -364,6 +373,7 @@ pub mod wayland {
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Ask the compositor to create a new region."]
+            #[allow(unused)]
             fn create_region(
                 &self,
                 client: &mut crate::server::Client,
@@ -415,26 +425,31 @@ pub mod wayland {
                                 stride,
                                 format
                             );
-                            self.create_buffer(
-                                client,
-                                sender_id,
-                                id,
-                                offset,
-                                width,
-                                height,
-                                stride,
-                                format.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .create_buffer(
+                                    client,
+                                    sender_id,
+                                    id,
+                                    offset,
+                                    width,
+                                    height,
+                                    stride,
+                                    format.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wl_shm_pool#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         2u16 => {
                             let size = message.int()?;
                             tracing::debug!("wl_shm_pool#{}.resize({})", sender_id, size);
-                            self.resize(client, sender_id, size).await
+                            let result = self.resize(client, sender_id, size).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -451,6 +466,7 @@ pub mod wayland {
             #[doc = "A buffer will keep a reference to the pool it was created from"]
             #[doc = "so it is valid to destroy the pool immediately after creating"]
             #[doc = "a buffer from it."]
+            #[allow(unused)]
             fn create_buffer(
                 &self,
                 client: &mut crate::server::Client,
@@ -467,11 +483,14 @@ pub mod wayland {
             #[doc = "The mmapped memory will be released when all"]
             #[doc = "buffers that have been created from this pool"]
             #[doc = "are gone."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This request will cause the server to remap the backing memory"]
             #[doc = "for the pool from the file descriptor passed when the pool was"]
             #[doc = "created, but using the new size.  This request can only be"]
@@ -482,6 +501,7 @@ pub mod wayland {
             #[doc = "file descriptor passed at creation time. It is the client's"]
             #[doc = "responsibility to ensure that the file is at least as big as"]
             #[doc = "the new pool size."]
+            #[allow(unused)]
             fn resize(
                 &self,
                 client: &mut crate::server::Client,
@@ -944,11 +964,14 @@ pub mod wayland {
                                 fd.as_raw_fd(),
                                 size
                             );
-                            self.create_pool(client, sender_id, id, fd, size).await
+                            let result = self.create_pool(client, sender_id, id, fd, size).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wl_shm#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -959,6 +982,7 @@ pub mod wayland {
             #[doc = "The pool can be used to create shared memory based buffer"]
             #[doc = "objects.  The server will mmap size bytes of the passed file"]
             #[doc = "descriptor, to use as backing memory for the pool."]
+            #[allow(unused)]
             fn create_pool(
                 &self,
                 client: &mut crate::server::Client,
@@ -971,11 +995,14 @@ pub mod wayland {
             #[doc = "use the shm object anymore."]
             #[doc = ""]
             #[doc = "Objects created via this interface remain unaffected."]
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Informs the client about a valid pixel format that"]
             #[doc = "can be used for buffers. Known formats include"]
             #[doc = "argb8888 and xrgb8888."]
@@ -1032,7 +1059,9 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_buffer#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1042,11 +1071,14 @@ pub mod wayland {
             #[doc = "storage is defined by the buffer factory interface."]
             #[doc = ""]
             #[doc = "For possible side-effects to a surface, see wl_surface.attach."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Sent when this wl_buffer is no longer used by the compositor."]
             #[doc = "The client is now free to reuse or destroy this buffer and its"]
             #[doc = "backing storage."]
@@ -1139,7 +1171,8 @@ pub mod wayland {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.accept(client, sender_id, serial, mime_type).await
+                            let result = self.accept(client, sender_id, serial, mime_type).await;
+                            result
                         }
                         1u16 => {
                             let mime_type = message
@@ -1152,15 +1185,19 @@ pub mod wayland {
                                 mime_type,
                                 fd.as_raw_fd()
                             );
-                            self.receive(client, sender_id, mime_type, fd).await
+                            let result = self.receive(client, sender_id, mime_type, fd).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("wl_data_offer#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         3u16 => {
                             tracing::debug!("wl_data_offer#{}.finish()", sender_id,);
-                            self.finish(client, sender_id).await
+                            let result = self.finish(client, sender_id).await;
+                            result
                         }
                         4u16 => {
                             let dnd_actions = message.uint()?;
@@ -1171,13 +1208,15 @@ pub mod wayland {
                                 dnd_actions,
                                 preferred_action
                             );
-                            self.set_actions(
-                                client,
-                                sender_id,
-                                dnd_actions.try_into()?,
-                                preferred_action.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_actions(
+                                    client,
+                                    sender_id,
+                                    dnd_actions.try_into()?,
+                                    preferred_action.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1197,6 +1236,7 @@ pub mod wayland {
             #[doc = "will be cancelled and the corresponding drag source will receive"]
             #[doc = "wl_data_source.cancelled. Clients may still use this event in"]
             #[doc = "conjunction with wl_data_source.action for feedback."]
+            #[allow(unused)]
             fn accept(
                 &self,
                 client: &mut crate::server::Client,
@@ -1219,6 +1259,7 @@ pub mod wayland {
             #[doc = "both before and after wl_data_device.drop. Drag-and-drop destination"]
             #[doc = "clients may preemptively fetch data or examine it more closely to"]
             #[doc = "determine acceptance."]
+            #[allow(unused)]
             fn receive(
                 &self,
                 client: &mut crate::server::Client,
@@ -1227,11 +1268,14 @@ pub mod wayland {
                 fd: rustix::fd::OwnedFd,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the data offer."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Notifies the compositor that the drag destination successfully"]
             #[doc = "finished the drag-and-drop operation."]
             #[doc = ""]
@@ -1246,6 +1290,7 @@ pub mod wayland {
             #[doc = ""]
             #[doc = "If wl_data_offer.finish request is received for a non drag and drop"]
             #[doc = "operation, the invalid_finish protocol error is raised."]
+            #[allow(unused)]
             fn finish(
                 &self,
                 client: &mut crate::server::Client,
@@ -1282,6 +1327,7 @@ pub mod wayland {
             #[doc = ""]
             #[doc = "This request can only be made on drag-and-drop offers, a protocol error"]
             #[doc = "will be raised otherwise."]
+            #[allow(unused)]
             fn set_actions(
                 &self,
                 client: &mut crate::server::Client,
@@ -1441,11 +1487,14 @@ pub mod wayland {
                                 sender_id,
                                 mime_type
                             );
-                            self.offer(client, sender_id, mime_type).await
+                            let result = self.offer(client, sender_id, mime_type).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wl_data_source#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         2u16 => {
                             let dnd_actions = message.uint()?;
@@ -1454,8 +1503,10 @@ pub mod wayland {
                                 sender_id,
                                 dnd_actions
                             );
-                            self.set_actions(client, sender_id, dnd_actions.try_into()?)
-                                .await
+                            let result = self
+                                .set_actions(client, sender_id, dnd_actions.try_into()?)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1464,6 +1515,7 @@ pub mod wayland {
             #[doc = "This request adds a mime type to the set of mime types"]
             #[doc = "advertised to targets.  Can be called several times to offer"]
             #[doc = "multiple types."]
+            #[allow(unused)]
             fn offer(
                 &self,
                 client: &mut crate::server::Client,
@@ -1471,11 +1523,14 @@ pub mod wayland {
                 mime_type: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the data source."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Sets the actions that the source side client supports for this"]
             #[doc = "operation. This request may trigger wl_data_source.action and"]
             #[doc = "wl_data_offer.action events if the compositor needs to change the"]
@@ -1489,6 +1544,7 @@ pub mod wayland {
             #[doc = "used in drag-and-drop, so it must be performed before"]
             #[doc = "wl_data_device.start_drag. Attempting to use the source other than"]
             #[doc = "for drag-and-drop will raise a protocol error."]
+            #[allow(unused)]
             fn set_actions(
                 &self,
                 client: &mut crate::server::Client,
@@ -1733,8 +1789,10 @@ pub mod wayland {
                                 icon.as_ref().map_or("null".to_string(), |v| v.to_string()),
                                 serial
                             );
-                            self.start_drag(client, sender_id, source, origin, icon, serial)
-                                .await
+                            let result = self
+                                .start_drag(client, sender_id, source, origin, icon, serial)
+                                .await;
+                            result
                         }
                         1u16 => {
                             let source = message.object()?;
@@ -1747,11 +1805,15 @@ pub mod wayland {
                                     .map_or("null".to_string(), |v| v.to_string()),
                                 serial
                             );
-                            self.set_selection(client, sender_id, source, serial).await
+                            let result =
+                                self.set_selection(client, sender_id, source, serial).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("wl_data_device#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1786,6 +1848,7 @@ pub mod wayland {
             #[doc = "The given source may not be used in any further set_selection or"]
             #[doc = "start_drag requests. Attempting to reuse a previously-used source"]
             #[doc = "may send a used_source error."]
+            #[allow(unused)]
             fn start_drag(
                 &self,
                 client: &mut crate::server::Client,
@@ -1803,6 +1866,7 @@ pub mod wayland {
             #[doc = "The given source may not be used in any further set_selection or"]
             #[doc = "start_drag requests. Attempting to reuse a previously-used source"]
             #[doc = "may send a used_source error."]
+            #[allow(unused)]
             fn set_selection(
                 &self,
                 client: &mut crate::server::Client,
@@ -1811,11 +1875,14 @@ pub mod wayland {
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request destroys the data device."]
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The data_offer event introduces a new wl_data_offer object,"]
             #[doc = "which will subsequently be used in either the"]
             #[doc = "data_device.enter event (for drag-and-drop) or the"]
@@ -2033,7 +2100,8 @@ pub mod wayland {
                                 sender_id,
                                 id
                             );
-                            self.create_data_source(client, sender_id, id).await
+                            let result = self.create_data_source(client, sender_id, id).await;
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -2048,13 +2116,15 @@ pub mod wayland {
                                 id,
                                 seat
                             );
-                            self.get_data_device(client, sender_id, id, seat).await
+                            let result = self.get_data_device(client, sender_id, id, seat).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Create a new data source."]
+            #[allow(unused)]
             fn create_data_source(
                 &self,
                 client: &mut crate::server::Client,
@@ -2062,6 +2132,7 @@ pub mod wayland {
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a new data device for a given seat."]
+            #[allow(unused)]
             fn get_data_device(
                 &self,
                 client: &mut crate::server::Client,
@@ -2131,7 +2202,9 @@ pub mod wayland {
                                 id,
                                 surface
                             );
-                            self.get_shell_surface(client, sender_id, id, surface).await
+                            let result =
+                                self.get_shell_surface(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2142,6 +2215,7 @@ pub mod wayland {
             #[doc = "already has another role, it raises a protocol error."]
             #[doc = ""]
             #[doc = "Only one shell surface can be associated with a given surface."]
+            #[allow(unused)]
             fn get_shell_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -2239,7 +2313,8 @@ pub mod wayland {
                         0u16 => {
                             let serial = message.uint()?;
                             tracing::debug!("wl_shell_surface#{}.pong({})", sender_id, serial);
-                            self.pong(client, sender_id, serial).await
+                            let result = self.pong(client, sender_id, serial).await;
+                            result
                         }
                         1u16 => {
                             let seat = message
@@ -2252,7 +2327,8 @@ pub mod wayland {
                                 seat,
                                 serial
                             );
-                            self.r#move(client, sender_id, seat, serial).await
+                            let result = self.r#move(client, sender_id, seat, serial).await;
+                            result
                         }
                         2u16 => {
                             let seat = message
@@ -2267,12 +2343,15 @@ pub mod wayland {
                                 serial,
                                 edges
                             );
-                            self.resize(client, sender_id, seat, serial, edges.try_into()?)
-                                .await
+                            let result = self
+                                .resize(client, sender_id, seat, serial, edges.try_into()?)
+                                .await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!("wl_shell_surface#{}.set_toplevel()", sender_id,);
-                            self.set_toplevel(client, sender_id).await
+                            let result = self.set_toplevel(client, sender_id).await;
+                            result
                         }
                         4u16 => {
                             let parent = message
@@ -2289,8 +2368,10 @@ pub mod wayland {
                                 y,
                                 flags
                             );
-                            self.set_transient(client, sender_id, parent, x, y, flags.try_into()?)
-                                .await
+                            let result = self
+                                .set_transient(client, sender_id, parent, x, y, flags.try_into()?)
+                                .await;
+                            result
                         }
                         5u16 => {
                             let method = message.uint()?;
@@ -2305,14 +2386,16 @@ pub mod wayland {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_fullscreen(
-                                client,
-                                sender_id,
-                                method.try_into()?,
-                                framerate,
-                                output,
-                            )
-                            .await
+                            let result = self
+                                .set_fullscreen(
+                                    client,
+                                    sender_id,
+                                    method.try_into()?,
+                                    framerate,
+                                    output,
+                                )
+                                .await;
+                            result
                         }
                         6u16 => {
                             let seat = message
@@ -2335,17 +2418,19 @@ pub mod wayland {
                                 y,
                                 flags
                             );
-                            self.set_popup(
-                                client,
-                                sender_id,
-                                seat,
-                                serial,
-                                parent,
-                                x,
-                                y,
-                                flags.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_popup(
+                                    client,
+                                    sender_id,
+                                    seat,
+                                    serial,
+                                    parent,
+                                    x,
+                                    y,
+                                    flags.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         7u16 => {
                             let output = message.object()?;
@@ -2356,7 +2441,8 @@ pub mod wayland {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_maximized(client, sender_id, output).await
+                            let result = self.set_maximized(client, sender_id, output).await;
+                            result
                         }
                         8u16 => {
                             let title = message
@@ -2367,7 +2453,8 @@ pub mod wayland {
                                 sender_id,
                                 title
                             );
-                            self.set_title(client, sender_id, title).await
+                            let result = self.set_title(client, sender_id, title).await;
+                            result
                         }
                         9u16 => {
                             let class_ = message
@@ -2378,7 +2465,8 @@ pub mod wayland {
                                 sender_id,
                                 class_
                             );
-                            self.set_class(client, sender_id, class_).await
+                            let result = self.set_class(client, sender_id, class_).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2386,6 +2474,7 @@ pub mod wayland {
             }
             #[doc = "A client must respond to a ping event with a pong request or"]
             #[doc = "the client may be deemed unresponsive."]
+            #[allow(unused)]
             fn pong(
                 &self,
                 client: &mut crate::server::Client,
@@ -2397,6 +2486,7 @@ pub mod wayland {
             #[doc = "This request must be used in response to a button press event."]
             #[doc = "The server may ignore move requests depending on the state of"]
             #[doc = "the surface (e.g. fullscreen or maximized)."]
+            #[allow(unused)]
             fn r#move(
                 &self,
                 client: &mut crate::server::Client,
@@ -2409,6 +2499,7 @@ pub mod wayland {
             #[doc = "This request must be used in response to a button press event."]
             #[doc = "The server may ignore resize requests depending on the state of"]
             #[doc = "the surface (e.g. fullscreen or maximized)."]
+            #[allow(unused)]
             fn resize(
                 &self,
                 client: &mut crate::server::Client,
@@ -2420,6 +2511,7 @@ pub mod wayland {
             #[doc = "Map the surface as a toplevel surface."]
             #[doc = ""]
             #[doc = "A toplevel surface is not fullscreen, maximized or transient."]
+            #[allow(unused)]
             fn set_toplevel(
                 &self,
                 client: &mut crate::server::Client,
@@ -2432,6 +2524,7 @@ pub mod wayland {
             #[doc = "parent surface, in surface-local coordinates."]
             #[doc = ""]
             #[doc = "The flags argument controls details of the transient behaviour."]
+            #[allow(unused)]
             fn set_transient(
                 &self,
                 client: &mut crate::server::Client,
@@ -2474,6 +2567,7 @@ pub mod wayland {
             #[doc = "The compositor must reply to this request with a configure event"]
             #[doc = "with the dimensions for the output on which the surface will"]
             #[doc = "be made fullscreen."]
+            #[allow(unused)]
             fn set_fullscreen(
                 &self,
                 client: &mut crate::server::Client,
@@ -2501,6 +2595,7 @@ pub mod wayland {
             #[doc = "The x and y arguments specify the location of the upper left"]
             #[doc = "corner of the surface relative to the upper left corner of the"]
             #[doc = "parent surface, in surface-local coordinates."]
+            #[allow(unused)]
             fn set_popup(
                 &self,
                 client: &mut crate::server::Client,
@@ -2530,6 +2625,7 @@ pub mod wayland {
             #[doc = "fullscreen shell surface."]
             #[doc = ""]
             #[doc = "The details depend on the compositor implementation."]
+            #[allow(unused)]
             fn set_maximized(
                 &self,
                 client: &mut crate::server::Client,
@@ -2543,6 +2639,7 @@ pub mod wayland {
             #[doc = "compositor."]
             #[doc = ""]
             #[doc = "The string must be encoded in UTF-8."]
+            #[allow(unused)]
             fn set_title(
                 &self,
                 client: &mut crate::server::Client,
@@ -2555,6 +2652,7 @@ pub mod wayland {
             #[doc = "to which the surface belongs. A common convention is to use the"]
             #[doc = "file name (or the full path if it is a non-standard location) of"]
             #[doc = "the application's .desktop file as the class."]
+            #[allow(unused)]
             fn set_class(
                 &self,
                 client: &mut crate::server::Client,
@@ -2737,7 +2835,9 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_surface#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let buffer = message.object()?;
@@ -2752,7 +2852,8 @@ pub mod wayland {
                                 x,
                                 y
                             );
-                            self.attach(client, sender_id, buffer, x, y).await
+                            let result = self.attach(client, sender_id, buffer, x, y).await;
+                            result
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -2767,14 +2868,16 @@ pub mod wayland {
                                 width,
                                 height
                             );
-                            self.damage(client, sender_id, x, y, width, height).await
+                            let result = self.damage(client, sender_id, x, y, width, height).await;
+                            result
                         }
                         3u16 => {
                             let callback = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_surface#{}.frame({})", sender_id, callback);
-                            self.frame(client, sender_id, callback).await
+                            let result = self.frame(client, sender_id, callback).await;
+                            result
                         }
                         4u16 => {
                             let region = message.object()?;
@@ -2785,7 +2888,8 @@ pub mod wayland {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_opaque_region(client, sender_id, region).await
+                            let result = self.set_opaque_region(client, sender_id, region).await;
+                            result
                         }
                         5u16 => {
                             let region = message.object()?;
@@ -2796,11 +2900,13 @@ pub mod wayland {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_input_region(client, sender_id, region).await
+                            let result = self.set_input_region(client, sender_id, region).await;
+                            result
                         }
                         6u16 => {
                             tracing::debug!("wl_surface#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         7u16 => {
                             let transform = message.uint()?;
@@ -2809,13 +2915,16 @@ pub mod wayland {
                                 sender_id,
                                 transform
                             );
-                            self.set_buffer_transform(client, sender_id, transform.try_into()?)
-                                .await
+                            let result = self
+                                .set_buffer_transform(client, sender_id, transform.try_into()?)
+                                .await;
+                            result
                         }
                         8u16 => {
                             let scale = message.int()?;
                             tracing::debug!("wl_surface#{}.set_buffer_scale({})", sender_id, scale);
-                            self.set_buffer_scale(client, sender_id, scale).await
+                            let result = self.set_buffer_scale(client, sender_id, scale).await;
+                            result
                         }
                         9u16 => {
                             let x = message.int()?;
@@ -2830,25 +2939,31 @@ pub mod wayland {
                                 width,
                                 height
                             );
-                            self.damage_buffer(client, sender_id, x, y, width, height)
-                                .await
+                            let result = self
+                                .damage_buffer(client, sender_id, x, y, width, height)
+                                .await;
+                            result
                         }
                         10u16 => {
                             let x = message.int()?;
                             let y = message.int()?;
                             tracing::debug!("wl_surface#{}.offset({}, {})", sender_id, x, y);
-                            self.offset(client, sender_id, x, y).await
+                            let result = self.offset(client, sender_id, x, y).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Deletes the surface and invalidates its object ID."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Set a buffer as the content of this surface."]
             #[doc = ""]
             #[doc = "The new size of the surface is calculated based on the buffer"]
@@ -2913,6 +3028,7 @@ pub mod wayland {
             #[doc = "maximise compatibility should not destroy pending buffers and should"]
             #[doc = "ensure that they explicitly remove content from surfaces, even after"]
             #[doc = "destroying buffers."]
+            #[allow(unused)]
             fn attach(
                 &self,
                 client: &mut crate::server::Client,
@@ -2942,6 +3058,7 @@ pub mod wayland {
             #[doc = "Note! New clients should not use this request. Instead damage can be"]
             #[doc = "posted with wl_surface.damage_buffer which uses buffer coordinates"]
             #[doc = "instead of surface coordinates."]
+            #[allow(unused)]
             fn damage(
                 &self,
                 client: &mut crate::server::Client,
@@ -2983,6 +3100,7 @@ pub mod wayland {
             #[doc = ""]
             #[doc = "The callback_data passed in the callback is the current time, in"]
             #[doc = "milliseconds, with an undefined base."]
+            #[allow(unused)]
             fn frame(
                 &self,
                 client: &mut crate::server::Client,
@@ -3013,6 +3131,7 @@ pub mod wayland {
             #[doc = "opaque region has copy semantics, and the wl_region object can be"]
             #[doc = "destroyed immediately. A NULL wl_region causes the pending opaque"]
             #[doc = "region to be set to empty."]
+            #[allow(unused)]
             fn set_opaque_region(
                 &self,
                 client: &mut crate::server::Client,
@@ -3041,6 +3160,7 @@ pub mod wayland {
             #[doc = "has copy semantics, and the wl_region object can be destroyed"]
             #[doc = "immediately. A NULL wl_region causes the input region to be set"]
             #[doc = "to infinite."]
+            #[allow(unused)]
             fn set_input_region(
                 &self,
                 client: &mut crate::server::Client,
@@ -3066,6 +3186,7 @@ pub mod wayland {
             #[doc = "to affect double-buffered state."]
             #[doc = ""]
             #[doc = "Other interfaces may add further double-buffered surface state."]
+            #[allow(unused)]
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
@@ -3102,6 +3223,7 @@ pub mod wayland {
             #[doc = "If transform is not one of the values from the"]
             #[doc = "wl_output.transform enum the invalid_transform protocol error"]
             #[doc = "is raised."]
+            #[allow(unused)]
             fn set_buffer_transform(
                 &self,
                 client: &mut crate::server::Client,
@@ -3131,6 +3253,7 @@ pub mod wayland {
             #[doc = ""]
             #[doc = "If scale is not greater than 0 the invalid_scale protocol error is"]
             #[doc = "raised."]
+            #[allow(unused)]
             fn set_buffer_scale(
                 &self,
                 client: &mut crate::server::Client,
@@ -3169,6 +3292,7 @@ pub mod wayland {
             #[doc = "kinds of damage into account will have to accumulate damage from the"]
             #[doc = "two requests separately and only transform from one to the other"]
             #[doc = "after receiving the wl_surface.commit."]
+            #[allow(unused)]
             fn damage_buffer(
                 &self,
                 client: &mut crate::server::Client,
@@ -3190,6 +3314,7 @@ pub mod wayland {
             #[doc = "This request is semantically equivalent to and the replaces the x and y"]
             #[doc = "arguments in the wl_surface.attach request in wl_surface versions prior"]
             #[doc = "to 5. See wl_surface.attach for details."]
+            #[allow(unused)]
             fn offset(
                 &self,
                 client: &mut crate::server::Client,
@@ -3368,25 +3493,30 @@ pub mod wayland {
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_seat#{}.get_pointer({})", sender_id, id);
-                            self.get_pointer(client, sender_id, id).await
+                            let result = self.get_pointer(client, sender_id, id).await;
+                            result
                         }
                         1u16 => {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_seat#{}.get_keyboard({})", sender_id, id);
-                            self.get_keyboard(client, sender_id, id).await
+                            let result = self.get_keyboard(client, sender_id, id).await;
+                            result
                         }
                         2u16 => {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_seat#{}.get_touch({})", sender_id, id);
-                            self.get_touch(client, sender_id, id).await
+                            let result = self.get_touch(client, sender_id, id).await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!("wl_seat#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3400,6 +3530,7 @@ pub mod wayland {
             #[doc = "It is a protocol violation to issue this request on a seat that has"]
             #[doc = "never had the pointer capability. The missing_capability error will"]
             #[doc = "be sent in this case."]
+            #[allow(unused)]
             fn get_pointer(
                 &self,
                 client: &mut crate::server::Client,
@@ -3414,6 +3545,7 @@ pub mod wayland {
             #[doc = "It is a protocol violation to issue this request on a seat that has"]
             #[doc = "never had the keyboard capability. The missing_capability error will"]
             #[doc = "be sent in this case."]
+            #[allow(unused)]
             fn get_keyboard(
                 &self,
                 client: &mut crate::server::Client,
@@ -3428,6 +3560,7 @@ pub mod wayland {
             #[doc = "It is a protocol violation to issue this request on a seat that has"]
             #[doc = "never had the touch capability. The missing_capability error will"]
             #[doc = "be sent in this case."]
+            #[allow(unused)]
             fn get_touch(
                 &self,
                 client: &mut crate::server::Client,
@@ -3436,11 +3569,14 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Using this request a client can tell the server that it is not going to"]
             #[doc = "use the seat object anymore."]
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This is emitted whenever a seat gains or loses the pointer,"]
             #[doc = "keyboard or touch capabilities.  The argument is a capability"]
             #[doc = "enum containing the complete set of capabilities this seat has."]
@@ -3701,14 +3837,18 @@ pub mod wayland {
                                 hotspot_x,
                                 hotspot_y
                             );
-                            self.set_cursor(
-                                client, sender_id, serial, surface, hotspot_x, hotspot_y,
-                            )
-                            .await
+                            let result = self
+                                .set_cursor(
+                                    client, sender_id, serial, surface, hotspot_x, hotspot_y,
+                                )
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("wl_pointer#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3747,6 +3887,7 @@ pub mod wayland {
             #[doc = "The serial parameter must match the latest wl_pointer.enter"]
             #[doc = "serial number sent to the client. Otherwise the request will be"]
             #[doc = "ignored."]
+            #[allow(unused)]
             fn set_cursor(
                 &self,
                 client: &mut crate::server::Client,
@@ -3761,11 +3902,14 @@ pub mod wayland {
             #[doc = ""]
             #[doc = "This request destroys the pointer proxy object, so clients must not call"]
             #[doc = "wl_pointer_destroy() after using this request."]
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Notification that this seat's pointer is focused on a certain"]
             #[doc = "surface."]
             #[doc = ""]
@@ -4308,17 +4452,22 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_keyboard#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event provides a file descriptor to the client which can be"]
             #[doc = "memory-mapped in read-only mode to provide a keyboard mapping"]
             #[doc = "description."]
@@ -4582,17 +4731,22 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_touch#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "A new touch point has appeared on the surface. This touch point is"]
             #[doc = "assigned a unique ID. Future events from this touch point reference"]
             #[doc = "this ID. The ID ceases to be valid after a touch up event and may be"]
@@ -4960,7 +5114,9 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_output#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4968,11 +5124,14 @@ pub mod wayland {
             }
             #[doc = "Using this request a client can tell the server that it is not going to"]
             #[doc = "use the output object anymore."]
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The geometry event describes geometric properties of the output."]
             #[doc = "The event is sent when binding to the output object and whenever"]
             #[doc = "any of the properties change."]
@@ -5255,7 +5414,9 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_region#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let x = message.int()?;
@@ -5270,7 +5431,8 @@ pub mod wayland {
                                 width,
                                 height
                             );
-                            self.add(client, sender_id, x, y, width, height).await
+                            let result = self.add(client, sender_id, x, y, width, height).await;
+                            result
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -5285,19 +5447,25 @@ pub mod wayland {
                                 width,
                                 height
                             );
-                            self.subtract(client, sender_id, x, y, width, height).await
+                            let result =
+                                self.subtract(client, sender_id, x, y, width, height).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Destroy the region.  This will invalidate the object ID."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Add the specified rectangle to the region."]
+            #[allow(unused)]
             fn add(
                 &self,
                 client: &mut crate::server::Client,
@@ -5308,6 +5476,7 @@ pub mod wayland {
                 height: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Subtract the specified rectangle from the region."]
+            #[allow(unused)]
             fn subtract(
                 &self,
                 client: &mut crate::server::Client,
@@ -5381,7 +5550,9 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_subcompositor#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -5400,8 +5571,10 @@ pub mod wayland {
                                 surface,
                                 parent
                             );
-                            self.get_subsurface(client, sender_id, id, surface, parent)
-                                .await
+                            let result = self
+                                .get_subsurface(client, sender_id, id, surface, parent)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5410,11 +5583,14 @@ pub mod wayland {
             #[doc = "Informs the server that the client will not be using this"]
             #[doc = "protocol object anymore. This does not affect any other"]
             #[doc = "objects, wl_subsurface objects included."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Create a sub-surface interface for the given surface, and"]
             #[doc = "associate it with the given parent surface. This turns a"]
             #[doc = "plain wl_surface into a sub-surface."]
@@ -5434,6 +5610,7 @@ pub mod wayland {
             #[doc = ""]
             #[doc = "This request modifies the behaviour of wl_surface.commit request on"]
             #[doc = "the sub-surface, see the documentation on wl_subsurface interface."]
+            #[allow(unused)]
             fn get_subsurface(
                 &self,
                 client: &mut crate::server::Client,
@@ -5536,7 +5713,9 @@ pub mod wayland {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("wl_subsurface#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let x = message.int()?;
@@ -5547,29 +5726,34 @@ pub mod wayland {
                                 x,
                                 y
                             );
-                            self.set_position(client, sender_id, x, y).await
+                            let result = self.set_position(client, sender_id, x, y).await;
+                            result
                         }
                         2u16 => {
                             let sibling = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_subsurface#{}.place_above({})", sender_id, sibling);
-                            self.place_above(client, sender_id, sibling).await
+                            let result = self.place_above(client, sender_id, sibling).await;
+                            result
                         }
                         3u16 => {
                             let sibling = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_subsurface#{}.place_below({})", sender_id, sibling);
-                            self.place_below(client, sender_id, sibling).await
+                            let result = self.place_below(client, sender_id, sibling).await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!("wl_subsurface#{}.set_sync()", sender_id,);
-                            self.set_sync(client, sender_id).await
+                            let result = self.set_sync(client, sender_id).await;
+                            result
                         }
                         5u16 => {
                             tracing::debug!("wl_subsurface#{}.set_desync()", sender_id,);
-                            self.set_desync(client, sender_id).await
+                            let result = self.set_desync(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5579,11 +5763,14 @@ pub mod wayland {
             #[doc = "that was turned into a sub-surface with a"]
             #[doc = "wl_subcompositor.get_subsurface request. The wl_surface's association"]
             #[doc = "to the parent is deleted. The wl_surface is unmapped immediately."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This schedules a sub-surface position change."]
             #[doc = "The sub-surface will be moved so that its origin (top left"]
             #[doc = "corner pixel) will be at the location x, y of the parent surface"]
@@ -5598,6 +5785,7 @@ pub mod wayland {
             #[doc = "replaces the scheduled position from any previous request."]
             #[doc = ""]
             #[doc = "The initial position is 0, 0."]
+            #[allow(unused)]
             fn set_position(
                 &self,
                 client: &mut crate::server::Client,
@@ -5618,6 +5806,7 @@ pub mod wayland {
             #[doc = ""]
             #[doc = "A new sub-surface is initially added as the top-most in the stack"]
             #[doc = "of its siblings and parent."]
+            #[allow(unused)]
             fn place_above(
                 &self,
                 client: &mut crate::server::Client,
@@ -5626,6 +5815,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The sub-surface is placed just below the reference surface."]
             #[doc = "See wl_subsurface.place_above."]
+            #[allow(unused)]
             fn place_below(
                 &self,
                 client: &mut crate::server::Client,
@@ -5645,6 +5835,7 @@ pub mod wayland {
             #[doc = "parent surface commits do not (re-)apply old state."]
             #[doc = ""]
             #[doc = "See wl_subsurface for the recursive effect of this mode."]
+            #[allow(unused)]
             fn set_sync(
                 &self,
                 client: &mut crate::server::Client,
@@ -5669,6 +5860,7 @@ pub mod wayland {
             #[doc = ""]
             #[doc = "If a surface's parent surface behaves as desynchronized, then"]
             #[doc = "the cached state is applied on set_desync."]
+            #[allow(unused)]
             fn set_desync(
                 &self,
                 client: &mut crate::server::Client,

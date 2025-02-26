@@ -32,16 +32,20 @@ pub mod appmenu {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            let result = self.create(client, sender_id, id, surface).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("org_kde_kwin_appmenu_manager#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn create(
                 &self,
                 client: &mut crate::server::Client,
@@ -49,11 +53,14 @@ pub mod appmenu {
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "The DBus service name and object path where the appmenu interface is present"]
@@ -89,12 +96,16 @@ pub mod appmenu {
                                 service_name,
                                 object_path
                             );
-                            self.set_address(client, sender_id, service_name, object_path)
-                                .await
+                            let result = self
+                                .set_address(client, sender_id, service_name, object_path)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("org_kde_kwin_appmenu#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -102,6 +113,7 @@ pub mod appmenu {
             }
             #[doc = "Set or update the service name and object path."]
             #[doc = "Strings should be formatted in Latin-1 matching the relevant DBus specifications."]
+            #[allow(unused)]
             fn set_address(
                 &self,
                 client: &mut crate::server::Client,
@@ -109,11 +121,14 @@ pub mod appmenu {
                 service_name: String,
                 object_path: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -149,7 +164,8 @@ pub mod blur {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            let result = self.create(client, sender_id, id, surface).await;
+                            result
                         }
                         1u16 => {
                             let surface = message
@@ -160,12 +176,14 @@ pub mod blur {
                                 sender_id,
                                 surface
                             );
-                            self.unset(client, sender_id, surface).await
+                            let result = self.unset(client, sender_id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn create(
                 &self,
                 client: &mut crate::server::Client,
@@ -173,6 +191,7 @@ pub mod blur {
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn unset(
                 &self,
                 client: &mut crate::server::Client,
@@ -200,7 +219,8 @@ pub mod blur {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_blur#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             let region = message.object()?;
@@ -211,32 +231,40 @@ pub mod blur {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_region(client, sender_id, region).await
+                            let result = self.set_region(client, sender_id, region).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("org_kde_kwin_blur#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_region(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -272,7 +300,8 @@ pub mod contrast {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            let result = self.create(client, sender_id, id, surface).await;
+                            result
                         }
                         1u16 => {
                             let surface = message
@@ -283,12 +312,14 @@ pub mod contrast {
                                 sender_id,
                                 surface
                             );
-                            self.unset(client, sender_id, surface).await
+                            let result = self.unset(client, sender_id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn create(
                 &self,
                 client: &mut crate::server::Client,
@@ -296,6 +327,7 @@ pub mod contrast {
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn unset(
                 &self,
                 client: &mut crate::server::Client,
@@ -323,7 +355,8 @@ pub mod contrast {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_contrast#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             let region = message.object()?;
@@ -334,7 +367,8 @@ pub mod contrast {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_region(client, sender_id, region).await
+                            let result = self.set_region(client, sender_id, region).await;
+                            result
                         }
                         2u16 => {
                             let contrast = message.fixed()?;
@@ -343,7 +377,8 @@ pub mod contrast {
                                 sender_id,
                                 contrast
                             );
-                            self.set_contrast(client, sender_id, contrast).await
+                            let result = self.set_contrast(client, sender_id, contrast).await;
+                            result
                         }
                         3u16 => {
                             let intensity = message.fixed()?;
@@ -352,7 +387,8 @@ pub mod contrast {
                                 sender_id,
                                 intensity
                             );
-                            self.set_intensity(client, sender_id, intensity).await
+                            let result = self.set_intensity(client, sender_id, intensity).await;
+                            result
                         }
                         4u16 => {
                             let saturation = message.fixed()?;
@@ -361,11 +397,14 @@ pub mod contrast {
                                 sender_id,
                                 saturation
                             );
-                            self.set_saturation(client, sender_id, saturation).await
+                            let result = self.set_saturation(client, sender_id, saturation).await;
+                            result
                         }
                         5u16 => {
                             tracing::debug!("org_kde_kwin_contrast#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         6u16 => {
                             let red = message.int()?;
@@ -380,51 +419,62 @@ pub mod contrast {
                                 blue,
                                 alpha
                             );
-                            self.set_frost(client, sender_id, red, green, blue, alpha)
-                                .await
+                            let result = self
+                                .set_frost(client, sender_id, red, green, blue, alpha)
+                                .await;
+                            result
                         }
                         7u16 => {
                             tracing::debug!("org_kde_kwin_contrast#{}.unset_frost()", sender_id,);
-                            self.unset_frost(client, sender_id).await
+                            let result = self.unset_frost(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_region(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_contrast(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 contrast: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_intensity(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 intensity: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_saturation(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 saturation: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "enables 'frost' variant of contrast effect."]
             #[doc = ""]
             #[doc = "'frost' is an enhanced version of the contrast effect that"]
@@ -433,6 +483,7 @@ pub mod contrast {
             #[doc = ""]
             #[doc = "r, g, b, a are channels from 0-255, indicating a colour to use in contrast calculation."]
             #[doc = "should be based off of the \"main\" background colour of the surface."]
+            #[allow(unused)]
             fn set_frost(
                 &self,
                 client: &mut crate::server::Client,
@@ -442,6 +493,7 @@ pub mod contrast {
                 blue: i32,
                 alpha: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn unset_frost(
                 &self,
                 client: &mut crate::server::Client,
@@ -492,13 +544,15 @@ pub mod dpms {
                                 id,
                                 output
                             );
-                            self.get(client, sender_id, id, output).await
+                            let result = self.get(client, sender_id, id, output).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Factory request to get the org_kde_kwin_dpms for a given wl_output."]
+            #[allow(unused)]
             fn get(
                 &self,
                 client: &mut crate::server::Client,
@@ -561,11 +615,14 @@ pub mod dpms {
                         0u16 => {
                             let mode = message.uint()?;
                             tracing::debug!("org_kde_kwin_dpms#{}.set({})", sender_id, mode);
-                            self.set(client, sender_id, mode).await
+                            let result = self.set(client, sender_id, mode).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("org_kde_kwin_dpms#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -577,17 +634,21 @@ pub mod dpms {
             #[doc = ""]
             #[doc = "The client should not assume that the mode changed after requesting a new mode."]
             #[doc = "Instead the client should listen for the mode event."]
+            #[allow(unused)]
             fn set(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mode: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event gets pushed on binding the resource and indicates whether the wl_output"]
             #[doc = "supports DPMS. There are operation modes of a Wayland server where DPMS might not"]
             #[doc = "make sense (e.g. nested compositors)."]
@@ -697,8 +758,10 @@ pub mod fake_input {
                                 application,
                                 reason
                             );
-                            self.authenticate(client, sender_id, application, reason)
-                                .await
+                            let result = self
+                                .authenticate(client, sender_id, application, reason)
+                                .await;
+                            result
                         }
                         1u16 => {
                             let delta_x = message.fixed()?;
@@ -709,8 +772,10 @@ pub mod fake_input {
                                 delta_x,
                                 delta_y
                             );
-                            self.pointer_motion(client, sender_id, delta_x, delta_y)
-                                .await
+                            let result = self
+                                .pointer_motion(client, sender_id, delta_x, delta_y)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let button = message.uint()?;
@@ -721,7 +786,8 @@ pub mod fake_input {
                                 button,
                                 state
                             );
-                            self.button(client, sender_id, button, state).await
+                            let result = self.button(client, sender_id, button, state).await;
+                            result
                         }
                         3u16 => {
                             let axis = message.uint()?;
@@ -732,7 +798,8 @@ pub mod fake_input {
                                 axis,
                                 value
                             );
-                            self.axis(client, sender_id, axis, value).await
+                            let result = self.axis(client, sender_id, axis, value).await;
+                            result
                         }
                         4u16 => {
                             let id = message.uint()?;
@@ -745,7 +812,8 @@ pub mod fake_input {
                                 x,
                                 y
                             );
-                            self.touch_down(client, sender_id, id, x, y).await
+                            let result = self.touch_down(client, sender_id, id, x, y).await;
+                            result
                         }
                         5u16 => {
                             let id = message.uint()?;
@@ -758,7 +826,8 @@ pub mod fake_input {
                                 x,
                                 y
                             );
-                            self.touch_motion(client, sender_id, id, x, y).await
+                            let result = self.touch_motion(client, sender_id, id, x, y).await;
+                            result
                         }
                         6u16 => {
                             let id = message.uint()?;
@@ -767,15 +836,18 @@ pub mod fake_input {
                                 sender_id,
                                 id
                             );
-                            self.touch_up(client, sender_id, id).await
+                            let result = self.touch_up(client, sender_id, id).await;
+                            result
                         }
                         7u16 => {
                             tracing::debug!("org_kde_kwin_fake_input#{}.touch_cancel()", sender_id,);
-                            self.touch_cancel(client, sender_id).await
+                            let result = self.touch_cancel(client, sender_id).await;
+                            result
                         }
                         8u16 => {
                             tracing::debug!("org_kde_kwin_fake_input#{}.touch_frame()", sender_id,);
-                            self.touch_frame(client, sender_id).await
+                            let result = self.touch_frame(client, sender_id).await;
+                            result
                         }
                         9u16 => {
                             let x = message.fixed()?;
@@ -786,7 +858,9 @@ pub mod fake_input {
                                 x,
                                 y
                             );
-                            self.pointer_motion_absolute(client, sender_id, x, y).await
+                            let result =
+                                self.pointer_motion_absolute(client, sender_id, x, y).await;
+                            result
                         }
                         10u16 => {
                             let button = message.uint()?;
@@ -797,11 +871,14 @@ pub mod fake_input {
                                 button,
                                 state
                             );
-                            self.keyboard_key(client, sender_id, button, state).await
+                            let result = self.keyboard_key(client, sender_id, button, state).await;
+                            result
                         }
                         11u16 => {
                             tracing::debug!("org_kde_kwin_fake_input#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -812,6 +889,7 @@ pub mod fake_input {
             #[doc = "whether it wants to grant the request. The data might also be passed to"]
             #[doc = "the user to decide whether the application should get granted access to"]
             #[doc = "this very privileged interface."]
+            #[allow(unused)]
             fn authenticate(
                 &self,
                 client: &mut crate::server::Client,
@@ -819,6 +897,7 @@ pub mod fake_input {
                 application: String,
                 reason: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn pointer_motion(
                 &self,
                 client: &mut crate::server::Client,
@@ -826,6 +905,7 @@ pub mod fake_input {
                 delta_x: crate::wire::Fixed,
                 delta_y: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn button(
                 &self,
                 client: &mut crate::server::Client,
@@ -833,6 +913,7 @@ pub mod fake_input {
                 button: u32,
                 state: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn axis(
                 &self,
                 client: &mut crate::server::Client,
@@ -842,6 +923,7 @@ pub mod fake_input {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A client should use this request to send touch down event at specific"]
             #[doc = "coordinates."]
+            #[allow(unused)]
             fn touch_down(
                 &self,
                 client: &mut crate::server::Client,
@@ -851,6 +933,7 @@ pub mod fake_input {
                 y: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A client should use this request to send touch motion to specific position."]
+            #[allow(unused)]
             fn touch_motion(
                 &self,
                 client: &mut crate::server::Client,
@@ -860,6 +943,7 @@ pub mod fake_input {
                 y: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A client should use this request to send touch up event."]
+            #[allow(unused)]
             fn touch_up(
                 &self,
                 client: &mut crate::server::Client,
@@ -868,17 +952,20 @@ pub mod fake_input {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A client should use this request to cancel the current"]
             #[doc = "touch event."]
+            #[allow(unused)]
             fn touch_cancel(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A client should use this request to send touch frame event."]
+            #[allow(unused)]
             fn touch_frame(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn pointer_motion_absolute(
                 &self,
                 client: &mut crate::server::Client,
@@ -886,6 +973,7 @@ pub mod fake_input {
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn keyboard_key(
                 &self,
                 client: &mut crate::server::Client,
@@ -893,11 +981,14 @@ pub mod fake_input {
                 button: u32,
                 state: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -1049,7 +1140,9 @@ pub mod fullscreen_shell {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("_wl_fullscreen_shell#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let surface = message.object()?;
@@ -1066,8 +1159,10 @@ pub mod fullscreen_shell {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.present_surface(client, sender_id, surface, method, output)
-                                .await
+                            let result = self
+                                .present_surface(client, sender_id, surface, method, output)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let surface = message
@@ -1088,10 +1183,12 @@ pub mod fullscreen_shell {
                                 framerate,
                                 feedback
                             );
-                            self.present_surface_for_mode(
-                                client, sender_id, surface, output, framerate, feedback,
-                            )
-                            .await
+                            let result = self
+                                .present_surface_for_mode(
+                                    client, sender_id, surface, output, framerate, feedback,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1102,11 +1199,14 @@ pub mod fullscreen_shell {
             #[doc = "This destroys the server-side object and frees this binding.  If"]
             #[doc = "the client binds to wl_fullscreen_shell multiple times, it may wish"]
             #[doc = "to free some of those bindings."]
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Present a surface on the given output."]
             #[doc = ""]
             #[doc = "If the output is null, the compositor will present the surface on"]
@@ -1124,6 +1224,7 @@ pub mod fullscreen_shell {
             #[doc = "operation on the surface.  This will override any kind of output"]
             #[doc = "scaling, so the buffer_scale property of the surface is effectively"]
             #[doc = "ignored."]
+            #[allow(unused)]
             fn present_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -1169,6 +1270,7 @@ pub mod fullscreen_shell {
             #[doc = "then the compositor may choose a mode that matches either the buffer"]
             #[doc = "size or the surface size.  In either case, the surface will fill the"]
             #[doc = "output."]
+            #[allow(unused)]
             fn present_surface_for_mode(
                 &self,
                 client: &mut crate::server::Client,
@@ -1343,13 +1445,16 @@ pub mod idle {
                                 seat,
                                 timeout
                             );
-                            self.get_idle_timeout(client, sender_id, id, seat, timeout)
-                                .await
+                            let result = self
+                                .get_idle_timeout(client, sender_id, id, seat, timeout)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn get_idle_timeout(
                 &self,
                 client: &mut crate::server::Client,
@@ -1379,24 +1484,31 @@ pub mod idle {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_idle_timeout#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "org_kde_kwin_idle_timeout#{}.simulate_user_activity()",
                                 sender_id,
                             );
-                            self.simulate_user_activity(client, sender_id).await
+                            let result = self.simulate_user_activity(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
+            #[allow(unused)]
             fn simulate_user_activity(
                 &self,
                 client: &mut crate::server::Client,
@@ -1458,7 +1570,9 @@ pub mod kde_external_brightness_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("kde_external_brightness_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -1469,17 +1583,23 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 id
                             );
-                            self.create_brightness_control(client, sender_id, id).await
+                            let result =
+                                self.create_brightness_control(client, sender_id, id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
+            #[allow(unused)]
             fn create_brightness_control(
                 &self,
                 client: &mut crate::server::Client,
@@ -1514,7 +1634,9 @@ pub mod kde_external_brightness_v1 {
                                 "kde_external_brightness_device_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let internal = message.uint()?;
@@ -1523,7 +1645,8 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 internal
                             );
-                            self.set_internal(client, sender_id, internal).await
+                            let result = self.set_internal(client, sender_id, internal).await;
+                            result
                         }
                         2u16 => {
                             let string = message
@@ -1534,7 +1657,8 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 string
                             );
-                            self.set_edid(client, sender_id, string).await
+                            let result = self.set_edid(client, sender_id, string).await;
+                            result
                         }
                         3u16 => {
                             let value = message.uint()?;
@@ -1543,14 +1667,16 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 value
                             );
-                            self.set_max_brightness(client, sender_id, value).await
+                            let result = self.set_max_brightness(client, sender_id, value).await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!(
                                 "kde_external_brightness_device_v1#{}.commit()",
                                 sender_id,
                             );
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         5u16 => {
                             let value = message.uint()?;
@@ -1559,35 +1685,44 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 value
                             );
-                            self.set_observed_brightness(client, sender_id, value).await
+                            let result =
+                                self.set_observed_brightness(client, sender_id, value).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
+            #[allow(unused)]
             fn set_internal(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 internal: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_edid(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 string: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_max_brightness(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 value: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
@@ -1597,6 +1732,7 @@ pub mod kde_external_brightness_v1 {
             #[doc = "It can also set this again after the initial commit to notify the compositor that"]
             #[doc = "the brightness level has changed due to external factors."]
             #[doc = "The compositor is free to use or ignore this value as it sees fit."]
+            #[allow(unused)]
             fn set_observed_brightness(
                 &self,
                 client: &mut crate::server::Client,
@@ -1685,17 +1821,21 @@ pub mod kde_lockscreen_overlay_v1 {
                                 sender_id,
                                 surface
                             );
-                            self.allow(client, sender_id, surface).await
+                            let result = self.allow(client, sender_id, surface).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("kde_lockscreen_overlay_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Informs the compositor that the surface could be shown when the screen is locked. This request should be called while the surface is unmapped."]
+            #[allow(unused)]
             fn allow(
                 &self,
                 client: &mut crate::server::Client,
@@ -1703,11 +1843,14 @@ pub mod kde_lockscreen_overlay_v1 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This won't affect the surface previously marked with the allow request."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -2811,7 +2954,8 @@ pub mod kde_output_management_v2 {
                                 sender_id,
                                 id
                             );
-                            self.create_configuration(client, sender_id, id).await
+                            let result = self.create_configuration(client, sender_id, id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2819,6 +2963,7 @@ pub mod kde_output_management_v2 {
             }
             #[doc = "Request an outputconfiguration object through which the client can configure"]
             #[doc = "output devices."]
+            #[allow(unused)]
             fn create_configuration(
                 &self,
                 client: &mut crate::server::Client,
@@ -3015,7 +3160,8 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 enable
                             );
-                            self.enable(client, sender_id, outputdevice, enable).await
+                            let result = self.enable(client, sender_id, outputdevice, enable).await;
+                            result
                         }
                         1u16 => {
                             let outputdevice = message
@@ -3030,7 +3176,8 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 mode
                             );
-                            self.mode(client, sender_id, outputdevice, mode).await
+                            let result = self.mode(client, sender_id, outputdevice, mode).await;
+                            result
                         }
                         2u16 => {
                             let outputdevice = message
@@ -3043,8 +3190,10 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 transform
                             );
-                            self.transform(client, sender_id, outputdevice, transform)
-                                .await
+                            let result = self
+                                .transform(client, sender_id, outputdevice, transform)
+                                .await;
+                            result
                         }
                         3u16 => {
                             let outputdevice = message
@@ -3059,7 +3208,8 @@ pub mod kde_output_management_v2 {
                                 x,
                                 y
                             );
-                            self.position(client, sender_id, outputdevice, x, y).await
+                            let result = self.position(client, sender_id, outputdevice, x, y).await;
+                            result
                         }
                         4u16 => {
                             let outputdevice = message
@@ -3072,15 +3222,19 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 scale
                             );
-                            self.scale(client, sender_id, outputdevice, scale).await
+                            let result = self.scale(client, sender_id, outputdevice, scale).await;
+                            result
                         }
                         5u16 => {
                             tracing::debug!("kde_output_configuration_v2#{}.apply()", sender_id,);
-                            self.apply(client, sender_id).await
+                            let result = self.apply(client, sender_id).await;
+                            result
                         }
                         6u16 => {
                             tracing::debug!("kde_output_configuration_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         7u16 => {
                             let outputdevice = message
@@ -3093,8 +3247,10 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 overscan
                             );
-                            self.overscan(client, sender_id, outputdevice, overscan)
-                                .await
+                            let result = self
+                                .overscan(client, sender_id, outputdevice, overscan)
+                                .await;
+                            result
                         }
                         8u16 => {
                             let outputdevice = message
@@ -3107,8 +3263,10 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 policy
                             );
-                            self.set_vrr_policy(client, sender_id, outputdevice, policy.try_into()?)
-                                .await
+                            let result = self
+                                .set_vrr_policy(client, sender_id, outputdevice, policy.try_into()?)
+                                .await;
+                            result
                         }
                         9u16 => {
                             let outputdevice = message
@@ -3121,13 +3279,15 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 rgb_range
                             );
-                            self.set_rgb_range(
-                                client,
-                                sender_id,
-                                outputdevice,
-                                rgb_range.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_rgb_range(
+                                    client,
+                                    sender_id,
+                                    outputdevice,
+                                    rgb_range.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         10u16 => {
                             let output = message
@@ -3138,7 +3298,8 @@ pub mod kde_output_management_v2 {
                                 sender_id,
                                 output
                             );
-                            self.set_primary_output(client, sender_id, output).await
+                            let result = self.set_primary_output(client, sender_id, output).await;
+                            result
                         }
                         11u16 => {
                             let outputdevice = message
@@ -3151,8 +3312,10 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 priority
                             );
-                            self.set_priority(client, sender_id, outputdevice, priority)
-                                .await
+                            let result = self
+                                .set_priority(client, sender_id, outputdevice, priority)
+                                .await;
+                            result
                         }
                         12u16 => {
                             let outputdevice = message
@@ -3165,8 +3328,10 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 enable_hdr
                             );
-                            self.set_high_dynamic_range(client, sender_id, outputdevice, enable_hdr)
-                                .await
+                            let result = self
+                                .set_high_dynamic_range(client, sender_id, outputdevice, enable_hdr)
+                                .await;
+                            result
                         }
                         13u16 => {
                             let outputdevice = message
@@ -3179,8 +3344,10 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 sdr_brightness
                             );
-                            self.set_sdr_brightness(client, sender_id, outputdevice, sdr_brightness)
-                                .await
+                            let result = self
+                                .set_sdr_brightness(client, sender_id, outputdevice, sdr_brightness)
+                                .await;
+                            result
                         }
                         14u16 => {
                             let outputdevice = message
@@ -3193,8 +3360,10 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 enable_wcg
                             );
-                            self.set_wide_color_gamut(client, sender_id, outputdevice, enable_wcg)
-                                .await
+                            let result = self
+                                .set_wide_color_gamut(client, sender_id, outputdevice, enable_wcg)
+                                .await;
+                            result
                         }
                         15u16 => {
                             let outputdevice = message
@@ -3207,13 +3376,15 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 policy
                             );
-                            self.set_auto_rotate_policy(
-                                client,
-                                sender_id,
-                                outputdevice,
-                                policy.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_auto_rotate_policy(
+                                    client,
+                                    sender_id,
+                                    outputdevice,
+                                    policy.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         16u16 => {
                             let outputdevice = message
@@ -3228,8 +3399,10 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 profile_path
                             );
-                            self.set_icc_profile_path(client, sender_id, outputdevice, profile_path)
-                                .await
+                            let result = self
+                                .set_icc_profile_path(client, sender_id, outputdevice, profile_path)
+                                .await;
+                            result
                         }
                         17u16 => {
                             let outputdevice = message
@@ -3246,15 +3419,17 @@ pub mod kde_output_management_v2 {
                                 max_frame_average_brightness,
                                 min_brightness
                             );
-                            self.set_brightness_overrides(
-                                client,
-                                sender_id,
-                                outputdevice,
-                                max_peak_brightness,
-                                max_frame_average_brightness,
-                                min_brightness,
-                            )
-                            .await
+                            let result = self
+                                .set_brightness_overrides(
+                                    client,
+                                    sender_id,
+                                    outputdevice,
+                                    max_peak_brightness,
+                                    max_frame_average_brightness,
+                                    min_brightness,
+                                )
+                                .await;
+                            result
                         }
                         18u16 => {
                             let outputdevice = message
@@ -3267,13 +3442,15 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 gamut_wideness
                             );
-                            self.set_sdr_gamut_wideness(
-                                client,
-                                sender_id,
-                                outputdevice,
-                                gamut_wideness,
-                            )
-                            .await
+                            let result = self
+                                .set_sdr_gamut_wideness(
+                                    client,
+                                    sender_id,
+                                    outputdevice,
+                                    gamut_wideness,
+                                )
+                                .await;
+                            result
                         }
                         19u16 => {
                             let outputdevice = message
@@ -3286,13 +3463,15 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 color_profile_source
                             );
-                            self.set_color_profile_source(
-                                client,
-                                sender_id,
-                                outputdevice,
-                                color_profile_source.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_color_profile_source(
+                                    client,
+                                    sender_id,
+                                    outputdevice,
+                                    color_profile_source.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         20u16 => {
                             let outputdevice = message
@@ -3305,8 +3484,10 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 brightness
                             );
-                            self.set_brightness(client, sender_id, outputdevice, brightness)
-                                .await
+                            let result = self
+                                .set_brightness(client, sender_id, outputdevice, brightness)
+                                .await;
+                            result
                         }
                         21u16 => {
                             let outputdevice = message
@@ -3319,13 +3500,15 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 preference
                             );
-                            self.set_color_power_tradeoff(
-                                client,
-                                sender_id,
-                                outputdevice,
-                                preference.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_color_power_tradeoff(
+                                    client,
+                                    sender_id,
+                                    outputdevice,
+                                    preference.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         22u16 => {
                             let outputdevice = message
@@ -3338,14 +3521,17 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 multiplier
                             );
-                            self.set_dimming(client, sender_id, outputdevice, multiplier)
-                                .await
+                            let result = self
+                                .set_dimming(client, sender_id, outputdevice, multiplier)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Mark the output as enabled or disabled."]
+            #[allow(unused)]
             fn enable(
                 &self,
                 client: &mut crate::server::Client,
@@ -3354,6 +3540,7 @@ pub mod kde_output_management_v2 {
                 enable: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the mode for a given output."]
+            #[allow(unused)]
             fn mode(
                 &self,
                 client: &mut crate::server::Client,
@@ -3362,6 +3549,7 @@ pub mod kde_output_management_v2 {
                 mode: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the transformation for a given output."]
+            #[allow(unused)]
             fn transform(
                 &self,
                 client: &mut crate::server::Client,
@@ -3376,6 +3564,7 @@ pub mod kde_output_management_v2 {
             #[doc = ""]
             #[doc = "There may be no gaps or overlaps between outputs, i.e. the outputs are"]
             #[doc = "stacked horizontally, vertically, or both on each other."]
+            #[allow(unused)]
             fn position(
                 &self,
                 client: &mut crate::server::Client,
@@ -3385,6 +3574,7 @@ pub mod kde_output_management_v2 {
                 y: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the scaling factor for this output device."]
+            #[allow(unused)]
             fn scale(
                 &self,
                 client: &mut crate::server::Client,
@@ -3397,17 +3587,22 @@ pub mod kde_output_management_v2 {
             #[doc = ""]
             #[doc = "The output configuration can be applied only once. The already_applied protocol error"]
             #[doc = "will be posted if the apply request is called the second time."]
+            #[allow(unused)]
             fn apply(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Set the overscan value of this output device with a value in percent."]
+            #[allow(unused)]
             fn overscan(
                 &self,
                 client: &mut crate::server::Client,
@@ -3417,6 +3612,7 @@ pub mod kde_output_management_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set what policy the compositor should employ regarding its use of"]
             #[doc = "variable refresh rate."]
+            #[allow(unused)]
             fn set_vrr_policy(
                 &self,
                 client: &mut crate::server::Client,
@@ -3425,6 +3621,7 @@ pub mod kde_output_management_v2 {
                 policy: VrrPolicy,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Whether full or limited color range should be used"]
+            #[allow(unused)]
             fn set_rgb_range(
                 &self,
                 client: &mut crate::server::Client,
@@ -3432,6 +3629,7 @@ pub mod kde_output_management_v2 {
                 outputdevice: crate::wire::ObjectId,
                 rgb_range: RgbRange,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_primary_output(
                 &self,
                 client: &mut crate::server::Client,
@@ -3441,6 +3639,7 @@ pub mod kde_output_management_v2 {
             #[doc = "The order of outputs can be used to assign desktop environment components to a specific screen,"]
             #[doc = "see kde_output_order_v1 for details. The priority is 1-based for outputs that will be enabled after"]
             #[doc = "this changeset is applied, all outputs that are disabled need to have the index set to zero."]
+            #[allow(unused)]
             fn set_priority(
                 &self,
                 client: &mut crate::server::Client,
@@ -3449,6 +3648,7 @@ pub mod kde_output_management_v2 {
                 priority: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets whether or not the output should be set to HDR mode."]
+            #[allow(unused)]
             fn set_high_dynamic_range(
                 &self,
                 client: &mut crate::server::Client,
@@ -3458,6 +3658,7 @@ pub mod kde_output_management_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the brightness of standard dynamic range content in nits. Only has an effect while the output is in HDR mode."]
             #[doc = "Note that while the value is in nits, that doesn't necessarily translate to the same brightness on the screen."]
+            #[allow(unused)]
             fn set_sdr_brightness(
                 &self,
                 client: &mut crate::server::Client,
@@ -3466,6 +3667,7 @@ pub mod kde_output_management_v2 {
                 sdr_brightness: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Whether or not the output should use a wide color gamut"]
+            #[allow(unused)]
             fn set_wide_color_gamut(
                 &self,
                 client: &mut crate::server::Client,
@@ -3473,6 +3675,7 @@ pub mod kde_output_management_v2 {
                 outputdevice: crate::wire::ObjectId,
                 enable_wcg: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_auto_rotate_policy(
                 &self,
                 client: &mut crate::server::Client,
@@ -3480,6 +3683,7 @@ pub mod kde_output_management_v2 {
                 outputdevice: crate::wire::ObjectId,
                 policy: AutoRotatePolicy,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_icc_profile_path(
                 &self,
                 client: &mut crate::server::Client,
@@ -3487,6 +3691,7 @@ pub mod kde_output_management_v2 {
                 outputdevice: crate::wire::ObjectId,
                 profile_path: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_brightness_overrides(
                 &self,
                 client: &mut crate::server::Client,
@@ -3498,6 +3703,7 @@ pub mod kde_output_management_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
             #[doc = "default experience on many modern sRGB screens."]
+            #[allow(unused)]
             fn set_sdr_gamut_wideness(
                 &self,
                 client: &mut crate::server::Client,
@@ -3505,6 +3711,7 @@ pub mod kde_output_management_v2 {
                 outputdevice: crate::wire::ObjectId,
                 gamut_wideness: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_color_profile_source(
                 &self,
                 client: &mut crate::server::Client,
@@ -3520,6 +3727,7 @@ pub mod kde_output_management_v2 {
             #[doc = "This is supported while HDR is active in versions 8 and below,"]
             #[doc = "or when the device supports the brightness_control capability in"]
             #[doc = "versions 9 and above."]
+            #[allow(unused)]
             fn set_brightness(
                 &self,
                 client: &mut crate::server::Client,
@@ -3527,6 +3735,7 @@ pub mod kde_output_management_v2 {
                 outputdevice: crate::wire::ObjectId,
                 brightness: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_color_power_tradeoff(
                 &self,
                 client: &mut crate::server::Client,
@@ -3543,6 +3752,7 @@ pub mod kde_output_management_v2 {
             #[doc = ""]
             #[doc = "This is supported only when the brightness_control capability is"]
             #[doc = "also supported."]
+            #[allow(unused)]
             fn set_dimming(
                 &self,
                 client: &mut crate::server::Client,
@@ -3635,17 +3845,22 @@ pub mod kde_output_order_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("kde_output_order_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Specifies the output identified by their wl_output.name."]
             fn output(
                 &self,
@@ -3714,17 +3929,22 @@ pub mod kde_primary_output_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("kde_primary_output_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Specifies which output is the primary one identified by their uuid. See kde_output_device_v2 uuid event for more information about it."]
             fn primary_output(
                 &self,
@@ -3841,7 +4061,9 @@ pub mod kde_screen_edge_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("kde_screen_edge_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -3858,14 +4080,16 @@ pub mod kde_screen_edge_v1 {
                                 border,
                                 surface
                             );
-                            self.get_auto_hide_screen_edge(
-                                client,
-                                sender_id,
-                                id,
-                                border.try_into()?,
-                                surface,
-                            )
-                            .await
+                            let result = self
+                                .get_auto_hide_screen_edge(
+                                    client,
+                                    sender_id,
+                                    id,
+                                    border.try_into()?,
+                                    surface,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3873,11 +4097,14 @@ pub mod kde_screen_edge_v1 {
             }
             #[doc = "Destroy the screen edge manager. This doesn't destroy objects created"]
             #[doc = "with this manager."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Create a new auto hide screen edge object associated with the specified"]
             #[doc = "surface and the border."]
             #[doc = ""]
@@ -3890,6 +4117,7 @@ pub mod kde_screen_edge_v1 {
             #[doc = ""]
             #[doc = "The invalid_role protocol error will be raised if the specified surface"]
             #[doc = "does not have layer_surface role."]
+            #[allow(unused)]
             fn get_auto_hide_screen_edge(
                 &self,
                 client: &mut crate::server::Client,
@@ -3933,21 +4161,25 @@ pub mod kde_screen_edge_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("kde_auto_hide_screen_edge_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "kde_auto_hide_screen_edge_v1#{}.deactivate()",
                                 sender_id,
                             );
-                            self.deactivate(client, sender_id).await
+                            let result = self.deactivate(client, sender_id).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!(
                                 "kde_auto_hide_screen_edge_v1#{}.activate()",
                                 sender_id,
                             );
-                            self.activate(client, sender_id).await
+                            let result = self.activate(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3955,12 +4187,16 @@ pub mod kde_screen_edge_v1 {
             }
             #[doc = "Destroy the auto hide screen edge object. If the screen edge is active,"]
             #[doc = "it will be deactivated and the surface will be made visible."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Deactivate the screen edge. The surface will be made visible."]
+            #[allow(unused)]
             fn deactivate(
                 &self,
                 client: &mut crate::server::Client,
@@ -3968,6 +4204,7 @@ pub mod kde_screen_edge_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Activate the screen edge. The surface will be hidden until the screen"]
             #[doc = "edge is triggered."]
+            #[allow(unused)]
             fn activate(
                 &self,
                 client: &mut crate::server::Client,
@@ -4058,26 +4295,33 @@ pub mod keystate {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_keystate#{}.fetch_states()", sender_id,);
-                            self.fetch_states(client, sender_id).await
+                            let result = self.fetch_states(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!("org_kde_kwin_keystate#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn fetch_states(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             fn state_changed(
                 &self,
                 client: &mut crate::server::Client,
@@ -4137,8 +4381,10 @@ pub mod org_kde_plasma_virtual_desktop {
                                 id,
                                 desktop_id
                             );
-                            self.get_virtual_desktop(client, sender_id, id, desktop_id)
-                                .await
+                            let result = self
+                                .get_virtual_desktop(client, sender_id, id, desktop_id)
+                                .await;
+                            result
                         }
                         1u16 => {
                             let name = message
@@ -4151,8 +4397,10 @@ pub mod org_kde_plasma_virtual_desktop {
                                 name,
                                 position
                             );
-                            self.request_create_virtual_desktop(client, sender_id, name, position)
-                                .await
+                            let result = self
+                                .request_create_virtual_desktop(client, sender_id, name, position)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let desktop_id = message
@@ -4163,8 +4411,10 @@ pub mod org_kde_plasma_virtual_desktop {
                                 sender_id,
                                 desktop_id
                             );
-                            self.request_remove_virtual_desktop(client, sender_id, desktop_id)
-                                .await
+                            let result = self
+                                .request_remove_virtual_desktop(client, sender_id, desktop_id)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4176,6 +4426,7 @@ pub mod org_kde_plasma_virtual_desktop {
             #[doc = "implementation detail. Regular clients must not use this protocol."]
             #[doc = "Backward incompatible changes may be added without bumping the major"]
             #[doc = "version of the extension."]
+            #[allow(unused)]
             fn get_virtual_desktop(
                 &self,
                 client: &mut crate::server::Client,
@@ -4184,6 +4435,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 desktop_id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Ask the server to create a new virtual desktop, and position it at a specified position. If the position is zero or less, it will be positioned at the beginning, if the position is the count or more, it will be positioned at the end."]
+            #[allow(unused)]
             fn request_create_virtual_desktop(
                 &self,
                 client: &mut crate::server::Client,
@@ -4192,6 +4444,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 position: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Ask the server to get rid of a virtual desktop, the server may or may not acconsent to the request."]
+            #[allow(unused)]
             fn request_remove_virtual_desktop(
                 &self,
                 client: &mut crate::server::Client,
@@ -4308,13 +4561,15 @@ pub mod org_kde_plasma_virtual_desktop {
                                 "org_kde_plasma_virtual_desktop#{}.request_activate()",
                                 sender_id,
                             );
-                            self.request_activate(client, sender_id).await
+                            let result = self.request_activate(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Request the server to set the status of this desktop to active: The server is free to consent or deny the request. This will be the new \"current\" virtual desktop of the system."]
+            #[allow(unused)]
             fn request_activate(
                 &self,
                 client: &mut crate::server::Client,
@@ -4504,7 +4759,8 @@ pub mod outputmanagement {
                                 sender_id,
                                 id
                             );
-                            self.create_configuration(client, sender_id, id).await
+                            let result = self.create_configuration(client, sender_id, id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4512,6 +4768,7 @@ pub mod outputmanagement {
             }
             #[doc = "Request an outputconfiguration object through which the client can configure"]
             #[doc = "output devices."]
+            #[allow(unused)]
             fn create_configuration(
                 &self,
                 client: &mut crate::server::Client,
@@ -4585,7 +4842,8 @@ pub mod outputmanagement {
                                 outputdevice,
                                 enable
                             );
-                            self.enable(client, sender_id, outputdevice, enable).await
+                            let result = self.enable(client, sender_id, outputdevice, enable).await;
+                            result
                         }
                         1u16 => {
                             let outputdevice = message
@@ -4598,7 +4856,8 @@ pub mod outputmanagement {
                                 outputdevice,
                                 mode_id
                             );
-                            self.mode(client, sender_id, outputdevice, mode_id).await
+                            let result = self.mode(client, sender_id, outputdevice, mode_id).await;
+                            result
                         }
                         2u16 => {
                             let outputdevice = message
@@ -4611,8 +4870,10 @@ pub mod outputmanagement {
                                 outputdevice,
                                 transform
                             );
-                            self.transform(client, sender_id, outputdevice, transform)
-                                .await
+                            let result = self
+                                .transform(client, sender_id, outputdevice, transform)
+                                .await;
+                            result
                         }
                         3u16 => {
                             let outputdevice = message
@@ -4627,7 +4888,8 @@ pub mod outputmanagement {
                                 x,
                                 y
                             );
-                            self.position(client, sender_id, outputdevice, x, y).await
+                            let result = self.position(client, sender_id, outputdevice, x, y).await;
+                            result
                         }
                         4u16 => {
                             let outputdevice = message
@@ -4640,14 +4902,16 @@ pub mod outputmanagement {
                                 outputdevice,
                                 scale
                             );
-                            self.scale(client, sender_id, outputdevice, scale).await
+                            let result = self.scale(client, sender_id, outputdevice, scale).await;
+                            result
                         }
                         5u16 => {
                             tracing::debug!(
                                 "org_kde_kwin_outputconfiguration#{}.apply()",
                                 sender_id,
                             );
-                            self.apply(client, sender_id).await
+                            let result = self.apply(client, sender_id).await;
+                            result
                         }
                         6u16 => {
                             let outputdevice = message
@@ -4660,7 +4924,8 @@ pub mod outputmanagement {
                                 outputdevice,
                                 scale
                             );
-                            self.scalef(client, sender_id, outputdevice, scale).await
+                            let result = self.scalef(client, sender_id, outputdevice, scale).await;
+                            result
                         }
                         7u16 => {
                             let outputdevice = message
@@ -4677,15 +4942,19 @@ pub mod outputmanagement {
                                 green.len(),
                                 blue.len()
                             );
-                            self.colorcurves(client, sender_id, outputdevice, red, green, blue)
-                                .await
+                            let result = self
+                                .colorcurves(client, sender_id, outputdevice, red, green, blue)
+                                .await;
+                            result
                         }
                         8u16 => {
                             tracing::debug!(
                                 "org_kde_kwin_outputconfiguration#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         9u16 => {
                             let outputdevice = message
@@ -4698,8 +4967,10 @@ pub mod outputmanagement {
                                 outputdevice,
                                 overscan
                             );
-                            self.overscan(client, sender_id, outputdevice, overscan)
-                                .await
+                            let result = self
+                                .overscan(client, sender_id, outputdevice, overscan)
+                                .await;
+                            result
                         }
                         10u16 => {
                             let outputdevice = message
@@ -4712,14 +4983,17 @@ pub mod outputmanagement {
                                 outputdevice,
                                 policy
                             );
-                            self.set_vrr_policy(client, sender_id, outputdevice, policy.try_into()?)
-                                .await
+                            let result = self
+                                .set_vrr_policy(client, sender_id, outputdevice, policy.try_into()?)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Mark the output as enabled or disabled."]
+            #[allow(unused)]
             fn enable(
                 &self,
                 client: &mut crate::server::Client,
@@ -4728,6 +5002,7 @@ pub mod outputmanagement {
                 enable: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the mode for a given output by its mode size (width and height) and refresh rate."]
+            #[allow(unused)]
             fn mode(
                 &self,
                 client: &mut crate::server::Client,
@@ -4736,6 +5011,7 @@ pub mod outputmanagement {
                 mode_id: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the transformation for a given output."]
+            #[allow(unused)]
             fn transform(
                 &self,
                 client: &mut crate::server::Client,
@@ -4750,6 +5026,7 @@ pub mod outputmanagement {
             #[doc = ""]
             #[doc = "There may be no gaps or overlaps between outputs, i.e. the outputs are"]
             #[doc = "stacked horizontally, vertically, or both on each other."]
+            #[allow(unused)]
             fn position(
                 &self,
                 client: &mut crate::server::Client,
@@ -4759,6 +5036,7 @@ pub mod outputmanagement {
                 y: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the scaling factor for this output device."]
+            #[allow(unused)]
             fn scale(
                 &self,
                 client: &mut crate::server::Client,
@@ -4768,6 +5046,7 @@ pub mod outputmanagement {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Asks the server to apply property changes requested through this outputconfiguration"]
             #[doc = "object to all outputs on the server side."]
+            #[allow(unused)]
             fn apply(
                 &self,
                 client: &mut crate::server::Client,
@@ -4775,6 +5054,7 @@ pub mod outputmanagement {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the scaling factor for this output device."]
             #[doc = "Sending both scale and scalef is undefined."]
+            #[allow(unused)]
             fn scalef(
                 &self,
                 client: &mut crate::server::Client,
@@ -4787,6 +5067,7 @@ pub mod outputmanagement {
             #[doc = ""]
             #[doc = "These are the raw values. A compositor might opt to adjust these values"]
             #[doc = "internally, for example to shift color temperature at night."]
+            #[allow(unused)]
             fn colorcurves(
                 &self,
                 client: &mut crate::server::Client,
@@ -4796,12 +5077,16 @@ pub mod outputmanagement {
                 green: Vec<u8>,
                 blue: Vec<u8>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Set the overscan value of this output device with a value in percent."]
+            #[allow(unused)]
             fn overscan(
                 &self,
                 client: &mut crate::server::Client,
@@ -4811,6 +5096,7 @@ pub mod outputmanagement {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set what policy the compositor should employ regarding its use of"]
             #[doc = "variable refresh rate."]
+            #[allow(unused)]
             fn set_vrr_policy(
                 &self,
                 client: &mut crate::server::Client,
@@ -5519,7 +5805,8 @@ pub mod plasma_shell {
                                 id,
                                 surface
                             );
-                            self.get_surface(client, sender_id, id, surface).await
+                            let result = self.get_surface(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5529,6 +5816,7 @@ pub mod plasma_shell {
             #[doc = ""]
             #[doc = "Only one shell surface can be associated with a given"]
             #[doc = "surface."]
+            #[allow(unused)]
             fn get_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -5648,7 +5936,9 @@ pub mod plasma_shell {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("org_kde_plasma_surface#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let output = message
@@ -5659,7 +5949,8 @@ pub mod plasma_shell {
                                 sender_id,
                                 output
                             );
-                            self.set_output(client, sender_id, output).await
+                            let result = self.set_output(client, sender_id, output).await;
+                            result
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -5670,7 +5961,8 @@ pub mod plasma_shell {
                                 x,
                                 y
                             );
-                            self.set_position(client, sender_id, x, y).await
+                            let result = self.set_position(client, sender_id, x, y).await;
+                            result
                         }
                         3u16 => {
                             let role = message.uint()?;
@@ -5679,7 +5971,8 @@ pub mod plasma_shell {
                                 sender_id,
                                 role
                             );
-                            self.set_role(client, sender_id, role).await
+                            let result = self.set_role(client, sender_id, role).await;
+                            result
                         }
                         4u16 => {
                             let flag = message.uint()?;
@@ -5688,7 +5981,8 @@ pub mod plasma_shell {
                                 sender_id,
                                 flag
                             );
-                            self.set_panel_behavior(client, sender_id, flag).await
+                            let result = self.set_panel_behavior(client, sender_id, flag).await;
+                            result
                         }
                         5u16 => {
                             let skip = message.uint()?;
@@ -5697,21 +5991,24 @@ pub mod plasma_shell {
                                 sender_id,
                                 skip
                             );
-                            self.set_skip_taskbar(client, sender_id, skip).await
+                            let result = self.set_skip_taskbar(client, sender_id, skip).await;
+                            result
                         }
                         6u16 => {
                             tracing::debug!(
                                 "org_kde_plasma_surface#{}.panel_auto_hide_hide()",
                                 sender_id,
                             );
-                            self.panel_auto_hide_hide(client, sender_id).await
+                            let result = self.panel_auto_hide_hide(client, sender_id).await;
+                            result
                         }
                         7u16 => {
                             tracing::debug!(
                                 "org_kde_plasma_surface#{}.panel_auto_hide_show()",
                                 sender_id,
                             );
-                            self.panel_auto_hide_show(client, sender_id).await
+                            let result = self.panel_auto_hide_show(client, sender_id).await;
+                            result
                         }
                         8u16 => {
                             let takes_focus = message.uint()?;
@@ -5720,8 +6017,10 @@ pub mod plasma_shell {
                                 sender_id,
                                 takes_focus
                             );
-                            self.set_panel_takes_focus(client, sender_id, takes_focus)
-                                .await
+                            let result = self
+                                .set_panel_takes_focus(client, sender_id, takes_focus)
+                                .await;
+                            result
                         }
                         9u16 => {
                             let skip = message.uint()?;
@@ -5730,14 +6029,16 @@ pub mod plasma_shell {
                                 sender_id,
                                 skip
                             );
-                            self.set_skip_switcher(client, sender_id, skip).await
+                            let result = self.set_skip_switcher(client, sender_id, skip).await;
+                            result
                         }
                         10u16 => {
                             tracing::debug!(
                                 "org_kde_plasma_surface#{}.open_under_cursor()",
                                 sender_id,
                             );
-                            self.open_under_cursor(client, sender_id).await
+                            let result = self.open_under_cursor(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -5747,15 +6048,19 @@ pub mod plasma_shell {
             #[doc = "wl_surface object that was turned into a shell surface with the"]
             #[doc = "org_kde_plasma_shell.get_surface request."]
             #[doc = "The shell surface role is lost and wl_surface is unmapped."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Assign an output to this shell surface."]
             #[doc = "The compositor will use this information to set the position"]
             #[doc = "when org_kde_plasma_surface.set_position request is"]
             #[doc = "called."]
+            #[allow(unused)]
             fn set_output(
                 &self,
                 client: &mut crate::server::Client,
@@ -5769,6 +6074,7 @@ pub mod plasma_shell {
             #[doc = ""]
             #[doc = "Use org_kde_plasma_surface.set_output to assign an output"]
             #[doc = "to this surface."]
+            #[allow(unused)]
             fn set_position(
                 &self,
                 client: &mut crate::server::Client,
@@ -5869,6 +6175,7 @@ pub mod plasma_shell {
             #[doc = "lock surface as big as the screen."]
             #[doc = ""]
             #[doc = "Only one surface per output can have the lock role."]
+            #[allow(unused)]
             fn set_role(
                 &self,
                 client: &mut crate::server::Client,
@@ -5880,6 +6187,7 @@ pub mod plasma_shell {
             #[doc = "the default."]
             #[doc = ""]
             #[doc = "Deprecated in Plasma 6. Setting this flag will have no effect. Applications should use layer shell where appropriate."]
+            #[allow(unused)]
             fn set_panel_behavior(
                 &self,
                 client: &mut crate::server::Client,
@@ -5887,6 +6195,7 @@ pub mod plasma_shell {
                 flag: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Setting this bit to the window, will make it say it prefers to not be listed in the taskbar. Taskbar implementations may or may not follow this hint."]
+            #[allow(unused)]
             fn set_skip_taskbar(
                 &self,
                 client: &mut crate::server::Client,
@@ -5903,6 +6212,7 @@ pub mod plasma_shell {
             #[doc = "if the compositor is unable to hide the panel."]
             #[doc = ""]
             #[doc = "The client can also request to show the panel again with the request panel_auto_hide_show."]
+            #[allow(unused)]
             fn panel_auto_hide_hide(
                 &self,
                 client: &mut crate::server::Client,
@@ -5910,6 +6220,7 @@ pub mod plasma_shell {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A panel surface with panel_behavior auto_hide can perform this request to show the panel"]
             #[doc = "again which got hidden with panel_auto_hide_hide."]
+            #[allow(unused)]
             fn panel_auto_hide_show(
                 &self,
                 client: &mut crate::server::Client,
@@ -5918,6 +6229,7 @@ pub mod plasma_shell {
             #[doc = "By default various org_kde_plasma_surface roles do not take focus and cannot be"]
             #[doc = "activated. With this request the compositor can be instructed to pass focus also to this"]
             #[doc = "org_kde_plasma_surface."]
+            #[allow(unused)]
             fn set_panel_takes_focus(
                 &self,
                 client: &mut crate::server::Client,
@@ -5925,6 +6237,7 @@ pub mod plasma_shell {
                 takes_focus: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Setting this bit will indicate that the window prefers not to be listed in a switcher."]
+            #[allow(unused)]
             fn set_skip_switcher(
                 &self,
                 client: &mut crate::server::Client,
@@ -5933,6 +6246,7 @@ pub mod plasma_shell {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request the initial position of this surface to be under the current"]
             #[doc = "cursor position. Has to be called before attaching any buffer to this surface."]
+            #[allow(unused)]
             fn open_under_cursor(
                 &self,
                 client: &mut crate::server::Client,
@@ -6092,7 +6406,8 @@ pub mod plasma_window_management {
                                 sender_id,
                                 state
                             );
-                            self.show_desktop(client, sender_id, state).await
+                            let result = self.show_desktop(client, sender_id, state).await;
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -6105,8 +6420,10 @@ pub mod plasma_window_management {
                                 id,
                                 internal_window_id
                             );
-                            self.get_window(client, sender_id, id, internal_window_id)
-                                .await
+                            let result = self
+                                .get_window(client, sender_id, id, internal_window_id)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let id = message
@@ -6121,8 +6438,10 @@ pub mod plasma_window_management {
                                 id,
                                 internal_window_uuid
                             );
-                            self.get_window_by_uuid(client, sender_id, id, internal_window_uuid)
-                                .await
+                            let result = self
+                                .get_window_by_uuid(client, sender_id, id, internal_window_uuid)
+                                .await;
+                            result
                         }
                         3u16 => {
                             let stacking_order = message
@@ -6133,14 +6452,17 @@ pub mod plasma_window_management {
                                 sender_id,
                                 stacking_order
                             );
-                            self.get_stacking_order(client, sender_id, stacking_order)
-                                .await
+                            let result = self
+                                .get_stacking_order(client, sender_id, stacking_order)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Tell the compositor to show/hide the desktop."]
+            #[allow(unused)]
             fn show_desktop(
                 &self,
                 client: &mut crate::server::Client,
@@ -6148,6 +6470,7 @@ pub mod plasma_window_management {
                 state: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Deprecated: use get_window_by_uuid"]
+            #[allow(unused)]
             fn get_window(
                 &self,
                 client: &mut crate::server::Client,
@@ -6155,6 +6478,7 @@ pub mod plasma_window_management {
                 id: crate::wire::ObjectId,
                 internal_window_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn get_window_by_uuid(
                 &self,
                 client: &mut crate::server::Client,
@@ -6162,6 +6486,7 @@ pub mod plasma_window_management {
                 id: crate::wire::ObjectId,
                 internal_window_uuid: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn get_stacking_order(
                 &self,
                 client: &mut crate::server::Client,
@@ -6331,7 +6656,8 @@ pub mod plasma_window_management {
                                 flags,
                                 state
                             );
-                            self.set_state(client, sender_id, flags, state).await
+                            let result = self.set_state(client, sender_id, flags, state).await;
+                            result
                         }
                         1u16 => {
                             let number = message.uint()?;
@@ -6340,7 +6666,8 @@ pub mod plasma_window_management {
                                 sender_id,
                                 number
                             );
-                            self.set_virtual_desktop(client, sender_id, number).await
+                            let result = self.set_virtual_desktop(client, sender_id, number).await;
+                            result
                         }
                         2u16 => {
                             let panel = message
@@ -6359,10 +6686,12 @@ pub mod plasma_window_management {
                                 width,
                                 height
                             );
-                            self.set_minimized_geometry(
-                                client, sender_id, panel, x, y, width, height,
-                            )
-                            .await
+                            let result = self
+                                .set_minimized_geometry(
+                                    client, sender_id, panel, x, y, width, height,
+                                )
+                                .await;
+                            result
                         }
                         3u16 => {
                             let panel = message
@@ -6373,24 +6702,31 @@ pub mod plasma_window_management {
                                 sender_id,
                                 panel
                             );
-                            self.unset_minimized_geometry(client, sender_id, panel)
-                                .await
+                            let result = self
+                                .unset_minimized_geometry(client, sender_id, panel)
+                                .await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!("org_kde_plasma_window#{}.close()", sender_id,);
-                            self.close(client, sender_id).await
+                            let result = self.close(client, sender_id).await;
+                            result
                         }
                         5u16 => {
                             tracing::debug!("org_kde_plasma_window#{}.request_move()", sender_id,);
-                            self.request_move(client, sender_id).await
+                            let result = self.request_move(client, sender_id).await;
+                            result
                         }
                         6u16 => {
                             tracing::debug!("org_kde_plasma_window#{}.request_resize()", sender_id,);
-                            self.request_resize(client, sender_id).await
+                            let result = self.request_resize(client, sender_id).await;
+                            result
                         }
                         7u16 => {
                             tracing::debug!("org_kde_plasma_window#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         8u16 => {
                             let fd = message.fd()?;
@@ -6399,7 +6735,8 @@ pub mod plasma_window_management {
                                 sender_id,
                                 fd.as_raw_fd()
                             );
-                            self.get_icon(client, sender_id, fd).await
+                            let result = self.get_icon(client, sender_id, fd).await;
+                            result
                         }
                         9u16 => {
                             let id = message
@@ -6410,16 +6747,20 @@ pub mod plasma_window_management {
                                 sender_id,
                                 id
                             );
-                            self.request_enter_virtual_desktop(client, sender_id, id)
-                                .await
+                            let result = self
+                                .request_enter_virtual_desktop(client, sender_id, id)
+                                .await;
+                            result
                         }
                         10u16 => {
                             tracing::debug!(
                                 "org_kde_plasma_window#{}.request_enter_new_virtual_desktop()",
                                 sender_id,
                             );
-                            self.request_enter_new_virtual_desktop(client, sender_id)
-                                .await
+                            let result = self
+                                .request_enter_new_virtual_desktop(client, sender_id)
+                                .await;
+                            result
                         }
                         11u16 => {
                             let id = message
@@ -6430,8 +6771,10 @@ pub mod plasma_window_management {
                                 sender_id,
                                 id
                             );
-                            self.request_leave_virtual_desktop(client, sender_id, id)
-                                .await
+                            let result = self
+                                .request_leave_virtual_desktop(client, sender_id, id)
+                                .await;
+                            result
                         }
                         12u16 => {
                             let id = message
@@ -6442,7 +6785,8 @@ pub mod plasma_window_management {
                                 sender_id,
                                 id
                             );
-                            self.request_enter_activity(client, sender_id, id).await
+                            let result = self.request_enter_activity(client, sender_id, id).await;
+                            result
                         }
                         13u16 => {
                             let id = message
@@ -6453,7 +6797,8 @@ pub mod plasma_window_management {
                                 sender_id,
                                 id
                             );
-                            self.request_leave_activity(client, sender_id, id).await
+                            let result = self.request_leave_activity(client, sender_id, id).await;
+                            result
                         }
                         14u16 => {
                             let output = message
@@ -6464,7 +6809,8 @@ pub mod plasma_window_management {
                                 sender_id,
                                 output
                             );
-                            self.send_to_output(client, sender_id, output).await
+                            let result = self.send_to_output(client, sender_id, output).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -6475,6 +6821,7 @@ pub mod plasma_window_management {
             #[doc = "Values for state argument are described by org_kde_plasma_window_management.state"]
             #[doc = "and can be used together in a bitfield. The flags bitfield describes which flags are"]
             #[doc = "supposed to be set, the state bitfield the value for the set flags"]
+            #[allow(unused)]
             fn set_state(
                 &self,
                 client: &mut crate::server::Client,
@@ -6488,6 +6835,7 @@ pub mod plasma_window_management {
             #[doc = "To show the window on all virtual desktops, call the"]
             #[doc = "org_kde_plasma_window.set_state request and specify a on_all_desktops"]
             #[doc = "state in the bitfield."]
+            #[allow(unused)]
             fn set_virtual_desktop(
                 &self,
                 client: &mut crate::server::Client,
@@ -6496,6 +6844,7 @@ pub mod plasma_window_management {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the geometry of the taskbar entry for this window."]
             #[doc = "The geometry is relative to a panel in particular."]
+            #[allow(unused)]
             fn set_minimized_geometry(
                 &self,
                 client: &mut crate::server::Client,
@@ -6507,6 +6856,7 @@ pub mod plasma_window_management {
                 height: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Remove the task geometry information for a particular panel."]
+            #[allow(unused)]
             fn unset_minimized_geometry(
                 &self,
                 client: &mut crate::server::Client,
@@ -6514,31 +6864,38 @@ pub mod plasma_window_management {
                 panel: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Close this window."]
+            #[allow(unused)]
             fn close(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request an interactive move for this window."]
+            #[allow(unused)]
             fn request_move(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request an interactive resize for this window."]
+            #[allow(unused)]
             fn request_resize(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Removes the resource bound for this org_kde_plasma_window."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The compositor will write the window icon into the provided file descriptor."]
             #[doc = "The data is a serialized QIcon with QDataStream."]
+            #[allow(unused)]
             fn get_icon(
                 &self,
                 client: &mut crate::server::Client,
@@ -6547,6 +6904,7 @@ pub mod plasma_window_management {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Make the window enter a virtual desktop. A window can enter more"]
             #[doc = "than one virtual desktop. if the id is empty or invalid, no action will be performed."]
+            #[allow(unused)]
             fn request_enter_virtual_desktop(
                 &self,
                 client: &mut crate::server::Client,
@@ -6556,12 +6914,14 @@ pub mod plasma_window_management {
             #[doc = "RFC: do this with an empty id to request_enter_virtual_desktop?"]
             #[doc = "Make the window enter a new virtual desktop. If the server consents the request,"]
             #[doc = "it will create a new virtual desktop and assign the window to it."]
+            #[allow(unused)]
             fn request_enter_new_virtual_desktop(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Make the window exit a virtual desktop. If it exits all desktops it will be considered on all of them."]
+            #[allow(unused)]
             fn request_leave_virtual_desktop(
                 &self,
                 client: &mut crate::server::Client,
@@ -6569,6 +6929,7 @@ pub mod plasma_window_management {
                 id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Make the window enter an activity. A window can enter more activity. If the id is empty or invalid, no action will be performed."]
+            #[allow(unused)]
             fn request_enter_activity(
                 &self,
                 client: &mut crate::server::Client,
@@ -6576,6 +6937,7 @@ pub mod plasma_window_management {
                 id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Make the window exit a an activity. If it exits all activities it will be considered on all of them."]
+            #[allow(unused)]
             fn request_leave_activity(
                 &self,
                 client: &mut crate::server::Client,
@@ -6583,6 +6945,7 @@ pub mod plasma_window_management {
                 id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests this window to be displayed in a specific output."]
+            #[allow(unused)]
             fn send_to_output(
                 &self,
                 client: &mut crate::server::Client,
@@ -7030,7 +7393,9 @@ pub mod plasma_window_management {
                                 "org_kde_plasma_activation_feedback#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7038,11 +7403,14 @@ pub mod plasma_window_management {
             }
             #[doc = "Destroy the activation manager object. The activation objects introduced"]
             #[doc = "by this manager object will be unaffected."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Will be issued when an app is set to be activated. It offers"]
             #[doc = "an instance of org_kde_plasma_activation that will tell us the app_id"]
             #[doc = "and the extent of the activation."]
@@ -7088,7 +7456,9 @@ pub mod plasma_window_management {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("org_kde_plasma_activation#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7096,11 +7466,14 @@ pub mod plasma_window_management {
             }
             #[doc = "Notify the compositor that the org_kde_plasma_activation object will no"]
             #[doc = "longer be used."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             fn app_id(
                 &self,
                 client: &mut crate::server::Client,
@@ -7230,20 +7603,25 @@ pub mod remote_access {
                                 buffer,
                                 internal_buffer_id
                             );
-                            self.get_buffer(client, sender_id, buffer, internal_buffer_id)
-                                .await
+                            let result = self
+                                .get_buffer(client, sender_id, buffer, internal_buffer_id)
+                                .await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "org_kde_kwin_remote_access_manager#{}.release()",
                                 sender_id,
                             );
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn get_buffer(
                 &self,
                 client: &mut crate::server::Client,
@@ -7251,11 +7629,14 @@ pub mod remote_access {
                 buffer: crate::wire::ObjectId,
                 internal_buffer_id: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             fn buffer_ready(
                 &self,
                 client: &mut crate::server::Client,
@@ -7301,17 +7682,22 @@ pub mod remote_access {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_remote_buffer#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             fn gbm_handle(
                 &self,
                 client: &mut crate::server::Client,
@@ -7381,12 +7767,14 @@ pub mod server_decoration_palette {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            let result = self.create(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn create(
                 &self,
                 client: &mut crate::server::Client,
@@ -7423,14 +7811,17 @@ pub mod server_decoration_palette {
                                 sender_id,
                                 palette
                             );
-                            self.set_palette(client, sender_id, palette).await
+                            let result = self.set_palette(client, sender_id, palette).await;
+                            result
                         }
                         1u16 => {
                             tracing::debug!(
                                 "org_kde_kwin_server_decoration_palette#{}.release()",
                                 sender_id,
                             );
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7439,17 +7830,21 @@ pub mod server_decoration_palette {
             #[doc = "Color scheme that should be applied to the window decoration."]
             #[doc = "Absolute file path, or name of palette in the user's config directory."]
             #[doc = "The server may choose not to follow the requested style."]
+            #[allow(unused)]
             fn set_palette(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 palette: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -7519,7 +7914,8 @@ pub mod server_decoration {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            let result = self.create(client, sender_id, id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -7535,6 +7931,7 @@ pub mod server_decoration {
             #[doc = "protocol and considers it as client-side decorated. Nevertheless a"]
             #[doc = "client-side decorated surface should use this protocol to indicate"]
             #[doc = "to the server that it does not want a server-side deco."]
+            #[allow(unused)]
             fn create(
                 &self,
                 client: &mut crate::server::Client,
@@ -7618,7 +8015,9 @@ pub mod server_decoration {
                                 "org_kde_kwin_server_decoration#{}.release()",
                                 sender_id,
                             );
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let mode = message.uint()?;
@@ -7627,17 +8026,22 @@ pub mod server_decoration {
                                 sender_id,
                                 mode
                             );
-                            self.request_mode(client, sender_id, mode).await
+                            let result = self.request_mode(client, sender_id, mode).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
+            #[allow(unused)]
             fn request_mode(
                 &self,
                 client: &mut crate::server::Client,
@@ -7711,7 +8115,8 @@ pub mod shadow {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            let result = self.create(client, sender_id, id, surface).await;
+                            result
                         }
                         1u16 => {
                             let surface = message
@@ -7722,16 +8127,20 @@ pub mod shadow {
                                 sender_id,
                                 surface
                             );
-                            self.unset(client, sender_id, surface).await
+                            let result = self.unset(client, sender_id, surface).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("org_kde_kwin_shadow_manager#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn create(
                 &self,
                 client: &mut crate::server::Client,
@@ -7739,6 +8148,7 @@ pub mod shadow {
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn unset(
                 &self,
                 client: &mut crate::server::Client,
@@ -7746,11 +8156,14 @@ pub mod shadow {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the org_kde_kwin_shadow_manager object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -7772,7 +8185,8 @@ pub mod shadow {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_shadow#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             let buffer = message
@@ -7783,7 +8197,8 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_left(client, sender_id, buffer).await
+                            let result = self.attach_left(client, sender_id, buffer).await;
+                            result
                         }
                         2u16 => {
                             let buffer = message
@@ -7794,7 +8209,8 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_top_left(client, sender_id, buffer).await
+                            let result = self.attach_top_left(client, sender_id, buffer).await;
+                            result
                         }
                         3u16 => {
                             let buffer = message
@@ -7805,7 +8221,8 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_top(client, sender_id, buffer).await
+                            let result = self.attach_top(client, sender_id, buffer).await;
+                            result
                         }
                         4u16 => {
                             let buffer = message
@@ -7816,7 +8233,8 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_top_right(client, sender_id, buffer).await
+                            let result = self.attach_top_right(client, sender_id, buffer).await;
+                            result
                         }
                         5u16 => {
                             let buffer = message
@@ -7827,7 +8245,8 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_right(client, sender_id, buffer).await
+                            let result = self.attach_right(client, sender_id, buffer).await;
+                            result
                         }
                         6u16 => {
                             let buffer = message
@@ -7838,7 +8257,8 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_bottom_right(client, sender_id, buffer).await
+                            let result = self.attach_bottom_right(client, sender_id, buffer).await;
+                            result
                         }
                         7u16 => {
                             let buffer = message
@@ -7849,7 +8269,8 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_bottom(client, sender_id, buffer).await
+                            let result = self.attach_bottom(client, sender_id, buffer).await;
+                            result
                         }
                         8u16 => {
                             let buffer = message
@@ -7860,7 +8281,8 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_bottom_left(client, sender_id, buffer).await
+                            let result = self.attach_bottom_left(client, sender_id, buffer).await;
+                            result
                         }
                         9u16 => {
                             let offset = message.fixed()?;
@@ -7869,7 +8291,8 @@ pub mod shadow {
                                 sender_id,
                                 offset
                             );
-                            self.set_left_offset(client, sender_id, offset).await
+                            let result = self.set_left_offset(client, sender_id, offset).await;
+                            result
                         }
                         10u16 => {
                             let offset = message.fixed()?;
@@ -7878,7 +8301,8 @@ pub mod shadow {
                                 sender_id,
                                 offset
                             );
-                            self.set_top_offset(client, sender_id, offset).await
+                            let result = self.set_top_offset(client, sender_id, offset).await;
+                            result
                         }
                         11u16 => {
                             let offset = message.fixed()?;
@@ -7887,7 +8311,8 @@ pub mod shadow {
                                 sender_id,
                                 offset
                             );
-                            self.set_right_offset(client, sender_id, offset).await
+                            let result = self.set_right_offset(client, sender_id, offset).await;
+                            result
                         }
                         12u16 => {
                             let offset = message.fixed()?;
@@ -7896,87 +8321,103 @@ pub mod shadow {
                                 sender_id,
                                 offset
                             );
-                            self.set_bottom_offset(client, sender_id, offset).await
+                            let result = self.set_bottom_offset(client, sender_id, offset).await;
+                            result
                         }
                         13u16 => {
                             tracing::debug!("org_kde_kwin_shadow#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn attach_left(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn attach_top_left(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn attach_top(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn attach_top_right(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn attach_right(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn attach_bottom_right(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn attach_bottom(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn attach_bottom_left(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_left_offset(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 offset: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_top_offset(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 offset: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_right_offset(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 offset: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_bottom_offset(
                 &self,
                 client: &mut crate::server::Client,
@@ -7987,11 +8428,14 @@ pub mod shadow {
             #[doc = "still set on a wl_surface the shadow will be immediately removed."]
             #[doc = "Prefer to first call the request unset on the org_kde_kwin_shadow_manager and"]
             #[doc = "commit the wl_surface to apply the change."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -8027,7 +8471,8 @@ pub mod slide {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            let result = self.create(client, sender_id, id, surface).await;
+                            result
                         }
                         1u16 => {
                             let surface = message
@@ -8038,12 +8483,14 @@ pub mod slide {
                                 sender_id,
                                 surface
                             );
-                            self.unset(client, sender_id, surface).await
+                            let result = self.unset(client, sender_id, surface).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn create(
                 &self,
                 client: &mut crate::server::Client,
@@ -8051,6 +8498,7 @@ pub mod slide {
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn unset(
                 &self,
                 client: &mut crate::server::Client,
@@ -8109,7 +8557,8 @@ pub mod slide {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_slide#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            let result = self.commit(client, sender_id).await;
+                            result
                         }
                         1u16 => {
                             let location = message.uint()?;
@@ -8118,7 +8567,8 @@ pub mod slide {
                                 sender_id,
                                 location
                             );
-                            self.set_location(client, sender_id, location).await
+                            let result = self.set_location(client, sender_id, location).await;
+                            result
                         }
                         2u16 => {
                             let offset = message.int()?;
@@ -8127,38 +8577,47 @@ pub mod slide {
                                 sender_id,
                                 offset
                             );
-                            self.set_offset(client, sender_id, offset).await
+                            let result = self.set_offset(client, sender_id, offset).await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!("org_kde_kwin_slide#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_location(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 location: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_offset(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 offset: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -8194,13 +8653,16 @@ pub mod surface_extension {
                                 id,
                                 surface
                             );
-                            self.get_extended_surface(client, sender_id, id, surface)
-                                .await
+                            let result = self
+                                .get_extended_surface(client, sender_id, id, surface)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn get_extended_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -8290,8 +8752,10 @@ pub mod surface_extension {
                                 name,
                                 value.len()
                             );
-                            self.update_generic_property(client, sender_id, name, value)
-                                .await
+                            let result = self
+                                .update_generic_property(client, sender_id, name, value)
+                                .await;
+                            result
                         }
                         1u16 => {
                             let orientation = message.int()?;
@@ -8300,8 +8764,10 @@ pub mod surface_extension {
                                 sender_id,
                                 orientation
                             );
-                            self.set_content_orientation_mask(client, sender_id, orientation)
-                                .await
+                            let result = self
+                                .set_content_orientation_mask(client, sender_id, orientation)
+                                .await;
+                            result
                         }
                         2u16 => {
                             let flags = message.int()?;
@@ -8310,20 +8776,24 @@ pub mod surface_extension {
                                 sender_id,
                                 flags
                             );
-                            self.set_window_flags(client, sender_id, flags).await
+                            let result = self.set_window_flags(client, sender_id, flags).await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!("qt_extended_surface#{}.raise()", sender_id,);
-                            self.raise(client, sender_id).await
+                            let result = self.raise(client, sender_id).await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!("qt_extended_surface#{}.lower()", sender_id,);
-                            self.lower(client, sender_id).await
+                            let result = self.lower(client, sender_id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn update_generic_property(
                 &self,
                 client: &mut crate::server::Client,
@@ -8331,23 +8801,27 @@ pub mod surface_extension {
                 name: String,
                 value: Vec<u8>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_content_orientation_mask(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 orientation: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_window_flags(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 flags: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn raise(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn lower(
                 &self,
                 client: &mut crate::server::Client,
@@ -8655,29 +9129,35 @@ pub mod text_input_unstable_v2 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_text_input_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let surface = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("zwp_text_input_v2#{}.enable({})", sender_id, surface);
-                            self.enable(client, sender_id, surface).await
+                            let result = self.enable(client, sender_id, surface).await;
+                            result
                         }
                         2u16 => {
                             let surface = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("zwp_text_input_v2#{}.disable({})", sender_id, surface);
-                            self.disable(client, sender_id, surface).await
+                            let result = self.disable(client, sender_id, surface).await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!("zwp_text_input_v2#{}.show_input_panel()", sender_id,);
-                            self.show_input_panel(client, sender_id).await
+                            let result = self.show_input_panel(client, sender_id).await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!("zwp_text_input_v2#{}.hide_input_panel()", sender_id,);
-                            self.hide_input_panel(client, sender_id).await
+                            let result = self.hide_input_panel(client, sender_id).await;
+                            result
                         }
                         5u16 => {
                             let text = message
@@ -8692,8 +9172,10 @@ pub mod text_input_unstable_v2 {
                                 cursor,
                                 anchor
                             );
-                            self.set_surrounding_text(client, sender_id, text, cursor, anchor)
-                                .await
+                            let result = self
+                                .set_surrounding_text(client, sender_id, text, cursor, anchor)
+                                .await;
+                            result
                         }
                         6u16 => {
                             let hint = message.uint()?;
@@ -8704,13 +9186,15 @@ pub mod text_input_unstable_v2 {
                                 hint,
                                 purpose
                             );
-                            self.set_content_type(
-                                client,
-                                sender_id,
-                                hint.try_into()?,
-                                purpose.try_into()?,
-                            )
-                            .await
+                            let result = self
+                                .set_content_type(
+                                    client,
+                                    sender_id,
+                                    hint.try_into()?,
+                                    purpose.try_into()?,
+                                )
+                                .await;
+                            result
                         }
                         7u16 => {
                             let x = message.int()?;
@@ -8725,8 +9209,10 @@ pub mod text_input_unstable_v2 {
                                 width,
                                 height
                             );
-                            self.set_cursor_rectangle(client, sender_id, x, y, width, height)
-                                .await
+                            let result = self
+                                .set_cursor_rectangle(client, sender_id, x, y, width, height)
+                                .await;
+                            result
                         }
                         8u16 => {
                             let language = message
@@ -8737,8 +9223,10 @@ pub mod text_input_unstable_v2 {
                                 sender_id,
                                 language
                             );
-                            self.set_preferred_language(client, sender_id, language)
-                                .await
+                            let result = self
+                                .set_preferred_language(client, sender_id, language)
+                                .await;
+                            result
                         }
                         9u16 => {
                             let serial = message.uint()?;
@@ -8749,8 +9237,10 @@ pub mod text_input_unstable_v2 {
                                 serial,
                                 reason
                             );
-                            self.update_state(client, sender_id, serial, reason.try_into()?)
-                                .await
+                            let result = self
+                                .update_state(client, sender_id, serial, reason.try_into()?)
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -8758,17 +9248,21 @@ pub mod text_input_unstable_v2 {
             }
             #[doc = "Destroy the wp_text_input object. Also disables all surfaces enabled"]
             #[doc = "through this wp_text_input object"]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Enable text input in a surface (usually when a text entry inside of it"]
             #[doc = "has focus)."]
             #[doc = ""]
             #[doc = "This can be called before or after a surface gets text (or keyboard)"]
             #[doc = "focus via the enter event. Text input to a surface is only active"]
             #[doc = "when it has the current text (or keyboard) focus and is enabled."]
+            #[allow(unused)]
             fn enable(
                 &self,
                 client: &mut crate::server::Client,
@@ -8777,6 +9271,7 @@ pub mod text_input_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Disable text input in a surface (typically when there is no focus on any"]
             #[doc = "text entry inside the surface)."]
+            #[allow(unused)]
             fn disable(
                 &self,
                 client: &mut crate::server::Client,
@@ -8788,12 +9283,14 @@ pub mod text_input_unstable_v2 {
             #[doc = "This should be used for example to show a virtual keyboard again"]
             #[doc = "(with a tap) after it was closed by pressing on a close button on the"]
             #[doc = "keyboard."]
+            #[allow(unused)]
             fn show_input_panel(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to hide."]
+            #[allow(unused)]
             fn hide_input_panel(
                 &self,
                 client: &mut crate::server::Client,
@@ -8814,6 +9311,7 @@ pub mod text_input_unstable_v2 {
             #[doc = ""]
             #[doc = "There is a maximum length of wayland messages so text can not be"]
             #[doc = "longer than 4000 bytes."]
+            #[allow(unused)]
             fn set_surrounding_text(
                 &self,
                 client: &mut crate::server::Client,
@@ -8828,6 +9326,7 @@ pub mod text_input_unstable_v2 {
             #[doc = ""]
             #[doc = "When no content type is explicitly set, a normal content purpose with"]
             #[doc = "none hint should be assumed."]
+            #[allow(unused)]
             fn set_content_type(
                 &self,
                 client: &mut crate::server::Client,
@@ -8840,6 +9339,7 @@ pub mod text_input_unstable_v2 {
             #[doc = ""]
             #[doc = "Allows the compositor to put a window with word suggestions near the"]
             #[doc = "cursor."]
+            #[allow(unused)]
             fn set_cursor_rectangle(
                 &self,
                 client: &mut crate::server::Client,
@@ -8856,6 +9356,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "It could be used for example in a word processor to indicate language of"]
             #[doc = "currently edited document or in an instant message application which"]
             #[doc = "tracks languages of contacts."]
+            #[allow(unused)]
             fn set_preferred_language(
                 &self,
                 client: &mut crate::server::Client,
@@ -8883,6 +9384,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "To make sure to not receive outdated input method events after a"]
             #[doc = "reset or switching to a new widget wl_display_sync() should be used"]
             #[doc = "after update_state in these cases."]
+            #[allow(unused)]
             fn update_state(
                 &self,
                 client: &mut crate::server::Client,
@@ -9358,7 +9860,9 @@ pub mod text_input_unstable_v2 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwp_text_input_manager_v2#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -9373,19 +9877,24 @@ pub mod text_input_unstable_v2 {
                                 id,
                                 seat
                             );
-                            self.get_text_input(client, sender_id, id, seat).await
+                            let result = self.get_text_input(client, sender_id, id, seat).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Destroy the wp_text_input_manager object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Creates a new text-input object for a given seat."]
+            #[allow(unused)]
             fn get_text_input(
                 &self,
                 client: &mut crate::server::Client,
@@ -9631,26 +10140,31 @@ pub mod text {
                                 seat,
                                 surface
                             );
-                            self.activate(client, sender_id, seat, surface).await
+                            let result = self.activate(client, sender_id, seat, surface).await;
+                            result
                         }
                         1u16 => {
                             let seat = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_text_input#{}.deactivate({})", sender_id, seat);
-                            self.deactivate(client, sender_id, seat).await
+                            let result = self.deactivate(client, sender_id, seat).await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("wl_text_input#{}.show_input_panel()", sender_id,);
-                            self.show_input_panel(client, sender_id).await
+                            let result = self.show_input_panel(client, sender_id).await;
+                            result
                         }
                         3u16 => {
                             tracing::debug!("wl_text_input#{}.hide_input_panel()", sender_id,);
-                            self.hide_input_panel(client, sender_id).await
+                            let result = self.hide_input_panel(client, sender_id).await;
+                            result
                         }
                         4u16 => {
                             tracing::debug!("wl_text_input#{}.reset()", sender_id,);
-                            self.reset(client, sender_id).await
+                            let result = self.reset(client, sender_id).await;
+                            result
                         }
                         5u16 => {
                             let text = message
@@ -9665,8 +10179,10 @@ pub mod text {
                                 cursor,
                                 anchor
                             );
-                            self.set_surrounding_text(client, sender_id, text, cursor, anchor)
-                                .await
+                            let result = self
+                                .set_surrounding_text(client, sender_id, text, cursor, anchor)
+                                .await;
+                            result
                         }
                         6u16 => {
                             let hint = message.uint()?;
@@ -9677,8 +10193,10 @@ pub mod text {
                                 hint,
                                 purpose
                             );
-                            self.set_content_type(client, sender_id, hint, purpose)
-                                .await
+                            let result = self
+                                .set_content_type(client, sender_id, hint, purpose)
+                                .await;
+                            result
                         }
                         7u16 => {
                             let x = message.int()?;
@@ -9693,8 +10211,10 @@ pub mod text {
                                 width,
                                 height
                             );
-                            self.set_cursor_rectangle(client, sender_id, x, y, width, height)
-                                .await
+                            let result = self
+                                .set_cursor_rectangle(client, sender_id, x, y, width, height)
+                                .await;
+                            result
                         }
                         8u16 => {
                             let language = message
@@ -9705,13 +10225,16 @@ pub mod text {
                                 sender_id,
                                 language
                             );
-                            self.set_preferred_language(client, sender_id, language)
-                                .await
+                            let result = self
+                                .set_preferred_language(client, sender_id, language)
+                                .await;
+                            result
                         }
                         9u16 => {
                             let serial = message.uint()?;
                             tracing::debug!("wl_text_input#{}.commit_state({})", sender_id, serial);
-                            self.commit_state(client, sender_id, serial).await
+                            let result = self.commit_state(client, sender_id, serial).await;
+                            result
                         }
                         10u16 => {
                             let button = message.uint()?;
@@ -9722,7 +10245,8 @@ pub mod text {
                                 button,
                                 index
                             );
-                            self.invoke_action(client, sender_id, button, index).await
+                            let result = self.invoke_action(client, sender_id, button, index).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -9734,6 +10258,7 @@ pub mod text {
             #[doc = "activation. The surface argument is a wl_surface assigned to the"]
             #[doc = "text-input object and tracked for focus lost. The enter event"]
             #[doc = "is emitted on successful activation."]
+            #[allow(unused)]
             fn activate(
                 &self,
                 client: &mut crate::server::Client,
@@ -9744,6 +10269,7 @@ pub mod text {
             #[doc = "Requests the text-input object to be deactivated (typically when the"]
             #[doc = "text entry lost focus). The seat argument is a wl_seat which was used"]
             #[doc = "for activation."]
+            #[allow(unused)]
             fn deactivate(
                 &self,
                 client: &mut crate::server::Client,
@@ -9751,12 +10277,14 @@ pub mod text {
                 seat: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to show."]
+            #[allow(unused)]
             fn show_input_panel(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to hide."]
+            #[allow(unused)]
             fn hide_input_panel(
                 &self,
                 client: &mut crate::server::Client,
@@ -9765,6 +10293,7 @@ pub mod text {
             #[doc = "Should be called by an editor widget when the input state should be"]
             #[doc = "reset, for example after the text was changed outside of the normal"]
             #[doc = "input method flow."]
+            #[allow(unused)]
             fn reset(
                 &self,
                 client: &mut crate::server::Client,
@@ -9775,6 +10304,7 @@ pub mod text {
             #[doc = "surrounding text. Anchor is the byte offset of the"]
             #[doc = "selection anchor within the surrounding text. If there is no selected"]
             #[doc = "text anchor is the same as cursor."]
+            #[allow(unused)]
             fn set_surrounding_text(
                 &self,
                 client: &mut crate::server::Client,
@@ -9790,6 +10320,7 @@ pub mod text {
             #[doc = "When no content type is explicitly set, a normal content purpose with"]
             #[doc = "default hints (auto completion, auto correction, auto capitalization)"]
             #[doc = "should be assumed."]
+            #[allow(unused)]
             fn set_content_type(
                 &self,
                 client: &mut crate::server::Client,
@@ -9797,6 +10328,7 @@ pub mod text {
                 hint: u32,
                 purpose: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn set_cursor_rectangle(
                 &self,
                 client: &mut crate::server::Client,
@@ -9813,18 +10345,21 @@ pub mod text {
             #[doc = "It could be used for example in a word processor to indicate language of"]
             #[doc = "currently edited document or in an instant message application which tracks"]
             #[doc = "languages of contacts."]
+            #[allow(unused)]
             fn set_preferred_language(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 language: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn commit_state(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn invoke_action(
                 &self,
                 client: &mut crate::server::Client,
@@ -10214,13 +10749,15 @@ pub mod text {
                                 sender_id,
                                 id
                             );
-                            self.create_text_input(client, sender_id, id).await
+                            let result = self.create_text_input(client, sender_id, id).await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
             #[doc = "Creates a new text-input object."]
+            #[allow(unused)]
             fn create_text_input(
                 &self,
                 client: &mut crate::server::Client,
@@ -10326,13 +10863,15 @@ pub mod wl_eglstream_controller {
                                 wl_surface,
                                 wl_resource
                             );
-                            self.attach_eglstream_consumer(
-                                client,
-                                sender_id,
-                                wl_surface,
-                                wl_resource,
-                            )
-                            .await
+                            let result = self
+                                .attach_eglstream_consumer(
+                                    client,
+                                    sender_id,
+                                    wl_surface,
+                                    wl_resource,
+                                )
+                                .await;
+                            result
                         }
                         1u16 => {
                             let wl_surface = message
@@ -10349,14 +10888,16 @@ pub mod wl_eglstream_controller {
                                 wl_resource,
                                 attribs.len()
                             );
-                            self.attach_eglstream_consumer_attribs(
-                                client,
-                                sender_id,
-                                wl_surface,
-                                wl_resource,
-                                attribs,
-                            )
-                            .await
+                            let result = self
+                                .attach_eglstream_consumer_attribs(
+                                    client,
+                                    sender_id,
+                                    wl_surface,
+                                    wl_resource,
+                                    attribs,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -10364,6 +10905,7 @@ pub mod wl_eglstream_controller {
             }
             #[doc = "Creates the corresponding server side EGLStream from the given wl_buffer"]
             #[doc = "and attaches a consumer to it."]
+            #[allow(unused)]
             fn attach_eglstream_consumer(
                 &self,
                 client: &mut crate::server::Client,
@@ -10373,6 +10915,7 @@ pub mod wl_eglstream_controller {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Creates the corresponding server side EGLStream from the given wl_buffer"]
             #[doc = "and attaches a consumer to it using the given attributes."]
+            #[allow(unused)]
             fn attach_eglstream_consumer_attribs(
                 &self,
                 client: &mut crate::server::Client,
@@ -10449,8 +10992,10 @@ pub mod zkde_screencast_unstable_v1 {
                                 output,
                                 pointer
                             );
-                            self.stream_output(client, sender_id, stream, output, pointer)
-                                .await
+                            let result = self
+                                .stream_output(client, sender_id, stream, output, pointer)
+                                .await;
+                            result
                         }
                         1u16 => {
                             let stream = message
@@ -10467,12 +11012,16 @@ pub mod zkde_screencast_unstable_v1 {
                                 window_uuid,
                                 pointer
                             );
-                            self.stream_window(client, sender_id, stream, window_uuid, pointer)
-                                .await
+                            let result = self
+                                .stream_window(client, sender_id, stream, window_uuid, pointer)
+                                .await;
+                            result
                         }
                         2u16 => {
                             tracing::debug!("zkde_screencast_unstable_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         3u16 => {
                             let stream = message
@@ -10495,10 +11044,12 @@ pub mod zkde_screencast_unstable_v1 {
                                 scale,
                                 pointer
                             );
-                            self.stream_virtual_output(
-                                client, sender_id, stream, name, width, height, scale, pointer,
-                            )
-                            .await
+                            let result = self
+                                .stream_virtual_output(
+                                    client, sender_id, stream, name, width, height, scale, pointer,
+                                )
+                                .await;
+                            result
                         }
                         4u16 => {
                             let stream = message
@@ -10521,10 +11072,12 @@ pub mod zkde_screencast_unstable_v1 {
                                 scale,
                                 pointer
                             );
-                            self.stream_region(
-                                client, sender_id, stream, x, y, width, height, scale, pointer,
-                            )
-                            .await
+                            let result = self
+                                .stream_region(
+                                    client, sender_id, stream, x, y, width, height, scale, pointer,
+                                )
+                                .await;
+                            result
                         }
                         5u16 => {
                             let stream = message
@@ -10551,23 +11104,26 @@ pub mod zkde_screencast_unstable_v1 {
                                 scale,
                                 pointer
                             );
-                            self.stream_virtual_output_with_description(
-                                client,
-                                sender_id,
-                                stream,
-                                name,
-                                description,
-                                width,
-                                height,
-                                scale,
-                                pointer,
-                            )
-                            .await
+                            let result = self
+                                .stream_virtual_output_with_description(
+                                    client,
+                                    sender_id,
+                                    stream,
+                                    name,
+                                    description,
+                                    width,
+                                    height,
+                                    scale,
+                                    pointer,
+                                )
+                                .await;
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn stream_output(
                 &self,
                 client: &mut crate::server::Client,
@@ -10576,6 +11132,7 @@ pub mod zkde_screencast_unstable_v1 {
                 output: crate::wire::ObjectId,
                 pointer: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn stream_window(
                 &self,
                 client: &mut crate::server::Client,
@@ -10585,11 +11142,15 @@ pub mod zkde_screencast_unstable_v1 {
                 pointer: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the zkde_screencast_unstable_v1 object."]
+            #[allow(unused)]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
+            #[allow(unused)]
             fn stream_virtual_output(
                 &self,
                 client: &mut crate::server::Client,
@@ -10601,6 +11162,7 @@ pub mod zkde_screencast_unstable_v1 {
                 scale: crate::wire::Fixed,
                 pointer: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn stream_region(
                 &self,
                 client: &mut crate::server::Client,
@@ -10613,6 +11175,7 @@ pub mod zkde_screencast_unstable_v1 {
                 scale: crate::wire::Fixed,
                 pointer: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[allow(unused)]
             fn stream_virtual_output_with_description(
                 &self,
                 client: &mut crate::server::Client,
@@ -10649,17 +11212,22 @@ pub mod zkde_screencast_unstable_v1 {
                                 "zkde_screencast_stream_unstable_v1#{}.close()",
                                 sender_id,
                             );
-                            self.close(client, sender_id).await
+                            let result = self.close(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
                 }
             }
+            #[allow(unused)]
             fn close(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move { Ok(()) }
+            }
             fn closed(
                 &self,
                 client: &mut crate::server::Client,
