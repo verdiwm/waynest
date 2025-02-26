@@ -30,10 +30,10 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
             let name = &interface.name;
             let version = &interface.version;
 
-            let dispatchers = write_dispatchers(&interface);
-            let requests = write_requests(pairs, pair, &interface);
-            let events = write_events(pairs, pair, &interface);
-            let enums = write_enums(&interface);
+            let dispatchers = write_dispatchers(interface);
+            let requests = write_requests(pairs, pair, interface);
+            let events = write_events(pairs, pair, interface);
+            let enums = write_enums(interface);
 
             let handler_args = if dispatchers.is_empty() {
                 quote! {
@@ -104,7 +104,7 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
 
     for (opcode, request) in interface.requests.iter().enumerate() {
         let opcode = opcode as u16;
-        let name = make_ident(&request.name.to_snek_case());
+        let name = make_ident(request.name.to_snek_case());
 
         let mut tracing_fmt = Vec::new();
         let mut tracing_args = Vec::new();
@@ -222,17 +222,13 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
         let docs = description_to_docs(event.description.as_ref());
         let name = make_ident(event.name.to_snek_case());
 
-        let mut args = vec![
-            quote! {&self },
-            quote! {client: &mut crate::server::Client},
-            quote! {sender_id: crate::wire::ObjectId},
-        ];
+        let mut args = vec![quote! {&self }, quote! {sender_id: crate::wire::ObjectId}];
 
         let mut tracing_fmt = Vec::new();
         let mut tracing_args = Vec::new();
 
         for arg in &event.args {
-            let mut ty = arg.to_rust_type_token(arg.find_protocol(&pairs).as_ref().unwrap_or(pair));
+            let mut ty = arg.to_rust_type_token(arg.find_protocol(pairs).as_ref().unwrap_or(pair));
 
             let mut map_display = quote! {};
 
@@ -319,19 +315,14 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
 
         events.push(quote! {
             #(#docs)*
-            fn #name(#(#args),*) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
+            #[must_use]
+            fn #name(#(#args),*) -> crate::wire::Message {
                     tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
 
-                    let (payload,fds) = crate::wire::PayloadBuilder::new()
-                        #(#build_args)*
-                        .build();
-
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, #opcode, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+                let (payload,fds) = crate::wire::PayloadBuilder::new()
+                    #(#build_args)*
+                    .build();
+                crate::wire::Message::new(sender_id, #opcode, payload, fds)
             }
         });
     }

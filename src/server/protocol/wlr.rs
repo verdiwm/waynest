@@ -205,26 +205,21 @@ pub mod wlr_data_control_unstable_v1 {
             #[doc = "wlr_data_control_device.data_offer event, the new data_offer object"]
             #[doc = "will send out wlr_data_control_offer.offer events to describe the MIME"]
             #[doc = "types it offers."]
+            #[must_use]
             fn data_offer(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_data_control_device_v1#{}.data_offer({})",
-                        sender_id,
-                        id
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(id))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_data_control_device_v1#{}.data_offer({})",
+                    sender_id,
+                    id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "The selection event is sent out to notify the client of a new"]
             #[doc = "wlr_data_control_offer for the selection for this device. The"]
@@ -238,40 +233,27 @@ pub mod wlr_data_control_unstable_v1 {
             #[doc = ""]
             #[doc = "The first selection event is sent upon binding the"]
             #[doc = "wlr_data_control_device object."]
+            #[must_use]
             fn selection(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: Option<crate::wire::ObjectId>,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_data_control_device_v1#{}.selection({})",
-                        sender_id,
-                        id.as_ref().map_or("null".to_string(), |v| v.to_string())
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_data_control_device_v1#{}.selection({})",
+                    sender_id,
+                    id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This data control object is no longer valid and should be destroyed by"]
             #[doc = "the client."]
-            fn finished(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_data_control_device_v1#{}.finished()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn finished(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_data_control_device_v1#{}.finished()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "The primary_selection event is sent out to notify the client of a new"]
             #[doc = "wlr_data_control_offer for the primary selection for this device. The"]
@@ -286,24 +268,19 @@ pub mod wlr_data_control_unstable_v1 {
             #[doc = "If the compositor supports primary selection, the first"]
             #[doc = "primary_selection event is sent upon binding the"]
             #[doc = "wlr_data_control_device object."]
+            #[must_use]
             fn primary_selection(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: Option<crate::wire::ObjectId>,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_data_control_device_v1#{}.primary_selection({})",
-                        sender_id,
-                        id.as_ref().map_or("null".to_string(), |v| v.to_string())
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_data_control_device_v1#{}.primary_selection({})",
+                    sender_id,
+                    id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
         }
     }
@@ -387,47 +364,34 @@ pub mod wlr_data_control_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request for data from the client. Send the data as the specified MIME"]
             #[doc = "type over the passed file descriptor, then close it."]
+            #[must_use]
             fn send(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_data_control_source_v1#{}.send(\"{}\", {})",
-                        sender_id,
-                        mime_type,
-                        fd.as_raw_fd()
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(mime_type))
-                        .put_fd(fd)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_data_control_source_v1#{}.send(\"{}\", {})",
+                    sender_id,
+                    mime_type,
+                    fd.as_raw_fd()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(mime_type))
+                    .put_fd(fd)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This data source is no longer valid. The data source has been replaced"]
             #[doc = "by another data source."]
             #[doc = ""]
             #[doc = "The client should clean up and destroy this data source."]
-            fn cancelled(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_data_control_source_v1#{}.cancelled()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn cancelled(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_data_control_source_v1#{}.cancelled()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -498,26 +462,21 @@ pub mod wlr_data_control_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent immediately after creating the wlr_data_control_offer object."]
             #[doc = "One event per offered MIME type."]
+            #[must_use]
             fn offer(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_data_control_offer_v1#{}.offer(\"{}\")",
-                        sender_id,
-                        mime_type
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(mime_type))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_data_control_offer_v1#{}.offer(\"{}\")",
+                    sender_id,
+                    mime_type
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(mime_type))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
         }
     }
@@ -704,9 +663,9 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             #[doc = ""]
             #[doc = "This event is followed by a number of \"object\" as specified by the"]
             #[doc = "\"num_objects\" argument."]
+            #[must_use]
             fn frame(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 width: u32,
                 height: u32,
@@ -718,48 +677,43 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 mod_high: u32,
                 mod_low: u32,
                 num_objects: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_export_dmabuf_frame_v1#{}.frame({}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
-                        sender_id,
-                        width,
-                        height,
-                        offset_x,
-                        offset_y,
-                        buffer_flags,
-                        flags,
-                        format,
-                        mod_high,
-                        mod_low,
-                        num_objects
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(width)
-                        .put_uint(height)
-                        .put_uint(offset_x)
-                        .put_uint(offset_y)
-                        .put_uint(buffer_flags)
-                        .put_uint(flags as u32)
-                        .put_uint(format)
-                        .put_uint(mod_high)
-                        .put_uint(mod_low)
-                        .put_uint(num_objects)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_export_dmabuf_frame_v1#{}.frame({}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                    sender_id,
+                    width,
+                    height,
+                    offset_x,
+                    offset_y,
+                    buffer_flags,
+                    flags,
+                    format,
+                    mod_high,
+                    mod_low,
+                    num_objects
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(width)
+                    .put_uint(height)
+                    .put_uint(offset_x)
+                    .put_uint(offset_y)
+                    .put_uint(buffer_flags)
+                    .put_uint(flags as u32)
+                    .put_uint(format)
+                    .put_uint(mod_high)
+                    .put_uint(mod_low)
+                    .put_uint(num_objects)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "Event which serves to supply the client with the file descriptors"]
             #[doc = "containing the data for each object."]
             #[doc = ""]
             #[doc = "After receiving this event, the client must always close the file"]
             #[doc = "descriptor as soon as they're done with it and even if the frame fails."]
+            #[must_use]
             fn object(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 index: u32,
                 fd: rustix::fd::OwnedFd,
@@ -767,31 +721,26 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 offset: u32,
                 stride: u32,
                 plane_index: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_export_dmabuf_frame_v1#{}.object({}, {}, {}, {}, {}, {})",
-                        sender_id,
-                        index,
-                        fd.as_raw_fd(),
-                        size,
-                        offset,
-                        stride,
-                        plane_index
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(index)
-                        .put_fd(fd)
-                        .put_uint(size)
-                        .put_uint(offset)
-                        .put_uint(stride)
-                        .put_uint(plane_index)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_export_dmabuf_frame_v1#{}.object({}, {}, {}, {}, {}, {})",
+                    sender_id,
+                    index,
+                    fd.as_raw_fd(),
+                    size,
+                    offset,
+                    stride,
+                    plane_index
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(index)
+                    .put_fd(fd)
+                    .put_uint(size)
+                    .put_uint(offset)
+                    .put_uint(stride)
+                    .put_uint(plane_index)
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This event is sent as soon as the frame is presented, indicating it is"]
             #[doc = "available for reading. This event includes the time at which"]
@@ -805,32 +754,27 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             #[doc = "may have an arbitrary offset at start."]
             #[doc = ""]
             #[doc = "After receiving this event, the client should destroy this object."]
+            #[must_use]
             fn ready(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_export_dmabuf_frame_v1#{}.ready({}, {}, {})",
-                        sender_id,
-                        tv_sec_hi,
-                        tv_sec_lo,
-                        tv_nsec
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(tv_sec_hi)
-                        .put_uint(tv_sec_lo)
-                        .put_uint(tv_nsec)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_export_dmabuf_frame_v1#{}.ready({}, {}, {})",
+                    sender_id,
+                    tv_sec_hi,
+                    tv_sec_lo,
+                    tv_nsec
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(tv_sec_hi)
+                    .put_uint(tv_sec_lo)
+                    .put_uint(tv_nsec)
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "If the capture failed or if the frame is no longer valid after the"]
             #[doc = "\"frame\" event has been emitted, this event will be used to inform the"]
@@ -841,26 +785,21 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             #[doc = "same source will fail again."]
             #[doc = ""]
             #[doc = "After receiving this event, the client should destroy this object."]
+            #[must_use]
             fn cancel(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 reason: CancelReason,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_export_dmabuf_frame_v1#{}.cancel({})",
-                        sender_id,
-                        reason
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(reason as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_export_dmabuf_frame_v1#{}.cancel({})",
+                    sender_id,
+                    reason
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(reason as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
         }
     }
@@ -918,47 +857,34 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             #[doc = "All initial details of the toplevel(title, app_id, states, etc.) will"]
             #[doc = "be sent immediately after this event via the corresponding events in"]
             #[doc = "zwlr_foreign_toplevel_handle_v1."]
+            #[must_use]
             fn toplevel(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_foreign_toplevel_manager_v1#{}.toplevel({})",
-                        sender_id,
-                        toplevel
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(toplevel))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_foreign_toplevel_manager_v1#{}.toplevel({})",
+                    sender_id,
+                    toplevel
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(toplevel))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event indicates that the compositor is done sending events to the"]
             #[doc = "zwlr_foreign_toplevel_manager_v1. The server will destroy the object"]
             #[doc = "immediately after sending this request, so it will become invalid and"]
             #[doc = "the client should free any resources associated with it."]
-            fn finished(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_foreign_toplevel_manager_v1#{}.finished()",
-                        sender_id,
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn finished(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_foreign_toplevel_manager_v1#{}.finished()",
+                    sender_id,
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -1232,181 +1158,134 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is emitted whenever the title of the toplevel changes."]
+            #[must_use]
             fn title(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 title: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_foreign_toplevel_handle_v1#{}.title(\"{}\")",
-                        sender_id,
-                        title
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(title))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.title(\"{}\")",
+                    sender_id,
+                    title
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(title))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event is emitted whenever the app-id of the toplevel changes."]
+            #[must_use]
             fn app_id(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 app_id: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_foreign_toplevel_handle_v1#{}.app_id(\"{}\")",
-                        sender_id,
-                        app_id
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(app_id))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.app_id(\"{}\")",
+                    sender_id,
+                    app_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(app_id))
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This event is emitted whenever the toplevel becomes visible on"]
             #[doc = "the given output. A toplevel may be visible on multiple outputs."]
+            #[must_use]
             fn output_enter(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_foreign_toplevel_handle_v1#{}.output_enter({})",
-                        sender_id,
-                        output
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(output))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.output_enter({})",
+                    sender_id,
+                    output
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "This event is emitted whenever the toplevel stops being visible on"]
             #[doc = "the given output. It is guaranteed that an entered-output event"]
             #[doc = "with the same output has been emitted before this event."]
+            #[must_use]
             fn output_leave(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_foreign_toplevel_handle_v1#{}.output_leave({})",
-                        sender_id,
-                        output
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(output))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.output_leave({})",
+                    sender_id,
+                    output
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(output))
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "This event is emitted immediately after the zlw_foreign_toplevel_handle_v1"]
             #[doc = "is created and each time the toplevel state changes, either because of a"]
             #[doc = "compositor action or because of a request in this protocol."]
+            #[must_use]
             fn state(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state: Vec<u8>,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_foreign_toplevel_handle_v1#{}.state(array[{}])",
-                        sender_id,
-                        state.len()
-                    );
-                    let (payload, fds) =
-                        crate::wire::PayloadBuilder::new().put_array(state).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.state(array[{}])",
+                    sender_id,
+                    state.len()
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(state).build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
             #[doc = "This event is sent after all changes in the toplevel state have been"]
             #[doc = "sent."]
             #[doc = ""]
             #[doc = "This allows changes to the zwlr_foreign_toplevel_handle_v1 properties"]
             #[doc = "to be seen as atomic, even if they happen via multiple events."]
-            fn done(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.done()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn done(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.done()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 5u16, payload, fds)
             }
             #[doc = "This event means the toplevel has been destroyed. It is guaranteed there"]
             #[doc = "won't be any more events for this zwlr_foreign_toplevel_handle_v1. The"]
             #[doc = "toplevel itself becomes inert so any requests will be ignored except the"]
             #[doc = "destroy request."]
-            fn closed(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.closed()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn closed(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_foreign_toplevel_handle_v1#{}.closed()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 6u16, payload, fds)
             }
             #[doc = "This event is emitted whenever the parent of the toplevel changes."]
             #[doc = ""]
             #[doc = "No event is emitted when the parent handle is destroyed by the client."]
+            #[must_use]
             fn parent(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 parent: Option<crate::wire::ObjectId>,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_foreign_toplevel_handle_v1#{}.parent({})",
-                        sender_id,
-                        parent
-                            .as_ref()
-                            .map_or("null".to_string(), |v| v.to_string())
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(parent)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_foreign_toplevel_handle_v1#{}.parent({})",
+                    sender_id,
+                    parent
+                        .as_ref()
+                        .map_or("null".to_string(), |v| v.to_string())
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(parent)
+                    .build();
+                crate::wire::Message::new(sender_id, 7u16, payload, fds)
             }
         }
     }
@@ -1575,24 +1454,19 @@ pub mod wlr_gamma_control_unstable_v1 {
             #[doc = "Advertise the size of each gamma ramp."]
             #[doc = ""]
             #[doc = "This event is sent immediately when the gamma control object is created."]
+            #[must_use]
             fn gamma_size(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 size: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_gamma_control_v1#{}.gamma_size({})",
-                        sender_id,
-                        size
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(size).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_gamma_control_v1#{}.gamma_size({})",
+                    sender_id,
+                    size
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(size).build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event indicates that the gamma control is no longer valid. This"]
             #[doc = "can happen for a number of reasons, including:"]
@@ -1602,19 +1476,11 @@ pub mod wlr_gamma_control_unstable_v1 {
             #[doc = "- The compositor has transferred gamma control to another client"]
             #[doc = ""]
             #[doc = "Upon receiving this event, the client should destroy this object."]
-            fn failed(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_gamma_control_v1#{}.failed()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn failed(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_gamma_control_v1#{}.failed()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -2299,51 +2165,38 @@ pub mod wlr_layer_shell_unstable_v1 {
             #[doc = ""]
             #[doc = "If the width or height arguments are zero, it means the client should"]
             #[doc = "decide its own window dimension."]
+            #[must_use]
             fn configure(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_layer_surface_v1#{}.configure({}, {}, {})",
-                        sender_id,
-                        serial,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(serial)
-                        .put_uint(width)
-                        .put_uint(height)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_layer_surface_v1#{}.configure({}, {}, {})",
+                    sender_id,
+                    serial,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(serial)
+                    .put_uint(width)
+                    .put_uint(height)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "The closed event is sent by the compositor when the surface will no"]
             #[doc = "longer be shown. The output may have been destroyed or the user may"]
             #[doc = "have asked for it to be removed. Further changes to the surface will be"]
             #[doc = "ignored. The client should destroy the resource after receiving this"]
             #[doc = "event, and create a new surface if they so choose."]
-            fn closed(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_layer_surface_v1#{}.closed()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn closed(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_layer_surface_v1#{}.closed()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -2449,22 +2302,17 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "This event introduces a new head. This happens whenever a new head"]
             #[doc = "appears (e.g. a monitor is plugged in) or after the output manager is"]
             #[doc = "bound."]
+            #[must_use]
             fn head(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 head: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_manager_v1#{}.head({})", sender_id, head);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(head))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_manager_v1#{}.head({})", sender_id, head);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(head))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event is sent after all information has been sent after binding to"]
             #[doc = "the output manager object and after any subsequent changes. This applies"]
@@ -2477,39 +2325,21 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "even if they happen via multiple events."]
             #[doc = ""]
             #[doc = "A serial is sent to be used in a future create_configuration request."]
-            fn done(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                serial: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_manager_v1#{}.done({})", sender_id, serial);
-                    let (payload, fds) =
-                        crate::wire::PayloadBuilder::new().put_uint(serial).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn done(&self, sender_id: crate::wire::ObjectId, serial: u32) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_manager_v1#{}.done({})", sender_id, serial);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This event indicates that the compositor is done sending manager events."]
             #[doc = "The compositor will destroy the object immediately after sending this"]
             #[doc = "event, so it will become invalid and the client should release any"]
             #[doc = "resources associated with it."]
-            fn finished(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_manager_v1#{}.finished()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn finished(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_manager_v1#{}.finished()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
         }
     }
@@ -2600,22 +2430,13 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "The name event is sent after a wlr_output_head object is created. This"]
             #[doc = "event is only sent once per object, and the name does not change over"]
             #[doc = "the lifetime of the wlr_output_head object."]
-            fn name(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                name: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_head_v1#{}.name(\"{}\")", sender_id, name);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(name))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn name(&self, sender_id: crate::wire::ObjectId, name: String) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_head_v1#{}.name(\"{}\")", sender_id, name);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(name))
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event describes a human-readable description of the head."]
             #[doc = ""]
@@ -2631,26 +2452,21 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "The description event is sent after a wlr_output_head object is created."]
             #[doc = "This event is only sent once per object, and the description does not"]
             #[doc = "change over the lifetime of the wlr_output_head object."]
+            #[must_use]
             fn description(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 description: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_output_head_v1#{}.description(\"{}\")",
-                        sender_id,
-                        description
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(description))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_output_head_v1#{}.description(\"{}\")",
+                    sender_id,
+                    description
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(description))
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This event describes the physical size of the head. This event is only"]
             #[doc = "sent if the head has a physical size (e.g. is not a projector or a"]
@@ -2659,176 +2475,131 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "The physical size event is sent after a wlr_output_head object is created. This"]
             #[doc = "event is only sent once per object, and the physical size does not change over"]
             #[doc = "the lifetime of the wlr_output_head object."]
+            #[must_use]
             fn physical_size(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_output_head_v1#{}.physical_size({}, {})",
-                        sender_id,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_int(width)
-                        .put_int(height)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_output_head_v1#{}.physical_size({}, {})",
+                    sender_id,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "This event introduces a mode for this head. It is sent once per"]
             #[doc = "supported mode."]
+            #[must_use]
             fn mode(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mode: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_head_v1#{}.mode({})", sender_id, mode);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(mode))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_head_v1#{}.mode({})", sender_id, mode);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(mode))
+                    .build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "This event describes whether the head is enabled. A disabled head is not"]
             #[doc = "mapped to a region of the global compositor space."]
             #[doc = ""]
             #[doc = "When a head is disabled, some properties (current_mode, position,"]
             #[doc = "transform and scale) are irrelevant."]
+            #[must_use]
             fn enabled(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 enabled: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_head_v1#{}.enabled({})", sender_id, enabled);
-                    let (payload, fds) =
-                        crate::wire::PayloadBuilder::new().put_int(enabled).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_head_v1#{}.enabled({})", sender_id, enabled);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(enabled).build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
             #[doc = "This event describes the mode currently in use for this head. It is only"]
             #[doc = "sent if the output is enabled."]
+            #[must_use]
             fn current_mode(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mode: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_output_head_v1#{}.current_mode({})",
-                        sender_id,
-                        mode
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_object(Some(mode))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_output_head_v1#{}.current_mode({})",
+                    sender_id,
+                    mode
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(mode))
+                    .build();
+                crate::wire::Message::new(sender_id, 5u16, payload, fds)
             }
             #[doc = "This events describes the position of the head in the global compositor"]
             #[doc = "space. It is only sent if the output is enabled."]
+            #[must_use]
             fn position(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_output_head_v1#{}.position({}, {})",
-                        sender_id,
-                        x,
-                        y
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_int(x)
-                        .put_int(y)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_output_head_v1#{}.position({}, {})",
+                    sender_id,
+                    x,
+                    y
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(x)
+                    .put_int(y)
+                    .build();
+                crate::wire::Message::new(sender_id, 6u16, payload, fds)
             }
             #[doc = "This event describes the transformation currently applied to the head."]
             #[doc = "It is only sent if the output is enabled."]
+            #[must_use]
             fn transform(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_output_head_v1#{}.transform({})",
-                        sender_id,
-                        transform
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(transform as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_output_head_v1#{}.transform({})",
+                    sender_id,
+                    transform
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(transform as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 7u16, payload, fds)
             }
             #[doc = "This events describes the scale of the head in the global compositor"]
             #[doc = "space. It is only sent if the output is enabled."]
+            #[must_use]
             fn scale(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 scale: crate::wire::Fixed,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_head_v1#{}.scale({})", sender_id, scale);
-                    let (payload, fds) =
-                        crate::wire::PayloadBuilder::new().put_fixed(scale).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_head_v1#{}.scale({})", sender_id, scale);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_fixed(scale).build();
+                crate::wire::Message::new(sender_id, 8u16, payload, fds)
             }
             #[doc = "This event indicates that the head is no longer available. The head"]
             #[doc = "object becomes inert. Clients should send a destroy request and release"]
             #[doc = "any resources associated with it."]
-            fn finished(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_head_v1#{}.finished()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn finished(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_head_v1#{}.finished()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 9u16, payload, fds)
             }
             #[doc = "This event describes the manufacturer of the head."]
             #[doc = ""]
@@ -2852,22 +2623,13 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = ""]
             #[doc = "It is not recommended to display the make string in UI to users. For"]
             #[doc = "that the string provided by the description event should be preferred."]
-            fn make(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                make: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_head_v1#{}.make(\"{}\")", sender_id, make);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(make))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn make(&self, sender_id: crate::wire::ObjectId, make: String) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_head_v1#{}.make(\"{}\")", sender_id, make);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(make))
+                    .build();
+                crate::wire::Message::new(sender_id, 10u16, payload, fds)
             }
             #[doc = "This event describes the model of the head."]
             #[doc = ""]
@@ -2891,22 +2653,17 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = ""]
             #[doc = "It is not recommended to display the model string in UI to users. For"]
             #[doc = "that the string provided by the description event should be preferred."]
+            #[must_use]
             fn model(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 model: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_head_v1#{}.model(\"{}\")", sender_id, model);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(model))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 11u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_head_v1#{}.model(\"{}\")", sender_id, model);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(model))
+                    .build();
+                crate::wire::Message::new(sender_id, 11u16, payload, fds)
             }
             #[doc = "This event describes the serial number of the head."]
             #[doc = ""]
@@ -2928,50 +2685,40 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "It is not recommended to display the serial_number string in UI to"]
             #[doc = "users. For that the string provided by the description event should be"]
             #[doc = "preferred."]
+            #[must_use]
             fn serial_number(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 serial_number: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_output_head_v1#{}.serial_number(\"{}\")",
-                        sender_id,
-                        serial_number
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(serial_number))
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 12u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_output_head_v1#{}.serial_number(\"{}\")",
+                    sender_id,
+                    serial_number
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_string(Some(serial_number))
+                    .build();
+                crate::wire::Message::new(sender_id, 12u16, payload, fds)
             }
             #[doc = "This event describes whether adaptive sync is currently enabled for"]
             #[doc = "the head or not. Adaptive sync is also known as Variable Refresh"]
             #[doc = "Rate or VRR."]
+            #[must_use]
             fn adaptive_sync(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state: AdaptiveSyncState,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_output_head_v1#{}.adaptive_sync({})",
-                        sender_id,
-                        state
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(state as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 13u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_output_head_v1#{}.adaptive_sync({})",
+                    sender_id,
+                    state
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(state as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 13u16, payload, fds)
             }
         }
     }
@@ -3019,79 +2766,52 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "hardware units of the output device. This is not necessarily the same as"]
             #[doc = "the output size in the global compositor space. For instance, the output"]
             #[doc = "may be scaled or transformed."]
+            #[must_use]
             fn size(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_output_mode_v1#{}.size({}, {})",
-                        sender_id,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_int(width)
-                        .put_int(height)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_output_mode_v1#{}.size({}, {})",
+                    sender_id,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_int(width)
+                    .put_int(height)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event describes the mode's fixed vertical refresh rate. It is only"]
             #[doc = "sent if the mode has a fixed refresh rate."]
+            #[must_use]
             fn refresh(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 refresh: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_mode_v1#{}.refresh({})", sender_id, refresh);
-                    let (payload, fds) =
-                        crate::wire::PayloadBuilder::new().put_int(refresh).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_mode_v1#{}.refresh({})", sender_id, refresh);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(refresh).build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "This event advertises this mode as preferred."]
-            fn preferred(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_mode_v1#{}.preferred()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn preferred(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_mode_v1#{}.preferred()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "This event indicates that the mode is no longer available. The mode"]
             #[doc = "object becomes inert. Clients should send a destroy request and release"]
             #[doc = "any resources associated with it."]
-            fn finished(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_mode_v1#{}.finished()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn finished(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_mode_v1#{}.finished()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
         }
     }
@@ -3254,38 +2974,22 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = ""]
             #[doc = "If the current configuration has changed, events to describe the changes"]
             #[doc = "will be sent followed by a wlr_output_manager.done event."]
-            fn succeeded(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_configuration_v1#{}.succeeded()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn succeeded(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_configuration_v1#{}.succeeded()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "Sent if the compositor rejects the changes or failed to apply them. The"]
             #[doc = "compositor should revert any changes made by the apply request that"]
             #[doc = "triggered this event."]
             #[doc = ""]
             #[doc = "Upon receiving this event, the client should destroy this object."]
-            fn failed(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_configuration_v1#{}.failed()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn failed(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_configuration_v1#{}.failed()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "Sent if the compositor cancels the configuration because the state of an"]
             #[doc = "output changed and the client has outdated information (e.g. after an"]
@@ -3295,19 +2999,11 @@ pub mod wlr_output_management_unstable_v1 {
             #[doc = "again."]
             #[doc = ""]
             #[doc = "Upon receiving this event, the client should destroy this object."]
-            fn cancelled(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_configuration_v1#{}.cancelled()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn cancelled(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_configuration_v1#{}.cancelled()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
         }
     }
@@ -3670,22 +3366,13 @@ pub mod wlr_output_power_management_unstable_v1 {
             #[doc = "compositor deciding to change an output's mode."]
             #[doc = "This event is also sent immediately when the object is created"]
             #[doc = "so the client is informed about the current power management mode."]
-            fn mode(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                mode: Mode,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_power_v1#{}.mode({})", sender_id, mode);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(mode as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn mode(&self, sender_id: crate::wire::ObjectId, mode: Mode) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_power_v1#{}.mode({})", sender_id, mode);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(mode as u32)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "This event indicates that the output power management mode control"]
             #[doc = "is no longer valid. This can happen for a number of reasons,"]
@@ -3696,19 +3383,11 @@ pub mod wlr_output_power_management_unstable_v1 {
             #[doc = "- The output disappeared"]
             #[doc = ""]
             #[doc = "Upon receiving this event, the client should destroy this object."]
-            fn failed(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_output_power_v1#{}.failed()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn failed(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_output_power_v1#{}.failed()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
         }
     }
@@ -3970,54 +3649,44 @@ pub mod wlr_screencopy_unstable_v1 {
             #[doc = "Provides information about wl_shm buffer parameters that need to be"]
             #[doc = "used for this frame. This event is sent once after the frame is created"]
             #[doc = "if wl_shm buffers are supported."]
+            #[must_use]
             fn buffer(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 format: super::super::super::core::wayland::wl_shm::Format,
                 width: u32,
                 height: u32,
                 stride: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_screencopy_frame_v1#{}.buffer({}, {}, {}, {})",
-                        sender_id,
-                        format,
-                        width,
-                        height,
-                        stride
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(format as u32)
-                        .put_uint(width)
-                        .put_uint(height)
-                        .put_uint(stride)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_screencopy_frame_v1#{}.buffer({}, {}, {}, {})",
+                    sender_id,
+                    format,
+                    width,
+                    height,
+                    stride
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(format as u32)
+                    .put_uint(width)
+                    .put_uint(height)
+                    .put_uint(stride)
+                    .build();
+                crate::wire::Message::new(sender_id, 0u16, payload, fds)
             }
             #[doc = "Provides flags about the frame. This event is sent once before the"]
             #[doc = "\"ready\" event."]
+            #[must_use]
             fn flags(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 flags: Flags,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_screencopy_frame_v1#{}.flags({})", sender_id, flags);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(flags.bits())
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.flags({})", sender_id, flags);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(flags.bits())
+                    .build();
+                crate::wire::Message::new(sender_id, 1u16, payload, fds)
             }
             #[doc = "Called as soon as the frame is copied, indicating it is available"]
             #[doc = "for reading. This event includes the time at which presentation happened"]
@@ -4031,49 +3700,36 @@ pub mod wlr_screencopy_unstable_v1 {
             #[doc = "may have an arbitrary offset at start."]
             #[doc = ""]
             #[doc = "After receiving this event, the client should destroy the object."]
+            #[must_use]
             fn ready(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_screencopy_frame_v1#{}.ready({}, {}, {})",
-                        sender_id,
-                        tv_sec_hi,
-                        tv_sec_lo,
-                        tv_nsec
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(tv_sec_hi)
-                        .put_uint(tv_sec_lo)
-                        .put_uint(tv_nsec)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_screencopy_frame_v1#{}.ready({}, {}, {})",
+                    sender_id,
+                    tv_sec_hi,
+                    tv_sec_lo,
+                    tv_nsec
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(tv_sec_hi)
+                    .put_uint(tv_sec_lo)
+                    .put_uint(tv_nsec)
+                    .build();
+                crate::wire::Message::new(sender_id, 2u16, payload, fds)
             }
             #[doc = "This event indicates that the attempted frame copy has failed."]
             #[doc = ""]
             #[doc = "After receiving this event, the client should destroy the object."]
-            fn failed(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_screencopy_frame_v1#{}.failed()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn failed(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.failed()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 3u16, payload, fds)
             }
             #[doc = "This event is sent right before the ready event when copy_with_damage is"]
             #[doc = "requested. It may be generated multiple times for each copy_with_damage"]
@@ -4085,83 +3741,65 @@ pub mod wlr_screencopy_unstable_v1 {
             #[doc = ""]
             #[doc = "The union of all regions received between the call to copy_with_damage"]
             #[doc = "and a ready event is the total damage since the prior ready event."]
+            #[must_use]
             fn damage(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 x: u32,
                 y: u32,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_screencopy_frame_v1#{}.damage({}, {}, {}, {})",
-                        sender_id,
-                        x,
-                        y,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(x)
-                        .put_uint(y)
-                        .put_uint(width)
-                        .put_uint(height)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_screencopy_frame_v1#{}.damage({}, {}, {}, {})",
+                    sender_id,
+                    x,
+                    y,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(x)
+                    .put_uint(y)
+                    .put_uint(width)
+                    .put_uint(height)
+                    .build();
+                crate::wire::Message::new(sender_id, 4u16, payload, fds)
             }
             #[doc = "Provides information about linux-dmabuf buffer parameters that need to"]
             #[doc = "be used for this frame. This event is sent once after the frame is"]
             #[doc = "created if linux-dmabuf buffers are supported."]
+            #[must_use]
             fn linux_dmabuf(
                 &self,
-                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 format: u32,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zwlr_screencopy_frame_v1#{}.linux_dmabuf({}, {}, {})",
-                        sender_id,
-                        format,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(format)
-                        .put_uint(width)
-                        .put_uint(height)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            ) -> crate::wire::Message {
+                tracing::debug!(
+                    "-> zwlr_screencopy_frame_v1#{}.linux_dmabuf({}, {}, {})",
+                    sender_id,
+                    format,
+                    width,
+                    height
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(format)
+                    .put_uint(width)
+                    .put_uint(height)
+                    .build();
+                crate::wire::Message::new(sender_id, 5u16, payload, fds)
             }
             #[doc = "This event is sent once after all buffer events have been sent."]
             #[doc = ""]
             #[doc = "The client should proceed to create a buffer of one of the supported"]
             #[doc = "types, and send a \"copy\" request."]
-            fn buffer_done(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> zwlr_screencopy_frame_v1#{}.buffer_done()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
+            #[must_use]
+            fn buffer_done(&self, sender_id: crate::wire::ObjectId) -> crate::wire::Message {
+                tracing::debug!("-> zwlr_screencopy_frame_v1#{}.buffer_done()", sender_id,);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                crate::wire::Message::new(sender_id, 6u16, payload, fds)
             }
         }
     }
