@@ -753,7 +753,7 @@ checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 
 [[package]]
 name = "waynest"
-version = "0.0.21"
+version = "0.0.22"
 dependencies = [
  "anyhow",
  "arbitrary",
