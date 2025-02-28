@@ -46,7 +46,17 @@ impl MessageCodec {
         src: &mut BytesMut,
         fds: &mut [RawFd],
     ) -> std::result::Result<Option<Message>, DecodeError> {
-        if src.is_empty() {
+        // Need at least 8 bytes for the header
+        if src.len() < 8 {
+            return Ok(None);
+        }
+
+        // Peek at the header to get the total message length
+        let second = (&src[4..8]).get_u32_ne();
+        let total_len = (second >> 16) as usize;
+
+        // Check if we have the complete message
+        if src.len() < total_len {
             return Ok(None);
         }
 
@@ -367,6 +377,11 @@ impl Socket {
                                 fds.push(fd);
                             }
                         }
+                    }
+
+                    // If we got no bytes and no file descriptors, treat as EOF
+                    if msg.bytes == 0 && fds.is_empty() {
+                        return Poll::Ready(Ok(()));
                     }
 
                     buf.advance(msg.bytes);
