@@ -59,7 +59,9 @@ pub mod wlr_data_control_unstable_v1 {
                         }
                         2u16 => {
                             tracing::debug!("zwlr_data_control_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -143,7 +145,9 @@ pub mod wlr_data_control_unstable_v1 {
                         }
                         1u16 => {
                             tracing::debug!("zwlr_data_control_device_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         2u16 => {
                             let source = message.object()?;
@@ -362,7 +366,9 @@ pub mod wlr_data_control_unstable_v1 {
                         }
                         1u16 => {
                             tracing::debug!("zwlr_data_control_source_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -467,7 +473,9 @@ pub mod wlr_data_control_unstable_v1 {
                         }
                         1u16 => {
                             tracing::debug!("zwlr_data_control_offer_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -575,7 +583,9 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                                 "zwlr_export_dmabuf_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -682,7 +692,9 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwlr_export_dmabuf_frame_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1108,7 +1120,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                                 "zwlr_foreign_toplevel_handle_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         8u16 => {
                             let output = message.object()?;
@@ -1463,7 +1477,9 @@ pub mod wlr_gamma_control_unstable_v1 {
                                 "zwlr_gamma_control_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1546,7 +1562,9 @@ pub mod wlr_gamma_control_unstable_v1 {
                         }
                         1u16 => {
                             tracing::debug!("zwlr_gamma_control_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1719,7 +1737,9 @@ pub mod wlr_input_inhibit_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwlr_input_inhibitor_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -1855,7 +1875,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                         }
                         1u16 => {
                             tracing::debug!("zwlr_layer_shell_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2089,7 +2111,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                         }
                         7u16 => {
                             tracing::debug!("zwlr_layer_surface_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         8u16 => {
                             let layer = message.uint()?;
@@ -2569,7 +2593,9 @@ pub mod wlr_output_management_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwlr_output_head_v1#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3002,7 +3028,9 @@ pub mod wlr_output_management_unstable_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("zwlr_output_mode_v1#{}.release()", sender_id,);
-                            self.release(client, sender_id).await
+                            let result = self.release(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3185,7 +3213,9 @@ pub mod wlr_output_management_unstable_v1 {
                         }
                         4u16 => {
                             tracing::debug!("zwlr_output_configuration_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3543,7 +3573,9 @@ pub mod wlr_output_power_management_unstable_v1 {
                         }
                         1u16 => {
                             tracing::debug!("zwlr_output_power_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3642,7 +3674,9 @@ pub mod wlr_output_power_management_unstable_v1 {
                         }
                         1u16 => {
                             tracing::debug!("zwlr_output_power_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3801,7 +3835,9 @@ pub mod wlr_screencopy_unstable_v1 {
                         }
                         2u16 => {
                             tracing::debug!("zwlr_screencopy_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3924,7 +3960,9 @@ pub mod wlr_screencopy_unstable_v1 {
                         }
                         1u16 => {
                             tracing::debug!("zwlr_screencopy_frame_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         2u16 => {
                             let buffer = message
@@ -4321,7 +4359,9 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                         }
                         8u16 => {
                             tracing::debug!("zwlr_virtual_pointer_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -4448,7 +4488,9 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 "zwlr_virtual_pointer_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         2u16 => {
                             let seat = message.object()?;

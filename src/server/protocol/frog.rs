@@ -28,7 +28,9 @@ pub mod frog_color_management_v1 {
                                 "frog_color_management_factory_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let surface = message
@@ -177,7 +179,9 @@ pub mod frog_color_management_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("frog_color_managed_surface#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let transfer_function = message.uint()?;
@@ -441,7 +445,9 @@ pub mod frog_fifo_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("frog_fifo_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -539,7 +545,9 @@ pub mod frog_fifo_v1 {
                         }
                         2u16 => {
                             tracing::debug!("frog_fifo_surface_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }

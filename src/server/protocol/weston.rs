@@ -256,7 +256,9 @@ pub mod color_management_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xx_color_manager_v4#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -527,7 +529,9 @@ pub mod color_management_v1 {
                                 "xx_color_management_output_v4#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let image_description = message
@@ -666,7 +670,9 @@ pub mod color_management_v1 {
                                 "xx_color_management_surface_v4#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let image_description = message
@@ -799,7 +805,9 @@ pub mod color_management_v1 {
                                 "xx_color_management_feedback_surface_v4#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let image_description = message
@@ -963,7 +971,9 @@ pub mod color_management_v1 {
                                 sender_id,
                                 image_description
                             );
-                            self.create(client, sender_id, image_description).await
+                            let result = self.create(client, sender_id, image_description).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let icc_profile = message.fd()?;
@@ -1149,7 +1159,9 @@ pub mod color_management_v1 {
                                 sender_id,
                                 image_description
                             );
-                            self.create(client, sender_id, image_description).await
+                            let result = self.create(client, sender_id, image_description).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let tf = message.uint()?;
@@ -1639,7 +1651,9 @@ pub mod color_management_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("xx_image_description_v4#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let information = message
@@ -2151,7 +2165,9 @@ pub mod ivi_application {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("ivi_surface#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -2614,7 +2630,9 @@ pub mod weston_content_protection {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("weston_content_protection#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let id = message
@@ -2766,7 +2784,9 @@ pub mod weston_content_protection {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("weston_protected_surface#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let r#type = message.uint()?;
@@ -2923,7 +2943,9 @@ pub mod weston_debug {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("weston_debug_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let name = message
@@ -3027,7 +3049,9 @@ pub mod weston_debug {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("weston_debug_stream_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3521,7 +3545,9 @@ pub mod weston_direct_display {
                         }
                         1u16 => {
                             tracing::debug!("weston_direct_display_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -3628,7 +3654,9 @@ pub mod weston_output_capture {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("weston_capture_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let output = message
@@ -3749,7 +3777,9 @@ pub mod weston_output_capture {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("weston_capture_source_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let buffer = message
@@ -4349,7 +4379,9 @@ pub mod weston_test {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("weston_test_runner#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let test_name = message
@@ -4469,7 +4501,9 @@ pub mod weston_touch_calibration {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("weston_touch_calibration#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let surface = message
@@ -4669,7 +4703,9 @@ pub mod weston_touch_calibration {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("weston_touch_calibrator#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         1u16 => {
                             let x = message.int()?;

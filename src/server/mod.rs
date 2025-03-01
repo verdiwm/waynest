@@ -9,7 +9,7 @@ pub use waynest_macros::Dispatcher;
 use async_trait::async_trait;
 use core::fmt;
 use futures_util::{SinkExt, TryStreamExt};
-use std::{collections::HashMap, io, sync::Arc};
+use std::{any::Any, collections::HashMap, io, sync::Arc};
 use tokio::net::UnixStream;
 
 use crate::wire::{Message, ObjectId, Socket};
@@ -44,12 +44,26 @@ impl Client {
         prev
     }
 
-    pub fn insert<D: Dispatcher + 'static>(&mut self, sender_id: ObjectId, object: D) {
-        self.store.insert(sender_id, Arc::new(object))
+    pub fn insert<D: Dispatcher>(&mut self, id: ObjectId, object: D) -> Arc<D> {
+        let dispatcher = Arc::new(object);
+        self.insert_raw(id, dispatcher.clone());
+        dispatcher
+    }
+    pub fn insert_raw<D: Dispatcher>(&mut self, id: ObjectId, object: Arc<D>) {
+        self.store.insert(id, object);
+    }
+
+    pub fn get<D: Dispatcher>(&self, id: ObjectId) -> Option<Arc<D>> {
+        let dispatcher = Dispatcher::as_any(self.store.get(id)?);
+        Arc::downcast(dispatcher).ok()
+    }
+
+    pub fn remove(&mut self, id: ObjectId) {
+        self.store.remove(id)
     }
 
     pub async fn handle_message(&mut self, message: &mut Message) -> Result<()> {
-        let object = self.store.get(&message.object_id).ok_or(Error::Internal)?;
+        let object = self.store.get(message.object_id).ok_or(Error::Internal)?;
 
         object.dispatch(self, message.object_id, message).await
     }
@@ -80,13 +94,19 @@ impl Store {
         self.objects.insert(sender_id, object);
     }
 
-    fn get(&self, id: &ObjectId) -> Option<Arc<dyn Dispatcher>> {
-        self.objects.get(id).cloned()
+    fn get(&self, id: ObjectId) -> Option<Arc<dyn Dispatcher>> {
+        self.objects.get(&id).cloned()
+    }
+
+    fn remove(&mut self, id: ObjectId) {
+        self.objects.remove(&id);
     }
 }
 
 #[async_trait]
-pub trait Dispatcher: Send + Sync {
+pub trait Dispatcher: Any + Send + Sync + 'static {
+    // necessary for trait upcasting
+    fn as_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync + 'static>;
     async fn dispatch(
         &self,
         client: &mut Client,
