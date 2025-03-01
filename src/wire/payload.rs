@@ -1,7 +1,6 @@
-use std::os::fd::RawFd;
+use std::os::fd::{IntoRawFd, OwnedFd, RawFd};
 
 use bytes::{BufMut, Bytes, BytesMut};
-use rustix::fd::AsRawFd;
 
 use super::{Fixed, NewId, ObjectId};
 
@@ -105,8 +104,8 @@ impl PayloadBuilder {
         self
     }
 
-    pub fn put_fd<Fd: AsRawFd>(mut self, fd: Fd) -> Self {
-        self.fds.push(fd.as_raw_fd());
+    pub fn put_fd<Fd: Into<OwnedFd>>(mut self, fd: Fd) -> Self {
+        self.fds.push(fd.into().into_raw_fd());
 
         self
     }
