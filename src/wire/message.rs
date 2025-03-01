@@ -48,16 +48,19 @@ impl Message {
         fds.extend_from_slice(&self.fds);
     }
 
-    pub fn from_bytes(bytes: &mut BytesMut, fds: &mut [RawFd]) -> Result<Self, DecodeError> {
-        let object_id = bytes
-            .try_get_u32_ne()
-            .map_err(|_| DecodeError::MalformedHeader)?;
+    pub fn decode(bytes: &mut BytesMut, fds: &mut [RawFd]) -> Result<Option<Self>, DecodeError> {
+        let mut header = [0u8; 8];
 
-        let object_id = ObjectId::new(object_id).ok_or(DecodeError::MalformedHeader)?;
+        if bytes.try_copy_to_slice(&mut header).is_err() {
+            return Ok(None);
+        }
 
-        let second = bytes
-            .try_get_u32_ne()
-            .map_err(|_| DecodeError::MalformedHeader)?;
+        let object_id = ObjectId::new(u32::from_ne_bytes([
+            header[0], header[1], header[2], header[3],
+        ]))
+        .ok_or(DecodeError::MalformedHeader)?;
+
+        let second = u32::from_ne_bytes([header[4], header[5], header[6], header[7]]);
 
         let len = (second >> 16) as usize;
         let opcode = (second & 65535) as u16;
@@ -67,17 +70,17 @@ impl Message {
         }
 
         if bytes.remaining() < (len - 8) {
-            return Err(DecodeError::MalformedPayload);
+            return Ok(None);
         }
 
         let payload = bytes.copy_to_bytes(len - 8);
 
-        Ok(Message {
+        Ok(Some(Message {
             object_id,
             opcode,
             payload,
             fds: fds.to_owned(),
-        })
+        }))
     }
 
     pub fn int(&mut self) -> Result<i32, DecodeError> {
@@ -174,8 +177,8 @@ mod tests {
         msg.to_bytes(&mut bytes, &mut fds);
 
         assert_eq!(
-            msg,
-            Message::from_bytes(&mut bytes, &mut fds).expect("Failed to parse bytes")
+            Some(msg),
+            Message::decode(&mut bytes, &mut fds).expect("Failed to parse bytes")
         );
     }
 }

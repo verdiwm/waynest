@@ -46,11 +46,7 @@ impl MessageCodec {
         src: &mut BytesMut,
         fds: &mut [RawFd],
     ) -> std::result::Result<Option<Message>, DecodeError> {
-        if src.is_empty() {
-            return Ok(None);
-        }
-
-        Message::from_bytes(src, fds).map(Option::Some)
+        Message::decode(src, fds)
     }
 
     fn decode_eof(
