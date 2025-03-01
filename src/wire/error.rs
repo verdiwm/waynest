@@ -3,7 +3,7 @@ pub enum DecodeError {
     #[error("Malformed header")]
     MalformedHeader,
     #[error("Invalid payload lenght")]
-    InvalidLenght,
+    InvalidLength,
     #[error("Malformed payload")]
     MalformedPayload,
     #[error("{0}")]

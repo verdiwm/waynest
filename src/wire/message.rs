@@ -66,7 +66,7 @@ impl Message {
         let opcode = (second & 65535) as u16;
 
         if len < 8 {
-            return Err(DecodeError::InvalidLenght);
+            return Err(DecodeError::InvalidLength);
         }
 
         if bytes.remaining() < (len - 8) {
