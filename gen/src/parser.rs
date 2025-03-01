@@ -66,8 +66,7 @@ pub struct Message {
     pub args: Vec<Arg>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
-
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub enum MessageType {
     #[serde(rename(deserialize = "destructor"))]
     Destructor,

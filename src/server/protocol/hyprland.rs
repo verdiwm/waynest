@@ -90,7 +90,9 @@ pub mod hyprland_ctm_control_v1 {
                                 "hyprland_ctm_control_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -181,7 +183,9 @@ pub mod hyprland_focus_grab_v1 {
                                 "hyprland_focus_grab_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -263,7 +267,9 @@ pub mod hyprland_focus_grab_v1 {
                         }
                         3u16 => {
                             tracing::debug!("hyprland_focus_grab_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -412,7 +418,9 @@ pub mod hyprland_global_shortcuts_v1 {
                                 "hyprland_global_shortcuts_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -464,7 +472,9 @@ pub mod hyprland_global_shortcuts_v1 {
                     match message.opcode {
                         0u16 => {
                             tracing::debug!("hyprland_global_shortcut_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -599,7 +609,9 @@ pub mod hyprland_surface_v1 {
                         }
                         1u16 => {
                             tracing::debug!("hyprland_surface_manager_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -681,7 +693,9 @@ pub mod hyprland_surface_v1 {
                         }
                         1u16 => {
                             tracing::debug!("hyprland_surface_v1#{}.destroy()", sender_id,);
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
@@ -756,7 +770,9 @@ pub mod hyprland_toplevel_export_v1 {
                                 "hyprland_toplevel_export_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         2u16 => {
                             let frame = message
@@ -908,7 +924,9 @@ pub mod hyprland_toplevel_export_v1 {
                                 "hyprland_toplevel_export_frame_v1#{}.destroy()",
                                 sender_id,
                             );
-                            self.destroy(client, sender_id).await
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
                         }
                         _ => Err(crate::server::error::Error::UnknownOpcode),
                     }
