@@ -12,6 +12,8 @@ pub enum Error {
     IoError(#[from] io::Error),
     #[error("Unknown Opcode")]
     UnknownOpcode,
+    #[error("Custom: {0}")]
+    Custom(String),
 }
 
 pub type Result<T, E = Error> = core::result::Result<T, E>;
