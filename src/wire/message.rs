@@ -39,7 +39,7 @@ impl Message {
         }
     }
 
-    pub fn to_bytes(&self, buf: &mut BytesMut, fds: &mut Vec<RawFd>) {
+    pub fn encode(&self, buf: &mut BytesMut, fds: &mut Vec<RawFd>) {
         buf.reserve(8 + self.payload.len());
         buf.put_u32_ne(self.object_id.as_raw());
         buf.put_u32_ne((((self.payload.len() + 8) as u32) << 16) | self.opcode as u32);
@@ -174,7 +174,7 @@ mod tests {
 
         let mut bytes = BytesMut::new();
         let mut fds = Vec::new();
-        msg.to_bytes(&mut bytes, &mut fds);
+        msg.encode(&mut bytes, &mut fds);
 
         assert_eq!(
             Some(msg),

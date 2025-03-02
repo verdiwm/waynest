@@ -217,7 +217,7 @@ impl Sink<Message> for Socket {
         let pinned = self.project();
         let state = pinned.write_state;
 
-        message.to_bytes(&mut state.buffer, &mut state.fds);
+        message.encode(&mut state.buffer, &mut state.fds);
 
         Ok(())
     }
