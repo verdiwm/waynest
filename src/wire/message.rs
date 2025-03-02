@@ -10,7 +10,7 @@ pub struct Message {
     pub object_id: ObjectId,
     pub opcode: u16,
     payload: Bytes,
-    fds: Vec<RawFd>,
+    pub(crate) fds: Vec<RawFd>,
 }
 
 #[cfg(feature = "fuzz")]
@@ -39,16 +39,24 @@ impl Message {
         }
     }
 
-    pub fn encode(&self, buf: &mut BytesMut, fds: &mut Vec<RawFd>) {
+    /// Encodes a message
+    ///
+    /// # Notes
+    ///
+    /// It's the caller responsability to extract the fds
+    pub fn encode(&self, buf: &mut BytesMut) {
         buf.reserve(8 + self.payload.len());
         buf.put_u32_ne(self.object_id.as_raw());
         buf.put_u32_ne((((self.payload.len() + 8) as u32) << 16) | self.opcode as u32);
         buf.put_slice(&self.payload);
-
-        fds.extend_from_slice(&self.fds);
     }
 
-    pub fn decode(bytes: &mut BytesMut, fds: &mut [RawFd]) -> Result<Option<Self>, DecodeError> {
+    /// Decodes a message
+    ///
+    /// # Notes
+    ///
+    /// Its the caller responsability to later set the fds
+    pub fn decode(bytes: &mut BytesMut) -> Result<Option<Self>, DecodeError> {
         let object_id = match bytes.chunk().get(..4) {
             Some(peek) => ObjectId::new(u32::from_ne_bytes(unsafe {
                 *(peek as *const _ as *const [u8; 4])
@@ -81,7 +89,7 @@ impl Message {
             object_id,
             opcode,
             payload,
-            fds: fds.to_owned(),
+            fds: Vec::new(),
         }))
     }
 
@@ -171,16 +179,15 @@ mod tests {
             object_id: unsafe { ObjectId::from_raw(10) },
             opcode: 0,
             payload: Bytes::copy_from_slice(b"\x03\0\0\0"),
-            fds: vec![10, 20, 0, 33, 48, 17],
+            fds: Vec::new(),
         };
 
         let mut bytes = BytesMut::new();
-        let mut fds = Vec::new();
-        msg.encode(&mut bytes, &mut fds);
+        msg.encode(&mut bytes);
 
         assert_eq!(
             Some(msg),
-            Message::decode(&mut bytes, &mut fds).expect("Failed to parse bytes")
+            Message::decode(&mut bytes).expect("Failed to parse bytes")
         );
     }
 }
