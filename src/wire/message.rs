@@ -49,14 +49,17 @@ impl Message {
     }
 
     pub fn decode(bytes: &mut BytesMut, fds: &mut [RawFd]) -> Result<Option<Self>, DecodeError> {
-        let object_id = match bytes.try_get_u32_ne() {
-            Ok(object_id) => ObjectId::new(object_id).ok_or(DecodeError::MalformedHeader)?,
-            Err(_) => return Ok(None),
+        let object_id = match bytes.chunk().get(..4) {
+            Some(peek) => ObjectId::new(u32::from_ne_bytes(unsafe {
+                *(peek as *const _ as *const [u8; 4])
+            }))
+            .ok_or(DecodeError::MalformedHeader)?,
+            None => return Ok(None),
         };
 
-        let second = match bytes.try_get_u32_ne() {
-            Ok(second) => second,
-            Err(_) => return Ok(None),
+        let second = match bytes.chunk().get(4..8) {
+            Some(peek) => u32::from_ne_bytes(unsafe { *(peek as *const _ as *const [u8; 4]) }),
+            None => return Ok(None),
         };
 
         let len = (second >> 16) as usize;
@@ -66,9 +69,11 @@ impl Message {
             return Err(DecodeError::InvalidLength(len));
         }
 
-        if bytes.remaining() < (len - 8) {
+        if bytes.remaining() < len {
             return Ok(None);
         }
+
+        bytes.advance(8); // Skip the header we've already processed
 
         let payload = bytes.copy_to_bytes(len - 8);
 
