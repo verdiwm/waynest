@@ -49,18 +49,15 @@ impl Message {
     }
 
     pub fn decode(bytes: &mut BytesMut, fds: &mut [RawFd]) -> Result<Option<Self>, DecodeError> {
-        let mut header = [0u8; 8];
+        let object_id = match bytes.try_get_u32_ne() {
+            Ok(object_id) => ObjectId::new(object_id).ok_or(DecodeError::MalformedHeader)?,
+            Err(_) => return Ok(None),
+        };
 
-        if bytes.try_copy_to_slice(&mut header).is_err() {
-            return Ok(None);
-        }
-
-        let object_id = ObjectId::new(u32::from_ne_bytes([
-            header[0], header[1], header[2], header[3],
-        ]))
-        .ok_or(DecodeError::MalformedHeader)?;
-
-        let second = u32::from_ne_bytes([header[4], header[5], header[6], header[7]]);
+        let second = match bytes.try_get_u32_ne() {
+            Ok(second) => second,
+            Err(_) => return Ok(None),
+        };
 
         let len = (second >> 16) as usize;
         let opcode = (second & 65535) as u16;
