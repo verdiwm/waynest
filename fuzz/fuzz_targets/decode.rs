@@ -27,5 +27,5 @@ fuzz_target!(|data: Data| {
     let mut bytes = data.bytes;
     let mut fds = data.fds;
 
-    let _ = Message::from_bytes(&mut bytes, &mut fds);
+    let _ = Message::decode(&mut bytes, &mut fds);
 });

@@ -7,5 +7,5 @@ fuzz_target!(|message: Message| {
     let mut bytes = BytesMut::new();
     let mut fds = Vec::new();
 
-    message.to_bytes(&mut bytes, &mut fds);
+    message.encode(&mut bytes, &mut fds);
 });

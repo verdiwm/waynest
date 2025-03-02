@@ -17,15 +17,15 @@ path = ".."
 features = ["fuzz"]
 
 [[bin]]
-name = "message_from_bytes"
-path = "fuzz_targets/message_from_bytes.rs"
+name = "decode"
+path = "fuzz_targets/decode.rs"
 test = false
 doc = false
 bench = false
 
 [[bin]]
-name = "message_to_bytes"
-path = "fuzz_targets/message_to_bytes.rs"
+name = "encode"
+path = "fuzz_targets/encode.rs"
 test = false
 doc = false
 bench = false
