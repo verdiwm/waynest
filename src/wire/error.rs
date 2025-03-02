@@ -1,11 +1,11 @@
 #[derive(thiserror::Error, Debug)]
 pub enum DecodeError {
-    #[error("Sender object id cannot be null")]
+    #[error("Sender object ID cannot be null")]
     InvalidSenderId,
-    #[error("Received invalid payload length: {0}")]
+    #[error("Invalid payload length: {0} bytes")]
     InvalidLength(usize),
-    #[error("Malformed payload")]
+    #[error("Failed to decode malformed payload")]
     MalformedPayload,
-    #[error("{0}")]
+    #[error("I/O error during decoding: {0}")]
     IoError(#[from] std::io::Error),
 }
