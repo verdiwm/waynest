@@ -10,7 +10,7 @@ pub struct Message {
     pub object_id: ObjectId,
     pub opcode: u16,
     payload: Bytes,
-    pub(crate) fds: Vec<RawFd>,
+    pub fds: Vec<RawFd>,
 }
 
 #[cfg(feature = "fuzz")]
