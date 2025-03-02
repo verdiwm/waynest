@@ -1,7 +1,7 @@
 #[derive(thiserror::Error, Debug)]
 pub enum DecodeError {
-    #[error("Malformed header")]
-    MalformedHeader,
+    #[error("Sender object id cannot be null")]
+    InvalidSenderId,
     #[error("Received invalid payload length: {0}")]
     InvalidLength(usize),
     #[error("Malformed payload")]

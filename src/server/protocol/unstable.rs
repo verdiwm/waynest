@@ -210,7 +210,7 @@ pub mod fullscreen_shell_unstable_v1 {
                             )
                             .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -351,7 +351,7 @@ pub mod fullscreen_shell_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -479,7 +479,7 @@ pub mod idle_inhibit_unstable_v1 {
                             );
                             self.create_inhibitor(client, sender_id, id, surface).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -534,7 +534,7 @@ pub mod idle_inhibit_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -776,7 +776,7 @@ pub mod input_method_unstable_v1 {
                             self.text_direction(client, sender_id, serial, direction)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1101,7 +1101,7 @@ pub mod input_method_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1184,7 +1184,7 @@ pub mod input_method_unstable_v1 {
                             self.get_input_panel_surface(client, sender_id, id, surface)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1254,7 +1254,7 @@ pub mod input_method_unstable_v1 {
                             );
                             self.set_overlay_panel(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1369,7 +1369,7 @@ pub mod input_timestamps_unstable_v1 {
                             self.get_touch_timestamps(client, sender_id, id, touch)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1454,7 +1454,7 @@ pub mod input_timestamps_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1594,7 +1594,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                             self.inhibit_shortcuts(client, sender_id, id, surface, seat)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1678,7 +1678,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1869,7 +1869,7 @@ pub mod linux_dmabuf_unstable_v1 {
                             self.get_surface_feedback(client, sender_id, id, surface)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2157,7 +2157,7 @@ pub mod linux_dmabuf_unstable_v1 {
                             )
                             .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2407,7 +2407,7 @@ pub mod linux_dmabuf_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2745,7 +2745,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                             self.get_synchronization(client, sender_id, id, surface)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2889,7 +2889,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                             );
                             self.get_release(client, sender_id, release).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2994,7 +2994,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3231,7 +3231,7 @@ pub mod pointer_constraints_unstable_v1 {
                             )
                             .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3384,7 +3384,7 @@ pub mod pointer_constraints_unstable_v1 {
                             );
                             self.set_region(client, sender_id, region).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3510,7 +3510,7 @@ pub mod pointer_constraints_unstable_v1 {
                             );
                             self.set_region(client, sender_id, region).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3666,7 +3666,7 @@ pub mod pointer_gestures_unstable_v1 {
                             );
                             self.get_hold_gesture(client, sender_id, id, pointer).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3744,7 +3744,7 @@ pub mod pointer_gestures_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3891,7 +3891,7 @@ pub mod pointer_gestures_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4053,7 +4053,7 @@ pub mod pointer_gestures_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4231,7 +4231,7 @@ pub mod wp_primary_selection_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4297,7 +4297,7 @@ pub mod wp_primary_selection_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4418,7 +4418,7 @@ pub mod wp_primary_selection_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4511,7 +4511,7 @@ pub mod wp_primary_selection_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4646,7 +4646,7 @@ pub mod relative_pointer_unstable_v1 {
                             self.get_relative_pointer(client, sender_id, id, pointer)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4695,7 +4695,7 @@ pub mod relative_pointer_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4902,7 +4902,7 @@ pub mod tablet_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4950,7 +4950,7 @@ pub mod tablet_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -5205,7 +5205,7 @@ pub mod tablet_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -5797,7 +5797,7 @@ pub mod tablet_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -6042,7 +6042,7 @@ pub mod tablet_unstable_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -6090,7 +6090,7 @@ pub mod tablet_unstable_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -6372,7 +6372,7 @@ pub mod tablet_unstable_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -6963,7 +6963,7 @@ pub mod tablet_unstable_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -7159,7 +7159,7 @@ pub mod tablet_unstable_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -7366,7 +7366,7 @@ pub mod tablet_unstable_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -7560,7 +7560,7 @@ pub mod tablet_unstable_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -7836,7 +7836,7 @@ pub mod tablet_unstable_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -8372,7 +8372,7 @@ pub mod text_input_unstable_v1 {
                             );
                             self.invoke_action(client, sender_id, button, index).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -8869,7 +8869,7 @@ pub mod text_input_unstable_v1 {
                             );
                             self.create_text_input(client, sender_id, id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -9122,7 +9122,7 @@ pub mod text_input_unstable_v3 {
                             tracing::debug!("zwp_text_input_v3#{}.commit()", sender_id,);
                             self.commit(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -9556,7 +9556,7 @@ pub mod text_input_unstable_v3 {
                             );
                             self.get_text_input(client, sender_id, id, seat).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -9640,7 +9640,7 @@ pub mod xdg_decoration_unstable_v1 {
                             self.get_toplevel_decoration(client, sender_id, id, toplevel)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -9767,7 +9767,7 @@ pub mod xdg_decoration_unstable_v1 {
                             );
                             self.unset_mode(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -9916,7 +9916,7 @@ pub mod xdg_foreign_unstable_v1 {
                             );
                             self.export(client, sender_id, id, surface).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -9985,7 +9985,7 @@ pub mod xdg_foreign_unstable_v1 {
                             );
                             self.import(client, sender_id, id, handle).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -10037,7 +10037,7 @@ pub mod xdg_foreign_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -10109,7 +10109,7 @@ pub mod xdg_foreign_unstable_v1 {
                             );
                             self.set_parent_of(client, sender_id, surface).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -10246,7 +10246,7 @@ pub mod xdg_foreign_unstable_v2 {
                             );
                             self.export_toplevel(client, sender_id, id, surface).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -10316,7 +10316,7 @@ pub mod xdg_foreign_unstable_v2 {
                             );
                             self.import_toplevel(client, sender_id, id, handle).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -10368,7 +10368,7 @@ pub mod xdg_foreign_unstable_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -10463,7 +10463,7 @@ pub mod xdg_foreign_unstable_v2 {
                             );
                             self.set_parent_of(client, sender_id, surface).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -10575,7 +10575,7 @@ pub mod xdg_output_unstable_v1 {
                             );
                             self.get_xdg_output(client, sender_id, id, output).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -10630,7 +10630,7 @@ pub mod xdg_output_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -10973,7 +10973,7 @@ pub mod xdg_shell_unstable_v5 {
                             tracing::debug!("xdg_shell#{}.pong({})", sender_id, serial);
                             self.pong(client, sender_id, serial).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -11315,7 +11315,7 @@ pub mod xdg_shell_unstable_v5 {
                             tracing::debug!("xdg_surface#{}.set_minimized()", sender_id,);
                             self.set_minimized(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -11756,7 +11756,7 @@ pub mod xdg_shell_unstable_v5 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -11886,7 +11886,7 @@ pub mod xdg_shell_unstable_v6 {
                             tracing::debug!("zxdg_shell_v6#{}.pong({})", sender_id, serial);
                             self.pong(client, sender_id, serial).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -12130,7 +12130,7 @@ pub mod xdg_shell_unstable_v6 {
                             );
                             self.set_offset(client, sender_id, x, y).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -12370,7 +12370,7 @@ pub mod xdg_shell_unstable_v6 {
                             );
                             self.ack_configure(client, sender_id, serial).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -12733,7 +12733,7 @@ pub mod xdg_shell_unstable_v6 {
                             tracing::debug!("zxdg_toplevel_v6#{}.set_minimized()", sender_id,);
                             self.set_minimized(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -13204,7 +13204,7 @@ pub mod xdg_shell_unstable_v6 {
                             );
                             self.grab(client, sender_id, seat, serial).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -13409,7 +13409,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                             self.grab_keyboard(client, sender_id, id, surface, seat)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -13475,7 +13475,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }

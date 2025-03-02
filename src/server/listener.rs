@@ -24,7 +24,7 @@ impl Listener {
     pub fn new() -> Result<Self, Error> {
         // FIXME: add a proper error
         let runtime_dir: PathBuf = std::env::var("XDG_RUNTIME_DIR")
-            .map_err(|_| Error::Internal)?
+            .map_err(|_| Error::XdgError)?
             .into();
 
         #[allow(clippy::never_loop)]
@@ -36,7 +36,7 @@ impl Listener {
             return Self::new_with_path(path);
         }
 
-        Err(Error::Internal)
+        Err(Error::XdgError)
     }
 
     pub fn new_with_path<P: AsRef<Path>>(path: P) -> Result<Self, Error> {

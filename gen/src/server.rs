@@ -70,7 +70,7 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                                 #[allow(clippy::match_single_binding)]
                                 match message.opcode {
                                     #(#dispatchers),*
-                                    _ => Err(crate::server::error::Error::UnknownOpcode),
+                                    opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                                 }
                             }
                         }

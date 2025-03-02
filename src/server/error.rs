@@ -1,18 +1,20 @@
 use std::io;
 
-use crate::wire::DecodeError;
+use crate::wire::{DecodeError, ObjectId};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("Internal Error")]
-    Internal,
-    #[error("Malformed")]
-    Malformed(#[from] DecodeError),
-    #[error("Io Error: {0}")]
+    #[error("Failed to decode message: {0}")]
+    Decode(#[from] DecodeError),
+    #[error("I/O operation failed: {0}")]
     IoError(#[from] io::Error),
-    #[error("Unknown Opcode")]
-    UnknownOpcode,
-    #[error("Custom: {0}")]
+    #[error("Received unsupported opcode: {0}")]
+    UnknownOpcode(u16),
+    #[error("No object found with ID: {0}")]
+    MissingObject(ObjectId),
+    #[error("Failed to access XDG socket path")]
+    XdgError,
+    #[error("{0}")]
     Custom(String),
 }
 

@@ -65,7 +65,7 @@ pub mod wayland {
                             tracing::debug!("wl_display#{}.get_registry({})", sender_id, registry);
                             self.get_registry(client, sender_id, registry).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -200,7 +200,7 @@ pub mod wayland {
                             tracing::debug!("wl_registry#{}.bind({}, {})", sender_id, name, id);
                             self.bind(client, sender_id, name, id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -294,7 +294,7 @@ pub mod wayland {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -352,7 +352,7 @@ pub mod wayland {
                             tracing::debug!("wl_compositor#{}.create_region({})", sender_id, id);
                             self.create_region(client, sender_id, id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -438,7 +438,7 @@ pub mod wayland {
                             tracing::debug!("wl_shm_pool#{}.resize({})", sender_id, size);
                             self.resize(client, sender_id, size).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -954,7 +954,7 @@ pub mod wayland {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1040,7 +1040,7 @@ pub mod wayland {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1187,7 +1187,7 @@ pub mod wayland {
                             )
                             .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1467,7 +1467,7 @@ pub mod wayland {
                             self.set_actions(client, sender_id, dnd_actions.try_into()?)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1765,7 +1765,7 @@ pub mod wayland {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2062,7 +2062,7 @@ pub mod wayland {
                             );
                             self.get_data_device(client, sender_id, id, seat).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2145,7 +2145,7 @@ pub mod wayland {
                             );
                             self.get_shell_surface(client, sender_id, id, surface).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2392,7 +2392,7 @@ pub mod wayland {
                             );
                             self.set_class(client, sender_id, class_).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2853,7 +2853,7 @@ pub mod wayland {
                             tracing::debug!("wl_surface#{}.offset({}, {})", sender_id, x, y);
                             self.offset(client, sender_id, x, y).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3404,7 +3404,7 @@ pub mod wayland {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3728,7 +3728,7 @@ pub mod wayland {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4330,7 +4330,7 @@ pub mod wayland {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4606,7 +4606,7 @@ pub mod wayland {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4986,7 +4986,7 @@ pub mod wayland {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -5313,7 +5313,7 @@ pub mod wayland {
                             );
                             self.subtract(client, sender_id, x, y, width, height).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -5431,7 +5431,7 @@ pub mod wayland {
                             self.get_subsurface(client, sender_id, id, surface, parent)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -5601,7 +5601,7 @@ pub mod wayland {
                             tracing::debug!("wl_subsurface#{}.set_desync()", sender_id,);
                             self.set_desync(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }

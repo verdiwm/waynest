@@ -72,7 +72,7 @@ pub mod cosmic_atspi_v1 {
                             );
                             self.ungrab_keyboard(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -178,7 +178,7 @@ pub mod cosmic_image_source_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -233,7 +233,7 @@ pub mod cosmic_image_source_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -300,7 +300,7 @@ pub mod cosmic_image_source_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -369,7 +369,7 @@ pub mod cosmic_image_source_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -494,7 +494,7 @@ pub mod cosmic_output_management_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -629,7 +629,7 @@ pub mod cosmic_output_management_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -815,7 +815,7 @@ pub mod cosmic_output_management_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -926,7 +926,7 @@ pub mod cosmic_output_management_unstable_v1 {
                             self.set_adaptive_sync_ext(client, sender_id, state.try_into()?)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1014,7 +1014,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                             )
                             .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1059,7 +1059,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1329,7 +1329,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1422,7 +1422,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1709,7 +1709,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                             tracing::debug!("zcosmic_screencopy_frame_v2#{}.capture()", sender_id,);
                             self.capture(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1980,7 +1980,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                             self.get_screencopy_session(client, sender_id, session)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2170,7 +2170,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                             )
                             .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2337,7 +2337,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2860,7 +2860,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                             );
                             self.unset_sticky(client, sender_id, toplevel).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }

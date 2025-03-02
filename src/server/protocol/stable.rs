@@ -123,7 +123,7 @@ pub mod linux_dmabuf_v1 {
                             self.get_surface_feedback(client, sender_id, id, surface)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -413,7 +413,7 @@ pub mod linux_dmabuf_v1 {
                             )
                             .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -663,7 +663,7 @@ pub mod linux_dmabuf_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1003,7 +1003,7 @@ pub mod presentation_time {
                             );
                             self.feedback(client, sender_id, surface, callback).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1116,7 +1116,7 @@ pub mod presentation_time {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1370,7 +1370,7 @@ pub mod tablet_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1418,7 +1418,7 @@ pub mod tablet_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1700,7 +1700,7 @@ pub mod tablet_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2291,7 +2291,7 @@ pub mod tablet_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2487,7 +2487,7 @@ pub mod tablet_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2694,7 +2694,7 @@ pub mod tablet_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2888,7 +2888,7 @@ pub mod tablet_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3164,7 +3164,7 @@ pub mod tablet_v2 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3467,7 +3467,7 @@ pub mod viewporter {
                             );
                             self.get_viewport(client, sender_id, id, surface).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3626,7 +3626,7 @@ pub mod viewporter {
                             );
                             self.set_destination(client, sender_id, width, height).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3772,7 +3772,7 @@ pub mod xdg_shell {
                             tracing::debug!("xdg_wm_base#{}.pong({})", sender_id, serial);
                             self.pong(client, sender_id, serial).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4094,7 +4094,7 @@ pub mod xdg_shell {
                             );
                             self.set_parent_configure(client, sender_id, serial).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4389,7 +4389,7 @@ pub mod xdg_shell {
                             tracing::debug!("xdg_surface#{}.ack_configure({})", sender_id, serial);
                             self.ack_configure(client, sender_id, serial).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4857,7 +4857,7 @@ pub mod xdg_shell {
                             tracing::debug!("xdg_toplevel#{}.set_minimized()", sender_id,);
                             self.set_minimized(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -5452,7 +5452,7 @@ pub mod xdg_shell {
                             );
                             self.reposition(client, sender_id, positioner, token).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }

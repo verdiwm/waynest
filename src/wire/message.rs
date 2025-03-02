@@ -53,7 +53,7 @@ impl Message {
             Some(peek) => ObjectId::new(u32::from_ne_bytes(unsafe {
                 *(peek as *const _ as *const [u8; 4])
             }))
-            .ok_or(DecodeError::MalformedHeader)?,
+            .ok_or(DecodeError::InvalidSenderId)?,
             None => return Ok(None),
         };
 

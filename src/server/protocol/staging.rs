@@ -67,7 +67,7 @@ pub mod alpha_modifier_v1 {
                             );
                             self.get_surface(client, sender_id, id, surface).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -150,7 +150,7 @@ pub mod alpha_modifier_v1 {
                             );
                             self.set_multiplier(client, sender_id, factor).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -538,7 +538,7 @@ pub mod color_management_v1 {
                             self.create_windows_scrgb(client, sender_id, image_description)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -821,7 +821,7 @@ pub mod color_management_v1 {
                             self.get_image_description(client, sender_id, image_description)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -979,7 +979,7 @@ pub mod color_management_v1 {
                             );
                             self.unset_image_description(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1128,7 +1128,7 @@ pub mod color_management_v1 {
                             self.get_preferred_parametric(client, sender_id, image_description)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1319,7 +1319,7 @@ pub mod color_management_v1 {
                             self.set_icc_file(client, sender_id, icc_profile, offset, length)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1614,7 +1614,7 @@ pub mod color_management_v1 {
                             );
                             self.set_max_fall(client, sender_id, max_fall).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2023,7 +2023,7 @@ pub mod color_management_v1 {
                             );
                             self.get_information(client, sender_id, information).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2173,7 +2173,7 @@ pub mod color_management_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2603,7 +2603,7 @@ pub mod commit_timing_v1 {
                             );
                             self.get_timer(client, sender_id, id, surface).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2693,7 +2693,7 @@ pub mod commit_timing_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2800,7 +2800,7 @@ pub mod content_type_v1 {
                             self.get_surface_content_type(client, sender_id, id, surface)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2891,7 +2891,7 @@ pub mod content_type_v1 {
                             self.set_content_type(client, sender_id, content_type.try_into()?)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -2990,7 +2990,7 @@ pub mod cursor_shape_v1 {
                             )
                             .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3205,7 +3205,7 @@ pub mod cursor_shape_v1 {
                             self.set_shape(client, sender_id, serial, shape.try_into()?)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3309,7 +3309,7 @@ pub mod drm_lease_v1 {
                             tracing::debug!("wp_drm_lease_device_v1#{}.release()", sender_id,);
                             self.release(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3458,7 +3458,7 @@ pub mod drm_lease_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3663,7 +3663,7 @@ pub mod drm_lease_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3729,7 +3729,7 @@ pub mod drm_lease_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3863,7 +3863,7 @@ pub mod ext_data_control_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -3960,7 +3960,7 @@ pub mod ext_data_control_v1 {
                             );
                             self.set_primary_selection(client, sender_id, source).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4173,7 +4173,7 @@ pub mod ext_data_control_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4280,7 +4280,7 @@ pub mod ext_data_control_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4398,7 +4398,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4504,7 +4504,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4729,7 +4729,7 @@ pub mod ext_idle_notify_v1 {
                             self.get_input_idle_notification(client, sender_id, id, timeout, seat)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4821,7 +4821,7 @@ pub mod ext_idle_notify_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4915,7 +4915,7 @@ pub mod ext_image_capture_source_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -4970,7 +4970,7 @@ pub mod ext_image_capture_source_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -5039,7 +5039,7 @@ pub mod ext_image_capture_source_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -5179,7 +5179,7 @@ pub mod ext_image_copy_capture_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -5293,7 +5293,7 @@ pub mod ext_image_copy_capture_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -5594,7 +5594,7 @@ pub mod ext_image_copy_capture_v1 {
                             );
                             self.capture(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -5866,7 +5866,7 @@ pub mod ext_image_copy_capture_v1 {
                             );
                             self.get_capture_session(client, sender_id, session).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -6062,7 +6062,7 @@ pub mod ext_session_lock_v1 {
                             );
                             self.lock(client, sender_id, id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -6219,7 +6219,7 @@ pub mod ext_session_lock_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -6422,7 +6422,7 @@ pub mod ext_session_lock_v1 {
                             );
                             self.ack_configure(client, sender_id, serial).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -6564,7 +6564,7 @@ pub mod ext_transient_seat_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -6615,7 +6615,7 @@ pub mod ext_transient_seat_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -6723,7 +6723,7 @@ pub mod ext_workspace_v1 {
                             tracing::debug!("ext_workspace_manager_v1#{}.stop()", sender_id,);
                             self.stop(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -6910,7 +6910,7 @@ pub mod ext_workspace_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -7172,7 +7172,7 @@ pub mod ext_workspace_v1 {
                             tracing::debug!("ext_workspace_handle_v1#{}.remove()", sender_id,);
                             self.remove(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -7474,7 +7474,7 @@ pub mod fifo_v1 {
                             );
                             self.get_fifo(client, sender_id, id, surface).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -7559,7 +7559,7 @@ pub mod fifo_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -7704,7 +7704,7 @@ pub mod fractional_scale_v1 {
                             self.get_fractional_scale(client, sender_id, id, surface)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -7754,7 +7754,7 @@ pub mod fractional_scale_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -7901,7 +7901,7 @@ pub mod linux_drm_syncobj_v1 {
                             );
                             self.import_timeline(client, sender_id, id, fd).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -7970,7 +7970,7 @@ pub mod linux_drm_syncobj_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -8103,7 +8103,7 @@ pub mod linux_drm_syncobj_v1 {
                             self.set_release_point(client, sender_id, timeline, point_hi, point_lo)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -8288,7 +8288,7 @@ pub mod security_context_v1 {
                             self.create_listener(client, sender_id, id, listen_fd, close_fd)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -8421,7 +8421,7 @@ pub mod security_context_v1 {
                             tracing::debug!("wp_security_context_v1#{}.commit()", sender_id,);
                             self.commit(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -8559,7 +8559,7 @@ pub mod single_pixel_buffer_v1 {
                             self.create_u32_rgba_buffer(client, sender_id, id, r, g, b, a)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -8670,7 +8670,7 @@ pub mod tearing_control_v1 {
                             self.get_tearing_control(client, sender_id, id, surface)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -8761,7 +8761,7 @@ pub mod tearing_control_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -8879,7 +8879,7 @@ pub mod xdg_activation_v1 {
                             );
                             self.activate(client, sender_id, token, surface).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -9012,7 +9012,7 @@ pub mod xdg_activation_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -9170,7 +9170,7 @@ pub mod xdg_dialog_v1 {
                             );
                             self.get_xdg_dialog(client, sender_id, id, toplevel).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -9235,7 +9235,7 @@ pub mod xdg_dialog_v1 {
                             tracing::debug!("xdg_dialog_v1#{}.unset_modal()", sender_id,);
                             self.unset_modal(client, sender_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -9315,7 +9315,7 @@ pub mod xdg_system_bell_v1 {
                             );
                             self.ring(client, sender_id, surface).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -9438,7 +9438,7 @@ pub mod xdg_toplevel_drag_v1 {
                             self.get_xdg_toplevel_drag(client, sender_id, id, data_source)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -9532,7 +9532,7 @@ pub mod xdg_toplevel_drag_v1 {
                             self.attach(client, sender_id, toplevel, x_offset, y_offset)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -9637,7 +9637,7 @@ pub mod xdg_toplevel_icon_v1 {
                             );
                             self.set_icon(client, sender_id, toplevel, icon).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -9813,7 +9813,7 @@ pub mod xdg_toplevel_icon_v1 {
                             );
                             self.add_buffer(client, sender_id, buffer, scale).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -9986,7 +9986,7 @@ pub mod xwayland_shell_v1 {
                             self.get_xwayland_surface(client, sender_id, id, surface)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -10083,7 +10083,7 @@ pub mod xwayland_shell_v1 {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }

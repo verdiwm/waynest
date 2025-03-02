@@ -23,7 +23,7 @@ pub mod ivi_application {
                             client.remove(sender_id);
                             result
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -133,7 +133,7 @@ pub mod ivi_application {
                             self.surface_create(client, sender_id, ivi_id, surface, id)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -220,7 +220,7 @@ pub mod ivi_input {
                             self.set_input_acceptance(client, sender_id, surface, seat, accepted)
                                 .await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -475,7 +475,7 @@ pub mod ivi_wm {
                             tracing::debug!("ivi_wm_screen#{}.get({})", sender_id, param);
                             self.get(client, sender_id, param).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -669,7 +669,7 @@ pub mod ivi_wm {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode {
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
@@ -1138,7 +1138,7 @@ pub mod ivi_wm {
                             );
                             self.destroy_layout_layer(client, sender_id, layer_id).await
                         }
-                        _ => Err(crate::server::error::Error::UnknownOpcode),
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
