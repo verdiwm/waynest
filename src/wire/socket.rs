@@ -233,7 +233,7 @@ impl Sink<Message> for Socket {
 
         let fds = state.fds.as_slice();
 
-        let mut cmsg_space = vec![0; rustix::cmsg_space!(ScmRights(fds.len()))];
+        let mut cmsg_space = vec![MaybeUninit::uninit(); rustix::cmsg_space!(ScmRights(fds.len()))];
         let mut ancillary_buf = SendAncillaryBuffer::new(&mut cmsg_space);
 
         ancillary_buf.push(SendAncillaryMessage::ScmRights(unsafe {
@@ -340,7 +340,7 @@ impl Socket {
         loop {
             let mut guard = ready!(stream.poll_read_ready(cx))?;
 
-            let mut cmsg_space = vec![0; rustix::cmsg_space!(ScmRights(28))];
+            let mut cmsg_space = vec![MaybeUninit::uninit(); rustix::cmsg_space!(ScmRights(28))];
             let mut ancillary_buf = RecvAncillaryBuffer::new(&mut cmsg_space);
 
             let unfilled = buf.initialize_unfilled();
