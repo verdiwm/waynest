@@ -1,13 +1,13 @@
 [package]
 name = "waynest-gen"
-version = "0.0.1"
-edition = "2024"
-license = "Apache-2.0"
-authors = ["Matilde Morrone <contact@morrone.dev>"]
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 description = "Codegen glue for waynest"
 readme = "../README.md"
-documentation = "https://docs.rs/waynest"
-repository = "https://github.com/verdiwm/waynest"
+documentation = "https://docs.rs/waynest-gen"
+repository.workspace = true
 include = ["src/**/*.rs", "../README.md", "../LICENSE"]
 
 [features]

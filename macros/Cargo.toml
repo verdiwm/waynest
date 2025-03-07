@@ -1,13 +1,13 @@
 [package]
 name = "waynest-macros"
-version = "0.0.3"
-edition = "2024"
-license = "Apache-2.0"
-authors = ["Matilde Morrone <contact@morrone.dev>"]
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 description = "Macros for waynest"
 readme = "../README.md"
-documentation = "https://docs.rs/waynest"
-repository = "https://github.com/verdiwm/waynest"
+documentation = "https://docs.rs/waynest-macros"
+repository.workspace = true
 include = ["src/**/*.rs", "../README.md", "../LICENSE"]
 
 [lib]
@@ -16,7 +16,7 @@ proc-macro = true
 [dependencies]
 quote = "1.0.37"
 syn = { version = "2.0.89", features = ["full"] }
-waynest-gen = { version = "0.0.1", path = "../gen", optional = true }
+waynest-gen = { version = "0.0.25", path = "../gen", optional = true }
 
 [features]
 gen = ["dep:waynest-gen"]

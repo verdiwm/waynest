@@ -2,16 +2,23 @@
 members = ["gen", "macros"]
 exclude = ["fuzz"]
 
-[package]
-name = "waynest"
-version = "0.0.24"
+[workspace.package]
+version = "0.0.25"
 edition = "2024"
 license = "Apache-2.0"
 authors = ["Matilde Morrone <contact@morrone.dev>"]
+repository = "https://github.com/verdiwm/waynest"
+
+[package]
+name = "waynest"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 description = "Core wayland stuff"
 readme = "README.md"
 documentation = "https://docs.rs/waynest"
-repository = "https://github.com/verdiwm/waynest"
+repository.workspace = true
 include = ["src/**/*.rs", "README.md", "LICENSE"]
 
 [features]
@@ -47,7 +54,7 @@ rustix = { version = "1.0.0", features = ["fs", "net"] }
 thiserror = "2.0.12"
 tokio = { version = "1.43.0", features = ["net"] }
 tracing = "0.1.41"
-waynest-macros = { version = "0.0.3", path = "macros" }
+waynest-macros = { version = "0.0.25", path = "macros" }
 
 [dev-dependencies]
 anyhow = "1.0.97"
