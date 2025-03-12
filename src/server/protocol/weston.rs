@@ -253,7 +253,7 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("xx_color_manager_v4#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -523,7 +523,7 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "xx_color_management_output_v4#{}.destroy()",
@@ -664,7 +664,7 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "xx_color_management_surface_v4#{}.destroy()",
@@ -799,7 +799,7 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "xx_color_management_feedback_surface_v4#{}.destroy()",
@@ -961,7 +961,7 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let image_description = message
                                 .object()?
@@ -1149,7 +1149,7 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let image_description = message
                                 .object()?
@@ -1648,7 +1648,7 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("xx_image_description_v4#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -1800,7 +1800,7 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -2162,7 +2162,7 @@ pub mod ivi_application {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("ivi_surface#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -2260,7 +2260,7 @@ pub mod ivi_application {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let ivi_id = message.uint()?;
                             let surface = message
@@ -2381,7 +2381,7 @@ pub mod ivi_hmi_controller {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("ivi_hmi_controller#{}.ui_ready()", sender_id,);
                             self.ui_ready(client, sender_id).await
@@ -2509,7 +2509,7 @@ pub mod text_cursor_position {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let surface = message
                                 .object()?
@@ -2627,7 +2627,7 @@ pub mod weston_content_protection {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("weston_content_protection#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -2781,7 +2781,7 @@ pub mod weston_content_protection {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("weston_protected_surface#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -2940,7 +2940,7 @@ pub mod weston_debug {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("weston_debug_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -3046,7 +3046,7 @@ pub mod weston_debug {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("weston_debug_stream_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -3231,7 +3231,7 @@ pub mod weston_desktop {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let output = message
                                 .object()?
@@ -3454,7 +3454,7 @@ pub mod weston_desktop {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let surface = message
                                 .object()?
@@ -3531,7 +3531,7 @@ pub mod weston_direct_display {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let dmabuf = message
                                 .object()?
@@ -3651,7 +3651,7 @@ pub mod weston_output_capture {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("weston_capture_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -3774,7 +3774,7 @@ pub mod weston_output_capture {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("weston_capture_source_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -4034,7 +4034,7 @@ pub mod weston_test {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let surface = message
                                 .object()?
@@ -4376,7 +4376,7 @@ pub mod weston_test {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("weston_test_runner#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -4498,7 +4498,7 @@ pub mod weston_touch_calibration {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("weston_touch_calibration#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -4700,7 +4700,7 @@ pub mod weston_touch_calibration {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("weston_touch_calibrator#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -4993,7 +4993,7 @@ pub mod weston_touch_calibration {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }

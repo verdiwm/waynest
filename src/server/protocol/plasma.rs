@@ -18,7 +18,7 @@ pub mod appmenu {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -77,7 +77,7 @@ pub mod appmenu {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let service_name = message
                                 .string()?
@@ -139,7 +139,7 @@ pub mod blur {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -201,7 +201,7 @@ pub mod blur {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_blur#{}.commit()", sender_id,);
                             self.commit(client, sender_id).await
@@ -264,7 +264,7 @@ pub mod contrast {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -326,7 +326,7 @@ pub mod contrast {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_contrast#{}.commit()", sender_id,);
                             self.commit(client, sender_id).await
@@ -486,7 +486,7 @@ pub mod dpms {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -565,7 +565,7 @@ pub mod dpms {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let mode = message.uint()?;
                             tracing::debug!("org_kde_kwin_dpms#{}.set({})", sender_id, mode);
@@ -693,7 +693,7 @@ pub mod fake_input {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let application = message
                                 .string()?
@@ -1058,7 +1058,7 @@ pub mod fullscreen_shell {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("_wl_fullscreen_shell#{}.release()", sender_id,);
                             let result = self.release(client, sender_id).await;
@@ -1239,7 +1239,7 @@ pub mod fullscreen_shell {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -1341,7 +1341,7 @@ pub mod idle {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -1390,7 +1390,7 @@ pub mod idle {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_idle_timeout#{}.release()", sender_id,);
                             let result = self.release(client, sender_id).await;
@@ -1471,7 +1471,7 @@ pub mod kde_external_brightness_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("kde_external_brightness_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -1526,7 +1526,7 @@ pub mod kde_external_brightness_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "kde_external_brightness_device_v1#{}.destroy()",
@@ -1695,7 +1695,7 @@ pub mod kde_lockscreen_overlay_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let surface = message
                                 .object()?
@@ -1986,7 +1986,7 @@ pub mod kde_output_device_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -2673,7 +2673,7 @@ pub mod kde_output_device_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -2823,7 +2823,7 @@ pub mod kde_output_management_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -3025,7 +3025,7 @@ pub mod kde_output_management_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let outputdevice = message
                                 .object()?
@@ -3656,7 +3656,7 @@ pub mod kde_output_order_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("kde_output_order_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -3737,7 +3737,7 @@ pub mod kde_primary_output_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("kde_primary_output_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -3866,7 +3866,7 @@ pub mod kde_screen_edge_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("kde_screen_edge_manager_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -3960,7 +3960,7 @@ pub mod kde_screen_edge_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("kde_auto_hide_screen_edge_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -4087,7 +4087,7 @@ pub mod keystate {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_keystate#{}.fetch_states()", sender_id,);
                             self.fetch_states(client, sender_id).await
@@ -4157,7 +4157,7 @@ pub mod org_kde_plasma_virtual_desktop {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -4336,7 +4336,7 @@ pub mod org_kde_plasma_virtual_desktop {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "org_kde_plasma_virtual_desktop#{}.request_activate()",
@@ -4528,7 +4528,7 @@ pub mod outputmanagement {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -4607,7 +4607,7 @@ pub mod outputmanagement {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let outputdevice = message
                                 .object()?
@@ -5089,7 +5089,7 @@ pub mod org_kde_kwin_outputdevice {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -5541,7 +5541,7 @@ pub mod plasma_shell {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -5681,7 +5681,7 @@ pub mod plasma_shell {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_plasma_surface#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -6122,7 +6122,7 @@ pub mod plasma_window_management {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let state = message.uint()?;
                             tracing::debug!(
@@ -6359,7 +6359,7 @@ pub mod plasma_window_management {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let flags = message.uint()?;
                             let state = message.uint()?;
@@ -7064,7 +7064,7 @@ pub mod plasma_window_management {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "org_kde_plasma_activation_feedback#{}.destroy()",
@@ -7127,7 +7127,7 @@ pub mod plasma_window_management {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_plasma_activation#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -7201,7 +7201,7 @@ pub mod plasma_window_management {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -7262,7 +7262,7 @@ pub mod remote_access {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let buffer = message
                                 .object()?
@@ -7344,7 +7344,7 @@ pub mod remote_access {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_remote_buffer#{}.release()", sender_id,);
                             let result = self.release(client, sender_id).await;
@@ -7415,7 +7415,7 @@ pub mod server_decoration_palette {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -7461,7 +7461,7 @@ pub mod server_decoration_palette {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let palette = message
                                 .string()?
@@ -7555,7 +7555,7 @@ pub mod server_decoration {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -7662,7 +7662,7 @@ pub mod server_decoration {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "org_kde_kwin_server_decoration#{}.release()",
@@ -7749,7 +7749,7 @@ pub mod shadow {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -7823,7 +7823,7 @@ pub mod shadow {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_shadow#{}.commit()", sender_id,);
                             self.commit(client, sender_id).await
@@ -8069,7 +8069,7 @@ pub mod slide {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -8162,7 +8162,7 @@ pub mod slide {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_slide#{}.commit()", sender_id,);
                             self.commit(client, sender_id).await
@@ -8238,7 +8238,7 @@ pub mod surface_extension {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -8336,7 +8336,7 @@ pub mod surface_extension {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let name = message
                                 .string()?
@@ -8710,7 +8710,7 @@ pub mod text_input_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_text_input_v2#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -9415,7 +9415,7 @@ pub mod text_input_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_text_input_manager_v2#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -9679,7 +9679,7 @@ pub mod text {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let seat = message
                                 .object()?
@@ -10266,7 +10266,7 @@ pub mod text {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -10374,7 +10374,7 @@ pub mod wl_eglstream_controller {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let wl_surface = message
                                 .object()?
@@ -10495,7 +10495,7 @@ pub mod zkde_screencast_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let stream = message
                                 .object()?
@@ -10707,7 +10707,7 @@ pub mod zkde_screencast_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "zkde_screencast_stream_unstable_v1#{}.close()",

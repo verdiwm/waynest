@@ -68,7 +68,7 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                         ) -> impl Future<Output = crate::server::Result<()>> + Send {
                             async move {
                                 #[allow(clippy::match_single_binding)]
-                                match message.opcode {
+                                match message.opcode() {
                                     #(#dispatchers),*
                                     opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                                 }

@@ -7,8 +7,8 @@ use super::{DecodeError, Fixed, NewId, ObjectId};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Message {
-    pub object_id: ObjectId,
-    pub opcode: u16,
+    object_id: ObjectId,
+    opcode: u16,
     payload: Bytes,
     fds: Vec<RawFd>,
 }
@@ -37,6 +37,14 @@ impl Message {
             payload,
             fds,
         }
+    }
+
+    pub const fn object_id(&self) -> ObjectId {
+        self.object_id
+    }
+
+    pub const fn opcode(&self) -> u16 {
+        self.opcode
     }
 
     pub fn encode(&self, buf: &mut BytesMut, fds: &mut Vec<RawFd>) {

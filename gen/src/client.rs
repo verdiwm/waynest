@@ -58,7 +58,7 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                             message: &mut crate::wire::Message,
                         ) -> crate::client::Result<()> {
                             #[allow(clippy::match_single_binding)]
-                            match message.opcode {
+                            match message.opcode() {
                                 // #(#dispatchers),*
                                 _ => Err(crate::client::Error::UnknownOpcode),
                             }

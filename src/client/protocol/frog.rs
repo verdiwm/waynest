@@ -19,7 +19,7 @@ pub mod frog_color_management_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -166,7 +166,7 @@ pub mod frog_color_management_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -363,7 +363,7 @@ pub mod frog_fifo_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -446,7 +446,7 @@ pub mod frog_fifo_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }

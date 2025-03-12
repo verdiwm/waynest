@@ -15,7 +15,7 @@ pub mod appmenu {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -65,7 +65,7 @@ pub mod appmenu {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -117,7 +117,7 @@ pub mod blur {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -167,7 +167,7 @@ pub mod blur {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -227,7 +227,7 @@ pub mod contrast {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -277,7 +277,7 @@ pub mod contrast {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -433,7 +433,7 @@ pub mod dpms {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -502,7 +502,7 @@ pub mod dpms {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -581,7 +581,7 @@ pub mod fake_input {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -933,7 +933,7 @@ pub mod fullscreen_shell {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1073,7 +1073,7 @@ pub mod fullscreen_shell {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1122,7 +1122,7 @@ pub mod idle {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1159,7 +1159,7 @@ pub mod idle {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1213,7 +1213,7 @@ pub mod kde_external_brightness_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1265,7 +1265,7 @@ pub mod kde_external_brightness_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1421,7 +1421,7 @@ pub mod kde_lockscreen_overlay_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1705,7 +1705,7 @@ pub mod kde_output_device_v2 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1875,7 +1875,7 @@ pub mod kde_output_device_v2 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1952,7 +1952,7 @@ pub mod kde_output_management_v2 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2150,7 +2150,7 @@ pub mod kde_output_management_v2 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2659,7 +2659,7 @@ pub mod kde_output_order_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2703,7 +2703,7 @@ pub mod kde_primary_output_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2808,7 +2808,7 @@ pub mod kde_screen_edge_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2888,7 +2888,7 @@ pub mod kde_screen_edge_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3011,7 +3011,7 @@ pub mod keystate {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3057,7 +3057,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3154,7 +3154,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3246,7 +3246,7 @@ pub mod outputmanagement {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3321,7 +3321,7 @@ pub mod outputmanagement {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3750,7 +3750,7 @@ pub mod org_kde_kwin_outputdevice {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3911,7 +3911,7 @@ pub mod plasma_shell {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4041,7 +4041,7 @@ pub mod plasma_shell {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4452,7 +4452,7 @@ pub mod plasma_window_management {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4569,7 +4569,7 @@ pub mod plasma_window_management {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4939,7 +4939,7 @@ pub mod plasma_window_management {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4978,7 +4978,7 @@ pub mod plasma_window_management {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5014,7 +5014,7 @@ pub mod plasma_window_management {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5037,7 +5037,7 @@ pub mod remote_access {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5095,7 +5095,7 @@ pub mod remote_access {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5137,7 +5137,7 @@ pub mod server_decoration_palette {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5176,7 +5176,7 @@ pub mod server_decoration_palette {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5267,7 +5267,7 @@ pub mod server_decoration {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5349,7 +5349,7 @@ pub mod server_decoration {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5412,7 +5412,7 @@ pub mod shadow {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5475,7 +5475,7 @@ pub mod shadow {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5696,7 +5696,7 @@ pub mod slide {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5777,7 +5777,7 @@ pub mod slide {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5850,7 +5850,7 @@ pub mod surface_extension {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5940,7 +5940,7 @@ pub mod surface_extension {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -6263,7 +6263,7 @@ pub mod text_input_unstable_v2 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -6654,7 +6654,7 @@ pub mod text_input_unstable_v2 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -6912,7 +6912,7 @@ pub mod text {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -7234,7 +7234,7 @@ pub mod text {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -7335,7 +7335,7 @@ pub mod wl_eglstream_controller {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -7433,7 +7433,7 @@ pub mod zkde_screencast_unstable_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -7596,7 +7596,7 @@ pub mod zkde_screencast_unstable_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }

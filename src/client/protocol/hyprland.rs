@@ -41,7 +41,7 @@ pub mod hyprland_ctm_control_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -144,7 +144,7 @@ pub mod hyprland_focus_grab_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -210,7 +210,7 @@ pub mod hyprland_focus_grab_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -330,7 +330,7 @@ pub mod hyprland_global_shortcuts_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -399,7 +399,7 @@ pub mod hyprland_global_shortcuts_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -474,7 +474,7 @@ pub mod hyprland_surface_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -558,7 +558,7 @@ pub mod hyprland_surface_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -621,7 +621,7 @@ pub mod hyprland_toplevel_export_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -762,7 +762,7 @@ pub mod hyprland_toplevel_export_v1 {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }

@@ -13,7 +13,7 @@ pub mod ivi_application {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -84,7 +84,7 @@ pub mod ivi_application {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -147,7 +147,7 @@ pub mod ivi_input {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -277,7 +277,7 @@ pub mod ivi_wm {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -441,7 +441,7 @@ pub mod ivi_wm {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -589,7 +589,7 @@ pub mod ivi_wm {
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
-                match message.opcode {
+                match message.opcode() {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }

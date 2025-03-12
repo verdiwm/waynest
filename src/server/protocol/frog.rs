@@ -22,7 +22,7 @@ pub mod frog_color_management_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "frog_color_management_factory_v1#{}.destroy()",
@@ -176,7 +176,7 @@ pub mod frog_color_management_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("frog_color_managed_surface#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -442,7 +442,7 @@ pub mod frog_fifo_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("frog_fifo_manager_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -534,7 +534,7 @@ pub mod frog_fifo_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("frog_fifo_surface_v1#{}.set_barrier()", sender_id,);
                             self.set_barrier(client, sender_id).await

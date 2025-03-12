@@ -155,7 +155,7 @@ pub mod fullscreen_shell_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_fullscreen_shell_v1#{}.release()", sender_id,);
                             let result = self.release(client, sender_id).await;
@@ -350,7 +350,7 @@ pub mod fullscreen_shell_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -457,7 +457,7 @@ pub mod idle_inhibit_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_idle_inhibit_manager_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -527,7 +527,7 @@ pub mod idle_inhibit_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_idle_inhibitor_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -588,7 +588,7 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_input_method_context_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -1100,7 +1100,7 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -1167,7 +1167,7 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -1233,7 +1233,7 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let output = message
                                 .object()?
@@ -1311,7 +1311,7 @@ pub mod input_timestamps_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "zwp_input_timestamps_manager_v1#{}.destroy()",
@@ -1447,7 +1447,7 @@ pub mod input_timestamps_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_input_timestamps_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -1564,7 +1564,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "zwp_keyboard_shortcuts_inhibit_manager_v1#{}.destroy()",
@@ -1668,7 +1668,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "zwp_keyboard_shortcuts_inhibitor_v1#{}.destroy()",
@@ -1824,7 +1824,7 @@ pub mod linux_dmabuf_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_linux_dmabuf_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -2077,7 +2077,7 @@ pub mod linux_dmabuf_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_linux_buffer_params_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -2400,7 +2400,7 @@ pub mod linux_dmabuf_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_linux_dmabuf_feedback_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -2719,7 +2719,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "zwp_linux_explicit_synchronization_v1#{}.destroy()",
@@ -2859,7 +2859,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "zwp_linux_surface_synchronization_v1#{}.destroy()",
@@ -2993,7 +2993,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -3156,7 +3156,7 @@ pub mod pointer_constraints_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_pointer_constraints_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -3354,7 +3354,7 @@ pub mod pointer_constraints_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_locked_pointer_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -3492,7 +3492,7 @@ pub mod pointer_constraints_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_confined_pointer_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -3614,7 +3614,7 @@ pub mod pointer_gestures_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -3737,7 +3737,7 @@ pub mod pointer_gestures_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_pointer_gesture_swipe_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -3884,7 +3884,7 @@ pub mod pointer_gestures_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_pointer_gesture_pinch_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -4046,7 +4046,7 @@ pub mod pointer_gestures_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_pointer_gesture_hold_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -4195,7 +4195,7 @@ pub mod wp_primary_selection_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -4274,7 +4274,7 @@ pub mod wp_primary_selection_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let source = message.object()?;
                             let serial = message.uint()?;
@@ -4395,7 +4395,7 @@ pub mod wp_primary_selection_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let mime_type = message
                                 .string()?
@@ -4490,7 +4490,7 @@ pub mod wp_primary_selection_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let mime_type = message
                                 .string()?
@@ -4620,7 +4620,7 @@ pub mod relative_pointer_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "zwp_relative_pointer_manager_v1#{}.destroy()",
@@ -4688,7 +4688,7 @@ pub mod relative_pointer_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_relative_pointer_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -4879,7 +4879,7 @@ pub mod tablet_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let tablet_seat = message
                                 .object()?
@@ -4943,7 +4943,7 @@ pub mod tablet_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_tablet_seat_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -5178,7 +5178,7 @@ pub mod tablet_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let serial = message.uint()?;
                             let surface = message.object()?;
@@ -5790,7 +5790,7 @@ pub mod tablet_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_tablet_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -6019,7 +6019,7 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let tablet_seat = message
                                 .object()?
@@ -6083,7 +6083,7 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_tablet_seat_v2#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -6345,7 +6345,7 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let serial = message.uint()?;
                             let surface = message.object()?;
@@ -6956,7 +6956,7 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_tablet_v2#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -7138,7 +7138,7 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let description = message
                                 .string()?
@@ -7345,7 +7345,7 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let description = message
                                 .string()?
@@ -7553,7 +7553,7 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_tablet_pad_group_v2#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -7813,7 +7813,7 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let button = message.uint()?;
                             let description = message
@@ -8256,7 +8256,7 @@ pub mod text_input_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let seat = message
                                 .object()?
@@ -8857,7 +8857,7 @@ pub mod text_input_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -9044,7 +9044,7 @@ pub mod text_input_unstable_v3 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_text_input_v3#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -9534,7 +9534,7 @@ pub mod text_input_unstable_v3 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_text_input_manager_v3#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -9617,7 +9617,7 @@ pub mod xdg_decoration_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_decoration_manager_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -9744,7 +9744,7 @@ pub mod xdg_decoration_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_toplevel_decoration_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -9894,7 +9894,7 @@ pub mod xdg_foreign_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_exporter_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -9963,7 +9963,7 @@ pub mod xdg_foreign_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_importer_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -10030,7 +10030,7 @@ pub mod xdg_foreign_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_exported_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -10091,7 +10091,7 @@ pub mod xdg_foreign_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_imported_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -10224,7 +10224,7 @@ pub mod xdg_foreign_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_exporter_v2#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -10294,7 +10294,7 @@ pub mod xdg_foreign_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_importer_v2#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -10361,7 +10361,7 @@ pub mod xdg_foreign_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_exported_v2#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -10445,7 +10445,7 @@ pub mod xdg_foreign_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_imported_v2#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -10553,7 +10553,7 @@ pub mod xdg_output_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_output_manager_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -10623,7 +10623,7 @@ pub mod xdg_output_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_output_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -10905,7 +10905,7 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("xdg_shell#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -11194,7 +11194,7 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("xdg_surface#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -11749,7 +11749,7 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("xdg_popup#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -11848,7 +11848,7 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_shell_v6#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -12056,7 +12056,7 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_positioner_v6#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -12311,7 +12311,7 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_surface_v6#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -12598,7 +12598,7 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_toplevel_v6#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -13184,7 +13184,7 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_popup_v6#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -13379,7 +13379,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "zwp_xwayland_keyboard_grab_manager_v1#{}.destroy()",
@@ -13465,7 +13465,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "zwp_xwayland_keyboard_grab_v1#{}.destroy()",

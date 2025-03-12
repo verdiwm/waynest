@@ -30,7 +30,7 @@ pub mod wlr_data_control_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -131,7 +131,7 @@ pub mod wlr_data_control_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let source = message.object()?;
                             tracing::debug!(
@@ -352,7 +352,7 @@ pub mod wlr_data_control_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let mime_type = message
                                 .string()?
@@ -457,7 +457,7 @@ pub mod wlr_data_control_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let mime_type = message
                                 .string()?
@@ -559,7 +559,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let frame = message
                                 .object()?
@@ -689,7 +689,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwlr_export_dmabuf_frame_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -901,7 +901,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "zwlr_foreign_toplevel_manager_v1#{}.stop()",
@@ -1048,7 +1048,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "zwlr_foreign_toplevel_handle_v1#{}.set_maximized()",
@@ -1456,7 +1456,7 @@ pub mod wlr_gamma_control_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -1550,7 +1550,7 @@ pub mod wlr_gamma_control_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let fd = message.fd()?;
                             tracing::debug!(
@@ -1683,7 +1683,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -1734,7 +1734,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwlr_input_inhibitor_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -1838,7 +1838,7 @@ pub mod wlr_layer_shell_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -2029,7 +2029,7 @@ pub mod wlr_layer_shell_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let width = message.uint()?;
                             let height = message.uint()?;
@@ -2428,7 +2428,7 @@ pub mod wlr_output_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -2590,7 +2590,7 @@ pub mod wlr_output_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwlr_output_head_v1#{}.release()", sender_id,);
                             let result = self.release(client, sender_id).await;
@@ -3025,7 +3025,7 @@ pub mod wlr_output_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwlr_output_mode_v1#{}.release()", sender_id,);
                             let result = self.release(client, sender_id).await;
@@ -3176,7 +3176,7 @@ pub mod wlr_output_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -3396,7 +3396,7 @@ pub mod wlr_output_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let mode = message
                                 .object()?
@@ -3555,7 +3555,7 @@ pub mod wlr_output_power_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -3662,7 +3662,7 @@ pub mod wlr_output_power_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let mode = message.uint()?;
                             tracing::debug!(
@@ -3778,7 +3778,7 @@ pub mod wlr_screencopy_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let frame = message
                                 .object()?
@@ -3946,7 +3946,7 @@ pub mod wlr_screencopy_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let buffer = message
                                 .object()?
@@ -4248,7 +4248,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let time = message.uint()?;
                             let dx = message.fixed()?;
@@ -4468,7 +4468,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let seat = message.object()?;
                             let id = message

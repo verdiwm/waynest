@@ -50,7 +50,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let callback = message
                                 .object()?
@@ -193,7 +193,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let name = message.uint()?;
                             let id = message.new_id()?;
@@ -293,7 +293,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -337,7 +337,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -395,7 +395,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -932,7 +932,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -1033,7 +1033,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("wl_buffer#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -1133,7 +1133,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let serial = message.uint()?;
                             let mime_type = message.string()?;
@@ -1439,7 +1439,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let mime_type = message
                                 .string()?
@@ -1725,7 +1725,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let source = message.object()?;
                             let origin = message
@@ -2035,7 +2035,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -2129,7 +2129,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -2247,7 +2247,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let serial = message.uint()?;
                             tracing::debug!("wl_shell_surface#{}.pong({})", sender_id, serial);
@@ -2746,7 +2746,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("wl_surface#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -3376,7 +3376,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -3701,7 +3701,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let serial = message.uint()?;
                             let surface = message.object()?;
@@ -4323,7 +4323,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("wl_keyboard#{}.release()", sender_id,);
                             let result = self.release(client, sender_id).await;
@@ -4599,7 +4599,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("wl_touch#{}.release()", sender_id,);
                             let result = self.release(client, sender_id).await;
@@ -4979,7 +4979,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("wl_output#{}.release()", sender_id,);
                             let result = self.release(client, sender_id).await;
@@ -5276,7 +5276,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("wl_region#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -5404,7 +5404,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("wl_subcompositor#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -5561,7 +5561,7 @@ pub mod wayland {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("wl_subsurface#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;

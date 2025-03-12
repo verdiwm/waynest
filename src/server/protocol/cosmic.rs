@@ -23,7 +23,7 @@ pub mod cosmic_atspi_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("cosmic_atspi_manager_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -171,7 +171,7 @@ pub mod cosmic_image_source_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zcosmic_image_source_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -208,7 +208,7 @@ pub mod cosmic_image_source_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let source = message
                                 .object()?
@@ -275,7 +275,7 @@ pub mod cosmic_image_source_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let source = message
                                 .object()?
@@ -343,7 +343,7 @@ pub mod cosmic_image_source_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let source = message
                                 .object()?
@@ -440,7 +440,7 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let extended = message
                                 .object()?
@@ -622,7 +622,7 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zcosmic_output_head_v1#{}.release()", sender_id,);
                             let result = self.release(client, sender_id).await;
@@ -785,7 +785,7 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -897,7 +897,7 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let scale_1000 = message.int()?;
                             tracing::debug!(
@@ -992,7 +992,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let overlap_notification = message
                                 .object()?
@@ -1049,7 +1049,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "zcosmic_overlap_notification_v1#{}.destroy()",
@@ -1271,7 +1271,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let session = message
                                 .object()?
@@ -1401,7 +1401,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let frame = message
                                 .object()?
@@ -1671,7 +1671,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zcosmic_screencopy_frame_v2#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -1958,7 +1958,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!(
                                 "zcosmic_screencopy_cursor_session_v2#{}.destroy()",
@@ -2144,7 +2144,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zcosmic_toplevel_info_v1#{}.stop()", sender_id,);
                             self.stop(client, sender_id).await
@@ -2330,7 +2330,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zcosmic_toplevel_handle_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -2688,7 +2688,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("zcosmic_toplevel_manager_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;

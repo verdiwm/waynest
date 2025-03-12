@@ -44,7 +44,7 @@ pub mod hyprland_ctm_control_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let output = message
                                 .object()?
@@ -166,7 +166,7 @@ pub mod hyprland_focus_grab_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let grab = message
                                 .object()?
@@ -238,7 +238,7 @@ pub mod hyprland_focus_grab_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let surface = message
                                 .object()?
@@ -376,7 +376,7 @@ pub mod hyprland_global_shortcuts_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let shortcut = message
                                 .object()?
@@ -469,7 +469,7 @@ pub mod hyprland_global_shortcuts_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("hyprland_global_shortcut_v1#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -590,7 +590,7 @@ pub mod hyprland_surface_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let id = message
                                 .object()?
@@ -681,7 +681,7 @@ pub mod hyprland_surface_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let opacity = message.fixed()?;
                             tracing::debug!(
@@ -748,7 +748,7 @@ pub mod hyprland_toplevel_export_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let frame = message
                                 .object()?
@@ -905,7 +905,7 @@ pub mod hyprland_toplevel_export_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let buffer = message
                                 .object()?

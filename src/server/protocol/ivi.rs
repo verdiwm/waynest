@@ -16,7 +16,7 @@ pub mod ivi_application {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("ivi_surface#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -114,7 +114,7 @@ pub mod ivi_application {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let ivi_id = message.uint()?;
                             let surface = message
@@ -189,7 +189,7 @@ pub mod ivi_input {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             let surface = message.uint()?;
                             let device = message.uint()?;
@@ -430,7 +430,7 @@ pub mod ivi_wm {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("ivi_wm_screen#{}.destroy()", sender_id,);
                             let result = self.destroy(client, sender_id).await;
@@ -668,7 +668,7 @@ pub mod ivi_wm {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -860,7 +860,7 @@ pub mod ivi_wm {
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
-                    match message.opcode {
+                    match message.opcode() {
                         0u16 => {
                             tracing::debug!("ivi_wm#{}.commit_changes()", sender_id,);
                             self.commit_changes(client, sender_id).await

@@ -65,10 +65,10 @@ impl Client {
     pub async fn handle_message(&mut self, message: &mut Message) -> Result<()> {
         let object = self
             .store
-            .get(message.object_id)
-            .ok_or(Error::MissingObject(message.object_id))?;
+            .get(message.object_id())
+            .ok_or(Error::MissingObject(message.object_id()))?;
 
-        object.dispatch(self, message.object_id, message).await
+        object.dispatch(self, message.object_id(), message).await
     }
 
     pub async fn next_message(&mut self) -> Result<Option<Message>> {
