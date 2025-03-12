@@ -30,7 +30,7 @@ impl<'a> arbitrary::Arbitrary<'a> for Message {
 }
 
 impl Message {
-    pub fn new(object_id: ObjectId, opcode: u16, payload: Bytes, fds: Vec<RawFd>) -> Self {
+    pub const fn new(object_id: ObjectId, opcode: u16, payload: Bytes, fds: Vec<RawFd>) -> Self {
         Self {
             object_id,
             opcode,
