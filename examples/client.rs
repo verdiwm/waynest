@@ -25,7 +25,7 @@ impl Client {
     pub async fn _handle_message(&mut self, message: &Message) {
         let dispatcher = self
             .objects
-            .get(&message.object_id)
+            .get(&message.object_id())
             .expect("Invalid object id");
 
         dispatcher.dispatch(message);
