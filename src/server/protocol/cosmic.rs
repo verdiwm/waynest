@@ -325,6 +325,73 @@ pub mod cosmic_image_source_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
+    #[doc = "A manager for creating image source objects for wl_output objects."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod zcosmic_ext_workspace_image_source_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the zcosmic_ext_workspace_image_source_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ZcosmicExtWorkspaceImageSourceManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "zcosmic_ext_workspace_image_source_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn handle_request(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                message: &mut crate::wire::Message,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let source = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let output = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "zcosmic_ext_workspace_image_source_manager_v1#{}.create_source({}, {})",
+                                sender_id,
+                                source,
+                                output
+                            );
+                            self.create_source(client, sender_id, source, output).await
+                        }
+                        1u16 => {
+                            tracing::debug!(
+                                "zcosmic_ext_workspace_image_source_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
+                        }
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
+                    }
+                }
+            }
+            #[doc = "Creates a source object for a workspaces. Images captured from this source"]
+            #[doc = "will show the same content as the workspace. Some elements may be omitted,"]
+            #[doc = "such as cursors and overlays that have been marked as transparent to"]
+            #[doc = "capturing."]
+            fn create_source(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                source: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Destroys the manager. This request may be sent at any time by the client"]
+            #[doc = "and objects created by the manager will remain valid after its"]
+            #[doc = "destruction."]
+            fn destroy(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+    }
     #[doc = "A manager for creating image source objects for"]
     #[doc = "zcosmic_toplevel_handle_v1 objects."]
     #[allow(clippy::too_many_arguments)]
@@ -2135,7 +2202,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
         #[doc = "Trait to implement the zcosmic_toplevel_info_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicToplevelInfoV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_toplevel_info_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2321,7 +2388,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
         #[doc = "Trait to implement the zcosmic_toplevel_handle_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicToplevelHandleV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_toplevel_handle_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2604,6 +2671,53 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
+            #[doc = "This event is emitted whenever the toplevel becomes visible on the"]
+            #[doc = "given workspace. A toplevel may be visible on multiple workspaces."]
+            fn ext_workspace_enter(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                workspace: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_handle_v1#{}.ext_workspace_enter({})",
+                        sender_id,
+                        workspace
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_object(Some(workspace))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+            #[doc = "This event is emitted whenever the toplevel is no longer visible"]
+            #[doc = "on a given workspace. It is guaranteed that an workspace_enter event with"]
+            #[doc = "the same workspace has been emitted before this event."]
+            fn ext_workspace_leave(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                workspace: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_handle_v1#{}.ext_workspace_leave({})",
+                        sender_id,
+                        workspace
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_object(Some(workspace))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 11u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
         }
     }
 }
@@ -2634,6 +2748,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             MoveToWorkspace = 6u32,
             #[doc = "set_sticky and unset_sticky requests are available"]
             Sticky = 7u32,
+            #[doc = "move_to_ext_workspace request is available"]
+            MoveToExtWorkspace = 8u32,
         }
         impl TryFrom<u32> for ZcosmicToplelevelManagementCapabilitiesV1 {
             type Error = crate::wire::DecodeError;
@@ -2646,6 +2762,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                     5u32 => Ok(Self::Fullscreen),
                     6u32 => Ok(Self::MoveToWorkspace),
                     7u32 => Ok(Self::Sticky),
+                    8u32 => Ok(Self::MoveToExtWorkspace),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -2679,7 +2796,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
         #[doc = "Trait to implement the zcosmic_toplevel_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicToplevelManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_toplevel_manager_v1";
-            const VERSION: u32 = 3u32;
+            const VERSION: u32 = 4u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2860,6 +2977,28 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                             );
                             self.unset_sticky(client, sender_id, toplevel).await
                         }
+                        13u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let workspace = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let output = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.move_to_ext_workspace({}, {}, {})",
+                                sender_id,
+                                toplevel,
+                                workspace,
+                                output
+                            );
+                            self.move_to_ext_workspace(
+                                client, sender_id, toplevel, workspace, output,
+                            )
+                            .await
+                        }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -2990,6 +3129,15 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Move window to workspace, on given output."]
+            fn move_to_ext_workspace(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                toplevel: crate::wire::ObjectId,
+                workspace: crate::wire::ObjectId,
+                output: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
             #[doc = "a capability isn't supported, clients should hide or disable the UI"]
