@@ -1,3 +1,93 @@
+#[doc = "This protocols provides way to toggle various accessibility features"]
+#[doc = "in the COSMIC desktop environment for shell components."]
+#[allow(clippy::module_inception)]
+pub mod cosmic_a11y_v1 {
+    #[doc = "Manager to toggle accessibility features."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod cosmic_a11y_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ActiveState {
+            #[doc = "function is disabled"]
+            Disabled = 0u32,
+            #[doc = "function is enabled"]
+            Enabled = 1u32,
+        }
+        impl TryFrom<u32> for ActiveState {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Disabled),
+                    1u32 => Ok(Self::Enabled),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ActiveState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the cosmic_a11y_manager_v1 interface. See the module level documentation for more info"]
+        pub trait CosmicA11yManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "cosmic_a11y_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn handle_request(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                message: &mut crate::wire::Message,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let active = message.uint()?;
+                            tracing::debug!(
+                                "cosmic_a11y_manager_v1#{}.set_magnifier({})",
+                                sender_id,
+                                active
+                            );
+                            self.set_magnifier(client, sender_id, active.try_into()?)
+                                .await
+                        }
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
+                    }
+                }
+            }
+            fn set_magnifier(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                active: ActiveState,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            fn magnifier(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                active: ActiveState,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> cosmic_a11y_manager_v1#{}.magnifier({})",
+                        sender_id,
+                        active
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(active as u32)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+        }
+    }
+}
 #[doc = "This protocol provides a relatively straightforward mapping of AtpsiDevice"]
 #[doc = "in the at-spi2-core library, so it's possible to add a Wayland backend for it."]
 #[doc = ""]
@@ -135,70 +225,18 @@ pub mod cosmic_atspi_v1 {
         }
     }
 }
-#[doc = "This protocol serves as an intermediary between screen capturing protocols"]
-#[doc = "and potential image sources such as outputs and toplevels."]
-#[doc = ""]
-#[doc = "This protocol may be extended to support more image sources in the future,"]
-#[doc = "thereby adding those image sources to other protocols that use the image"]
-#[doc = "source object without having to modify those protocols."]
-#[doc = ""]
-#[doc = "Warning! The protocol described in this file is currently in the testing"]
-#[doc = "phase. Backward compatible changes may be added together with the"]
-#[doc = "corresponding interface version bump. Backward incompatible changes can"]
-#[doc = "only be done by creating a new major version of the extension."]
+#[doc = "This protocols `extends ext-image-capture-source-v1` with additional capture"]
+#[doc = "sources."]
 #[allow(clippy::module_inception)]
 pub mod cosmic_image_source_unstable_v1 {
-    #[doc = "The image source object is an opaque descriptor for a capturable resource."]
-    #[doc = "This resource may be any sort of entity from which an image may be"]
-    #[doc = "derived."]
-    #[doc = ""]
-    #[doc = "Note, because zcosmic_image_source_v1 objects are created from multiple"]
-    #[doc = "independent factory interfaces, the zcosmic_image_source_v1 interface is"]
-    #[doc = "frozen at version 1."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod zcosmic_image_source_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the zcosmic_image_source_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicImageSourceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_image_source_v1";
-            const VERSION: u32 = 1u32;
-            fn handle_request(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            tracing::debug!("zcosmic_image_source_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
-                        }
-                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
-                    }
-                }
-            }
-            #[doc = "Destroys the image source. This request may be sent at any time by the"]
-            #[doc = "client."]
-            fn destroy(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-        }
-    }
     #[doc = "A manager for creating image source objects for wl_output objects."]
     #[allow(clippy::too_many_arguments)]
-    pub mod zcosmic_output_image_source_manager_v1 {
+    pub mod zcosmic_workspace_image_capture_source_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the zcosmic_output_image_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputImageSourceManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_output_image_source_manager_v1";
+        #[doc = "Trait to implement the zcosmic_workspace_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ZcosmicWorkspaceImageCaptureSourceManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "zcosmic_workspace_image_capture_source_manager_v1";
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
@@ -217,7 +255,7 @@ pub mod cosmic_image_source_unstable_v1 {
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!(
-                                "zcosmic_output_image_source_manager_v1#{}.create_source({}, {})",
+                                "zcosmic_workspace_image_capture_source_manager_v1#{}.create_source({}, {})",
                                 sender_id,
                                 source,
                                 output
@@ -226,74 +264,7 @@ pub mod cosmic_image_source_unstable_v1 {
                         }
                         1u16 => {
                             tracing::debug!(
-                                "zcosmic_output_image_source_manager_v1#{}.destroy()",
-                                sender_id,
-                            );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
-                        }
-                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
-                    }
-                }
-            }
-            #[doc = "Creates a source object for an output. Images captured from this source"]
-            #[doc = "will show the same content as the output. Some elements may be omitted,"]
-            #[doc = "such as cursors and overlays that have been marked as transparent to"]
-            #[doc = "capturing."]
-            fn create_source(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                source: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "Destroys the manager. This request may be sent at any time by the client"]
-            #[doc = "and objects created by the manager will remain valid after its"]
-            #[doc = "destruction."]
-            fn destroy(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-        }
-    }
-    #[doc = "A manager for creating image source objects for wl_output objects."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod zcosmic_workspace_image_source_manager_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the zcosmic_workspace_image_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceImageSourceManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_workspace_image_source_manager_v1";
-            const VERSION: u32 = 1u32;
-            fn handle_request(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let source = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let output = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing::debug!(
-                                "zcosmic_workspace_image_source_manager_v1#{}.create_source({}, {})",
-                                sender_id,
-                                source,
-                                output
-                            );
-                            self.create_source(client, sender_id, source, output).await
-                        }
-                        1u16 => {
-                            tracing::debug!(
-                                "zcosmic_workspace_image_source_manager_v1#{}.destroy()",
+                                "zcosmic_workspace_image_capture_source_manager_v1#{}.destroy()",
                                 sender_id,
                             );
                             let result = self.destroy(client, sender_id).await;
@@ -314,140 +285,6 @@ pub mod cosmic_image_source_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "Destroys the manager. This request may be sent at any time by the client"]
-            #[doc = "and objects created by the manager will remain valid after its"]
-            #[doc = "destruction."]
-            fn destroy(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-        }
-    }
-    #[doc = "A manager for creating image source objects for wl_output objects."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod zcosmic_ext_workspace_image_source_manager_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the zcosmic_ext_workspace_image_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicExtWorkspaceImageSourceManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_ext_workspace_image_source_manager_v1";
-            const VERSION: u32 = 1u32;
-            fn handle_request(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let source = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let output = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing::debug!(
-                                "zcosmic_ext_workspace_image_source_manager_v1#{}.create_source({}, {})",
-                                sender_id,
-                                source,
-                                output
-                            );
-                            self.create_source(client, sender_id, source, output).await
-                        }
-                        1u16 => {
-                            tracing::debug!(
-                                "zcosmic_ext_workspace_image_source_manager_v1#{}.destroy()",
-                                sender_id,
-                            );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
-                        }
-                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
-                    }
-                }
-            }
-            #[doc = "Creates a source object for a workspaces. Images captured from this source"]
-            #[doc = "will show the same content as the workspace. Some elements may be omitted,"]
-            #[doc = "such as cursors and overlays that have been marked as transparent to"]
-            #[doc = "capturing."]
-            fn create_source(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                source: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "Destroys the manager. This request may be sent at any time by the client"]
-            #[doc = "and objects created by the manager will remain valid after its"]
-            #[doc = "destruction."]
-            fn destroy(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-        }
-    }
-    #[doc = "A manager for creating image source objects for"]
-    #[doc = "zcosmic_toplevel_handle_v1 objects."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod zcosmic_toplevel_image_source_manager_v1 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the zcosmic_toplevel_image_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelImageSourceManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_toplevel_image_source_manager_v1";
-            const VERSION: u32 = 1u32;
-            fn handle_request(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let source = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let toplevel_handle = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing::debug!(
-                                "zcosmic_toplevel_image_source_manager_v1#{}.create_source({}, {})",
-                                sender_id,
-                                source,
-                                toplevel_handle
-                            );
-                            self.create_source(client, sender_id, source, toplevel_handle)
-                                .await
-                        }
-                        1u16 => {
-                            tracing::debug!(
-                                "zcosmic_toplevel_image_source_manager_v1#{}.destroy()",
-                                sender_id,
-                            );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
-                        }
-                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
-                    }
-                }
-            }
-            #[doc = "Creates a source object for a toplevel handle. Images captured"]
-            #[doc = "from this source will show the same content as the toplevel."]
-            fn create_source(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                source: crate::wire::ObjectId,
-                toplevel_handle: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroys the manager. This request may be sent at any time by the client"]
             #[doc = "and objects created by the manager will remain valid after its"]
@@ -3172,6 +3009,285 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                         .build();
                     client
                         .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod cosmic_workspace_unstable_v2 {
+    #[doc = "This protocol extends `ext-workspace-v1` with addtional requests and events."]
+    #[doc = ""]
+    #[doc = "The caller should call `get_cosmic_workspace` whenever a new ext workspace is"]
+    #[doc = "created."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod zcosmic_workspace_manager_v2 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "zcosmic_workspace_handle_v2 already exists for ext_workspace_handle_v1"]
+            WorkspaceExists = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::WorkspaceExists),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the zcosmic_workspace_manager_v2 interface. See the module level documentation for more info"]
+        pub trait ZcosmicWorkspaceManagerV2: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "zcosmic_workspace_manager_v2";
+            const VERSION: u32 = 1u32;
+            fn handle_request(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                message: &mut crate::wire::Message,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let cosmic_workspace = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let workspace = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "zcosmic_workspace_manager_v2#{}.get_cosmic_workspace({}, {})",
+                                sender_id,
+                                cosmic_workspace,
+                                workspace
+                            );
+                            self.get_cosmic_workspace(
+                                client,
+                                sender_id,
+                                cosmic_workspace,
+                                workspace,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            tracing::debug!("zcosmic_workspace_manager_v2#{}.destroy()", sender_id,);
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
+                        }
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
+                    }
+                }
+            }
+            #[doc = "Request a `zcosmic_workspace_handle_v2` extension object for an existing"]
+            #[doc = "`ext_workspace_handle_v1`."]
+            #[doc = ""]
+            #[doc = "If a `zcosmic_workspace_handle_v2` already exists for the `ext_workspace_handle_v1`, this"]
+            #[doc = "will raise a `workspace_exists` protocol error."]
+            fn get_cosmic_workspace(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                cosmic_workspace: crate::wire::ObjectId,
+                workspace: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "This request should be called either when the client will no longer"]
+            #[doc = "use the `zcosmic_workspace_manager_v2`."]
+            fn destroy(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+    }
+    #[doc = "A zcosmic_workspace_handle_v2 object represents a a workspace that handles a"]
+    #[doc = "group of surfaces."]
+    #[doc = ""]
+    #[doc = "Each workspace has a name, conveyed to the client with the name event; a"]
+    #[doc = "list of states, conveyed to the client with the state event; and"]
+    #[doc = "optionally a set of coordinates, conveyed to the client with the"]
+    #[doc = "coordinates event. The client may request that the compositor activate or"]
+    #[doc = "deactivate the workspace."]
+    #[doc = ""]
+    #[doc = "Each workspace can belong to only a single workspace group."]
+    #[doc = "Depepending on the compositor policy, there might be workspaces with"]
+    #[doc = "the same name in different workspace groups, but these workspaces are still"]
+    #[doc = "separate (e.g. one of them might be active while the other is not)."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod zcosmic_workspace_handle_v2 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct WorkspaceCapabilities : u32 { # [doc = "rename request is available"] const Rename = 1u32 ; # [doc = "set_tiling_state request is available"] const SetTilingState = 2u32 ; } }
+        impl TryFrom<u32> for WorkspaceCapabilities {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for WorkspaceCapabilities {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum TilingState {
+            #[doc = "The workspace has no active tiling properties"]
+            FloatingOnly = 0u32,
+            #[doc = "Tiling behavior is enabled for the workspace"]
+            TilingEnabled = 1u32,
+        }
+        impl TryFrom<u32> for TilingState {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::FloatingOnly),
+                    1u32 => Ok(Self::TilingEnabled),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for TilingState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the zcosmic_workspace_handle_v2 interface. See the module level documentation for more info"]
+        pub trait ZcosmicWorkspaceHandleV2: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "zcosmic_workspace_handle_v2";
+            const VERSION: u32 = 1u32;
+            fn handle_request(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                message: &mut crate::wire::Message,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            tracing::debug!("zcosmic_workspace_handle_v2#{}.destroy()", sender_id,);
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
+                        }
+                        1u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v2#{}.rename(\"{}\")",
+                                sender_id,
+                                name
+                            );
+                            self.rename(client, sender_id, name).await
+                        }
+                        2u16 => {
+                            let state = message.uint()?;
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v2#{}.set_tiling_state({})",
+                                sender_id,
+                                state
+                            );
+                            self.set_tiling_state(client, sender_id, state.try_into()?)
+                                .await
+                        }
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
+                    }
+                }
+            }
+            #[doc = "This request should be called either when the client will no longer"]
+            #[doc = "use the `zcosmic_workspace_handle_v1`."]
+            fn destroy(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Request that this workspace is renamed."]
+            #[doc = ""]
+            #[doc = "There is no guarantee the workspace will actually be renamed."]
+            fn rename(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                name: String,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Request that this workspace's tiling state is changed."]
+            #[doc = ""]
+            #[doc = "There is no guarantee the workspace will actually change it's tiling state."]
+            fn set_tiling_state(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                state: TilingState,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "This event advertises the capabilities supported by the compositor. If"]
+            #[doc = "a capability isn't supported, clients should hide or disable the UI"]
+            #[doc = "elements that expose this functionality. For instance, if the"]
+            #[doc = "compositor doesn't advertise support for removing workspaces, a button"]
+            #[doc = "triggering the remove request should not be displayed."]
+            #[doc = ""]
+            #[doc = "The compositor will ignore requests it doesn't support. For instance,"]
+            #[doc = "a compositor which doesn't advertise support for remove will ignore"]
+            #[doc = "remove requests."]
+            #[doc = ""]
+            #[doc = "Compositors must send this event once after creation of a"]
+            #[doc = "`zcosmic_workspace_handle_v2`. When the capabilities change, compositors"]
+            #[doc = "must send this event again."]
+            fn capabilities(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                capabilities: WorkspaceCapabilities,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> zcosmic_workspace_handle_v2#{}.capabilities({})",
+                        sender_id,
+                        capabilities
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(capabilities.bits())
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+            #[doc = "This event is emitted immediately after the zcosmic_workspace_handle_v2 is created"]
+            #[doc = "and each time the workspace tiling state changes, either because of a"]
+            #[doc = "compositor action or because of a request in this protocol."]
+            fn tiling_state(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                state: TilingState,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> zcosmic_workspace_handle_v2#{}.tiling_state({})",
+                        sender_id,
+                        state
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(state as u32)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
