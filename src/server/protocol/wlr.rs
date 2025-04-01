@@ -40,7 +40,7 @@ pub mod wlr_data_control_unstable_v1 {
                                 sender_id,
                                 id
                             );
-                            self.create_data_source(client, sender_id, id).await
+                            Requests::create_data_source(self, client, sender_id, id).await
                         }
                         1u16 => {
                             let id = message
@@ -55,11 +55,11 @@ pub mod wlr_data_control_unstable_v1 {
                                 id,
                                 seat
                             );
-                            self.get_data_device(client, sender_id, id, seat).await
+                            Requests::get_data_device(self, client, sender_id, id, seat).await
                         }
                         2u16 => {
                             tracing::debug!("zwlr_data_control_manager_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -144,11 +144,11 @@ pub mod wlr_data_control_unstable_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_selection(client, sender_id, source).await
+                            Requests::set_selection(self, client, sender_id, source).await
                         }
                         1u16 => {
                             tracing::debug!("zwlr_data_control_device_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -161,7 +161,7 @@ pub mod wlr_data_control_unstable_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_primary_selection(client, sender_id, source).await
+                            Requests::set_primary_selection(self, client, sender_id, source).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -369,11 +369,11 @@ pub mod wlr_data_control_unstable_v1 {
                                 sender_id,
                                 mime_type
                             );
-                            self.offer(client, sender_id, mime_type).await
+                            Requests::offer(self, client, sender_id, mime_type).await
                         }
                         1u16 => {
                             tracing::debug!("zwlr_data_control_source_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -480,11 +480,11 @@ pub mod wlr_data_control_unstable_v1 {
                                 mime_type,
                                 fd.as_raw_fd()
                             );
-                            self.receive(client, sender_id, mime_type, fd).await
+                            Requests::receive(self, client, sender_id, mime_type, fd).await
                         }
                         1u16 => {
                             tracing::debug!("zwlr_data_control_offer_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -590,15 +590,22 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                                 overlay_cursor,
                                 output
                             );
-                            self.capture_output(client, sender_id, frame, overlay_cursor, output)
-                                .await
+                            Requests::capture_output(
+                                self,
+                                client,
+                                sender_id,
+                                frame,
+                                overlay_cursor,
+                                output,
+                            )
+                            .await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zwlr_export_dmabuf_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -710,7 +717,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwlr_export_dmabuf_frame_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -929,7 +936,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                                 "zwlr_foreign_toplevel_manager_v1#{}.stop()",
                                 sender_id,
                             );
-                            self.stop(client, sender_id).await
+                            Requests::stop(self, client, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1080,28 +1087,28 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                                 "zwlr_foreign_toplevel_handle_v1#{}.set_maximized()",
                                 sender_id,
                             );
-                            self.set_maximized(client, sender_id).await
+                            Requests::set_maximized(self, client, sender_id).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zwlr_foreign_toplevel_handle_v1#{}.unset_maximized()",
                                 sender_id,
                             );
-                            self.unset_maximized(client, sender_id).await
+                            Requests::unset_maximized(self, client, sender_id).await
                         }
                         2u16 => {
                             tracing::debug!(
                                 "zwlr_foreign_toplevel_handle_v1#{}.set_minimized()",
                                 sender_id,
                             );
-                            self.set_minimized(client, sender_id).await
+                            Requests::set_minimized(self, client, sender_id).await
                         }
                         3u16 => {
                             tracing::debug!(
                                 "zwlr_foreign_toplevel_handle_v1#{}.unset_minimized()",
                                 sender_id,
                             );
-                            self.unset_minimized(client, sender_id).await
+                            Requests::unset_minimized(self, client, sender_id).await
                         }
                         4u16 => {
                             let seat = message
@@ -1112,14 +1119,14 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                                 sender_id,
                                 seat
                             );
-                            self.activate(client, sender_id, seat).await
+                            Requests::activate(self, client, sender_id, seat).await
                         }
                         5u16 => {
                             tracing::debug!(
                                 "zwlr_foreign_toplevel_handle_v1#{}.close()",
                                 sender_id,
                             );
-                            self.close(client, sender_id).await
+                            Requests::close(self, client, sender_id).await
                         }
                         6u16 => {
                             let surface = message
@@ -1138,15 +1145,17 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                                 width,
                                 height
                             );
-                            self.set_rectangle(client, sender_id, surface, x, y, width, height)
-                                .await
+                            Requests::set_rectangle(
+                                self, client, sender_id, surface, x, y, width, height,
+                            )
+                            .await
                         }
                         7u16 => {
                             tracing::debug!(
                                 "zwlr_foreign_toplevel_handle_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -1159,14 +1168,14 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_fullscreen(client, sender_id, output).await
+                            Requests::set_fullscreen(self, client, sender_id, output).await
                         }
                         9u16 => {
                             tracing::debug!(
                                 "zwlr_foreign_toplevel_handle_v1#{}.unset_fullscreen()",
                                 sender_id,
                             );
-                            self.unset_fullscreen(client, sender_id).await
+                            Requests::unset_fullscreen(self, client, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1500,14 +1509,14 @@ pub mod wlr_gamma_control_unstable_v1 {
                                 id,
                                 output
                             );
-                            self.get_gamma_control(client, sender_id, id, output).await
+                            Requests::get_gamma_control(self, client, sender_id, id, output).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zwlr_gamma_control_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -1591,11 +1600,11 @@ pub mod wlr_gamma_control_unstable_v1 {
                                 sender_id,
                                 fd.as_raw_fd()
                             );
-                            self.set_gamma(client, sender_id, fd).await
+                            Requests::set_gamma(self, client, sender_id, fd).await
                         }
                         1u16 => {
                             tracing::debug!("zwlr_gamma_control_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -1730,7 +1739,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
                                 sender_id,
                                 id
                             );
-                            self.get_inhibitor(client, sender_id, id).await
+                            Requests::get_inhibitor(self, client, sender_id, id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1777,7 +1786,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwlr_input_inhibitor_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -1905,7 +1914,8 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 layer,
                                 namespace
                             );
-                            self.get_layer_surface(
+                            Requests::get_layer_surface(
+                                self,
                                 client,
                                 sender_id,
                                 id,
@@ -1918,7 +1928,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                         }
                         1u16 => {
                             tracing::debug!("zwlr_layer_shell_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -2085,7 +2095,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 width,
                                 height
                             );
-                            self.set_size(client, sender_id, width, height).await
+                            Requests::set_size(self, client, sender_id, width, height).await
                         }
                         1u16 => {
                             let anchor = message.uint()?;
@@ -2094,7 +2104,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 sender_id,
                                 anchor
                             );
-                            self.set_anchor(client, sender_id, anchor.try_into()?).await
+                            Requests::set_anchor(self, client, sender_id, anchor.try_into()?).await
                         }
                         2u16 => {
                             let zone = message.int()?;
@@ -2103,7 +2113,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 sender_id,
                                 zone
                             );
-                            self.set_exclusive_zone(client, sender_id, zone).await
+                            Requests::set_exclusive_zone(self, client, sender_id, zone).await
                         }
                         3u16 => {
                             let top = message.int()?;
@@ -2118,7 +2128,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 bottom,
                                 left
                             );
-                            self.set_margin(client, sender_id, top, right, bottom, left)
+                            Requests::set_margin(self, client, sender_id, top, right, bottom, left)
                                 .await
                         }
                         4u16 => {
@@ -2128,7 +2138,8 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 sender_id,
                                 keyboard_interactivity
                             );
-                            self.set_keyboard_interactivity(
+                            Requests::set_keyboard_interactivity(
+                                self,
                                 client,
                                 sender_id,
                                 keyboard_interactivity.try_into()?,
@@ -2144,7 +2155,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 sender_id,
                                 popup
                             );
-                            self.get_popup(client, sender_id, popup).await
+                            Requests::get_popup(self, client, sender_id, popup).await
                         }
                         6u16 => {
                             let serial = message.uint()?;
@@ -2153,11 +2164,11 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 sender_id,
                                 serial
                             );
-                            self.ack_configure(client, sender_id, serial).await
+                            Requests::ack_configure(self, client, sender_id, serial).await
                         }
                         7u16 => {
                             tracing::debug!("zwlr_layer_surface_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -2168,7 +2179,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 sender_id,
                                 layer
                             );
-                            self.set_layer(client, sender_id, layer.try_into()?).await
+                            Requests::set_layer(self, client, sender_id, layer.try_into()?).await
                         }
                         9u16 => {
                             let edge = message.uint()?;
@@ -2177,7 +2188,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                                 sender_id,
                                 edge
                             );
-                            self.set_exclusive_edge(client, sender_id, edge.try_into()?)
+                            Requests::set_exclusive_edge(self, client, sender_id, edge.try_into()?)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -2490,12 +2501,12 @@ pub mod wlr_output_management_unstable_v1 {
                                 id,
                                 serial
                             );
-                            self.create_configuration(client, sender_id, id, serial)
+                            Requests::create_configuration(self, client, sender_id, id, serial)
                                 .await
                         }
                         1u16 => {
                             tracing::debug!("zwlr_output_manager_v1#{}.stop()", sender_id,);
-                            self.stop(client, sender_id).await
+                            Requests::stop(self, client, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -2647,7 +2658,7 @@ pub mod wlr_output_management_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwlr_output_head_v1#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -3086,7 +3097,7 @@ pub mod wlr_output_management_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwlr_output_mode_v1#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -3252,7 +3263,7 @@ pub mod wlr_output_management_unstable_v1 {
                                 id,
                                 head
                             );
-                            self.enable_head(client, sender_id, id, head).await
+                            Requests::enable_head(self, client, sender_id, id, head).await
                         }
                         1u16 => {
                             let head = message
@@ -3263,19 +3274,19 @@ pub mod wlr_output_management_unstable_v1 {
                                 sender_id,
                                 head
                             );
-                            self.disable_head(client, sender_id, head).await
+                            Requests::disable_head(self, client, sender_id, head).await
                         }
                         2u16 => {
                             tracing::debug!("zwlr_output_configuration_v1#{}.apply()", sender_id,);
-                            self.apply(client, sender_id).await
+                            Requests::apply(self, client, sender_id).await
                         }
                         3u16 => {
                             tracing::debug!("zwlr_output_configuration_v1#{}.test()", sender_id,);
-                            self.test(client, sender_id).await
+                            Requests::test(self, client, sender_id).await
                         }
                         4u16 => {
                             tracing::debug!("zwlr_output_configuration_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -3472,7 +3483,7 @@ pub mod wlr_output_management_unstable_v1 {
                                 sender_id,
                                 mode
                             );
-                            self.set_mode(client, sender_id, mode).await
+                            Requests::set_mode(self, client, sender_id, mode).await
                         }
                         1u16 => {
                             let width = message.int()?;
@@ -3485,8 +3496,10 @@ pub mod wlr_output_management_unstable_v1 {
                                 height,
                                 refresh
                             );
-                            self.set_custom_mode(client, sender_id, width, height, refresh)
-                                .await
+                            Requests::set_custom_mode(
+                                self, client, sender_id, width, height, refresh,
+                            )
+                            .await
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -3497,7 +3510,7 @@ pub mod wlr_output_management_unstable_v1 {
                                 x,
                                 y
                             );
-                            self.set_position(client, sender_id, x, y).await
+                            Requests::set_position(self, client, sender_id, x, y).await
                         }
                         3u16 => {
                             let transform = message.uint()?;
@@ -3506,7 +3519,7 @@ pub mod wlr_output_management_unstable_v1 {
                                 sender_id,
                                 transform
                             );
-                            self.set_transform(client, sender_id, transform.try_into()?)
+                            Requests::set_transform(self, client, sender_id, transform.try_into()?)
                                 .await
                         }
                         4u16 => {
@@ -3516,7 +3529,7 @@ pub mod wlr_output_management_unstable_v1 {
                                 sender_id,
                                 scale
                             );
-                            self.set_scale(client, sender_id, scale).await
+                            Requests::set_scale(self, client, sender_id, scale).await
                         }
                         5u16 => {
                             let state = message.uint()?;
@@ -3525,7 +3538,7 @@ pub mod wlr_output_management_unstable_v1 {
                                 sender_id,
                                 state
                             );
-                            self.set_adaptive_sync(client, sender_id, state.try_into()?)
+                            Requests::set_adaptive_sync(self, client, sender_id, state.try_into()?)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -3638,11 +3651,11 @@ pub mod wlr_output_power_management_unstable_v1 {
                                 id,
                                 output
                             );
-                            self.get_output_power(client, sender_id, id, output).await
+                            Requests::get_output_power(self, client, sender_id, id, output).await
                         }
                         1u16 => {
                             tracing::debug!("zwlr_output_power_manager_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -3742,11 +3755,11 @@ pub mod wlr_output_power_management_unstable_v1 {
                                 sender_id,
                                 mode
                             );
-                            self.set_mode(client, sender_id, mode.try_into()?).await
+                            Requests::set_mode(self, client, sender_id, mode.try_into()?).await
                         }
                         1u16 => {
                             tracing::debug!("zwlr_output_power_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -3870,8 +3883,15 @@ pub mod wlr_screencopy_unstable_v1 {
                                 overlay_cursor,
                                 output
                             );
-                            self.capture_output(client, sender_id, frame, overlay_cursor, output)
-                                .await
+                            Requests::capture_output(
+                                self,
+                                client,
+                                sender_id,
+                                frame,
+                                overlay_cursor,
+                                output,
+                            )
+                            .await
                         }
                         1u16 => {
                             let frame = message
@@ -3896,7 +3916,8 @@ pub mod wlr_screencopy_unstable_v1 {
                                 width,
                                 height
                             );
-                            self.capture_output_region(
+                            Requests::capture_output_region(
+                                self,
                                 client,
                                 sender_id,
                                 frame,
@@ -3911,7 +3932,7 @@ pub mod wlr_screencopy_unstable_v1 {
                         }
                         2u16 => {
                             tracing::debug!("zwlr_screencopy_manager_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -4035,11 +4056,11 @@ pub mod wlr_screencopy_unstable_v1 {
                                 sender_id,
                                 buffer
                             );
-                            self.copy(client, sender_id, buffer).await
+                            Requests::copy(self, client, sender_id, buffer).await
                         }
                         1u16 => {
                             tracing::debug!("zwlr_screencopy_frame_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -4052,7 +4073,7 @@ pub mod wlr_screencopy_unstable_v1 {
                                 sender_id,
                                 buffer
                             );
-                            self.copy_with_damage(client, sender_id, buffer).await
+                            Requests::copy_with_damage(self, client, sender_id, buffer).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4343,7 +4364,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 dx,
                                 dy
                             );
-                            self.motion(client, sender_id, time, dx, dy).await
+                            Requests::motion(self, client, sender_id, time, dx, dy).await
                         }
                         1u16 => {
                             let time = message.uint()?;
@@ -4360,8 +4381,10 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 x_extent,
                                 y_extent
                             );
-                            self.motion_absolute(client, sender_id, time, x, y, x_extent, y_extent)
-                                .await
+                            Requests::motion_absolute(
+                                self, client, sender_id, time, x, y, x_extent, y_extent,
+                            )
+                            .await
                         }
                         2u16 => {
                             let time = message.uint()?;
@@ -4374,8 +4397,15 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 button,
                                 state
                             );
-                            self.button(client, sender_id, time, button, state.try_into()?)
-                                .await
+                            Requests::button(
+                                self,
+                                client,
+                                sender_id,
+                                time,
+                                button,
+                                state.try_into()?,
+                            )
+                            .await
                         }
                         3u16 => {
                             let time = message.uint()?;
@@ -4388,12 +4418,12 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 axis,
                                 value
                             );
-                            self.axis(client, sender_id, time, axis.try_into()?, value)
+                            Requests::axis(self, client, sender_id, time, axis.try_into()?, value)
                                 .await
                         }
                         4u16 => {
                             tracing::debug!("zwlr_virtual_pointer_v1#{}.frame()", sender_id,);
-                            self.frame(client, sender_id).await
+                            Requests::frame(self, client, sender_id).await
                         }
                         5u16 => {
                             let axis_source = message.uint()?;
@@ -4402,7 +4432,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 sender_id,
                                 axis_source
                             );
-                            self.axis_source(client, sender_id, axis_source.try_into()?)
+                            Requests::axis_source(self, client, sender_id, axis_source.try_into()?)
                                 .await
                         }
                         6u16 => {
@@ -4414,7 +4444,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 time,
                                 axis
                             );
-                            self.axis_stop(client, sender_id, time, axis.try_into()?)
+                            Requests::axis_stop(self, client, sender_id, time, axis.try_into()?)
                                 .await
                         }
                         7u16 => {
@@ -4430,7 +4460,8 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 value,
                                 discrete
                             );
-                            self.axis_discrete(
+                            Requests::axis_discrete(
+                                self,
                                 client,
                                 sender_id,
                                 time,
@@ -4442,7 +4473,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                         }
                         8u16 => {
                             tracing::debug!("zwlr_virtual_pointer_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -4566,7 +4597,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 seat.as_ref().map_or("null".to_string(), |v| v.to_string()),
                                 id
                             );
-                            self.create_virtual_pointer(client, sender_id, seat, id)
+                            Requests::create_virtual_pointer(self, client, sender_id, seat, id)
                                 .await
                         }
                         1u16 => {
@@ -4574,7 +4605,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                 "zwlr_virtual_pointer_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -4593,8 +4624,8 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                                     .map_or("null".to_string(), |v| v.to_string()),
                                 id
                             );
-                            self.create_virtual_pointer_with_output(
-                                client, sender_id, seat, output, id,
+                            Requests::create_virtual_pointer_with_output(
+                                self, client, sender_id, seat, output, id,
                             )
                             .await
                         }

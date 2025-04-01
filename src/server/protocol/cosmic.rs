@@ -51,7 +51,7 @@ pub mod cosmic_a11y_v1 {
                                 sender_id,
                                 active
                             );
-                            self.set_magnifier(client, sender_id, active.try_into()?)
+                            Requests::set_magnifier(self, client, sender_id, active.try_into()?)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -120,7 +120,7 @@ pub mod cosmic_atspi_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("cosmic_atspi_manager_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -135,7 +135,7 @@ pub mod cosmic_atspi_v1 {
                                 virtual_mods.len(),
                                 key
                             );
-                            self.add_key_grab(client, sender_id, mods, virtual_mods, key)
+                            Requests::add_key_grab(self, client, sender_id, mods, virtual_mods, key)
                                 .await
                         }
                         2u16 => {
@@ -149,22 +149,29 @@ pub mod cosmic_atspi_v1 {
                                 virtual_mods.len(),
                                 key
                             );
-                            self.remove_key_grab(client, sender_id, mods, virtual_mods, key)
-                                .await
+                            Requests::remove_key_grab(
+                                self,
+                                client,
+                                sender_id,
+                                mods,
+                                virtual_mods,
+                                key,
+                            )
+                            .await
                         }
                         3u16 => {
                             tracing::debug!(
                                 "cosmic_atspi_manager_v1#{}.grab_keyboard()",
                                 sender_id,
                             );
-                            self.grab_keyboard(client, sender_id).await
+                            Requests::grab_keyboard(self, client, sender_id).await
                         }
                         4u16 => {
                             tracing::debug!(
                                 "cosmic_atspi_manager_v1#{}.ungrab_keyboard()",
                                 sender_id,
                             );
-                            self.ungrab_keyboard(client, sender_id).await
+                            Requests::ungrab_keyboard(self, client, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -268,14 +275,14 @@ pub mod cosmic_image_source_unstable_v1 {
                                 source,
                                 output
                             );
-                            self.create_source(client, sender_id, source, output).await
+                            Requests::create_source(self, client, sender_id, source, output).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zcosmic_workspace_image_capture_source_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -369,7 +376,7 @@ pub mod cosmic_output_management_unstable_v1 {
                                 extended,
                                 head
                             );
-                            self.get_head(client, sender_id, extended, head).await
+                            Requests::get_head(self, client, sender_id, extended, head).await
                         }
                         1u16 => {
                             let extended = message
@@ -384,7 +391,7 @@ pub mod cosmic_output_management_unstable_v1 {
                                 extended,
                                 config
                             );
-                            self.get_configuration(client, sender_id, extended, config)
+                            Requests::get_configuration(self, client, sender_id, extended, config)
                                 .await
                         }
                         2u16 => {
@@ -400,12 +407,18 @@ pub mod cosmic_output_management_unstable_v1 {
                                 extended,
                                 config_head
                             );
-                            self.get_configuration_head(client, sender_id, extended, config_head)
-                                .await
+                            Requests::get_configuration_head(
+                                self,
+                                client,
+                                sender_id,
+                                extended,
+                                config_head,
+                            )
+                            .await
                         }
                         3u16 => {
                             tracing::debug!("zcosmic_output_manager_v1#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -543,7 +556,7 @@ pub mod cosmic_output_management_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zcosmic_output_head_v1#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -725,7 +738,7 @@ pub mod cosmic_output_management_unstable_v1 {
                                 head,
                                 mirroring
                             );
-                            self.mirror_head(client, sender_id, id, head, mirroring)
+                            Requests::mirror_head(self, client, sender_id, id, head, mirroring)
                                 .await
                         }
                         1u16 => {
@@ -733,7 +746,7 @@ pub mod cosmic_output_management_unstable_v1 {
                                 "zcosmic_output_configuration_v1#{}.release()",
                                 sender_id,
                             );
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -831,14 +844,14 @@ pub mod cosmic_output_management_unstable_v1 {
                                 sender_id,
                                 scale_1000
                             );
-                            self.set_scale_1000(client, sender_id, scale_1000).await
+                            Requests::set_scale_1000(self, client, sender_id, scale_1000).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zcosmic_output_configuration_head_v1#{}.release()",
                                 sender_id,
                             );
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -849,8 +862,13 @@ pub mod cosmic_output_management_unstable_v1 {
                                 sender_id,
                                 state
                             );
-                            self.set_adaptive_sync_ext(client, sender_id, state.try_into()?)
-                                .await
+                            Requests::set_adaptive_sync_ext(
+                                self,
+                                client,
+                                sender_id,
+                                state.try_into()?,
+                            )
+                            .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -935,7 +953,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                                 overlap_notification,
                                 layer_surface
                             );
-                            self.notify_on_overlap(
+                            Requests::notify_on_overlap(
+                                self,
                                 client,
                                 sender_id,
                                 overlap_notification,
@@ -987,7 +1006,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                                 "zcosmic_overlap_notification_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -1223,7 +1242,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 source,
                                 options
                             );
-                            self.create_session(
+                            Requests::create_session(
+                                self,
                                 client,
                                 sender_id,
                                 session,
@@ -1251,8 +1271,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 pointer,
                                 options
                             );
-                            self.create_pointer_cursor_session(
-                                client, sender_id, session, source, pointer, options,
+                            Requests::create_pointer_cursor_session(
+                                self, client, sender_id, session, source, pointer, options,
                             )
                             .await
                         }
@@ -1261,7 +1281,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 "zcosmic_screencopy_manager_v2#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -1350,14 +1370,14 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 sender_id,
                                 frame
                             );
-                            self.create_frame(client, sender_id, frame).await
+                            Requests::create_frame(self, client, sender_id, frame).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zcosmic_screencopy_session_v2#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -1617,7 +1637,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zcosmic_screencopy_frame_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -1630,7 +1650,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_buffer(client, sender_id, buffer).await
+                            Requests::attach_buffer(self, client, sender_id, buffer).await
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -1645,12 +1665,12 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 width,
                                 height
                             );
-                            self.damage_buffer(client, sender_id, x, y, width, height)
+                            Requests::damage_buffer(self, client, sender_id, x, y, width, height)
                                 .await
                         }
                         3u16 => {
                             tracing::debug!("zcosmic_screencopy_frame_v2#{}.capture()", sender_id,);
-                            self.capture(client, sender_id).await
+                            Requests::capture(self, client, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1911,7 +1931,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 "zcosmic_screencopy_cursor_session_v2#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -1924,8 +1944,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                                 sender_id,
                                 session
                             );
-                            self.get_screencopy_session(client, sender_id, session)
-                                .await
+                            Requests::get_screencopy_session(self, client, sender_id, session).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -2098,7 +2117,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zcosmic_toplevel_info_v1#{}.stop()", sender_id,);
-                            self.stop(client, sender_id).await
+                            Requests::stop(self, client, sender_id).await
                         }
                         1u16 => {
                             let cosmic_toplevel = message
@@ -2113,7 +2132,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                                 cosmic_toplevel,
                                 foreign_toplevel
                             );
-                            self.get_cosmic_toplevel(
+                            Requests::get_cosmic_toplevel(
+                                self,
                                 client,
                                 sender_id,
                                 cosmic_toplevel,
@@ -2288,7 +2308,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zcosmic_toplevel_handle_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -2700,7 +2720,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zcosmic_toplevel_manager_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -2713,7 +2733,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.close(client, sender_id, toplevel).await
+                            Requests::close(self, client, sender_id, toplevel).await
                         }
                         2u16 => {
                             let toplevel = message
@@ -2728,7 +2748,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 toplevel,
                                 seat
                             );
-                            self.activate(client, sender_id, toplevel, seat).await
+                            Requests::activate(self, client, sender_id, toplevel, seat).await
                         }
                         3u16 => {
                             let toplevel = message
@@ -2739,7 +2759,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.set_maximized(client, sender_id, toplevel).await
+                            Requests::set_maximized(self, client, sender_id, toplevel).await
                         }
                         4u16 => {
                             let toplevel = message
@@ -2750,7 +2770,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.unset_maximized(client, sender_id, toplevel).await
+                            Requests::unset_maximized(self, client, sender_id, toplevel).await
                         }
                         5u16 => {
                             let toplevel = message
@@ -2761,7 +2781,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.set_minimized(client, sender_id, toplevel).await
+                            Requests::set_minimized(self, client, sender_id, toplevel).await
                         }
                         6u16 => {
                             let toplevel = message
@@ -2772,7 +2792,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.unset_minimized(client, sender_id, toplevel).await
+                            Requests::unset_minimized(self, client, sender_id, toplevel).await
                         }
                         7u16 => {
                             let toplevel = message
@@ -2787,7 +2807,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_fullscreen(client, sender_id, toplevel, output)
+                            Requests::set_fullscreen(self, client, sender_id, toplevel, output)
                                 .await
                         }
                         8u16 => {
@@ -2799,7 +2819,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.unset_fullscreen(client, sender_id, toplevel).await
+                            Requests::unset_fullscreen(self, client, sender_id, toplevel).await
                         }
                         9u16 => {
                             let toplevel = message
@@ -2822,8 +2842,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 width,
                                 height
                             );
-                            self.set_rectangle(
-                                client, sender_id, toplevel, surface, x, y, width, height,
+                            Requests::set_rectangle(
+                                self, client, sender_id, toplevel, surface, x, y, width, height,
                             )
                             .await
                         }
@@ -2844,8 +2864,10 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 workspace,
                                 output
                             );
-                            self.move_to_workspace(client, sender_id, toplevel, workspace, output)
-                                .await
+                            Requests::move_to_workspace(
+                                self, client, sender_id, toplevel, workspace, output,
+                            )
+                            .await
                         }
                         11u16 => {
                             let toplevel = message
@@ -2856,7 +2878,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.set_sticky(client, sender_id, toplevel).await
+                            Requests::set_sticky(self, client, sender_id, toplevel).await
                         }
                         12u16 => {
                             let toplevel = message
@@ -2867,7 +2889,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 sender_id,
                                 toplevel
                             );
-                            self.unset_sticky(client, sender_id, toplevel).await
+                            Requests::unset_sticky(self, client, sender_id, toplevel).await
                         }
                         13u16 => {
                             let toplevel = message
@@ -2886,8 +2908,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                                 workspace,
                                 output
                             );
-                            self.move_to_ext_workspace(
-                                client, sender_id, toplevel, workspace, output,
+                            Requests::move_to_ext_workspace(
+                                self, client, sender_id, toplevel, workspace, output,
                             )
                             .await
                         }
@@ -3132,7 +3154,8 @@ pub mod cosmic_workspace_unstable_v2 {
                                 cosmic_workspace,
                                 workspace
                             );
-                            self.get_cosmic_workspace(
+                            Requests::get_cosmic_workspace(
+                                self,
                                 client,
                                 sender_id,
                                 cosmic_workspace,
@@ -3142,7 +3165,7 @@ pub mod cosmic_workspace_unstable_v2 {
                         }
                         1u16 => {
                             tracing::debug!("zcosmic_workspace_manager_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -3242,7 +3265,7 @@ pub mod cosmic_workspace_unstable_v2 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zcosmic_workspace_handle_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -3255,7 +3278,7 @@ pub mod cosmic_workspace_unstable_v2 {
                                 sender_id,
                                 name
                             );
-                            self.rename(client, sender_id, name).await
+                            Requests::rename(self, client, sender_id, name).await
                         }
                         2u16 => {
                             let state = message.uint()?;
@@ -3264,7 +3287,7 @@ pub mod cosmic_workspace_unstable_v2 {
                                 sender_id,
                                 state
                             );
-                            self.set_tiling_state(client, sender_id, state.try_into()?)
+                            Requests::set_tiling_state(self, client, sender_id, state.try_into()?)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),

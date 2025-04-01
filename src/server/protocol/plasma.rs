@@ -32,11 +32,11 @@ pub mod appmenu {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            Requests::create(self, client, sender_id, id, surface).await
                         }
                         1u16 => {
                             tracing::debug!("org_kde_kwin_appmenu_manager#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -94,12 +94,18 @@ pub mod appmenu {
                                 service_name,
                                 object_path
                             );
-                            self.set_address(client, sender_id, service_name, object_path)
-                                .await
+                            Requests::set_address(
+                                self,
+                                client,
+                                sender_id,
+                                service_name,
+                                object_path,
+                            )
+                            .await
                         }
                         1u16 => {
                             tracing::debug!("org_kde_kwin_appmenu#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -159,7 +165,7 @@ pub mod blur {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            Requests::create(self, client, sender_id, id, surface).await
                         }
                         1u16 => {
                             let surface = message
@@ -170,7 +176,7 @@ pub mod blur {
                                 sender_id,
                                 surface
                             );
-                            self.unset(client, sender_id, surface).await
+                            Requests::unset(self, client, sender_id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -213,7 +219,7 @@ pub mod blur {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_blur#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            Requests::commit(self, client, sender_id).await
                         }
                         1u16 => {
                             let region = message.object()?;
@@ -224,11 +230,11 @@ pub mod blur {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_region(client, sender_id, region).await
+                            Requests::set_region(self, client, sender_id, region).await
                         }
                         2u16 => {
                             tracing::debug!("org_kde_kwin_blur#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -290,7 +296,7 @@ pub mod contrast {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            Requests::create(self, client, sender_id, id, surface).await
                         }
                         1u16 => {
                             let surface = message
@@ -301,7 +307,7 @@ pub mod contrast {
                                 sender_id,
                                 surface
                             );
-                            self.unset(client, sender_id, surface).await
+                            Requests::unset(self, client, sender_id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -344,7 +350,7 @@ pub mod contrast {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_contrast#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            Requests::commit(self, client, sender_id).await
                         }
                         1u16 => {
                             let region = message.object()?;
@@ -355,7 +361,7 @@ pub mod contrast {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_region(client, sender_id, region).await
+                            Requests::set_region(self, client, sender_id, region).await
                         }
                         2u16 => {
                             let contrast = message.fixed()?;
@@ -364,7 +370,7 @@ pub mod contrast {
                                 sender_id,
                                 contrast
                             );
-                            self.set_contrast(client, sender_id, contrast).await
+                            Requests::set_contrast(self, client, sender_id, contrast).await
                         }
                         3u16 => {
                             let intensity = message.fixed()?;
@@ -373,7 +379,7 @@ pub mod contrast {
                                 sender_id,
                                 intensity
                             );
-                            self.set_intensity(client, sender_id, intensity).await
+                            Requests::set_intensity(self, client, sender_id, intensity).await
                         }
                         4u16 => {
                             let saturation = message.fixed()?;
@@ -382,11 +388,11 @@ pub mod contrast {
                                 sender_id,
                                 saturation
                             );
-                            self.set_saturation(client, sender_id, saturation).await
+                            Requests::set_saturation(self, client, sender_id, saturation).await
                         }
                         5u16 => {
                             tracing::debug!("org_kde_kwin_contrast#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -403,12 +409,12 @@ pub mod contrast {
                                 blue,
                                 alpha
                             );
-                            self.set_frost(client, sender_id, red, green, blue, alpha)
+                            Requests::set_frost(self, client, sender_id, red, green, blue, alpha)
                                 .await
                         }
                         7u16 => {
                             tracing::debug!("org_kde_kwin_contrast#{}.unset_frost()", sender_id,);
-                            self.unset_frost(client, sender_id).await
+                            Requests::unset_frost(self, client, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -518,7 +524,7 @@ pub mod dpms {
                                 id,
                                 output
                             );
-                            self.get(client, sender_id, id, output).await
+                            Requests::get(self, client, sender_id, id, output).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -590,11 +596,11 @@ pub mod dpms {
                         0u16 => {
                             let mode = message.uint()?;
                             tracing::debug!("org_kde_kwin_dpms#{}.set({})", sender_id, mode);
-                            self.set(client, sender_id, mode).await
+                            Requests::set(self, client, sender_id, mode).await
                         }
                         1u16 => {
                             tracing::debug!("org_kde_kwin_dpms#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -732,7 +738,7 @@ pub mod fake_input {
                                 application,
                                 reason
                             );
-                            self.authenticate(client, sender_id, application, reason)
+                            Requests::authenticate(self, client, sender_id, application, reason)
                                 .await
                         }
                         1u16 => {
@@ -744,7 +750,7 @@ pub mod fake_input {
                                 delta_x,
                                 delta_y
                             );
-                            self.pointer_motion(client, sender_id, delta_x, delta_y)
+                            Requests::pointer_motion(self, client, sender_id, delta_x, delta_y)
                                 .await
                         }
                         2u16 => {
@@ -756,7 +762,7 @@ pub mod fake_input {
                                 button,
                                 state
                             );
-                            self.button(client, sender_id, button, state).await
+                            Requests::button(self, client, sender_id, button, state).await
                         }
                         3u16 => {
                             let axis = message.uint()?;
@@ -767,7 +773,7 @@ pub mod fake_input {
                                 axis,
                                 value
                             );
-                            self.axis(client, sender_id, axis, value).await
+                            Requests::axis(self, client, sender_id, axis, value).await
                         }
                         4u16 => {
                             let id = message.uint()?;
@@ -780,7 +786,7 @@ pub mod fake_input {
                                 x,
                                 y
                             );
-                            self.touch_down(client, sender_id, id, x, y).await
+                            Requests::touch_down(self, client, sender_id, id, x, y).await
                         }
                         5u16 => {
                             let id = message.uint()?;
@@ -793,7 +799,7 @@ pub mod fake_input {
                                 x,
                                 y
                             );
-                            self.touch_motion(client, sender_id, id, x, y).await
+                            Requests::touch_motion(self, client, sender_id, id, x, y).await
                         }
                         6u16 => {
                             let id = message.uint()?;
@@ -802,15 +808,15 @@ pub mod fake_input {
                                 sender_id,
                                 id
                             );
-                            self.touch_up(client, sender_id, id).await
+                            Requests::touch_up(self, client, sender_id, id).await
                         }
                         7u16 => {
                             tracing::debug!("org_kde_kwin_fake_input#{}.touch_cancel()", sender_id,);
-                            self.touch_cancel(client, sender_id).await
+                            Requests::touch_cancel(self, client, sender_id).await
                         }
                         8u16 => {
                             tracing::debug!("org_kde_kwin_fake_input#{}.touch_frame()", sender_id,);
-                            self.touch_frame(client, sender_id).await
+                            Requests::touch_frame(self, client, sender_id).await
                         }
                         9u16 => {
                             let x = message.fixed()?;
@@ -821,7 +827,7 @@ pub mod fake_input {
                                 x,
                                 y
                             );
-                            self.pointer_motion_absolute(client, sender_id, x, y).await
+                            Requests::pointer_motion_absolute(self, client, sender_id, x, y).await
                         }
                         10u16 => {
                             let button = message.uint()?;
@@ -832,11 +838,11 @@ pub mod fake_input {
                                 button,
                                 state
                             );
-                            self.keyboard_key(client, sender_id, button, state).await
+                            Requests::keyboard_key(self, client, sender_id, button, state).await
                         }
                         11u16 => {
                             tracing::debug!("org_kde_kwin_fake_input#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -1089,7 +1095,7 @@ pub mod fullscreen_shell {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("_wl_fullscreen_shell#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -1108,8 +1114,10 @@ pub mod fullscreen_shell {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.present_surface(client, sender_id, surface, method, output)
-                                .await
+                            Requests::present_surface(
+                                self, client, sender_id, surface, method, output,
+                            )
+                            .await
                         }
                         2u16 => {
                             let surface = message
@@ -1130,8 +1138,8 @@ pub mod fullscreen_shell {
                                 framerate,
                                 feedback
                             );
-                            self.present_surface_for_mode(
-                                client, sender_id, surface, output, framerate, feedback,
+                            Requests::present_surface_for_mode(
+                                self, client, sender_id, surface, output, framerate, feedback,
                             )
                             .await
                         }
@@ -1392,7 +1400,7 @@ pub mod idle {
                                 seat,
                                 timeout
                             );
-                            self.get_idle_timeout(client, sender_id, id, seat, timeout)
+                            Requests::get_idle_timeout(self, client, sender_id, id, seat, timeout)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -1431,7 +1439,7 @@ pub mod idle {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_idle_timeout#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -1440,7 +1448,7 @@ pub mod idle {
                                 "org_kde_kwin_idle_timeout#{}.simulate_user_activity()",
                                 sender_id,
                             );
-                            self.simulate_user_activity(client, sender_id).await
+                            Requests::simulate_user_activity(self, client, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1516,7 +1524,7 @@ pub mod kde_external_brightness_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("kde_external_brightness_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -1529,7 +1537,7 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 id
                             );
-                            self.create_brightness_control(client, sender_id, id).await
+                            Requests::create_brightness_control(self, client, sender_id, id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1577,7 +1585,7 @@ pub mod kde_external_brightness_v1 {
                                 "kde_external_brightness_device_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -1588,7 +1596,7 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 internal
                             );
-                            self.set_internal(client, sender_id, internal).await
+                            Requests::set_internal(self, client, sender_id, internal).await
                         }
                         2u16 => {
                             let string = message
@@ -1599,7 +1607,7 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 string
                             );
-                            self.set_edid(client, sender_id, string).await
+                            Requests::set_edid(self, client, sender_id, string).await
                         }
                         3u16 => {
                             let value = message.uint()?;
@@ -1608,14 +1616,14 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 value
                             );
-                            self.set_max_brightness(client, sender_id, value).await
+                            Requests::set_max_brightness(self, client, sender_id, value).await
                         }
                         4u16 => {
                             tracing::debug!(
                                 "kde_external_brightness_device_v1#{}.commit()",
                                 sender_id,
                             );
-                            self.commit(client, sender_id).await
+                            Requests::commit(self, client, sender_id).await
                         }
                         5u16 => {
                             let value = message.uint()?;
@@ -1624,7 +1632,7 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 value
                             );
-                            self.set_observed_brightness(client, sender_id, value).await
+                            Requests::set_observed_brightness(self, client, sender_id, value).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1754,11 +1762,11 @@ pub mod kde_lockscreen_overlay_v1 {
                                 sender_id,
                                 surface
                             );
-                            self.allow(client, sender_id, surface).await
+                            Requests::allow(self, client, sender_id, surface).await
                         }
                         1u16 => {
                             tracing::debug!("kde_lockscreen_overlay_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -2891,7 +2899,7 @@ pub mod kde_output_management_v2 {
                                 sender_id,
                                 id
                             );
-                            self.create_configuration(client, sender_id, id).await
+                            Requests::create_configuration(self, client, sender_id, id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -3098,7 +3106,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 enable
                             );
-                            self.enable(client, sender_id, outputdevice, enable).await
+                            Requests::enable(self, client, sender_id, outputdevice, enable).await
                         }
                         1u16 => {
                             let outputdevice = message
@@ -3113,7 +3121,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 mode
                             );
-                            self.mode(client, sender_id, outputdevice, mode).await
+                            Requests::mode(self, client, sender_id, outputdevice, mode).await
                         }
                         2u16 => {
                             let outputdevice = message
@@ -3126,7 +3134,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 transform
                             );
-                            self.transform(client, sender_id, outputdevice, transform)
+                            Requests::transform(self, client, sender_id, outputdevice, transform)
                                 .await
                         }
                         3u16 => {
@@ -3142,7 +3150,7 @@ pub mod kde_output_management_v2 {
                                 x,
                                 y
                             );
-                            self.position(client, sender_id, outputdevice, x, y).await
+                            Requests::position(self, client, sender_id, outputdevice, x, y).await
                         }
                         4u16 => {
                             let outputdevice = message
@@ -3155,15 +3163,15 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 scale
                             );
-                            self.scale(client, sender_id, outputdevice, scale).await
+                            Requests::scale(self, client, sender_id, outputdevice, scale).await
                         }
                         5u16 => {
                             tracing::debug!("kde_output_configuration_v2#{}.apply()", sender_id,);
-                            self.apply(client, sender_id).await
+                            Requests::apply(self, client, sender_id).await
                         }
                         6u16 => {
                             tracing::debug!("kde_output_configuration_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -3178,7 +3186,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 overscan
                             );
-                            self.overscan(client, sender_id, outputdevice, overscan)
+                            Requests::overscan(self, client, sender_id, outputdevice, overscan)
                                 .await
                         }
                         8u16 => {
@@ -3192,8 +3200,14 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 policy
                             );
-                            self.set_vrr_policy(client, sender_id, outputdevice, policy.try_into()?)
-                                .await
+                            Requests::set_vrr_policy(
+                                self,
+                                client,
+                                sender_id,
+                                outputdevice,
+                                policy.try_into()?,
+                            )
+                            .await
                         }
                         9u16 => {
                             let outputdevice = message
@@ -3206,7 +3220,8 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 rgb_range
                             );
-                            self.set_rgb_range(
+                            Requests::set_rgb_range(
+                                self,
                                 client,
                                 sender_id,
                                 outputdevice,
@@ -3223,7 +3238,7 @@ pub mod kde_output_management_v2 {
                                 sender_id,
                                 output
                             );
-                            self.set_primary_output(client, sender_id, output).await
+                            Requests::set_primary_output(self, client, sender_id, output).await
                         }
                         11u16 => {
                             let outputdevice = message
@@ -3236,7 +3251,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 priority
                             );
-                            self.set_priority(client, sender_id, outputdevice, priority)
+                            Requests::set_priority(self, client, sender_id, outputdevice, priority)
                                 .await
                         }
                         12u16 => {
@@ -3250,8 +3265,14 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 enable_hdr
                             );
-                            self.set_high_dynamic_range(client, sender_id, outputdevice, enable_hdr)
-                                .await
+                            Requests::set_high_dynamic_range(
+                                self,
+                                client,
+                                sender_id,
+                                outputdevice,
+                                enable_hdr,
+                            )
+                            .await
                         }
                         13u16 => {
                             let outputdevice = message
@@ -3264,8 +3285,14 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 sdr_brightness
                             );
-                            self.set_sdr_brightness(client, sender_id, outputdevice, sdr_brightness)
-                                .await
+                            Requests::set_sdr_brightness(
+                                self,
+                                client,
+                                sender_id,
+                                outputdevice,
+                                sdr_brightness,
+                            )
+                            .await
                         }
                         14u16 => {
                             let outputdevice = message
@@ -3278,8 +3305,14 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 enable_wcg
                             );
-                            self.set_wide_color_gamut(client, sender_id, outputdevice, enable_wcg)
-                                .await
+                            Requests::set_wide_color_gamut(
+                                self,
+                                client,
+                                sender_id,
+                                outputdevice,
+                                enable_wcg,
+                            )
+                            .await
                         }
                         15u16 => {
                             let outputdevice = message
@@ -3292,7 +3325,8 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 policy
                             );
-                            self.set_auto_rotate_policy(
+                            Requests::set_auto_rotate_policy(
+                                self,
                                 client,
                                 sender_id,
                                 outputdevice,
@@ -3313,8 +3347,14 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 profile_path
                             );
-                            self.set_icc_profile_path(client, sender_id, outputdevice, profile_path)
-                                .await
+                            Requests::set_icc_profile_path(
+                                self,
+                                client,
+                                sender_id,
+                                outputdevice,
+                                profile_path,
+                            )
+                            .await
                         }
                         17u16 => {
                             let outputdevice = message
@@ -3331,7 +3371,8 @@ pub mod kde_output_management_v2 {
                                 max_frame_average_brightness,
                                 min_brightness
                             );
-                            self.set_brightness_overrides(
+                            Requests::set_brightness_overrides(
+                                self,
                                 client,
                                 sender_id,
                                 outputdevice,
@@ -3352,7 +3393,8 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 gamut_wideness
                             );
-                            self.set_sdr_gamut_wideness(
+                            Requests::set_sdr_gamut_wideness(
+                                self,
                                 client,
                                 sender_id,
                                 outputdevice,
@@ -3371,7 +3413,8 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 color_profile_source
                             );
-                            self.set_color_profile_source(
+                            Requests::set_color_profile_source(
+                                self,
                                 client,
                                 sender_id,
                                 outputdevice,
@@ -3390,8 +3433,14 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 brightness
                             );
-                            self.set_brightness(client, sender_id, outputdevice, brightness)
-                                .await
+                            Requests::set_brightness(
+                                self,
+                                client,
+                                sender_id,
+                                outputdevice,
+                                brightness,
+                            )
+                            .await
                         }
                         21u16 => {
                             let outputdevice = message
@@ -3404,7 +3453,8 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 preference
                             );
-                            self.set_color_power_tradeoff(
+                            Requests::set_color_power_tradeoff(
+                                self,
                                 client,
                                 sender_id,
                                 outputdevice,
@@ -3423,7 +3473,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 multiplier
                             );
-                            self.set_dimming(client, sender_id, outputdevice, multiplier)
+                            Requests::set_dimming(self, client, sender_id, outputdevice, multiplier)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -3724,7 +3774,7 @@ pub mod kde_output_order_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("kde_output_order_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -3809,7 +3859,7 @@ pub mod kde_primary_output_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("kde_primary_output_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -3942,7 +3992,7 @@ pub mod kde_screen_edge_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("kde_screen_edge_manager_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -3961,7 +4011,8 @@ pub mod kde_screen_edge_v1 {
                                 border,
                                 surface
                             );
-                            self.get_auto_hide_screen_edge(
+                            Requests::get_auto_hide_screen_edge(
+                                self,
                                 client,
                                 sender_id,
                                 id,
@@ -4039,7 +4090,7 @@ pub mod kde_screen_edge_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("kde_auto_hide_screen_edge_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -4048,14 +4099,14 @@ pub mod kde_screen_edge_v1 {
                                 "kde_auto_hide_screen_edge_v1#{}.deactivate()",
                                 sender_id,
                             );
-                            self.deactivate(client, sender_id).await
+                            Requests::deactivate(self, client, sender_id).await
                         }
                         2u16 => {
                             tracing::debug!(
                                 "kde_auto_hide_screen_edge_v1#{}.activate()",
                                 sender_id,
                             );
-                            self.activate(client, sender_id).await
+                            Requests::activate(self, client, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4169,11 +4220,11 @@ pub mod keystate {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_keystate#{}.fetch_states()", sender_id,);
-                            self.fetch_states(client, sender_id).await
+                            Requests::fetch_states(self, client, sender_id).await
                         }
                         1u16 => {
                             tracing::debug!("org_kde_kwin_keystate#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -4254,7 +4305,7 @@ pub mod org_kde_plasma_virtual_desktop {
                                 id,
                                 desktop_id
                             );
-                            self.get_virtual_desktop(client, sender_id, id, desktop_id)
+                            Requests::get_virtual_desktop(self, client, sender_id, id, desktop_id)
                                 .await
                         }
                         1u16 => {
@@ -4268,8 +4319,10 @@ pub mod org_kde_plasma_virtual_desktop {
                                 name,
                                 position
                             );
-                            self.request_create_virtual_desktop(client, sender_id, name, position)
-                                .await
+                            Requests::request_create_virtual_desktop(
+                                self, client, sender_id, name, position,
+                            )
+                            .await
                         }
                         2u16 => {
                             let desktop_id = message
@@ -4280,8 +4333,10 @@ pub mod org_kde_plasma_virtual_desktop {
                                 sender_id,
                                 desktop_id
                             );
-                            self.request_remove_virtual_desktop(client, sender_id, desktop_id)
-                                .await
+                            Requests::request_remove_virtual_desktop(
+                                self, client, sender_id, desktop_id,
+                            )
+                            .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4429,7 +4484,7 @@ pub mod org_kde_plasma_virtual_desktop {
                                 "org_kde_plasma_virtual_desktop#{}.request_activate()",
                                 sender_id,
                             );
-                            self.request_activate(client, sender_id).await
+                            Requests::request_activate(self, client, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4629,7 +4684,7 @@ pub mod outputmanagement {
                                 sender_id,
                                 id
                             );
-                            self.create_configuration(client, sender_id, id).await
+                            Requests::create_configuration(self, client, sender_id, id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4713,7 +4768,7 @@ pub mod outputmanagement {
                                 outputdevice,
                                 enable
                             );
-                            self.enable(client, sender_id, outputdevice, enable).await
+                            Requests::enable(self, client, sender_id, outputdevice, enable).await
                         }
                         1u16 => {
                             let outputdevice = message
@@ -4726,7 +4781,7 @@ pub mod outputmanagement {
                                 outputdevice,
                                 mode_id
                             );
-                            self.mode(client, sender_id, outputdevice, mode_id).await
+                            Requests::mode(self, client, sender_id, outputdevice, mode_id).await
                         }
                         2u16 => {
                             let outputdevice = message
@@ -4739,7 +4794,7 @@ pub mod outputmanagement {
                                 outputdevice,
                                 transform
                             );
-                            self.transform(client, sender_id, outputdevice, transform)
+                            Requests::transform(self, client, sender_id, outputdevice, transform)
                                 .await
                         }
                         3u16 => {
@@ -4755,7 +4810,7 @@ pub mod outputmanagement {
                                 x,
                                 y
                             );
-                            self.position(client, sender_id, outputdevice, x, y).await
+                            Requests::position(self, client, sender_id, outputdevice, x, y).await
                         }
                         4u16 => {
                             let outputdevice = message
@@ -4768,14 +4823,14 @@ pub mod outputmanagement {
                                 outputdevice,
                                 scale
                             );
-                            self.scale(client, sender_id, outputdevice, scale).await
+                            Requests::scale(self, client, sender_id, outputdevice, scale).await
                         }
                         5u16 => {
                             tracing::debug!(
                                 "org_kde_kwin_outputconfiguration#{}.apply()",
                                 sender_id,
                             );
-                            self.apply(client, sender_id).await
+                            Requests::apply(self, client, sender_id).await
                         }
                         6u16 => {
                             let outputdevice = message
@@ -4788,7 +4843,7 @@ pub mod outputmanagement {
                                 outputdevice,
                                 scale
                             );
-                            self.scalef(client, sender_id, outputdevice, scale).await
+                            Requests::scalef(self, client, sender_id, outputdevice, scale).await
                         }
                         7u16 => {
                             let outputdevice = message
@@ -4805,15 +4860,23 @@ pub mod outputmanagement {
                                 green.len(),
                                 blue.len()
                             );
-                            self.colorcurves(client, sender_id, outputdevice, red, green, blue)
-                                .await
+                            Requests::colorcurves(
+                                self,
+                                client,
+                                sender_id,
+                                outputdevice,
+                                red,
+                                green,
+                                blue,
+                            )
+                            .await
                         }
                         8u16 => {
                             tracing::debug!(
                                 "org_kde_kwin_outputconfiguration#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -4828,7 +4891,7 @@ pub mod outputmanagement {
                                 outputdevice,
                                 overscan
                             );
-                            self.overscan(client, sender_id, outputdevice, overscan)
+                            Requests::overscan(self, client, sender_id, outputdevice, overscan)
                                 .await
                         }
                         10u16 => {
@@ -4842,8 +4905,14 @@ pub mod outputmanagement {
                                 outputdevice,
                                 policy
                             );
-                            self.set_vrr_policy(client, sender_id, outputdevice, policy.try_into()?)
-                                .await
+                            Requests::set_vrr_policy(
+                                self,
+                                client,
+                                sender_id,
+                                outputdevice,
+                                policy.try_into()?,
+                            )
+                            .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -5656,7 +5725,7 @@ pub mod plasma_shell {
                                 id,
                                 surface
                             );
-                            self.get_surface(client, sender_id, id, surface).await
+                            Requests::get_surface(self, client, sender_id, id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -5788,7 +5857,7 @@ pub mod plasma_shell {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_plasma_surface#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -5801,7 +5870,7 @@ pub mod plasma_shell {
                                 sender_id,
                                 output
                             );
-                            self.set_output(client, sender_id, output).await
+                            Requests::set_output(self, client, sender_id, output).await
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -5812,7 +5881,7 @@ pub mod plasma_shell {
                                 x,
                                 y
                             );
-                            self.set_position(client, sender_id, x, y).await
+                            Requests::set_position(self, client, sender_id, x, y).await
                         }
                         3u16 => {
                             let role = message.uint()?;
@@ -5821,7 +5890,7 @@ pub mod plasma_shell {
                                 sender_id,
                                 role
                             );
-                            self.set_role(client, sender_id, role).await
+                            Requests::set_role(self, client, sender_id, role).await
                         }
                         4u16 => {
                             let flag = message.uint()?;
@@ -5830,7 +5899,7 @@ pub mod plasma_shell {
                                 sender_id,
                                 flag
                             );
-                            self.set_panel_behavior(client, sender_id, flag).await
+                            Requests::set_panel_behavior(self, client, sender_id, flag).await
                         }
                         5u16 => {
                             let skip = message.uint()?;
@@ -5839,21 +5908,21 @@ pub mod plasma_shell {
                                 sender_id,
                                 skip
                             );
-                            self.set_skip_taskbar(client, sender_id, skip).await
+                            Requests::set_skip_taskbar(self, client, sender_id, skip).await
                         }
                         6u16 => {
                             tracing::debug!(
                                 "org_kde_plasma_surface#{}.panel_auto_hide_hide()",
                                 sender_id,
                             );
-                            self.panel_auto_hide_hide(client, sender_id).await
+                            Requests::panel_auto_hide_hide(self, client, sender_id).await
                         }
                         7u16 => {
                             tracing::debug!(
                                 "org_kde_plasma_surface#{}.panel_auto_hide_show()",
                                 sender_id,
                             );
-                            self.panel_auto_hide_show(client, sender_id).await
+                            Requests::panel_auto_hide_show(self, client, sender_id).await
                         }
                         8u16 => {
                             let takes_focus = message.uint()?;
@@ -5862,7 +5931,7 @@ pub mod plasma_shell {
                                 sender_id,
                                 takes_focus
                             );
-                            self.set_panel_takes_focus(client, sender_id, takes_focus)
+                            Requests::set_panel_takes_focus(self, client, sender_id, takes_focus)
                                 .await
                         }
                         9u16 => {
@@ -5872,14 +5941,14 @@ pub mod plasma_shell {
                                 sender_id,
                                 skip
                             );
-                            self.set_skip_switcher(client, sender_id, skip).await
+                            Requests::set_skip_switcher(self, client, sender_id, skip).await
                         }
                         10u16 => {
                             tracing::debug!(
                                 "org_kde_plasma_surface#{}.open_under_cursor()",
                                 sender_id,
                             );
-                            self.open_under_cursor(client, sender_id).await
+                            Requests::open_under_cursor(self, client, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -6238,7 +6307,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 state
                             );
-                            self.show_desktop(client, sender_id, state).await
+                            Requests::show_desktop(self, client, sender_id, state).await
                         }
                         1u16 => {
                             let id = message
@@ -6251,7 +6320,7 @@ pub mod plasma_window_management {
                                 id,
                                 internal_window_id
                             );
-                            self.get_window(client, sender_id, id, internal_window_id)
+                            Requests::get_window(self, client, sender_id, id, internal_window_id)
                                 .await
                         }
                         2u16 => {
@@ -6267,8 +6336,14 @@ pub mod plasma_window_management {
                                 id,
                                 internal_window_uuid
                             );
-                            self.get_window_by_uuid(client, sender_id, id, internal_window_uuid)
-                                .await
+                            Requests::get_window_by_uuid(
+                                self,
+                                client,
+                                sender_id,
+                                id,
+                                internal_window_uuid,
+                            )
+                            .await
                         }
                         3u16 => {
                             let stacking_order = message
@@ -6279,7 +6354,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 stacking_order
                             );
-                            self.get_stacking_order(client, sender_id, stacking_order)
+                            Requests::get_stacking_order(self, client, sender_id, stacking_order)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -6481,7 +6556,7 @@ pub mod plasma_window_management {
                                 flags,
                                 state
                             );
-                            self.set_state(client, sender_id, flags, state).await
+                            Requests::set_state(self, client, sender_id, flags, state).await
                         }
                         1u16 => {
                             let number = message.uint()?;
@@ -6490,7 +6565,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 number
                             );
-                            self.set_virtual_desktop(client, sender_id, number).await
+                            Requests::set_virtual_desktop(self, client, sender_id, number).await
                         }
                         2u16 => {
                             let panel = message
@@ -6509,8 +6584,8 @@ pub mod plasma_window_management {
                                 width,
                                 height
                             );
-                            self.set_minimized_geometry(
-                                client, sender_id, panel, x, y, width, height,
+                            Requests::set_minimized_geometry(
+                                self, client, sender_id, panel, x, y, width, height,
                             )
                             .await
                         }
@@ -6523,24 +6598,23 @@ pub mod plasma_window_management {
                                 sender_id,
                                 panel
                             );
-                            self.unset_minimized_geometry(client, sender_id, panel)
-                                .await
+                            Requests::unset_minimized_geometry(self, client, sender_id, panel).await
                         }
                         4u16 => {
                             tracing::debug!("org_kde_plasma_window#{}.close()", sender_id,);
-                            self.close(client, sender_id).await
+                            Requests::close(self, client, sender_id).await
                         }
                         5u16 => {
                             tracing::debug!("org_kde_plasma_window#{}.request_move()", sender_id,);
-                            self.request_move(client, sender_id).await
+                            Requests::request_move(self, client, sender_id).await
                         }
                         6u16 => {
                             tracing::debug!("org_kde_plasma_window#{}.request_resize()", sender_id,);
-                            self.request_resize(client, sender_id).await
+                            Requests::request_resize(self, client, sender_id).await
                         }
                         7u16 => {
                             tracing::debug!("org_kde_plasma_window#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -6551,7 +6625,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 fd.as_raw_fd()
                             );
-                            self.get_icon(client, sender_id, fd).await
+                            Requests::get_icon(self, client, sender_id, fd).await
                         }
                         9u16 => {
                             let id = message
@@ -6562,7 +6636,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 id
                             );
-                            self.request_enter_virtual_desktop(client, sender_id, id)
+                            Requests::request_enter_virtual_desktop(self, client, sender_id, id)
                                 .await
                         }
                         10u16 => {
@@ -6570,7 +6644,7 @@ pub mod plasma_window_management {
                                 "org_kde_plasma_window#{}.request_enter_new_virtual_desktop()",
                                 sender_id,
                             );
-                            self.request_enter_new_virtual_desktop(client, sender_id)
+                            Requests::request_enter_new_virtual_desktop(self, client, sender_id)
                                 .await
                         }
                         11u16 => {
@@ -6582,7 +6656,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 id
                             );
-                            self.request_leave_virtual_desktop(client, sender_id, id)
+                            Requests::request_leave_virtual_desktop(self, client, sender_id, id)
                                 .await
                         }
                         12u16 => {
@@ -6594,7 +6668,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 id
                             );
-                            self.request_enter_activity(client, sender_id, id).await
+                            Requests::request_enter_activity(self, client, sender_id, id).await
                         }
                         13u16 => {
                             let id = message
@@ -6605,7 +6679,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 id
                             );
-                            self.request_leave_activity(client, sender_id, id).await
+                            Requests::request_leave_activity(self, client, sender_id, id).await
                         }
                         14u16 => {
                             let output = message
@@ -6616,7 +6690,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 output
                             );
-                            self.send_to_output(client, sender_id, output).await
+                            Requests::send_to_output(self, client, sender_id, output).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7186,7 +7260,7 @@ pub mod plasma_window_management {
                                 "org_kde_plasma_activation_feedback#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -7250,7 +7324,7 @@ pub mod plasma_window_management {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_plasma_activation#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -7401,15 +7475,21 @@ pub mod remote_access {
                                 buffer,
                                 internal_buffer_id
                             );
-                            self.get_buffer(client, sender_id, buffer, internal_buffer_id)
-                                .await
+                            Requests::get_buffer(
+                                self,
+                                client,
+                                sender_id,
+                                buffer,
+                                internal_buffer_id,
+                            )
+                            .await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "org_kde_kwin_remote_access_manager#{}.release()",
                                 sender_id,
                             );
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -7478,7 +7558,7 @@ pub mod remote_access {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_remote_buffer#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -7564,7 +7644,7 @@ pub mod server_decoration_palette {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            Requests::create(self, client, sender_id, id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7609,14 +7689,14 @@ pub mod server_decoration_palette {
                                 sender_id,
                                 palette
                             );
-                            self.set_palette(client, sender_id, palette).await
+                            Requests::set_palette(self, client, sender_id, palette).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "org_kde_kwin_server_decoration_palette#{}.release()",
                                 sender_id,
                             );
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -7710,7 +7790,7 @@ pub mod server_decoration {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            Requests::create(self, client, sender_id, id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7813,7 +7893,7 @@ pub mod server_decoration {
                                 "org_kde_kwin_server_decoration#{}.release()",
                                 sender_id,
                             );
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -7824,7 +7904,7 @@ pub mod server_decoration {
                                 sender_id,
                                 mode
                             );
-                            self.request_mode(client, sender_id, mode).await
+                            Requests::request_mode(self, client, sender_id, mode).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7912,7 +7992,7 @@ pub mod shadow {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            Requests::create(self, client, sender_id, id, surface).await
                         }
                         1u16 => {
                             let surface = message
@@ -7923,11 +8003,11 @@ pub mod shadow {
                                 sender_id,
                                 surface
                             );
-                            self.unset(client, sender_id, surface).await
+                            Requests::unset(self, client, sender_id, surface).await
                         }
                         2u16 => {
                             tracing::debug!("org_kde_kwin_shadow_manager#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -7978,7 +8058,7 @@ pub mod shadow {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_shadow#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            Requests::commit(self, client, sender_id).await
                         }
                         1u16 => {
                             let buffer = message
@@ -7989,7 +8069,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_left(client, sender_id, buffer).await
+                            Requests::attach_left(self, client, sender_id, buffer).await
                         }
                         2u16 => {
                             let buffer = message
@@ -8000,7 +8080,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_top_left(client, sender_id, buffer).await
+                            Requests::attach_top_left(self, client, sender_id, buffer).await
                         }
                         3u16 => {
                             let buffer = message
@@ -8011,7 +8091,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_top(client, sender_id, buffer).await
+                            Requests::attach_top(self, client, sender_id, buffer).await
                         }
                         4u16 => {
                             let buffer = message
@@ -8022,7 +8102,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_top_right(client, sender_id, buffer).await
+                            Requests::attach_top_right(self, client, sender_id, buffer).await
                         }
                         5u16 => {
                             let buffer = message
@@ -8033,7 +8113,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_right(client, sender_id, buffer).await
+                            Requests::attach_right(self, client, sender_id, buffer).await
                         }
                         6u16 => {
                             let buffer = message
@@ -8044,7 +8124,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_bottom_right(client, sender_id, buffer).await
+                            Requests::attach_bottom_right(self, client, sender_id, buffer).await
                         }
                         7u16 => {
                             let buffer = message
@@ -8055,7 +8135,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_bottom(client, sender_id, buffer).await
+                            Requests::attach_bottom(self, client, sender_id, buffer).await
                         }
                         8u16 => {
                             let buffer = message
@@ -8066,7 +8146,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_bottom_left(client, sender_id, buffer).await
+                            Requests::attach_bottom_left(self, client, sender_id, buffer).await
                         }
                         9u16 => {
                             let offset = message.fixed()?;
@@ -8075,7 +8155,7 @@ pub mod shadow {
                                 sender_id,
                                 offset
                             );
-                            self.set_left_offset(client, sender_id, offset).await
+                            Requests::set_left_offset(self, client, sender_id, offset).await
                         }
                         10u16 => {
                             let offset = message.fixed()?;
@@ -8084,7 +8164,7 @@ pub mod shadow {
                                 sender_id,
                                 offset
                             );
-                            self.set_top_offset(client, sender_id, offset).await
+                            Requests::set_top_offset(self, client, sender_id, offset).await
                         }
                         11u16 => {
                             let offset = message.fixed()?;
@@ -8093,7 +8173,7 @@ pub mod shadow {
                                 sender_id,
                                 offset
                             );
-                            self.set_right_offset(client, sender_id, offset).await
+                            Requests::set_right_offset(self, client, sender_id, offset).await
                         }
                         12u16 => {
                             let offset = message.fixed()?;
@@ -8102,11 +8182,11 @@ pub mod shadow {
                                 sender_id,
                                 offset
                             );
-                            self.set_bottom_offset(client, sender_id, offset).await
+                            Requests::set_bottom_offset(self, client, sender_id, offset).await
                         }
                         13u16 => {
                             tracing::debug!("org_kde_kwin_shadow#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -8238,7 +8318,7 @@ pub mod slide {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            Requests::create(self, client, sender_id, id, surface).await
                         }
                         1u16 => {
                             let surface = message
@@ -8249,7 +8329,7 @@ pub mod slide {
                                 sender_id,
                                 surface
                             );
-                            self.unset(client, sender_id, surface).await
+                            Requests::unset(self, client, sender_id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -8323,7 +8403,7 @@ pub mod slide {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_slide#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            Requests::commit(self, client, sender_id).await
                         }
                         1u16 => {
                             let location = message.uint()?;
@@ -8332,7 +8412,7 @@ pub mod slide {
                                 sender_id,
                                 location
                             );
-                            self.set_location(client, sender_id, location).await
+                            Requests::set_location(self, client, sender_id, location).await
                         }
                         2u16 => {
                             let offset = message.int()?;
@@ -8341,11 +8421,11 @@ pub mod slide {
                                 sender_id,
                                 offset
                             );
-                            self.set_offset(client, sender_id, offset).await
+                            Requests::set_offset(self, client, sender_id, offset).await
                         }
                         3u16 => {
                             tracing::debug!("org_kde_kwin_slide#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
+                            let result = Requests::release(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -8413,7 +8493,7 @@ pub mod surface_extension {
                                 id,
                                 surface
                             );
-                            self.get_extended_surface(client, sender_id, id, surface)
+                            Requests::get_extended_surface(self, client, sender_id, id, surface)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -8512,7 +8592,7 @@ pub mod surface_extension {
                                 name,
                                 value.len()
                             );
-                            self.update_generic_property(client, sender_id, name, value)
+                            Requests::update_generic_property(self, client, sender_id, name, value)
                                 .await
                         }
                         1u16 => {
@@ -8522,8 +8602,13 @@ pub mod surface_extension {
                                 sender_id,
                                 orientation
                             );
-                            self.set_content_orientation_mask(client, sender_id, orientation)
-                                .await
+                            Requests::set_content_orientation_mask(
+                                self,
+                                client,
+                                sender_id,
+                                orientation,
+                            )
+                            .await
                         }
                         2u16 => {
                             let flags = message.int()?;
@@ -8532,15 +8617,15 @@ pub mod surface_extension {
                                 sender_id,
                                 flags
                             );
-                            self.set_window_flags(client, sender_id, flags).await
+                            Requests::set_window_flags(self, client, sender_id, flags).await
                         }
                         3u16 => {
                             tracing::debug!("qt_extended_surface#{}.raise()", sender_id,);
-                            self.raise(client, sender_id).await
+                            Requests::raise(self, client, sender_id).await
                         }
                         4u16 => {
                             tracing::debug!("qt_extended_surface#{}.lower()", sender_id,);
-                            self.lower(client, sender_id).await
+                            Requests::lower(self, client, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -8881,7 +8966,7 @@ pub mod text_input_unstable_v2 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_text_input_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -8890,22 +8975,22 @@ pub mod text_input_unstable_v2 {
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("zwp_text_input_v2#{}.enable({})", sender_id, surface);
-                            self.enable(client, sender_id, surface).await
+                            Requests::enable(self, client, sender_id, surface).await
                         }
                         2u16 => {
                             let surface = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("zwp_text_input_v2#{}.disable({})", sender_id, surface);
-                            self.disable(client, sender_id, surface).await
+                            Requests::disable(self, client, sender_id, surface).await
                         }
                         3u16 => {
                             tracing::debug!("zwp_text_input_v2#{}.show_input_panel()", sender_id,);
-                            self.show_input_panel(client, sender_id).await
+                            Requests::show_input_panel(self, client, sender_id).await
                         }
                         4u16 => {
                             tracing::debug!("zwp_text_input_v2#{}.hide_input_panel()", sender_id,);
-                            self.hide_input_panel(client, sender_id).await
+                            Requests::hide_input_panel(self, client, sender_id).await
                         }
                         5u16 => {
                             let text = message
@@ -8920,8 +9005,10 @@ pub mod text_input_unstable_v2 {
                                 cursor,
                                 anchor
                             );
-                            self.set_surrounding_text(client, sender_id, text, cursor, anchor)
-                                .await
+                            Requests::set_surrounding_text(
+                                self, client, sender_id, text, cursor, anchor,
+                            )
+                            .await
                         }
                         6u16 => {
                             let hint = message.uint()?;
@@ -8932,7 +9019,8 @@ pub mod text_input_unstable_v2 {
                                 hint,
                                 purpose
                             );
-                            self.set_content_type(
+                            Requests::set_content_type(
+                                self,
                                 client,
                                 sender_id,
                                 hint.try_into()?,
@@ -8953,8 +9041,10 @@ pub mod text_input_unstable_v2 {
                                 width,
                                 height
                             );
-                            self.set_cursor_rectangle(client, sender_id, x, y, width, height)
-                                .await
+                            Requests::set_cursor_rectangle(
+                                self, client, sender_id, x, y, width, height,
+                            )
+                            .await
                         }
                         8u16 => {
                             let language = message
@@ -8965,7 +9055,7 @@ pub mod text_input_unstable_v2 {
                                 sender_id,
                                 language
                             );
-                            self.set_preferred_language(client, sender_id, language)
+                            Requests::set_preferred_language(self, client, sender_id, language)
                                 .await
                         }
                         9u16 => {
@@ -8977,8 +9067,14 @@ pub mod text_input_unstable_v2 {
                                 serial,
                                 reason
                             );
-                            self.update_state(client, sender_id, serial, reason.try_into()?)
-                                .await
+                            Requests::update_state(
+                                self,
+                                client,
+                                sender_id,
+                                serial,
+                                reason.try_into()?,
+                            )
+                            .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -9590,7 +9686,7 @@ pub mod text_input_unstable_v2 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_text_input_manager_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -9607,7 +9703,7 @@ pub mod text_input_unstable_v2 {
                                 id,
                                 seat
                             );
-                            self.get_text_input(client, sender_id, id, seat).await
+                            Requests::get_text_input(self, client, sender_id, id, seat).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -9868,26 +9964,26 @@ pub mod text {
                                 seat,
                                 surface
                             );
-                            self.activate(client, sender_id, seat, surface).await
+                            Requests::activate(self, client, sender_id, seat, surface).await
                         }
                         1u16 => {
                             let seat = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_text_input#{}.deactivate({})", sender_id, seat);
-                            self.deactivate(client, sender_id, seat).await
+                            Requests::deactivate(self, client, sender_id, seat).await
                         }
                         2u16 => {
                             tracing::debug!("wl_text_input#{}.show_input_panel()", sender_id,);
-                            self.show_input_panel(client, sender_id).await
+                            Requests::show_input_panel(self, client, sender_id).await
                         }
                         3u16 => {
                             tracing::debug!("wl_text_input#{}.hide_input_panel()", sender_id,);
-                            self.hide_input_panel(client, sender_id).await
+                            Requests::hide_input_panel(self, client, sender_id).await
                         }
                         4u16 => {
                             tracing::debug!("wl_text_input#{}.reset()", sender_id,);
-                            self.reset(client, sender_id).await
+                            Requests::reset(self, client, sender_id).await
                         }
                         5u16 => {
                             let text = message
@@ -9902,8 +9998,10 @@ pub mod text {
                                 cursor,
                                 anchor
                             );
-                            self.set_surrounding_text(client, sender_id, text, cursor, anchor)
-                                .await
+                            Requests::set_surrounding_text(
+                                self, client, sender_id, text, cursor, anchor,
+                            )
+                            .await
                         }
                         6u16 => {
                             let hint = message.uint()?;
@@ -9914,8 +10012,7 @@ pub mod text {
                                 hint,
                                 purpose
                             );
-                            self.set_content_type(client, sender_id, hint, purpose)
-                                .await
+                            Requests::set_content_type(self, client, sender_id, hint, purpose).await
                         }
                         7u16 => {
                             let x = message.int()?;
@@ -9930,8 +10027,10 @@ pub mod text {
                                 width,
                                 height
                             );
-                            self.set_cursor_rectangle(client, sender_id, x, y, width, height)
-                                .await
+                            Requests::set_cursor_rectangle(
+                                self, client, sender_id, x, y, width, height,
+                            )
+                            .await
                         }
                         8u16 => {
                             let language = message
@@ -9942,13 +10041,13 @@ pub mod text {
                                 sender_id,
                                 language
                             );
-                            self.set_preferred_language(client, sender_id, language)
+                            Requests::set_preferred_language(self, client, sender_id, language)
                                 .await
                         }
                         9u16 => {
                             let serial = message.uint()?;
                             tracing::debug!("wl_text_input#{}.commit_state({})", sender_id, serial);
-                            self.commit_state(client, sender_id, serial).await
+                            Requests::commit_state(self, client, sender_id, serial).await
                         }
                         10u16 => {
                             let button = message.uint()?;
@@ -9959,7 +10058,7 @@ pub mod text {
                                 button,
                                 index
                             );
-                            self.invoke_action(client, sender_id, button, index).await
+                            Requests::invoke_action(self, client, sender_id, button, index).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -10455,7 +10554,7 @@ pub mod text {
                                 sender_id,
                                 id
                             );
-                            self.create_text_input(client, sender_id, id).await
+                            Requests::create_text_input(self, client, sender_id, id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -10570,7 +10669,8 @@ pub mod wl_eglstream_controller {
                                 wl_surface,
                                 wl_resource
                             );
-                            self.attach_eglstream_consumer(
+                            Requests::attach_eglstream_consumer(
+                                self,
                                 client,
                                 sender_id,
                                 wl_surface,
@@ -10593,7 +10693,8 @@ pub mod wl_eglstream_controller {
                                 wl_resource,
                                 attribs.len()
                             );
-                            self.attach_eglstream_consumer_attribs(
+                            Requests::attach_eglstream_consumer_attribs(
+                                self,
                                 client,
                                 sender_id,
                                 wl_surface,
@@ -10696,8 +10797,10 @@ pub mod zkde_screencast_unstable_v1 {
                                 output,
                                 pointer
                             );
-                            self.stream_output(client, sender_id, stream, output, pointer)
-                                .await
+                            Requests::stream_output(
+                                self, client, sender_id, stream, output, pointer,
+                            )
+                            .await
                         }
                         1u16 => {
                             let stream = message
@@ -10714,12 +10817,19 @@ pub mod zkde_screencast_unstable_v1 {
                                 window_uuid,
                                 pointer
                             );
-                            self.stream_window(client, sender_id, stream, window_uuid, pointer)
-                                .await
+                            Requests::stream_window(
+                                self,
+                                client,
+                                sender_id,
+                                stream,
+                                window_uuid,
+                                pointer,
+                            )
+                            .await
                         }
                         2u16 => {
                             tracing::debug!("zkde_screencast_unstable_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -10744,8 +10854,9 @@ pub mod zkde_screencast_unstable_v1 {
                                 scale,
                                 pointer
                             );
-                            self.stream_virtual_output(
-                                client, sender_id, stream, name, width, height, scale, pointer,
+                            Requests::stream_virtual_output(
+                                self, client, sender_id, stream, name, width, height, scale,
+                                pointer,
                             )
                             .await
                         }
@@ -10770,8 +10881,9 @@ pub mod zkde_screencast_unstable_v1 {
                                 scale,
                                 pointer
                             );
-                            self.stream_region(
-                                client, sender_id, stream, x, y, width, height, scale, pointer,
+                            Requests::stream_region(
+                                self, client, sender_id, stream, x, y, width, height, scale,
+                                pointer,
                             )
                             .await
                         }
@@ -10800,7 +10912,8 @@ pub mod zkde_screencast_unstable_v1 {
                                 scale,
                                 pointer
                             );
-                            self.stream_virtual_output_with_description(
+                            Requests::stream_virtual_output_with_description(
+                                self,
                                 client,
                                 sender_id,
                                 stream,
@@ -10901,7 +11014,7 @@ pub mod zkde_screencast_unstable_v1 {
                                 "zkde_screencast_stream_unstable_v1#{}.close()",
                                 sender_id,
                             );
-                            let result = self.close(client, sender_id).await;
+                            let result = Requests::close(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }

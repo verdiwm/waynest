@@ -19,7 +19,7 @@ pub mod ivi_application {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("ivi_surface#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -134,7 +134,7 @@ pub mod ivi_application {
                                 surface,
                                 id
                             );
-                            self.surface_create(client, sender_id, ivi_id, surface, id)
+                            Requests::surface_create(self, client, sender_id, ivi_id, surface, id)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -208,8 +208,10 @@ pub mod ivi_input {
                                 device,
                                 enabled
                             );
-                            self.set_input_focus(client, sender_id, surface, device, enabled)
-                                .await
+                            Requests::set_input_focus(
+                                self, client, sender_id, surface, device, enabled,
+                            )
+                            .await
                         }
                         1u16 => {
                             let surface = message.uint()?;
@@ -224,8 +226,10 @@ pub mod ivi_input {
                                 seat,
                                 accepted
                             );
-                            self.set_input_acceptance(client, sender_id, surface, seat, accepted)
-                                .await
+                            Requests::set_input_acceptance(
+                                self, client, sender_id, surface, seat, accepted,
+                            )
+                            .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -444,18 +448,18 @@ pub mod ivi_wm {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("ivi_wm_screen#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
                         1u16 => {
                             tracing::debug!("ivi_wm_screen#{}.clear()", sender_id,);
-                            self.clear(client, sender_id).await
+                            Requests::clear(self, client, sender_id).await
                         }
                         2u16 => {
                             let layer_id = message.uint()?;
                             tracing::debug!("ivi_wm_screen#{}.add_layer({})", sender_id, layer_id);
-                            self.add_layer(client, sender_id, layer_id).await
+                            Requests::add_layer(self, client, sender_id, layer_id).await
                         }
                         3u16 => {
                             let layer_id = message.uint()?;
@@ -464,7 +468,7 @@ pub mod ivi_wm {
                                 sender_id,
                                 layer_id
                             );
-                            self.remove_layer(client, sender_id, layer_id).await
+                            Requests::remove_layer(self, client, sender_id, layer_id).await
                         }
                         4u16 => {
                             let buffer = message
@@ -479,12 +483,12 @@ pub mod ivi_wm {
                                 buffer,
                                 screenshot
                             );
-                            self.screenshot(client, sender_id, buffer, screenshot).await
+                            Requests::screenshot(self, client, sender_id, buffer, screenshot).await
                         }
                         5u16 => {
                             let param = message.int()?;
                             tracing::debug!("ivi_wm_screen#{}.get({})", sender_id, param);
-                            self.get(client, sender_id, param).await
+                            Requests::get(self, client, sender_id, param).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -881,7 +885,7 @@ pub mod ivi_wm {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("ivi_wm#{}.commit_changes()", sender_id,);
-                            self.commit_changes(client, sender_id).await
+                            Requests::commit_changes(self, client, sender_id).await
                         }
                         1u16 => {
                             let output = message
@@ -896,7 +900,7 @@ pub mod ivi_wm {
                                 output,
                                 id
                             );
-                            self.create_screen(client, sender_id, output, id).await
+                            Requests::create_screen(self, client, sender_id, output, id).await
                         }
                         2u16 => {
                             let surface_id = message.uint()?;
@@ -907,8 +911,10 @@ pub mod ivi_wm {
                                 surface_id,
                                 visibility
                             );
-                            self.set_surface_visibility(client, sender_id, surface_id, visibility)
-                                .await
+                            Requests::set_surface_visibility(
+                                self, client, sender_id, surface_id, visibility,
+                            )
+                            .await
                         }
                         3u16 => {
                             let layer_id = message.uint()?;
@@ -919,8 +925,10 @@ pub mod ivi_wm {
                                 layer_id,
                                 visibility
                             );
-                            self.set_layer_visibility(client, sender_id, layer_id, visibility)
-                                .await
+                            Requests::set_layer_visibility(
+                                self, client, sender_id, layer_id, visibility,
+                            )
+                            .await
                         }
                         4u16 => {
                             let surface_id = message.uint()?;
@@ -931,8 +939,10 @@ pub mod ivi_wm {
                                 surface_id,
                                 opacity
                             );
-                            self.set_surface_opacity(client, sender_id, surface_id, opacity)
-                                .await
+                            Requests::set_surface_opacity(
+                                self, client, sender_id, surface_id, opacity,
+                            )
+                            .await
                         }
                         5u16 => {
                             let layer_id = message.uint()?;
@@ -943,7 +953,7 @@ pub mod ivi_wm {
                                 layer_id,
                                 opacity
                             );
-                            self.set_layer_opacity(client, sender_id, layer_id, opacity)
+                            Requests::set_layer_opacity(self, client, sender_id, layer_id, opacity)
                                 .await
                         }
                         6u16 => {
@@ -961,8 +971,8 @@ pub mod ivi_wm {
                                 width,
                                 height
                             );
-                            self.set_surface_source_rectangle(
-                                client, sender_id, surface_id, x, y, width, height,
+                            Requests::set_surface_source_rectangle(
+                                self, client, sender_id, surface_id, x, y, width, height,
                             )
                             .await
                         }
@@ -981,8 +991,8 @@ pub mod ivi_wm {
                                 width,
                                 height
                             );
-                            self.set_layer_source_rectangle(
-                                client, sender_id, layer_id, x, y, width, height,
+                            Requests::set_layer_source_rectangle(
+                                self, client, sender_id, layer_id, x, y, width, height,
                             )
                             .await
                         }
@@ -1001,8 +1011,8 @@ pub mod ivi_wm {
                                 width,
                                 height
                             );
-                            self.set_surface_destination_rectangle(
-                                client, sender_id, surface_id, x, y, width, height,
+                            Requests::set_surface_destination_rectangle(
+                                self, client, sender_id, surface_id, x, y, width, height,
                             )
                             .await
                         }
@@ -1021,8 +1031,8 @@ pub mod ivi_wm {
                                 width,
                                 height
                             );
-                            self.set_layer_destination_rectangle(
-                                client, sender_id, layer_id, x, y, width, height,
+                            Requests::set_layer_destination_rectangle(
+                                self, client, sender_id, layer_id, x, y, width, height,
                             )
                             .await
                         }
@@ -1035,7 +1045,7 @@ pub mod ivi_wm {
                                 surface_id,
                                 sync_state
                             );
-                            self.surface_sync(client, sender_id, surface_id, sync_state)
+                            Requests::surface_sync(self, client, sender_id, surface_id, sync_state)
                                 .await
                         }
                         11u16 => {
@@ -1047,7 +1057,7 @@ pub mod ivi_wm {
                                 layer_id,
                                 sync_state
                             );
-                            self.layer_sync(client, sender_id, layer_id, sync_state)
+                            Requests::layer_sync(self, client, sender_id, layer_id, sync_state)
                                 .await
                         }
                         12u16 => {
@@ -1059,7 +1069,7 @@ pub mod ivi_wm {
                                 surface_id,
                                 param
                             );
-                            self.surface_get(client, sender_id, surface_id, param).await
+                            Requests::surface_get(self, client, sender_id, surface_id, param).await
                         }
                         13u16 => {
                             let layer_id = message.uint()?;
@@ -1070,7 +1080,7 @@ pub mod ivi_wm {
                                 layer_id,
                                 param
                             );
-                            self.layer_get(client, sender_id, layer_id, param).await
+                            Requests::layer_get(self, client, sender_id, layer_id, param).await
                         }
                         14u16 => {
                             let buffer = message
@@ -1087,8 +1097,8 @@ pub mod ivi_wm {
                                 screenshot,
                                 surface_id
                             );
-                            self.surface_screenshot(
-                                client, sender_id, buffer, screenshot, surface_id,
+                            Requests::surface_screenshot(
+                                self, client, sender_id, buffer, screenshot, surface_id,
                             )
                             .await
                         }
@@ -1101,13 +1111,13 @@ pub mod ivi_wm {
                                 surface_id,
                                 r#type
                             );
-                            self.set_surface_type(client, sender_id, surface_id, r#type)
+                            Requests::set_surface_type(self, client, sender_id, surface_id, r#type)
                                 .await
                         }
                         16u16 => {
                             let layer_id = message.uint()?;
                             tracing::debug!("ivi_wm#{}.layer_clear({})", sender_id, layer_id);
-                            self.layer_clear(client, sender_id, layer_id).await
+                            Requests::layer_clear(self, client, sender_id, layer_id).await
                         }
                         17u16 => {
                             let layer_id = message.uint()?;
@@ -1118,8 +1128,10 @@ pub mod ivi_wm {
                                 layer_id,
                                 surface_id
                             );
-                            self.layer_add_surface(client, sender_id, layer_id, surface_id)
-                                .await
+                            Requests::layer_add_surface(
+                                self, client, sender_id, layer_id, surface_id,
+                            )
+                            .await
                         }
                         18u16 => {
                             let layer_id = message.uint()?;
@@ -1130,8 +1142,10 @@ pub mod ivi_wm {
                                 layer_id,
                                 surface_id
                             );
-                            self.layer_remove_surface(client, sender_id, layer_id, surface_id)
-                                .await
+                            Requests::layer_remove_surface(
+                                self, client, sender_id, layer_id, surface_id,
+                            )
+                            .await
                         }
                         19u16 => {
                             let layer_id = message.uint()?;
@@ -1144,8 +1158,10 @@ pub mod ivi_wm {
                                 width,
                                 height
                             );
-                            self.create_layout_layer(client, sender_id, layer_id, width, height)
-                                .await
+                            Requests::create_layout_layer(
+                                self, client, sender_id, layer_id, width, height,
+                            )
+                            .await
                         }
                         20u16 => {
                             let layer_id = message.uint()?;
@@ -1154,7 +1170,7 @@ pub mod ivi_wm {
                                 sender_id,
                                 layer_id
                             );
-                            self.destroy_layout_layer(client, sender_id, layer_id).await
+                            Requests::destroy_layout_layer(self, client, sender_id, layer_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }

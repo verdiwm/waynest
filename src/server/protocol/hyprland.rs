@@ -72,9 +72,9 @@ pub mod hyprland_ctm_control_v1 {
                                 mat7,
                                 mat8
                             );
-                            self.set_ctm_for_output(
-                                client, sender_id, output, mat0, mat1, mat2, mat3, mat4, mat5,
-                                mat6, mat7, mat8,
+                            Requests::set_ctm_for_output(
+                                self, client, sender_id, output, mat0, mat1, mat2, mat3, mat4,
+                                mat5, mat6, mat7, mat8,
                             )
                             .await
                         }
@@ -83,14 +83,14 @@ pub mod hyprland_ctm_control_v1 {
                                 "hyprland_ctm_control_manager_v1#{}.commit()",
                                 sender_id,
                             );
-                            self.commit(client, sender_id).await
+                            Requests::commit(self, client, sender_id).await
                         }
                         2u16 => {
                             tracing::debug!(
                                 "hyprland_ctm_control_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -179,14 +179,14 @@ pub mod hyprland_focus_grab_v1 {
                                 sender_id,
                                 grab
                             );
-                            self.create_grab(client, sender_id, grab).await
+                            Requests::create_grab(self, client, sender_id, grab).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "hyprland_focus_grab_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -254,7 +254,7 @@ pub mod hyprland_focus_grab_v1 {
                                 sender_id,
                                 surface
                             );
-                            self.add_surface(client, sender_id, surface).await
+                            Requests::add_surface(self, client, sender_id, surface).await
                         }
                         1u16 => {
                             let surface = message
@@ -265,15 +265,15 @@ pub mod hyprland_focus_grab_v1 {
                                 sender_id,
                                 surface
                             );
-                            self.remove_surface(client, sender_id, surface).await
+                            Requests::remove_surface(self, client, sender_id, surface).await
                         }
                         2u16 => {
                             tracing::debug!("hyprland_focus_grab_v1#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            Requests::commit(self, client, sender_id).await
                         }
                         3u16 => {
                             tracing::debug!("hyprland_focus_grab_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -412,7 +412,8 @@ pub mod hyprland_global_shortcuts_v1 {
                                 description,
                                 trigger_description
                             );
-                            self.register_shortcut(
+                            Requests::register_shortcut(
+                                self,
                                 client,
                                 sender_id,
                                 shortcut,
@@ -428,7 +429,7 @@ pub mod hyprland_global_shortcuts_v1 {
                                 "hyprland_global_shortcuts_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -485,7 +486,7 @@ pub mod hyprland_global_shortcuts_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("hyprland_global_shortcut_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -621,12 +622,12 @@ pub mod hyprland_surface_v1 {
                                 id,
                                 surface
                             );
-                            self.get_hyprland_surface(client, sender_id, id, surface)
+                            Requests::get_hyprland_surface(self, client, sender_id, id, surface)
                                 .await
                         }
                         1u16 => {
                             tracing::debug!("hyprland_surface_manager_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -709,11 +710,11 @@ pub mod hyprland_surface_v1 {
                                 sender_id,
                                 opacity
                             );
-                            self.set_opacity(client, sender_id, opacity).await
+                            Requests::set_opacity(self, client, sender_id, opacity).await
                         }
                         1u16 => {
                             tracing::debug!("hyprland_surface_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -785,15 +786,22 @@ pub mod hyprland_toplevel_export_v1 {
                                 overlay_cursor,
                                 handle
                             );
-                            self.capture_toplevel(client, sender_id, frame, overlay_cursor, handle)
-                                .await
+                            Requests::capture_toplevel(
+                                self,
+                                client,
+                                sender_id,
+                                frame,
+                                overlay_cursor,
+                                handle,
+                            )
+                            .await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "hyprland_toplevel_export_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }
@@ -812,7 +820,8 @@ pub mod hyprland_toplevel_export_v1 {
                                 overlay_cursor,
                                 handle
                             );
-                            self.capture_toplevel_with_wlr_toplevel_handle(
+                            Requests::capture_toplevel_with_wlr_toplevel_handle(
+                                self,
                                 client,
                                 sender_id,
                                 frame,
@@ -943,14 +952,14 @@ pub mod hyprland_toplevel_export_v1 {
                                 buffer,
                                 ignore_damage
                             );
-                            self.copy(client, sender_id, buffer, ignore_damage).await
+                            Requests::copy(self, client, sender_id, buffer, ignore_damage).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "hyprland_toplevel_export_frame_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
+                            let result = Requests::destroy(self, client, sender_id).await;
                             client.remove(sender_id);
                             result
                         }

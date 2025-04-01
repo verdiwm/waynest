@@ -75,6 +75,8 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                         }
                     }
 
+                    // impl<T: ServerHandler> Events for T {#(#events)*}
+
                     pub trait Requests {#(#requests)*}
                     pub trait Events {#(#events)*}
                 }
@@ -108,7 +110,7 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
         let mut tracing_fmt = Vec::new();
         let mut tracing_args = Vec::new();
 
-        let mut args = vec![quote! { client }, quote! { sender_id }];
+        let mut args = vec![quote! {self}, quote! { client }, quote! { sender_id }];
         let mut setters = Vec::new();
 
         for arg in &request.args {
@@ -169,13 +171,13 @@ fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
 
         let result = if request.ty == Some(MessageType::Destructor) {
             quote! {
-                let result = self.#name(#(#args),*).await;
+                let result = Requests::#name(#(#args),*).await;
                 client.remove(sender_id);
                 result
             }
         } else {
             quote! {
-                self.#name(#(#args),*).await
+                Requests::#name(#(#args),*).await
             }
         };
 
