@@ -241,10 +241,10 @@ pub mod color_management_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "xx_color_manager_v4";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xx_color_manager_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagerV4: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xx_color_manager_v4";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -332,6 +332,8 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the xx_color_manager_v4 object. This does not affect any other"]
             #[doc = "objects in any way."]
             fn destroy(
@@ -404,6 +406,8 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 obj: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each rendering intent the compositor supports."]
             fn supported_intent(
@@ -511,10 +515,10 @@ pub mod color_management_v1 {
     pub mod xx_color_management_output_v4 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "xx_color_management_output_v4";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xx_color_management_output_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagementOutputV4: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xx_color_management_output_v4";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -549,6 +553,8 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the color xx_color_management_output_v4 object. This does not"]
             #[doc = "affect any remaining protocol objects."]
             fn destroy(
@@ -593,6 +599,8 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is sent whenever the image description of the output changed,"]
             #[doc = "followed by one wl_output.done event common to output events across all"]
             #[doc = "extensions."]
@@ -652,10 +660,10 @@ pub mod color_management_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "xx_color_management_surface_v4";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xx_color_management_surface_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagementSurfaceV4: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xx_color_management_surface_v4";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -704,6 +712,8 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the xx_color_management_surface_v4 object and do the same as"]
             #[doc = "unset_image_description."]
             fn destroy(
@@ -756,6 +766,7 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A xx_color_management_feedback_surface_v4 allows the client to get the"]
     #[doc = "preferred color description of a surface."]
@@ -787,10 +798,10 @@ pub mod color_management_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "xx_color_management_feedback_surface_v4";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xx_color_management_feedback_surface_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagementFeedbackSurfaceV4: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xx_color_management_feedback_surface_v4";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -825,6 +836,8 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the xx_color_management_feedback_surface_v4 object."]
             fn destroy(
                 &self,
@@ -864,6 +877,8 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The preferred image description is the one which likely has the most"]
             #[doc = "performance and/or quality benefits for the compositor if used by the"]
             #[doc = "client for its wl_surface contents. This event is sent whenever the"]
@@ -949,10 +964,10 @@ pub mod color_management_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "xx_image_description_creator_icc_v4";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xx_image_description_creator_icc_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionCreatorIccV4: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xx_image_description_creator_icc_v4";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -993,6 +1008,8 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create an image description object based on the ICC information"]
             #[doc = "previously set on this object. A compositor must parse the ICC data in"]
             #[doc = "some undefined but finite amount of time."]
@@ -1066,6 +1083,7 @@ pub mod color_management_v1 {
                 length: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This type of object is used for collecting all the parameters required"]
     #[doc = "to create a xx_image_description_v4 object. A complete set of required"]
@@ -1137,10 +1155,10 @@ pub mod color_management_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "xx_image_description_creator_params_v4";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xx_image_description_creator_params_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionCreatorParamsV4: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xx_image_description_creator_params_v4";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1291,6 +1309,8 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create an image description object based on the parameters previously"]
             #[doc = "set on this object."]
             #[doc = ""]
@@ -1558,6 +1578,7 @@ pub mod color_management_v1 {
                 max_fall: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An image description carries information about the color encoding used on"]
     #[doc = "a surface when attached to a wl_surface via"]
@@ -1636,10 +1657,10 @@ pub mod color_management_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "xx_image_description_v4";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xx_image_description_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionV4: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xx_image_description_v4";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1670,6 +1691,8 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy this object. It is safe to destroy an object which is not ready."]
             #[doc = ""]
             #[doc = "Destroying a xx_image_description_v4 object has no side-effects, not"]
@@ -1693,6 +1716,8 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 information: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "If creating a xx_image_description_v4 object fails for a reason that is"]
             #[doc = "not defined as a protocol error, this event is sent."]
             #[doc = ""]
@@ -1788,10 +1813,10 @@ pub mod color_management_v1 {
     pub mod xx_image_description_info_v4 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "xx_image_description_info_v4";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xx_image_description_info_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionInfoV4: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xx_image_description_info_v4";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
@@ -1805,6 +1830,9 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {}
+        pub trait Events {
             #[doc = "Signals the end of information events and destroys the object."]
             fn done(
                 &self,
@@ -2150,10 +2178,10 @@ pub mod ivi_application {
     pub mod ivi_surface {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ivi_surface";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
-        pub trait IviSurface: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ivi_surface";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2173,6 +2201,8 @@ pub mod ivi_application {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This removes the link from ivi_id to wl_surface and destroys ivi_surface."]
             #[doc = "The ID, ivi_id, is free and can be used for surface_create again."]
             fn destroy(
@@ -2180,6 +2210,8 @@ pub mod ivi_application {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The configure event asks the client to resize its surface."]
             #[doc = ""]
             #[doc = "The size is a hint, in the sense that the client is free to"]
@@ -2248,10 +2280,10 @@ pub mod ivi_application {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ivi_application";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
-        pub trait IviApplication: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ivi_application";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2283,6 +2315,8 @@ pub mod ivi_application {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request gives the wl_surface the role of an IVI Surface. Creating more than"]
             #[doc = "one ivi_surface for a wl_surface is not allowed. Note, that this still allows the"]
             #[doc = "following example:"]
@@ -2313,6 +2347,7 @@ pub mod ivi_application {
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -2369,10 +2404,10 @@ pub mod ivi_hmi_controller {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ivi_hmi_controller";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ivi_hmi_controller interface. See the module level documentation for more info"]
-        pub trait IviHmiController: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ivi_hmi_controller";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2418,6 +2453,8 @@ pub mod ivi_hmi_controller {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn ui_ready(
                 &self,
                 client: &mut crate::server::Client,
@@ -2467,6 +2504,8 @@ pub mod ivi_hmi_controller {
                 sender_id: crate::wire::ObjectId,
                 home: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             fn workspace_end_control(
                 &self,
                 client: &mut crate::server::Client,
@@ -2497,10 +2536,10 @@ pub mod text_cursor_position {
     pub mod text_cursor_position {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "text_cursor_position";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the text_cursor_position interface. See the module level documentation for more info"]
-        pub trait TextCursorPosition: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "text_cursor_position";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2529,6 +2568,8 @@ pub mod text_cursor_position {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn notify(
                 &self,
                 client: &mut crate::server::Client,
@@ -2538,6 +2579,7 @@ pub mod text_cursor_position {
                 y: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[doc = "This protocol specifies a set of interfaces used to provide"]
@@ -2615,10 +2657,10 @@ pub mod weston_content_protection {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "weston_content_protection";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the weston_content_protection interface. See the module level documentation for more info"]
-        pub trait WestonContentProtection: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "weston_content_protection";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2653,6 +2695,8 @@ pub mod weston_content_protection {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Informs the server that the client will not be using this"]
             #[doc = "protocol object anymore. This does not affect any other objects,"]
             #[doc = "protected_surface objects included."]
@@ -2673,6 +2717,7 @@ pub mod weston_content_protection {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An additional interface to a wl_surface object, which allows a client to"]
     #[doc = "request the minimum level of content-protection, request to change the"]
@@ -2769,10 +2814,10 @@ pub mod weston_content_protection {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "weston_protected_surface";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the weston_protected_surface interface. See the module level documentation for more info"]
-        pub trait WestonProtectedSurface: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "weston_protected_surface";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2809,6 +2854,8 @@ pub mod weston_content_protection {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "If the protected_surface is destroyed, the wl_surface desired protection"]
             #[doc = "level returns to unprotected, as if set_type request was sent with type"]
             #[doc = "as 'unprotected'."]
@@ -2855,6 +2902,8 @@ pub mod weston_content_protection {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is sent to the client to inform about the actual protection"]
             #[doc = "level for its surface in the relax mode."]
             #[doc = ""]
@@ -2928,10 +2977,10 @@ pub mod weston_debug {
     pub mod weston_debug_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "weston_debug_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the weston_debug_v1 interface. See the module level documentation for more info"]
-        pub trait WestonDebugV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "weston_debug_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2969,6 +3018,8 @@ pub mod weston_debug {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroys the factory object, but does not affect any other objects."]
             fn destroy(
                 &self,
@@ -2993,6 +3044,8 @@ pub mod weston_debug {
                 streamfd: rustix::fd::OwnedFd,
                 stream: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Advertises an available debug scope which the client may be able to"]
             #[doc = "bind to. No information is provided by the server about the content"]
             #[doc = "contained within the debug streams provided by the scope, once a"]
@@ -3034,10 +3087,10 @@ pub mod weston_debug {
     pub mod weston_debug_stream_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "weston_debug_stream_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the weston_debug_stream_v1 interface. See the module level documentation for more info"]
-        pub trait WestonDebugStreamV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "weston_debug_stream_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3057,6 +3110,8 @@ pub mod weston_debug {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroys the object, which causes the server to stop writing into"]
             #[doc = "and closes the associated file descriptor if it was not closed"]
             #[doc = "already."]
@@ -3068,6 +3123,8 @@ pub mod weston_debug {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The server has successfully finished writing to and has closed the"]
             #[doc = "associated file descriptor."]
             #[doc = ""]
@@ -3219,10 +3276,10 @@ pub mod weston_desktop {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "weston_desktop_shell";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the weston_desktop_shell interface. See the module level documentation for more info"]
-        pub trait WestonDesktopShell: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "weston_desktop_shell";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3306,6 +3363,8 @@ pub mod weston_desktop {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn set_background(
                 &self,
                 client: &mut crate::server::Client,
@@ -3361,6 +3420,8 @@ pub mod weston_desktop {
                 sender_id: crate::wire::ObjectId,
                 position: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             fn configure(
                 &self,
                 client: &mut crate::server::Client,
@@ -3442,10 +3503,10 @@ pub mod weston_desktop {
     pub mod weston_screensaver {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "weston_screensaver";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the weston_screensaver interface. See the module level documentation for more info"]
-        pub trait WestonScreensaver: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "weston_screensaver";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3474,6 +3535,8 @@ pub mod weston_desktop {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "A screensaver surface is normally hidden, and only visible after an"]
             #[doc = "idle timeout."]
             fn set_surface(
@@ -3484,6 +3547,7 @@ pub mod weston_desktop {
                 output: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -3519,10 +3583,10 @@ pub mod weston_direct_display {
     pub mod weston_direct_display_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "weston_direct_display_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the weston_direct_display_v1 interface. See the module level documentation for more info"]
-        pub trait WestonDirectDisplayV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "weston_direct_display_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3553,6 +3617,8 @@ pub mod weston_direct_display {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request tells the compositor not to import the dmabuf to the GPU"]
             #[doc = "in order to bypass it entirely, such that the buffer will be directly"]
             #[doc = "scanned-out by the display controller. If HW is not capable/or there"]
@@ -3576,6 +3642,7 @@ pub mod weston_direct_display {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -3639,10 +3706,10 @@ pub mod weston_output_capture {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "weston_capture_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the weston_capture_v1 interface. See the module level documentation for more info"]
-        pub trait WestonCaptureV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "weston_capture_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3686,6 +3753,8 @@ pub mod weston_output_capture {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Affects no other protocol objects in any way."]
             fn destroy(
                 &self,
@@ -3729,6 +3798,7 @@ pub mod weston_output_capture {
                 capture_source_new_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An object representing image capturing functionality for a single"]
     #[doc = "source. When created, it sends the initial events if and only if the"]
@@ -3762,10 +3832,10 @@ pub mod weston_output_capture {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "weston_capture_source_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the weston_capture_source_v1 interface. See the module level documentation for more info"]
-        pub trait WestonCaptureSourceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "weston_capture_source_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3796,6 +3866,8 @@ pub mod weston_output_capture {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "If a capture is on-going on this object, this will cancel it and"]
             #[doc = "make the image buffer contents undefined."]
             #[doc = ""]
@@ -3838,6 +3910,8 @@ pub mod weston_output_capture {
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event delivers the pixel format that should be used for the"]
             #[doc = "image buffer. Any buffer is incompatible if it does not have"]
             #[doc = "this pixel format."]
@@ -4022,10 +4096,10 @@ pub mod weston_test {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "weston_test";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the weston_test interface. See the module level documentation for more info"]
-        pub trait WestonTest: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "weston_test";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4205,6 +4279,8 @@ pub mod weston_test {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn move_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -4293,6 +4369,8 @@ pub mod weston_test {
                 breakpoint: Breakpoint,
                 resource_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             fn pointer_position(
                 &self,
                 client: &mut crate::server::Client,
@@ -4364,10 +4442,10 @@ pub mod weston_test {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "weston_test_runner";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the weston_test_runner interface. See the module level documentation for more info"]
-        pub trait WestonTestRunner: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "weston_test_runner";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4398,6 +4476,8 @@ pub mod weston_test {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
@@ -4409,6 +4489,8 @@ pub mod weston_test {
                 sender_id: crate::wire::ObjectId,
                 test_name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             fn finished(
                 &self,
                 client: &mut crate::server::Client,
@@ -4486,10 +4568,10 @@ pub mod weston_touch_calibration {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "weston_touch_calibration";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the weston_touch_calibration interface. See the module level documentation for more info"]
-        pub trait WestonTouchCalibration: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "weston_touch_calibration";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4542,6 +4624,8 @@ pub mod weston_touch_calibration {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the binding to the global interface, does not affect any"]
             #[doc = "objects already created through this interface."]
             fn destroy(
@@ -4592,6 +4676,8 @@ pub mod weston_touch_calibration {
                 device: String,
                 matrix: Vec<u8>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "When a client binds to weston_touch_calibration, one touch_device event"]
             #[doc = "is sent for each touchscreen that is available to be calibrated. This"]
             #[doc = "is the only time the event is sent. Touch devices added in the"]
@@ -4688,10 +4774,10 @@ pub mod weston_touch_calibration {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "weston_touch_calibrator";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the weston_touch_calibrator interface. See the module level documentation for more info"]
-        pub trait WestonTouchCalibrator: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "weston_touch_calibrator";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4726,6 +4812,8 @@ pub mod weston_touch_calibration {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This unmaps the surface if it was mapped. The input device grab"]
             #[doc = "is dropped, if it was present. The surface loses its role as a"]
             #[doc = "calibrator."]
@@ -4759,6 +4847,8 @@ pub mod weston_touch_calibration {
                 y: i32,
                 reply: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event tells the client what size to make the surface. The client"]
             #[doc = "must obey the size exactly on the next commit with a wl_buffer."]
             #[doc = ""]
@@ -4981,10 +5071,10 @@ pub mod weston_touch_calibration {
     pub mod weston_touch_coordinate {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "weston_touch_coordinate";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the weston_touch_coordinate interface. See the module level documentation for more info"]
-        pub trait WestonTouchCoordinate: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "weston_touch_coordinate";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
@@ -4998,6 +5088,9 @@ pub mod weston_touch_calibration {
                     }
                 }
             }
+        }
+        pub trait Requests {}
+        pub trait Events {
             #[doc = "This event returns the conversion result from surface coordinates to"]
             #[doc = "the expected touch device coordinates."]
             #[doc = ""]

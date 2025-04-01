@@ -32,10 +32,10 @@ pub mod hyprland_ctm_control_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "hyprland_ctm_control_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the hyprland_ctm_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandCtmControlManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "hyprland_ctm_control_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -98,6 +98,8 @@ pub mod hyprland_ctm_control_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Set a CTM for a wl_output."]
             #[doc = ""]
             #[doc = "This state is not applied immediately; clients must call .commit to"]
@@ -142,6 +144,7 @@ pub mod hyprland_ctm_control_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[doc = "This protocol allows clients to limit input focus to a specific set"]
@@ -154,10 +157,10 @@ pub mod hyprland_focus_grab_v1 {
     pub mod hyprland_focus_grab_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "hyprland_focus_grab_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the hyprland_focus_grab_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandFocusGrabManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "hyprland_focus_grab_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -191,6 +194,8 @@ pub mod hyprland_focus_grab_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a surface grab object."]
             fn create_grab(
                 &self,
@@ -206,6 +211,7 @@ pub mod hyprland_focus_grab_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This interface restricts input focus to a specified whitelist of"]
     #[doc = "surfaces as long as the focus grab object exists and has at least"]
@@ -226,10 +232,10 @@ pub mod hyprland_focus_grab_v1 {
     pub mod hyprland_focus_grab_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "hyprland_focus_grab_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the hyprland_focus_grab_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandFocusGrabV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "hyprland_focus_grab_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -275,6 +281,8 @@ pub mod hyprland_focus_grab_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Add a surface to the whitelist. Destroying the surface is treated the"]
             #[doc = "same as an explicit call to remove_surface and duplicate additions are"]
             #[doc = "ignored."]
@@ -315,6 +323,8 @@ pub mod hyprland_focus_grab_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Sent when an active grab is cancelled by the compositor,"]
             #[doc = "regardless of cause."]
             fn cleared(
@@ -364,10 +374,10 @@ pub mod hyprland_global_shortcuts_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "hyprland_global_shortcuts_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the hyprland_global_shortcuts_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandGlobalShortcutsManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "hyprland_global_shortcuts_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -426,6 +436,8 @@ pub mod hyprland_global_shortcuts_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Register a new global shortcut."]
             #[doc = ""]
             #[doc = "A global shortcut is anonymous, meaning the app does not know what key(s) trigger it."]
@@ -451,16 +463,17 @@ pub mod hyprland_global_shortcuts_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This object represents a single shortcut."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_global_shortcut_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "hyprland_global_shortcut_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the hyprland_global_shortcut_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandGlobalShortcutV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "hyprland_global_shortcut_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -480,12 +493,16 @@ pub mod hyprland_global_shortcuts_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroys the shortcut. Can be sent at any time by the client."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The keystroke was pressed."]
             #[doc = ""]
             #[doc = "tv_ values hold the timestamp of the occurrence."]
@@ -578,10 +595,10 @@ pub mod hyprland_surface_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "hyprland_surface_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the hyprland_surface_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandSurfaceManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "hyprland_surface_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -617,6 +634,8 @@ pub mod hyprland_surface_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a hyprland surface object for the given wayland surface."]
             #[doc = ""]
             #[doc = "If the wl_surface already has an associated hyprland_surface_v1 object,"]
@@ -636,6 +655,7 @@ pub mod hyprland_surface_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This interface allows access to hyprland-specific properties of a wl_surface."]
     #[doc = ""]
@@ -669,10 +689,10 @@ pub mod hyprland_surface_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "hyprland_surface_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the hyprland_surface_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "hyprland_surface_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -701,6 +721,8 @@ pub mod hyprland_surface_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Sets a multiplier for the overall opacity of the surface."]
             #[doc = "This multiplier applies to visual effects such as blur behind the surface"]
             #[doc = "in addition to the surface's content."]
@@ -722,6 +744,7 @@ pub mod hyprland_surface_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[doc = "This protocol allows clients to ask for exporting another toplevel's"]
@@ -736,10 +759,10 @@ pub mod hyprland_toplevel_export_v1 {
     pub mod hyprland_toplevel_export_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "hyprland_toplevel_export_manager_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the hyprland_toplevel_export_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelExportManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "hyprland_toplevel_export_manager_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -802,6 +825,8 @@ pub mod hyprland_toplevel_export_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Capture the next frame of a toplevel. (window)"]
             #[doc = ""]
             #[doc = "The captured frame will not contain any server-side decorations and will"]
@@ -837,6 +862,7 @@ pub mod hyprland_toplevel_export_v1 {
                 handle: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This object represents a single frame."]
     #[doc = ""]
@@ -893,10 +919,10 @@ pub mod hyprland_toplevel_export_v1 {
                 self.bits().fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "hyprland_toplevel_export_frame_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the hyprland_toplevel_export_frame_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelExportFrameV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "hyprland_toplevel_export_frame_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -932,6 +958,8 @@ pub mod hyprland_toplevel_export_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Copy the frame to the supplied buffer. The buffer must have the"]
             #[doc = "correct size, see hyprland_toplevel_export_frame_v1.buffer and"]
             #[doc = "hyprland_toplevel_export_frame_v1.linux_dmabuf. The buffer needs to have a"]
@@ -955,6 +983,8 @@ pub mod hyprland_toplevel_export_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Provides information about wl_shm buffer parameters that need to be"]
             #[doc = "used for this frame. This event is sent once after the frame is created"]
             #[doc = "if wl_shm buffers are supported."]

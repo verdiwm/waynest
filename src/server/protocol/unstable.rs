@@ -143,10 +143,10 @@ pub mod fullscreen_shell_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_fullscreen_shell_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_fullscreen_shell_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpFullscreenShellV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_fullscreen_shell_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -214,6 +214,8 @@ pub mod fullscreen_shell_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Release the binding from the wl_fullscreen_shell interface."]
             #[doc = ""]
             #[doc = "This destroys the server-side object and frees this binding.  If"]
@@ -303,6 +305,8 @@ pub mod fullscreen_shell_unstable_v1 {
                 framerate: i32,
                 feedback: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Advertises a single capability of the compositor."]
             #[doc = ""]
             #[doc = "When the wl_fullscreen_shell interface is bound, this event is emitted"]
@@ -338,10 +342,10 @@ pub mod fullscreen_shell_unstable_v1 {
     pub mod zwp_fullscreen_shell_mode_feedback_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_fullscreen_shell_mode_feedback_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_fullscreen_shell_mode_feedback_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpFullscreenShellModeFeedbackV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_fullscreen_shell_mode_feedback_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
@@ -355,6 +359,9 @@ pub mod fullscreen_shell_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {}
+        pub trait Events {
             #[doc = "This event indicates that the attempted mode switch operation was"]
             #[doc = "successful.  A surface of the size requested in the mode switch"]
             #[doc = "will fill the output without scaling."]
@@ -445,10 +452,10 @@ pub mod idle_inhibit_unstable_v1 {
     pub mod zwp_idle_inhibit_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_idle_inhibit_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_idle_inhibit_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpIdleInhibitManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_idle_inhibit_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -483,6 +490,8 @@ pub mod idle_inhibit_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the inhibit manager."]
             fn destroy(
                 &self,
@@ -498,6 +507,7 @@ pub mod idle_inhibit_unstable_v1 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An idle inhibitor prevents the output that the associated surface is"]
     #[doc = "visible on from being set to a state where it is not visually usable due"]
@@ -515,10 +525,10 @@ pub mod idle_inhibit_unstable_v1 {
     pub mod zwp_idle_inhibitor_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_idle_inhibitor_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_idle_inhibitor_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpIdleInhibitorV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_idle_inhibitor_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -538,6 +548,8 @@ pub mod idle_inhibit_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Remove the inhibitor effect from the associated wl_surface."]
             fn destroy(
                 &self,
@@ -545,6 +557,7 @@ pub mod idle_inhibit_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -576,10 +589,10 @@ pub mod input_method_unstable_v1 {
     pub mod zwp_input_method_context_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_input_method_context_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_input_method_context_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpInputMethodContextV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_input_method_context_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -780,6 +793,8 @@ pub mod input_method_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
@@ -943,6 +958,8 @@ pub mod input_method_unstable_v1 {
                 serial: u32,
                 direction: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The plain surrounding text around the input position. Cursor is the"]
             #[doc = "position in bytes within the surrounding text relative to the beginning"]
             #[doc = "of the text. Anchor is the position in bytes of the selection anchor"]
@@ -1088,10 +1105,10 @@ pub mod input_method_unstable_v1 {
     pub mod zwp_input_method_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_input_method_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_input_method_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpInputMethodV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_input_method_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
@@ -1105,6 +1122,9 @@ pub mod input_method_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {}
+        pub trait Events {
             #[doc = "A text input was activated. Creates an input method context object"]
             #[doc = "which allows communication with the text input."]
             fn activate(
@@ -1155,10 +1175,10 @@ pub mod input_method_unstable_v1 {
     pub mod zwp_input_panel_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_input_panel_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_input_panel_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpInputPanelV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_input_panel_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1188,6 +1208,8 @@ pub mod input_method_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn get_input_panel_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -1196,6 +1218,7 @@ pub mod input_method_unstable_v1 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_panel_surface_v1 {
@@ -1221,10 +1244,10 @@ pub mod input_method_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_input_panel_surface_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_input_panel_surface_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpInputPanelSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_input_panel_surface_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1258,6 +1281,8 @@ pub mod input_method_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Set the input_panel_surface type to keyboard."]
             #[doc = ""]
             #[doc = "A keyboard surface is only shown when a text input is active."]
@@ -1278,6 +1303,7 @@ pub mod input_method_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[doc = "This protocol specifies a way for a client to request and receive"]
@@ -1299,10 +1325,10 @@ pub mod input_timestamps_unstable_v1 {
     pub mod zwp_input_timestamps_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_input_timestamps_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_input_timestamps_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpInputTimestampsManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_input_timestamps_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1373,6 +1399,8 @@ pub mod input_timestamps_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Informs the server that the client will no longer be using this"]
             #[doc = "protocol object. Existing objects created by this object are not"]
             #[doc = "affected."]
@@ -1427,6 +1455,7 @@ pub mod input_timestamps_unstable_v1 {
                 touch: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "Provides high-resolution timestamp events for a set of subscribed input"]
     #[doc = "events. The set of subscribed input events is determined by the"]
@@ -1435,10 +1464,10 @@ pub mod input_timestamps_unstable_v1 {
     pub mod zwp_input_timestamps_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_input_timestamps_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_input_timestamps_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpInputTimestampsV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_input_timestamps_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1458,6 +1487,8 @@ pub mod input_timestamps_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Informs the server that the client will no longer be using this"]
             #[doc = "protocol object. After the server processes the request, no more"]
             #[doc = "timestamp events will be emitted."]
@@ -1466,6 +1497,8 @@ pub mod input_timestamps_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The timestamp event is associated with the first subsequent input event"]
             #[doc = "carrying a timestamp which belongs to the set of input events this"]
             #[doc = "object is subscribed to."]
@@ -1552,10 +1585,10 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_keyboard_shortcuts_inhibit_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_keyboard_shortcuts_inhibit_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpKeyboardShortcutsInhibitManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_keyboard_shortcuts_inhibit_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1598,6 +1631,8 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the keyboard shortcuts inhibitor manager."]
             fn destroy(
                 &self,
@@ -1618,6 +1653,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                 seat: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A keyboard shortcuts inhibitor instructs the compositor to ignore"]
     #[doc = "its own keyboard shortcuts when the associated surface has keyboard"]
@@ -1656,10 +1692,10 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
     pub mod zwp_keyboard_shortcuts_inhibitor_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_keyboard_shortcuts_inhibitor_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_keyboard_shortcuts_inhibitor_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpKeyboardShortcutsInhibitorV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_keyboard_shortcuts_inhibitor_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1682,12 +1718,16 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Remove the keyboard shortcuts inhibitor from the associated wl_surface."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event indicates that the shortcut inhibitor is active."]
             #[doc = ""]
             #[doc = "The compositor sends this event every time compositor shortcuts"]
@@ -1812,10 +1852,10 @@ pub mod linux_dmabuf_unstable_v1 {
     pub mod zwp_linux_dmabuf_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_linux_dmabuf_v1";
+        pub const VERSION: u32 = 5u32;
         #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxDmabufV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_linux_dmabuf_v1";
-            const VERSION: u32 = 5u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1873,6 +1913,8 @@ pub mod linux_dmabuf_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Objects created through this interface, especially wl_buffers, will"]
             #[doc = "remain valid."]
             fn destroy(
@@ -1913,6 +1955,8 @@ pub mod linux_dmabuf_unstable_v1 {
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event advertises one buffer format that the server supports."]
             #[doc = "All the supported formats are advertised once when the client"]
             #[doc = "binds to this interface. A roundtrip after binding guarantees"]
@@ -2065,10 +2109,10 @@ pub mod linux_dmabuf_unstable_v1 {
                 self.bits().fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_linux_buffer_params_v1";
+        pub const VERSION: u32 = 5u32;
         #[doc = "Trait to implement the zwp_linux_buffer_params_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxBufferParamsV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_linux_buffer_params_v1";
-            const VERSION: u32 = 5u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2161,6 +2205,8 @@ pub mod linux_dmabuf_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Cleans up the temporary data sent to the server for dmabuf-based"]
             #[doc = "wl_buffer creation."]
             fn destroy(
@@ -2299,6 +2345,8 @@ pub mod linux_dmabuf_unstable_v1 {
                 format: u32,
                 flags: Flags,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event indicates that the attempted buffer creation was"]
             #[doc = "successful. It provides the new wl_buffer referencing the dmabuf(s)."]
             #[doc = ""]
@@ -2388,10 +2436,10 @@ pub mod linux_dmabuf_unstable_v1 {
                 self.bits().fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_linux_dmabuf_feedback_v1";
+        pub const VERSION: u32 = 5u32;
         #[doc = "Trait to implement the zwp_linux_dmabuf_feedback_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxDmabufFeedbackV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_linux_dmabuf_feedback_v1";
-            const VERSION: u32 = 5u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2411,6 +2459,8 @@ pub mod linux_dmabuf_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Using this request a client can tell the server that it is not going to"]
             #[doc = "use the wp_linux_dmabuf_feedback object anymore."]
             fn destroy(
@@ -2418,6 +2468,8 @@ pub mod linux_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is sent after all parameters of a wp_linux_dmabuf_feedback"]
             #[doc = "object have been sent."]
             #[doc = ""]
@@ -2707,10 +2759,10 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_linux_explicit_synchronization_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the zwp_linux_explicit_synchronization_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxExplicitSynchronizationV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_linux_explicit_synchronization_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2749,6 +2801,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy this explicit synchronization factory object. Other objects,"]
             #[doc = "including zwp_linux_surface_synchronization_v1 objects created by this"]
             #[doc = "factory, shall not be affected by this request."]
@@ -2776,6 +2830,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This object implements per-surface explicit synchronization."]
     #[doc = ""]
@@ -2847,10 +2902,10 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_linux_surface_synchronization_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the zwp_linux_surface_synchronization_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxSurfaceSynchronizationV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_linux_surface_synchronization_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2893,6 +2948,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy this explicit synchronization object."]
             #[doc = ""]
             #[doc = "Any fence set by this object with set_acquire_fence since the last"]
@@ -2959,6 +3016,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 release: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This object is instantiated in response to a"]
     #[doc = "zwp_linux_surface_synchronization_v1.get_release request."]
@@ -2981,10 +3039,10 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
     pub mod zwp_linux_buffer_release_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_linux_buffer_release_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_linux_buffer_release_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxBufferReleaseV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_linux_buffer_release_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
@@ -2998,6 +3056,9 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {}
+        pub trait Events {
             #[doc = "Sent when the compositor has finalised its usage of the associated"]
             #[doc = "buffer for the relevant commit, providing a dma_fence which will be"]
             #[doc = "signaled when all operations by the compositor on that buffer for that"]
@@ -3144,10 +3205,10 @@ pub mod pointer_constraints_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_pointer_constraints_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_pointer_constraints_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPointerConstraintsV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_pointer_constraints_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3235,6 +3296,8 @@ pub mod pointer_constraints_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Used by the client to notify the server that it will no longer use this"]
             #[doc = "pointer constraints object."]
             fn destroy(
@@ -3314,6 +3377,7 @@ pub mod pointer_constraints_unstable_v1 {
                 lifetime: Lifetime,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "The wp_locked_pointer interface represents a locked pointer state."]
     #[doc = ""]
@@ -3342,10 +3406,10 @@ pub mod pointer_constraints_unstable_v1 {
     pub mod zwp_locked_pointer_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_locked_pointer_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_locked_pointer_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLockedPointerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_locked_pointer_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3388,6 +3452,8 @@ pub mod pointer_constraints_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the locked pointer object. If applicable, the compositor will"]
             #[doc = "unlock the pointer."]
             fn destroy(
@@ -3423,6 +3489,8 @@ pub mod pointer_constraints_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Notification that the pointer lock of the seat's pointer is activated."]
             fn locked(
                 &self,
@@ -3480,10 +3548,10 @@ pub mod pointer_constraints_unstable_v1 {
     pub mod zwp_confined_pointer_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_confined_pointer_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_confined_pointer_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpConfinedPointerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_confined_pointer_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3514,6 +3582,8 @@ pub mod pointer_constraints_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the confined pointer object. If applicable, the compositor will"]
             #[doc = "unconfine the pointer."]
             fn destroy(
@@ -3541,6 +3611,8 @@ pub mod pointer_constraints_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Notification that the pointer confinement of the seat's pointer is"]
             #[doc = "activated."]
             fn confined(
@@ -3602,10 +3674,10 @@ pub mod pointer_gestures_unstable_v1 {
     pub mod zwp_pointer_gestures_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_pointer_gestures_v1";
+        pub const VERSION: u32 = 3u32;
         #[doc = "Trait to implement the zwp_pointer_gestures_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPointerGesturesV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_pointer_gestures_v1";
-            const VERSION: u32 = 3u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3670,6 +3742,8 @@ pub mod pointer_gestures_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a swipe gesture object. See the"]
             #[doc = "wl_pointer_gesture_swipe interface for details."]
             fn get_swipe_gesture(
@@ -3705,6 +3779,7 @@ pub mod pointer_gestures_unstable_v1 {
                 pointer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A swipe gesture object notifies a client about a multi-finger swipe"]
     #[doc = "gesture detected on an indirect input device such as a touchpad."]
@@ -3725,10 +3800,10 @@ pub mod pointer_gestures_unstable_v1 {
     pub mod zwp_pointer_gesture_swipe_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_pointer_gesture_swipe_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the zwp_pointer_gesture_swipe_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPointerGestureSwipeV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_pointer_gesture_swipe_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3748,11 +3823,15 @@ pub mod pointer_gestures_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is sent when a multi-finger swipe gesture is detected"]
             #[doc = "on the device."]
             fn begin(
@@ -3872,10 +3951,10 @@ pub mod pointer_gestures_unstable_v1 {
     pub mod zwp_pointer_gesture_pinch_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_pointer_gesture_pinch_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the zwp_pointer_gesture_pinch_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPointerGesturePinchV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_pointer_gesture_pinch_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3895,11 +3974,15 @@ pub mod pointer_gestures_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is sent when a multi-finger pinch gesture is detected"]
             #[doc = "on the device."]
             fn begin(
@@ -4034,10 +4117,10 @@ pub mod pointer_gestures_unstable_v1 {
     pub mod zwp_pointer_gesture_hold_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_pointer_gesture_hold_v1";
+        pub const VERSION: u32 = 3u32;
         #[doc = "Trait to implement the zwp_pointer_gesture_hold_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPointerGestureHoldV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_pointer_gesture_hold_v1";
-            const VERSION: u32 = 3u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4057,11 +4140,15 @@ pub mod pointer_gestures_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is sent when a hold gesture is detected on the device."]
             fn begin(
                 &self,
@@ -4183,10 +4270,10 @@ pub mod wp_primary_selection_unstable_v1 {
     pub mod zwp_primary_selection_device_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_primary_selection_device_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_primary_selection_device_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPrimarySelectionDeviceManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_primary_selection_device_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4235,6 +4322,8 @@ pub mod wp_primary_selection_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a new primary selection source."]
             fn create_source(
                 &self,
@@ -4257,15 +4346,16 @@ pub mod wp_primary_selection_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_primary_selection_device_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_primary_selection_device_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_primary_selection_device_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPrimarySelectionDeviceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_primary_selection_device_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4301,6 +4391,8 @@ pub mod wp_primary_selection_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Replaces the current selection. The previous owner of the primary"]
             #[doc = "selection will receive a wp_primary_selection_source.cancelled event."]
             #[doc = ""]
@@ -4318,6 +4410,8 @@ pub mod wp_primary_selection_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Introduces a new wp_primary_selection_offer object that may be used"]
             #[doc = "to receive the current primary selection. Immediately following this"]
             #[doc = "event, the new wp_primary_selection_offer object will send"]
@@ -4383,10 +4477,10 @@ pub mod wp_primary_selection_unstable_v1 {
     pub mod zwp_primary_selection_offer_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_primary_selection_offer_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_primary_selection_offer_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPrimarySelectionOfferV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_primary_selection_offer_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4422,6 +4516,8 @@ pub mod wp_primary_selection_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "To transfer the contents of the primary selection clipboard, the client"]
             #[doc = "issues this request and indicates the mime type that it wants to"]
             #[doc = "receive. The transfer happens through the passed file descriptor"]
@@ -4444,6 +4540,8 @@ pub mod wp_primary_selection_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Sent immediately after creating announcing the"]
             #[doc = "wp_primary_selection_offer through"]
             #[doc = "wp_primary_selection_device.data_offer. One event is sent per offered"]
@@ -4478,10 +4576,10 @@ pub mod wp_primary_selection_unstable_v1 {
     pub mod zwp_primary_selection_source_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_primary_selection_source_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_primary_selection_source_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPrimarySelectionSourceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_primary_selection_source_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4515,6 +4613,8 @@ pub mod wp_primary_selection_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request adds a mime type to the set of mime types advertised to"]
             #[doc = "targets. Can be called several times to offer multiple types."]
             fn offer(
@@ -4529,6 +4629,8 @@ pub mod wp_primary_selection_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Request for the current primary selection contents from the client."]
             #[doc = "Send the specified mime type over the passed file descriptor, then"]
             #[doc = "close it."]
@@ -4608,10 +4710,10 @@ pub mod relative_pointer_unstable_v1 {
     pub mod zwp_relative_pointer_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_relative_pointer_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_relative_pointer_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpRelativePointerManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_relative_pointer_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4650,6 +4752,8 @@ pub mod relative_pointer_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Used by the client to notify the server that it will no longer use this"]
             #[doc = "relative pointer manager object."]
             fn destroy(
@@ -4667,6 +4771,7 @@ pub mod relative_pointer_unstable_v1 {
                 pointer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A wp_relative_pointer object is an extension to the wl_pointer interface"]
     #[doc = "used for emitting relative pointer events. It shares the same focus as"]
@@ -4676,10 +4781,10 @@ pub mod relative_pointer_unstable_v1 {
     pub mod zwp_relative_pointer_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_relative_pointer_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_relative_pointer_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpRelativePointerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_relative_pointer_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4699,11 +4804,15 @@ pub mod relative_pointer_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Relative x/y pointer motion from the pointer of the seat associated with"]
             #[doc = "this object."]
             #[doc = ""]
@@ -4867,10 +4976,10 @@ pub mod tablet_unstable_v1 {
     pub mod zwp_tablet_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_tablet_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_tablet_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_tablet_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4906,6 +5015,8 @@ pub mod tablet_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Get the wp_tablet_seat object for the given seat. This object"]
             #[doc = "provides access to all graphics tablets in this seat."]
             fn get_tablet_seat(
@@ -4923,6 +5034,7 @@ pub mod tablet_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An object that provides access to the graphics tablets available on this"]
     #[doc = "seat. After binding to this interface, the compositor sends a set of"]
@@ -4931,10 +5043,10 @@ pub mod tablet_unstable_v1 {
     pub mod zwp_tablet_seat_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_tablet_seat_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_tablet_seat_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletSeatV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_tablet_seat_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4954,6 +5066,8 @@ pub mod tablet_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the wp_tablet_seat object. Objects created from this"]
             #[doc = "object are unaffected and should be destroyed separately."]
             fn destroy(
@@ -4961,6 +5075,8 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is sent whenever a new tablet becomes available on this"]
             #[doc = "seat. This event only provides the object id of the tablet, any"]
             #[doc = "static information about the tablet (device name, vid/pid, etc.) is"]
@@ -5166,10 +5282,10 @@ pub mod tablet_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_tablet_tool_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_tablet_tool_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletToolV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_tablet_tool_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -5209,6 +5325,8 @@ pub mod tablet_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Sets the surface of the cursor used for this tool on the given"]
             #[doc = "tablet. This request only takes effect if the tool is in proximity"]
             #[doc = "of one of the requesting client's surfaces or the surface parameter"]
@@ -5256,6 +5374,8 @@ pub mod tablet_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The tool type is the high-level type of the tool and usually decides"]
             #[doc = "the interaction expected from this tool."]
             #[doc = ""]
@@ -5778,10 +5898,10 @@ pub mod tablet_unstable_v1 {
     pub mod zwp_tablet_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_tablet_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_tablet_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_tablet_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -5801,12 +5921,16 @@ pub mod tablet_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This destroys the client's resource for this tablet object."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is sent in the initial burst of events before the"]
             #[doc = "wp_tablet.done event."]
             fn name(
@@ -6007,10 +6131,10 @@ pub mod tablet_unstable_v2 {
     pub mod zwp_tablet_manager_v2 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_tablet_manager_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletManagerV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_tablet_manager_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -6046,6 +6170,8 @@ pub mod tablet_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Get the wp_tablet_seat object for the given seat. This object"]
             #[doc = "provides access to all graphics tablets in this seat."]
             fn get_tablet_seat(
@@ -6063,6 +6189,7 @@ pub mod tablet_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An object that provides access to the graphics tablets available on this"]
     #[doc = "seat. After binding to this interface, the compositor sends a set of"]
@@ -6071,10 +6198,10 @@ pub mod tablet_unstable_v2 {
     pub mod zwp_tablet_seat_v2 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_tablet_seat_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletSeatV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_tablet_seat_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -6094,6 +6221,8 @@ pub mod tablet_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the wp_tablet_seat object. Objects created from this"]
             #[doc = "object are unaffected and should be destroyed separately."]
             fn destroy(
@@ -6101,6 +6230,8 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is sent whenever a new tablet becomes available on this"]
             #[doc = "seat. This event only provides the object id of the tablet, any"]
             #[doc = "static information about the tablet (device name, vid/pid, etc.) is"]
@@ -6333,10 +6464,10 @@ pub mod tablet_unstable_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_tablet_tool_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_tablet_tool_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletToolV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_tablet_tool_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -6376,6 +6507,8 @@ pub mod tablet_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Sets the surface of the cursor used for this tool on the given"]
             #[doc = "tablet. This request only takes effect if the tool is in proximity"]
             #[doc = "of one of the requesting client's surfaces or the surface parameter"]
@@ -6421,6 +6554,8 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The tool type is the high-level type of the tool and usually decides"]
             #[doc = "the interaction expected from this tool."]
             #[doc = ""]
@@ -6944,10 +7079,10 @@ pub mod tablet_unstable_v2 {
     pub mod zwp_tablet_v2 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_tablet_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_tablet_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_tablet_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -6967,12 +7102,16 @@ pub mod tablet_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This destroys the client's resource for this tablet object."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "A descriptive name for the tablet device."]
             #[doc = ""]
             #[doc = "If the device has no descriptive name, this event is not sent."]
@@ -7126,10 +7265,10 @@ pub mod tablet_unstable_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_tablet_pad_ring_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_tablet_pad_ring_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadRingV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_tablet_pad_ring_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7163,6 +7302,8 @@ pub mod tablet_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Request that the compositor use the provided feedback string"]
             #[doc = "associated with this ring. This request should be issued immediately"]
             #[doc = "after a wp_tablet_pad_group.mode_switch event from the corresponding"]
@@ -7195,6 +7336,8 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Source information for ring events."]
             #[doc = ""]
             #[doc = "This event does not occur on its own. It is sent before a"]
@@ -7333,10 +7476,10 @@ pub mod tablet_unstable_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_tablet_pad_strip_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_tablet_pad_strip_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadStripV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_tablet_pad_strip_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7370,6 +7513,8 @@ pub mod tablet_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Requests the compositor to use the provided feedback string"]
             #[doc = "associated with this strip. This request should be issued immediately"]
             #[doc = "after a wp_tablet_pad_group.mode_switch event from the corresponding"]
@@ -7402,6 +7547,8 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Source information for strip events."]
             #[doc = ""]
             #[doc = "This event does not occur on its own. It is sent before a"]
@@ -7541,10 +7688,10 @@ pub mod tablet_unstable_v2 {
     pub mod zwp_tablet_pad_group_v2 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_tablet_pad_group_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadGroupV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_tablet_pad_group_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7564,6 +7711,8 @@ pub mod tablet_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the wp_tablet_pad_group object. Objects created from this object"]
             #[doc = "are unaffected and should be destroyed separately."]
             fn destroy(
@@ -7571,6 +7720,8 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Sent on wp_tablet_pad_group initialization to announce the available"]
             #[doc = "buttons in the group. Button indices start at 0, a button may only be"]
             #[doc = "in one group at a time."]
@@ -7801,10 +7952,10 @@ pub mod tablet_unstable_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_tablet_pad_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_tablet_pad_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_tablet_pad_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7840,6 +7991,8 @@ pub mod tablet_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Requests the compositor to use the provided feedback string"]
             #[doc = "associated with this button. This request should be issued immediately"]
             #[doc = "after a wp_tablet_pad_group.mode_switch event from the corresponding"]
@@ -7879,6 +8032,8 @@ pub mod tablet_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Sent on wp_tablet_pad initialization to announce available groups."]
             #[doc = "One event is sent for each pad group available."]
             #[doc = ""]
@@ -8244,10 +8399,10 @@ pub mod text_input_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_text_input_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_text_input_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_text_input_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -8376,6 +8531,8 @@ pub mod text_input_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Requests the text_input object to be activated (typically when the"]
             #[doc = "text entry gets focus)."]
             #[doc = ""]
@@ -8481,6 +8638,8 @@ pub mod text_input_unstable_v1 {
                 button: u32,
                 index: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Notify the text_input object when it received focus. Typically in"]
             #[doc = "response to an activate request."]
             fn enter(
@@ -8845,10 +9004,10 @@ pub mod text_input_unstable_v1 {
     pub mod zwp_text_input_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_text_input_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_text_input_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_text_input_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -8873,6 +9032,8 @@ pub mod text_input_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Creates a new text_input object."]
             fn create_text_input(
                 &self,
@@ -8881,6 +9042,7 @@ pub mod text_input_unstable_v1 {
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[doc = "This protocol allows compositors to act as input methods and to send text"]
@@ -9032,10 +9194,10 @@ pub mod text_input_unstable_v3 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_text_input_v3";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_text_input_v3 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputV3: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_text_input_v3";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9126,6 +9288,8 @@ pub mod text_input_unstable_v3 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the wp_text_input object. Also disables all surfaces enabled"]
             #[doc = "through this wp_text_input object."]
             fn destroy(
@@ -9308,6 +9472,8 @@ pub mod text_input_unstable_v3 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Notification that this seat's text-input focus is on a certain surface."]
             #[doc = ""]
             #[doc = "If client has created multiple text input objects, compositor must send"]
@@ -9522,10 +9688,10 @@ pub mod text_input_unstable_v3 {
     pub mod zwp_text_input_manager_v3 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_text_input_manager_v3";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_text_input_manager_v3 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputManagerV3: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_text_input_manager_v3";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9560,6 +9726,8 @@ pub mod text_input_unstable_v3 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the wp_text_input_manager object."]
             fn destroy(
                 &self,
@@ -9575,6 +9743,7 @@ pub mod text_input_unstable_v3 {
                 seat: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -9605,10 +9774,10 @@ pub mod xdg_decoration_unstable_v1 {
     pub mod zxdg_decoration_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zxdg_decoration_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zxdg_decoration_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgDecorationManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_decoration_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9644,6 +9813,8 @@ pub mod xdg_decoration_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the decoration manager. This doesn't destroy objects created"]
             #[doc = "with the manager."]
             fn destroy(
@@ -9666,6 +9837,7 @@ pub mod xdg_decoration_unstable_v1 {
                 toplevel: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "The decoration object allows the compositor to toggle server-side window"]
     #[doc = "decorations for a toplevel surface. The client can request to switch to"]
@@ -9732,10 +9904,10 @@ pub mod xdg_decoration_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zxdg_toplevel_decoration_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zxdg_toplevel_decoration_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgToplevelDecorationV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_toplevel_decoration_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9771,6 +9943,8 @@ pub mod xdg_decoration_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Switch back to a mode without any server-side decorations at the next"]
             #[doc = "commit."]
             fn destroy(
@@ -9814,6 +9988,8 @@ pub mod xdg_decoration_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The configure event configures the effective decoration mode. The"]
             #[doc = "configured state should not be applied immediately. Clients must send an"]
             #[doc = "ack_configure in response to this event. See xdg_surface.configure and"]
@@ -9882,10 +10058,10 @@ pub mod xdg_foreign_unstable_v1 {
     pub mod zxdg_exporter_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zxdg_exporter_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zxdg_exporter_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgExporterV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_exporter_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9920,6 +10096,8 @@ pub mod xdg_foreign_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Notify the compositor that the xdg_exporter object will no longer be"]
             #[doc = "used."]
             fn destroy(
@@ -9943,6 +10121,7 @@ pub mod xdg_foreign_unstable_v1 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A global interface used for importing surfaces exported by xdg_exporter."]
     #[doc = "With this interface, a client can create a reference to a surface of"]
@@ -9951,10 +10130,10 @@ pub mod xdg_foreign_unstable_v1 {
     pub mod zxdg_importer_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zxdg_importer_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zxdg_importer_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgImporterV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_importer_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9989,6 +10168,8 @@ pub mod xdg_foreign_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Notify the compositor that the xdg_importer object will no longer be"]
             #[doc = "used."]
             fn destroy(
@@ -10009,6 +10190,7 @@ pub mod xdg_foreign_unstable_v1 {
                 handle: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An xdg_exported object represents an exported reference to a surface. The"]
     #[doc = "exported surface may be referenced as long as the xdg_exported object not"]
@@ -10018,10 +10200,10 @@ pub mod xdg_foreign_unstable_v1 {
     pub mod zxdg_exported_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zxdg_exported_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zxdg_exported_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgExportedV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_exported_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10041,6 +10223,8 @@ pub mod xdg_foreign_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Revoke the previously exported surface. This invalidates any"]
             #[doc = "relationship the importer may have set up using the xdg_imported created"]
             #[doc = "given the handle sent via xdg_exported.handle."]
@@ -10049,6 +10233,8 @@ pub mod xdg_foreign_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The handle event contains the unique handle of this exported surface"]
             #[doc = "reference. It may be shared with any client, which then can use it to"]
             #[doc = "import the surface by calling xdg_importer.import. A handle may be"]
@@ -10079,10 +10265,10 @@ pub mod xdg_foreign_unstable_v1 {
     pub mod zxdg_imported_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zxdg_imported_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zxdg_imported_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgImportedV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_imported_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10113,6 +10299,8 @@ pub mod xdg_foreign_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Notify the compositor that it will no longer use the xdg_imported"]
             #[doc = "object. Any relationship that may have been set up will at this point"]
             #[doc = "be invalidated."]
@@ -10131,6 +10319,8 @@ pub mod xdg_foreign_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The imported surface handle has been destroyed and any relationship set"]
             #[doc = "up has been invalidated. This may happen for various reasons, for"]
             #[doc = "example if the exported surface or the exported surface handle has been"]
@@ -10212,10 +10402,10 @@ pub mod xdg_foreign_unstable_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zxdg_exporter_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zxdg_exporter_v2 interface. See the module level documentation for more info"]
-        pub trait ZxdgExporterV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_exporter_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10250,6 +10440,8 @@ pub mod xdg_foreign_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Notify the compositor that the xdg_exporter object will no longer be"]
             #[doc = "used."]
             fn destroy(
@@ -10274,6 +10466,7 @@ pub mod xdg_foreign_unstable_v2 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A global interface used for importing surfaces exported by xdg_exporter."]
     #[doc = "With this interface, a client can create a reference to a surface of"]
@@ -10282,10 +10475,10 @@ pub mod xdg_foreign_unstable_v2 {
     pub mod zxdg_importer_v2 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zxdg_importer_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zxdg_importer_v2 interface. See the module level documentation for more info"]
-        pub trait ZxdgImporterV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_importer_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10320,6 +10513,8 @@ pub mod xdg_foreign_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Notify the compositor that the xdg_importer object will no longer be"]
             #[doc = "used."]
             fn destroy(
@@ -10340,6 +10535,7 @@ pub mod xdg_foreign_unstable_v2 {
                 handle: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An xdg_exported object represents an exported reference to a surface. The"]
     #[doc = "exported surface may be referenced as long as the xdg_exported object not"]
@@ -10349,10 +10545,10 @@ pub mod xdg_foreign_unstable_v2 {
     pub mod zxdg_exported_v2 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zxdg_exported_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zxdg_exported_v2 interface. See the module level documentation for more info"]
-        pub trait ZxdgExportedV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_exported_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10372,6 +10568,8 @@ pub mod xdg_foreign_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Revoke the previously exported surface. This invalidates any"]
             #[doc = "relationship the importer may have set up using the xdg_imported created"]
             #[doc = "given the handle sent via xdg_exported.handle."]
@@ -10380,6 +10578,8 @@ pub mod xdg_foreign_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The handle event contains the unique handle of this exported surface"]
             #[doc = "reference. It may be shared with any client, which then can use it to"]
             #[doc = "import the surface by calling xdg_importer.import_toplevel. A handle"]
@@ -10433,10 +10633,10 @@ pub mod xdg_foreign_unstable_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zxdg_imported_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zxdg_imported_v2 interface. See the module level documentation for more info"]
-        pub trait ZxdgImportedV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_imported_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10467,6 +10667,8 @@ pub mod xdg_foreign_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Notify the compositor that it will no longer use the xdg_imported"]
             #[doc = "object. Any relationship that may have been set up will at this point"]
             #[doc = "be invalidated."]
@@ -10486,6 +10688,8 @@ pub mod xdg_foreign_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The imported surface handle has been destroyed and any relationship set"]
             #[doc = "up has been invalidated. This may happen for various reasons, for"]
             #[doc = "example if the exported surface or the exported surface handle has been"]
@@ -10541,10 +10745,10 @@ pub mod xdg_output_unstable_v1 {
     pub mod zxdg_output_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zxdg_output_manager_v1";
+        pub const VERSION: u32 = 3u32;
         #[doc = "Trait to implement the zxdg_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgOutputManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_output_manager_v1";
-            const VERSION: u32 = 3u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10579,6 +10783,8 @@ pub mod xdg_output_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Using this request a client can tell the server that it is not"]
             #[doc = "going to use the xdg_output_manager object anymore."]
             #[doc = ""]
@@ -10597,6 +10803,7 @@ pub mod xdg_output_unstable_v1 {
                 output: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An xdg_output describes part of the compositor geometry."]
     #[doc = ""]
@@ -10611,10 +10818,10 @@ pub mod xdg_output_unstable_v1 {
     pub mod zxdg_output_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zxdg_output_v1";
+        pub const VERSION: u32 = 3u32;
         #[doc = "Trait to implement the zxdg_output_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgOutputV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_output_v1";
-            const VERSION: u32 = 3u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10634,6 +10841,8 @@ pub mod xdg_output_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Using this request a client can tell the server that it is not"]
             #[doc = "going to use the xdg_output object anymore."]
             fn destroy(
@@ -10641,6 +10850,8 @@ pub mod xdg_output_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The position event describes the location of the wl_output within"]
             #[doc = "the global compositor space."]
             #[doc = ""]
@@ -10893,10 +11104,10 @@ pub mod xdg_shell_unstable_v5 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "xdg_shell";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xdg_shell interface. See the module level documentation for more info"]
-        pub trait XdgShell: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xdg_shell";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10977,6 +11188,8 @@ pub mod xdg_shell_unstable_v5 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy this xdg_shell object."]
             #[doc = ""]
             #[doc = "Destroying a bound xdg_shell object while there are surfaces"]
@@ -11044,6 +11257,8 @@ pub mod xdg_shell_unstable_v5 {
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The ping event asks the client if it's still alive. Pass the"]
             #[doc = "serial specified in the event back to the compositor by sending"]
             #[doc = "a \"pong\" request back with the specified serial."]
@@ -11182,10 +11397,10 @@ pub mod xdg_shell_unstable_v5 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "xdg_surface";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xdg_surface interface. See the module level documentation for more info"]
-        pub trait XdgSurface: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xdg_surface";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -11319,6 +11534,8 @@ pub mod xdg_shell_unstable_v5 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Unmap and destroy the window. The window will be effectively"]
             #[doc = "hidden from the user's point of view, and all state like"]
             #[doc = "maximization, fullscreen, and so on, will be lost."]
@@ -11604,6 +11821,8 @@ pub mod xdg_shell_unstable_v5 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The configure event asks the client to resize its surface or to"]
             #[doc = "change its state."]
             #[doc = ""]
@@ -11737,10 +11956,10 @@ pub mod xdg_shell_unstable_v5 {
     pub mod xdg_popup {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "xdg_popup";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xdg_popup interface. See the module level documentation for more info"]
-        pub trait XdgPopup: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xdg_popup";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -11760,6 +11979,8 @@ pub mod xdg_shell_unstable_v5 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This destroys the popup. Explicitly destroying the xdg_popup"]
             #[doc = "object will also dismiss the popup, and unmap the surface."]
             #[doc = ""]
@@ -11770,6 +11991,8 @@ pub mod xdg_shell_unstable_v5 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The popup_done event is sent out when a popup is dismissed by the"]
             #[doc = "compositor. The client should destroy the xdg_popup object at this"]
             #[doc = "point."]
@@ -11836,10 +12059,10 @@ pub mod xdg_shell_unstable_v6 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zxdg_shell_v6";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zxdg_shell_v6 interface. See the module level documentation for more info"]
-        pub trait ZxdgShellV6: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_shell_v6";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -11890,6 +12113,8 @@ pub mod xdg_shell_unstable_v6 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy this xdg_shell object."]
             #[doc = ""]
             #[doc = "Destroying a bound xdg_shell object while there are surfaces"]
@@ -11935,6 +12160,8 @@ pub mod xdg_shell_unstable_v6 {
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The ping event asks the client if it's still alive. Pass the"]
             #[doc = "serial specified in the event back to the compositor by sending"]
             #[doc = "a \"pong\" request back with the specified serial. See xdg_shell.ping."]
@@ -12044,10 +12271,10 @@ pub mod xdg_shell_unstable_v6 {
                 self.bits().fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zxdg_positioner_v6";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zxdg_positioner_v6 interface. See the module level documentation for more info"]
-        pub trait ZxdgPositionerV6: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_positioner_v6";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -12134,6 +12361,8 @@ pub mod xdg_shell_unstable_v6 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Notify the compositor that the xdg_positioner will no longer be used."]
             fn destroy(
                 &self,
@@ -12240,6 +12469,7 @@ pub mod xdg_shell_unstable_v6 {
                 y: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An interface that may be implemented by a wl_surface, for"]
     #[doc = "implementations that provide a desktop-style user interface."]
@@ -12299,10 +12529,10 @@ pub mod xdg_shell_unstable_v6 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zxdg_surface_v6";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zxdg_surface_v6 interface. See the module level documentation for more info"]
-        pub trait ZxdgSurfaceV6: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_surface_v6";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -12374,6 +12604,8 @@ pub mod xdg_shell_unstable_v6 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the xdg_surface object. An xdg_surface must only be destroyed"]
             #[doc = "after its role object has been destroyed. If the role object still"]
             #[doc = "exists when this request is issued, the zxdg_shell_v6.defunct_surfaces"]
@@ -12469,6 +12701,8 @@ pub mod xdg_shell_unstable_v6 {
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The configure event marks the end of a configure sequence. A configure"]
             #[doc = "sequence is a set of one or more events configuring the state of the"]
             #[doc = "xdg_surface, including the final xdg_surface.configure event."]
@@ -12586,10 +12820,10 @@ pub mod xdg_shell_unstable_v6 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zxdg_toplevel_v6";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zxdg_toplevel_v6 interface. See the module level documentation for more info"]
-        pub trait ZxdgToplevelV6: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_toplevel_v6";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -12737,6 +12971,8 @@ pub mod xdg_shell_unstable_v6 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Unmap and destroy the window. The window will be effectively"]
             #[doc = "hidden from the user's point of view, and all state like"]
             #[doc = "maximization, fullscreen, and so on, will be lost."]
@@ -13044,6 +13280,8 @@ pub mod xdg_shell_unstable_v6 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This configure event asks the client to resize its toplevel surface or"]
             #[doc = "to change its state. The configured state should not be applied"]
             #[doc = "immediately. See xdg_surface.configure for details."]
@@ -13172,10 +13410,10 @@ pub mod xdg_shell_unstable_v6 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zxdg_popup_v6";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zxdg_popup_v6 interface. See the module level documentation for more info"]
-        pub trait ZxdgPopupV6: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zxdg_popup_v6";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -13208,6 +13446,8 @@ pub mod xdg_shell_unstable_v6 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This destroys the popup. Explicitly destroying the xdg_popup"]
             #[doc = "object will also dismiss the popup, and unmap the surface."]
             #[doc = ""]
@@ -13266,6 +13506,8 @@ pub mod xdg_shell_unstable_v6 {
                 seat: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event asks the popup surface to configure itself given the"]
             #[doc = "configuration. The configured state should not be applied immediately."]
             #[doc = "See xdg_surface.configure for details."]
@@ -13367,10 +13609,10 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
     pub mod zwp_xwayland_keyboard_grab_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_xwayland_keyboard_grab_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_xwayland_keyboard_grab_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpXwaylandKeyboardGrabManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_xwayland_keyboard_grab_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -13413,6 +13655,8 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the keyboard grab manager."]
             fn destroy(
                 &self,
@@ -13447,16 +13691,17 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                 seat: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A global interface used for grabbing the keyboard."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_xwayland_keyboard_grab_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_xwayland_keyboard_grab_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_xwayland_keyboard_grab_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpXwaylandKeyboardGrabV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_xwayland_keyboard_grab_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -13479,6 +13724,8 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the grabbed keyboard object. If applicable, the compositor"]
             #[doc = "will ungrab the keyboard."]
             fn destroy(
@@ -13487,5 +13734,6 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }

@@ -4,10 +4,10 @@ pub mod ivi_application {
     pub mod ivi_surface {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ivi_surface";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
-        pub trait IviSurface: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ivi_surface";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -27,6 +27,8 @@ pub mod ivi_application {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This removes the link from ivi_id to wl_surface and destroys ivi_surface."]
             #[doc = "The ID, ivi_id, is free and can be used for surface_create again."]
             fn destroy(
@@ -34,6 +36,8 @@ pub mod ivi_application {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The configure event asks the client to resize its surface."]
             #[doc = ""]
             #[doc = "The size is a hint, in the sense that the client is free to"]
@@ -102,10 +106,10 @@ pub mod ivi_application {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ivi_application";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
-        pub trait IviApplication: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ivi_application";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -137,6 +141,8 @@ pub mod ivi_application {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request gives the wl_surface the role of an IVI Surface. Creating more than"]
             #[doc = "one ivi_surface for a wl_surface is not allowed. Note, that this still allows the"]
             #[doc = "following example:"]
@@ -167,6 +173,7 @@ pub mod ivi_application {
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -177,10 +184,10 @@ pub mod ivi_input {
     pub mod ivi_input {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ivi_input";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the ivi_input interface. See the module level documentation for more info"]
-        pub trait IviInput: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ivi_input";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -224,6 +231,8 @@ pub mod ivi_input {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Set input focus state of surface in ivi compositor. If the surface has input"]
             #[doc = "focus, all non-graphical inputs (e.g. keyboard) are directed to the application"]
             #[doc = "providing the content for this surface."]
@@ -252,6 +261,8 @@ pub mod ivi_input {
                 seat: String,
                 accepted: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             fn seat_created(
                 &self,
                 client: &mut crate::server::Client,
@@ -418,10 +429,10 @@ pub mod ivi_wm {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ivi_wm_screen";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the ivi_wm_screen interface. See the module level documentation for more info"]
-        pub trait IviWmScreen: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ivi_wm_screen";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -479,6 +490,8 @@ pub mod ivi_wm {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Request to destroy the ivi_wm_screen."]
             fn destroy(
                 &self,
@@ -527,6 +540,8 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 param: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Sent immediately after creating the ivi_wm_screen object."]
             fn screen_id(
                 &self,
@@ -656,10 +671,10 @@ pub mod ivi_wm {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ivi_screenshot";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the ivi_screenshot interface. See the module level documentation for more info"]
-        pub trait IviScreenshot: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ivi_screenshot";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
@@ -673,6 +688,9 @@ pub mod ivi_wm {
                     }
                 }
             }
+        }
+        pub trait Requests {}
+        pub trait Events {
             #[doc = "This event notifies the filling data to buffer is done. The client"]
             #[doc = "can handle the buffer. This also provide the time of dumping data."]
             fn done(
@@ -848,10 +866,10 @@ pub mod ivi_wm {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ivi_wm";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the ivi_wm interface. See the module level documentation for more info"]
-        pub trait IviWm: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ivi_wm";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1142,6 +1160,8 @@ pub mod ivi_wm {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "All requests are not applied directly to scene object, so a controller"]
             #[doc = "can set different properties and apply the changes all at once."]
             #[doc = "Note: there's an exception to this. Creation and destruction of"]
@@ -1366,6 +1386,8 @@ pub mod ivi_wm {
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The new visibility state is provided in argument visibility."]
             #[doc = "If visibility is 0, the surface has become invisible."]
             #[doc = "If visibility is not 0, the surface has become visible."]

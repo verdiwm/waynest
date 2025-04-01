@@ -6,10 +6,10 @@ pub mod appmenu {
     pub mod org_kde_kwin_appmenu_manager {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_appmenu_manager";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the org_kde_kwin_appmenu_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinAppmenuManager: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_appmenu_manager";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -44,6 +44,8 @@ pub mod appmenu {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn create(
                 &self,
                 client: &mut crate::server::Client,
@@ -57,6 +59,7 @@ pub mod appmenu {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "The DBus service name and object path where the appmenu interface is present"]
     #[doc = "The object should be registered on the session bus before sending this request."]
@@ -65,10 +68,10 @@ pub mod appmenu {
     pub mod org_kde_kwin_appmenu {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_appmenu";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the org_kde_kwin_appmenu interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinAppmenu: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_appmenu";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -104,6 +107,8 @@ pub mod appmenu {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Set or update the service name and object path."]
             #[doc = "Strings should be formatted in Latin-1 matching the relevant DBus specifications."]
             fn set_address(
@@ -119,6 +124,7 @@ pub mod appmenu {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -127,10 +133,10 @@ pub mod blur {
     pub mod org_kde_kwin_blur_manager {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_blur_manager";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_kwin_blur_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinBlurManager: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_blur_manager";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -170,6 +176,8 @@ pub mod blur {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn create(
                 &self,
                 client: &mut crate::server::Client,
@@ -184,15 +192,16 @@ pub mod blur {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_blur {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_blur";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_kwin_blur interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinBlur: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_blur";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -227,6 +236,8 @@ pub mod blur {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
@@ -244,6 +255,7 @@ pub mod blur {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -252,10 +264,10 @@ pub mod contrast {
     pub mod org_kde_kwin_contrast_manager {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_contrast_manager";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the org_kde_kwin_contrast_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinContrastManager: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_contrast_manager";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -295,6 +307,8 @@ pub mod contrast {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn create(
                 &self,
                 client: &mut crate::server::Client,
@@ -309,15 +323,16 @@ pub mod contrast {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_contrast {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_contrast";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the org_kde_kwin_contrast interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinContrast: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_contrast";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -399,6 +414,8 @@ pub mod contrast {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
@@ -456,6 +473,7 @@ pub mod contrast {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -474,10 +492,10 @@ pub mod dpms {
     pub mod org_kde_kwin_dpms_manager {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_dpms_manager";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_kwin_dpms_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinDpmsManager: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_dpms_manager";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -506,6 +524,8 @@ pub mod dpms {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Factory request to get the org_kde_kwin_dpms for a given wl_output."]
             fn get(
                 &self,
@@ -515,6 +535,7 @@ pub mod dpms {
                 output: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This interface provides information about the VESA DPMS state for a wl_output."]
     #[doc = "It gets created through the request get on the org_kde_kwin_dpms_manager interface."]
@@ -553,10 +574,10 @@ pub mod dpms {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "org_kde_kwin_dpms";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_kwin_dpms interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinDpms: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_dpms";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -581,6 +602,8 @@ pub mod dpms {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Requests that the compositor puts the wl_output into the passed mode. The compositor"]
             #[doc = "is not obliged to change the state. In addition the compositor might leave the mode"]
             #[doc = "whenever it seems suitable. E.g. the compositor might return to On state on user input."]
@@ -598,6 +621,8 @@ pub mod dpms {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event gets pushed on binding the resource and indicates whether the wl_output"]
             #[doc = "supports DPMS. There are operation modes of a Wayland server where DPMS might not"]
             #[doc = "make sense (e.g. nested compositors)."]
@@ -681,10 +706,10 @@ pub mod fake_input {
     pub mod org_kde_kwin_fake_input {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_fake_input";
+        pub const VERSION: u32 = 5u32;
         #[doc = "Trait to implement the org_kde_kwin_fake_input interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinFakeInput: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_fake_input";
-            const VERSION: u32 = 5u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -819,6 +844,8 @@ pub mod fake_input {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "A client should use this request to tell the compositor why it wants to"]
             #[doc = "use this interface. The compositor might use the information to decide"]
             #[doc = "whether it wants to grant the request. The data might also be passed to"]
@@ -911,6 +938,7 @@ pub mod fake_input {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -1046,10 +1074,10 @@ pub mod fullscreen_shell {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "_wl_fullscreen_shell";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the _wl_fullscreen_shell interface. See the module level documentation for more info"]
-        pub trait WlFullscreenShell: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "_wl_fullscreen_shell";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1111,6 +1139,8 @@ pub mod fullscreen_shell {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Release the binding from the wl_fullscreen_shell interface"]
             #[doc = ""]
             #[doc = "This destroys the server-side object and frees this binding.  If"]
@@ -1192,6 +1222,8 @@ pub mod fullscreen_shell {
                 framerate: i32,
                 feedback: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Advertises a single capability of the compositor."]
             #[doc = ""]
             #[doc = "When the wl_fullscreen_shell interface is bound, this event is emitted"]
@@ -1227,10 +1259,10 @@ pub mod fullscreen_shell {
     pub mod _wl_fullscreen_shell_mode_feedback {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "_wl_fullscreen_shell_mode_feedback";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the _wl_fullscreen_shell_mode_feedback interface. See the module level documentation for more info"]
-        pub trait WlFullscreenShellModeFeedback: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "_wl_fullscreen_shell_mode_feedback";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
@@ -1244,6 +1276,9 @@ pub mod fullscreen_shell {
                     }
                 }
             }
+        }
+        pub trait Requests {}
+        pub trait Events {
             #[doc = "This event indicates that the attempted mode switch operation was"]
             #[doc = "successful.  A surface of the size requested in the mode switch"]
             #[doc = "will fill the output without scaling."]
@@ -1329,10 +1364,10 @@ pub mod idle {
     pub mod org_kde_kwin_idle {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_idle";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_kwin_idle interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinIdle: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_idle";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1364,6 +1399,8 @@ pub mod idle {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn get_idle_timeout(
                 &self,
                 client: &mut crate::server::Client,
@@ -1373,15 +1410,16 @@ pub mod idle {
                 timeout: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_idle_timeout {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_idle_timeout";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_kwin_idle_timeout interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinIdleTimeout: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_idle_timeout";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1408,6 +1446,8 @@ pub mod idle {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn release(
                 &self,
                 client: &mut crate::server::Client,
@@ -1418,6 +1458,8 @@ pub mod idle {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             fn idle(
                 &self,
                 client: &mut crate::server::Client,
@@ -1459,10 +1501,10 @@ pub mod kde_external_brightness_v1 {
     pub mod kde_external_brightness_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "kde_external_brightness_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the kde_external_brightness_v1 interface. See the module level documentation for more info"]
-        pub trait KdeExternalBrightnessV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_external_brightness_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1493,6 +1535,8 @@ pub mod kde_external_brightness_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
@@ -1505,6 +1549,7 @@ pub mod kde_external_brightness_v1 {
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "After creating this object, the client should issue all relevant setup requests"]
     #[doc = "(set_internal, set_edid, set_max_brightness, optionally set_observed_brightness)"]
@@ -1514,10 +1559,10 @@ pub mod kde_external_brightness_v1 {
     pub mod kde_external_brightness_device_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "kde_external_brightness_device_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the kde_external_brightness_device_v1 interface. See the module level documentation for more info"]
-        pub trait KdeExternalBrightnessDeviceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_external_brightness_device_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1585,6 +1630,8 @@ pub mod kde_external_brightness_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
@@ -1623,6 +1670,8 @@ pub mod kde_external_brightness_v1 {
                 sender_id: crate::wire::ObjectId,
                 value: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The client must ensure that if the brightness level changes due to external factors,"]
             #[doc = "that it either overwrites those changes with what the compositor last requested,"]
             #[doc = "or commit again with set_observed_brightness specifying the changed brightness."]
@@ -1683,10 +1732,10 @@ pub mod kde_lockscreen_overlay_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "kde_lockscreen_overlay_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the kde_lockscreen_overlay_v1 interface. See the module level documentation for more info"]
-        pub trait KdeLockscreenOverlayV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_lockscreen_overlay_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1717,6 +1766,8 @@ pub mod kde_lockscreen_overlay_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Informs the compositor that the surface could be shown when the screen is locked. This request should be called while the surface is unmapped."]
             fn allow(
                 &self,
@@ -1731,6 +1782,7 @@ pub mod kde_lockscreen_overlay_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -1974,10 +2026,10 @@ pub mod kde_output_device_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "kde_output_device_v2";
+        pub const VERSION: u32 = 11u32;
         #[doc = "Trait to implement the kde_output_device_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputDeviceV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_output_device_v2";
-            const VERSION: u32 = 11u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
@@ -1991,6 +2043,9 @@ pub mod kde_output_device_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {}
+        pub trait Events {
             #[doc = "The geometry event describes geometric properties of the output."]
             #[doc = "The event is sent when binding to the output object and whenever"]
             #[doc = "any of the properties change."]
@@ -2661,10 +2716,10 @@ pub mod kde_output_device_v2 {
     pub mod kde_output_device_mode_v2 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "kde_output_device_mode_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the kde_output_device_mode_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputDeviceModeV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_output_device_mode_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
@@ -2678,6 +2733,9 @@ pub mod kde_output_device_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {}
+        pub trait Events {
             #[doc = "This event describes the mode size. The size is given in physical"]
             #[doc = "hardware units of the output device. This is not necessarily the same as"]
             #[doc = "the output size in the global compositor space. For instance, the output"]
@@ -2811,10 +2869,10 @@ pub mod kde_output_management_v2 {
     pub mod kde_output_management_v2 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "kde_output_management_v2";
+        pub const VERSION: u32 = 12u32;
         #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputManagementV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_output_management_v2";
-            const VERSION: u32 = 12u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2839,6 +2897,8 @@ pub mod kde_output_management_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Request an outputconfiguration object through which the client can configure"]
             #[doc = "output devices."]
             fn create_configuration(
@@ -2848,6 +2908,7 @@ pub mod kde_output_management_v2 {
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "outputconfiguration is a client-specific resource that can be used to ask"]
     #[doc = "the server to apply changes to available output devices."]
@@ -3013,10 +3074,10 @@ pub mod kde_output_management_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "kde_output_configuration_v2";
+        pub const VERSION: u32 = 12u32;
         #[doc = "Trait to implement the kde_output_configuration_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputConfigurationV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_output_configuration_v2";
-            const VERSION: u32 = 12u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3369,6 +3430,8 @@ pub mod kde_output_management_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Mark the output as enabled or disabled."]
             fn enable(
                 &self,
@@ -3574,6 +3637,8 @@ pub mod kde_output_management_v2 {
                 outputdevice: crate::wire::ObjectId,
                 multiplier: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Sent after the server has successfully applied the changes."]
             #[doc = "."]
             fn applied(
@@ -3644,10 +3709,10 @@ pub mod kde_output_order_v1 {
     pub mod kde_output_order_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "kde_output_order_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the kde_output_order_v1 interface. See the module level documentation for more info"]
-        pub trait KdeOutputOrderV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_output_order_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3667,11 +3732,15 @@ pub mod kde_output_order_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Specifies the output identified by their wl_output.name."]
             fn output(
                 &self,
@@ -3725,10 +3794,10 @@ pub mod kde_primary_output_v1 {
     pub mod kde_primary_output_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "kde_primary_output_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the kde_primary_output_v1 interface. See the module level documentation for more info"]
-        pub trait KdePrimaryOutputV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_primary_output_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3748,11 +3817,15 @@ pub mod kde_primary_output_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Specifies which output is the primary one identified by their uuid. See kde_output_device_v2 uuid event for more information about it."]
             fn primary_output(
                 &self,
@@ -3854,10 +3927,10 @@ pub mod kde_screen_edge_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "kde_screen_edge_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the kde_screen_edge_manager_v1 interface. See the module level documentation for more info"]
-        pub trait KdeScreenEdgeManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_screen_edge_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3901,6 +3974,8 @@ pub mod kde_screen_edge_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the screen edge manager. This doesn't destroy objects created"]
             #[doc = "with this manager."]
             fn destroy(
@@ -3929,6 +4004,7 @@ pub mod kde_screen_edge_v1 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "The auto hide screen edge object allows to hide the surface and make it"]
     #[doc = "visible by triggering the screen edge. The screen edge is inactive and"]
@@ -3948,10 +4024,10 @@ pub mod kde_screen_edge_v1 {
     pub mod kde_auto_hide_screen_edge_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "kde_auto_hide_screen_edge_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the kde_auto_hide_screen_edge_v1 interface. See the module level documentation for more info"]
-        pub trait KdeAutoHideScreenEdgeV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "kde_auto_hide_screen_edge_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3985,6 +4061,8 @@ pub mod kde_screen_edge_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the auto hide screen edge object. If the screen edge is active,"]
             #[doc = "it will be deactivated and the surface will be made visible."]
             fn destroy(
@@ -4006,6 +4084,7 @@ pub mod kde_screen_edge_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -4075,10 +4154,10 @@ pub mod keystate {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "org_kde_kwin_keystate";
+        pub const VERSION: u32 = 5u32;
         #[doc = "Trait to implement the org_kde_kwin_keystate interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinKeystate: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_keystate";
-            const VERSION: u32 = 5u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4102,6 +4181,8 @@ pub mod keystate {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn fetch_states(
                 &self,
                 client: &mut crate::server::Client,
@@ -4112,6 +4193,8 @@ pub mod keystate {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             fn state_changed(
                 &self,
                 client: &mut crate::server::Client,
@@ -4145,10 +4228,10 @@ pub mod org_kde_plasma_virtual_desktop {
     pub mod org_kde_plasma_virtual_desktop_management {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop_management";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop_management interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaVirtualDesktopManagement: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop_management";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4204,6 +4287,8 @@ pub mod org_kde_plasma_virtual_desktop {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Given the id of a particular virtual desktop, get the corresponding org_kde_plasma_virtual_desktop which represents only the desktop with that id."]
             #[doc = ""]
             #[doc = "Warning! The protocol described in this file is a desktop environment"]
@@ -4232,6 +4317,8 @@ pub mod org_kde_plasma_virtual_desktop {
                 sender_id: crate::wire::ObjectId,
                 desktop_id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             fn desktop_created(
                 &self,
                 client: &mut crate::server::Client,
@@ -4324,10 +4411,10 @@ pub mod org_kde_plasma_virtual_desktop {
     pub mod org_kde_plasma_virtual_desktop {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaVirtualDesktop: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4348,12 +4435,16 @@ pub mod org_kde_plasma_virtual_desktop {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Request the server to set the status of this desktop to active: The server is free to consent or deny the request. This will be the new \"current\" virtual desktop of the system."]
             fn request_activate(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The format of the id is decided by the compositor implementation. A desktop id univocally identifies a virtual desktop and must be guaranteed to never exist two desktops with the same id. The format of the string id is up to the server implementation."]
             fn desktop_id(
                 &self,
@@ -4516,10 +4607,10 @@ pub mod outputmanagement {
     pub mod org_kde_kwin_outputmanagement {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_outputmanagement";
+        pub const VERSION: u32 = 4u32;
         #[doc = "Trait to implement the org_kde_kwin_outputmanagement interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputmanagement: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_outputmanagement";
-            const VERSION: u32 = 4u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4544,6 +4635,8 @@ pub mod outputmanagement {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Request an outputconfiguration object through which the client can configure"]
             #[doc = "output devices."]
             fn create_configuration(
@@ -4553,6 +4646,7 @@ pub mod outputmanagement {
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "outputconfiguration is a client-specific resource that can be used to ask"]
     #[doc = "the server to apply changes to available output devices."]
@@ -4595,10 +4689,10 @@ pub mod outputmanagement {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "org_kde_kwin_outputconfiguration";
+        pub const VERSION: u32 = 4u32;
         #[doc = "Trait to implement the org_kde_kwin_outputconfiguration interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputconfiguration: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_outputconfiguration";
-            const VERSION: u32 = 4u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4755,6 +4849,8 @@ pub mod outputmanagement {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Mark the output as enabled or disabled."]
             fn enable(
                 &self,
@@ -4854,6 +4950,8 @@ pub mod outputmanagement {
                 outputdevice: crate::wire::ObjectId,
                 policy: VrrPolicy,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Sent after the server has successfully applied the changes."]
             #[doc = "."]
             fn applied(
@@ -5077,10 +5175,10 @@ pub mod org_kde_kwin_outputdevice {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "org_kde_kwin_outputdevice";
+        pub const VERSION: u32 = 4u32;
         #[doc = "Trait to implement the org_kde_kwin_outputdevice interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputdevice: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_outputdevice";
-            const VERSION: u32 = 4u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
@@ -5094,6 +5192,9 @@ pub mod org_kde_kwin_outputdevice {
                     }
                 }
             }
+        }
+        pub trait Requests {}
+        pub trait Events {
             #[doc = "The geometry event describes geometric properties of the output."]
             #[doc = "The event is sent when binding to the output object and whenever"]
             #[doc = "any of the properties change."]
@@ -5529,10 +5630,10 @@ pub mod plasma_shell {
     pub mod org_kde_plasma_shell {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_plasma_shell";
+        pub const VERSION: u32 = 8u32;
         #[doc = "Trait to implement the org_kde_plasma_shell interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaShell: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_shell";
-            const VERSION: u32 = 8u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -5561,6 +5662,8 @@ pub mod plasma_shell {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a shell surface for an existing surface."]
             #[doc = ""]
             #[doc = "Only one shell surface can be associated with a given"]
@@ -5573,6 +5676,7 @@ pub mod plasma_shell {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An interface that may be implemented by a wl_surface, for"]
     #[doc = "implementations that provide the shell user interface."]
@@ -5669,10 +5773,10 @@ pub mod plasma_shell {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "org_kde_plasma_surface";
+        pub const VERSION: u32 = 8u32;
         #[doc = "Trait to implement the org_kde_plasma_surface interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaSurface: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_surface";
-            const VERSION: u32 = 8u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -5781,6 +5885,8 @@ pub mod plasma_shell {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "The org_kde_plasma_surface interface is removed from the"]
             #[doc = "wl_surface object that was turned into a shell surface with the"]
             #[doc = "org_kde_plasma_shell.get_surface request."]
@@ -5976,6 +6082,8 @@ pub mod plasma_shell {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "An auto-hiding panel got hidden by the compositor."]
             fn auto_hidden_panel_hidden(
                 &self,
@@ -6110,10 +6218,10 @@ pub mod plasma_window_management {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "org_kde_plasma_window_management";
+        pub const VERSION: u32 = 18u32;
         #[doc = "Trait to implement the org_kde_plasma_window_management interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaWindowManagement: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_window_management";
-            const VERSION: u32 = 18u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -6178,6 +6286,8 @@ pub mod plasma_window_management {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Tell the compositor to show/hide the desktop."]
             fn show_desktop(
                 &self,
@@ -6206,6 +6316,8 @@ pub mod plasma_window_management {
                 sender_id: crate::wire::ObjectId,
                 stacking_order: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event will be sent whenever the show desktop mode changes. E.g. when it is entered"]
             #[doc = "or left."]
             #[doc = ""]
@@ -6347,10 +6459,10 @@ pub mod plasma_window_management {
     pub mod org_kde_plasma_window {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_plasma_window";
+        pub const VERSION: u32 = 18u32;
         #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaWindow: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_window";
-            const VERSION: u32 = 18u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -6510,6 +6622,8 @@ pub mod plasma_window_management {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Set window state."]
             #[doc = ""]
             #[doc = "Values for state argument are described by org_kde_plasma_window_management.state"]
@@ -6629,6 +6743,8 @@ pub mod plasma_window_management {
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event will be sent as soon as the window title is changed."]
             fn title_changed(
                 &self,
@@ -7052,10 +7168,10 @@ pub mod plasma_window_management {
     pub mod org_kde_plasma_activation_feedback {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_plasma_activation_feedback";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_plasma_activation_feedback interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaActivationFeedback: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_activation_feedback";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7078,6 +7194,8 @@ pub mod plasma_window_management {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the activation manager object. The activation objects introduced"]
             #[doc = "by this manager object will be unaffected."]
             fn destroy(
@@ -7085,6 +7203,8 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Will be issued when an app is set to be activated. It offers"]
             #[doc = "an instance of org_kde_plasma_activation that will tell us the app_id"]
             #[doc = "and the extent of the activation."]
@@ -7115,10 +7235,10 @@ pub mod plasma_window_management {
     pub mod org_kde_plasma_activation {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_plasma_activation";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_plasma_activation interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaActivation: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_activation";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7138,6 +7258,8 @@ pub mod plasma_window_management {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Notify the compositor that the org_kde_plasma_activation object will no"]
             #[doc = "longer be used."]
             fn destroy(
@@ -7145,6 +7267,8 @@ pub mod plasma_window_management {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             fn app_id(
                 &self,
                 client: &mut crate::server::Client,
@@ -7189,10 +7313,10 @@ pub mod plasma_window_management {
     pub mod org_kde_plasma_stacking_order {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_plasma_stacking_order";
+        pub const VERSION: u32 = 17u32;
         #[doc = "Trait to implement the org_kde_plasma_stacking_order interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaStackingOrder: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_plasma_stacking_order";
-            const VERSION: u32 = 17u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
@@ -7206,6 +7330,9 @@ pub mod plasma_window_management {
                     }
                 }
             }
+        }
+        pub trait Requests {}
+        pub trait Events {
             fn window(
                 &self,
                 client: &mut crate::server::Client,
@@ -7250,10 +7377,10 @@ pub mod remote_access {
     pub mod org_kde_kwin_remote_access_manager {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_remote_access_manager";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_kwin_remote_access_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinRemoteAccessManager: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_remote_access_manager";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7290,6 +7417,8 @@ pub mod remote_access {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn get_buffer(
                 &self,
                 client: &mut crate::server::Client,
@@ -7302,6 +7431,8 @@ pub mod remote_access {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             fn buffer_ready(
                 &self,
                 client: &mut crate::server::Client,
@@ -7332,10 +7463,10 @@ pub mod remote_access {
     pub mod org_kde_kwin_remote_buffer {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_remote_buffer";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_kwin_remote_buffer interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinRemoteBuffer: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_remote_buffer";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7355,11 +7486,15 @@ pub mod remote_access {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             fn gbm_handle(
                 &self,
                 client: &mut crate::server::Client,
@@ -7403,10 +7538,10 @@ pub mod server_decoration_palette {
     pub mod org_kde_kwin_server_decoration_palette_manager {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette_manager";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecorationPaletteManager: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette_manager";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7435,6 +7570,8 @@ pub mod server_decoration_palette {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn create(
                 &self,
                 client: &mut crate::server::Client,
@@ -7443,16 +7580,17 @@ pub mod server_decoration_palette {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration_palette {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecorationPalette: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7486,6 +7624,8 @@ pub mod server_decoration_palette {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Color scheme that should be applied to the window decoration."]
             #[doc = "Absolute file path, or name of palette in the user's config directory."]
             #[doc = "The server may choose not to follow the requested style."]
@@ -7501,6 +7641,7 @@ pub mod server_decoration_palette {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -7543,10 +7684,10 @@ pub mod server_decoration {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "org_kde_kwin_server_decoration_manager";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecorationManager: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_server_decoration_manager";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7575,6 +7716,8 @@ pub mod server_decoration {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "When a client creates a server-side decoration object it indicates"]
             #[doc = "that it supports the protocol. The client is supposed to tell the"]
             #[doc = "server whether it wants server-side decorations or will provide"]
@@ -7592,6 +7735,8 @@ pub mod server_decoration {
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is emitted directly after binding the interface. It contains"]
             #[doc = "the default mode for the decoration. When a new server decoration object"]
             #[doc = "is created this new object will be in the default mode until the first"]
@@ -7650,10 +7795,10 @@ pub mod server_decoration {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "org_kde_kwin_server_decoration";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_kwin_server_decoration interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecoration: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_server_decoration";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7685,6 +7830,8 @@ pub mod server_decoration {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn release(
                 &self,
                 client: &mut crate::server::Client,
@@ -7696,6 +7843,8 @@ pub mod server_decoration {
                 sender_id: crate::wire::ObjectId,
                 mode: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is emitted directly after the decoration is created and"]
             #[doc = "represents the base decoration policy by the server. E.g. a server"]
             #[doc = "which wants all surfaces to be client-side decorated will send Client,"]
@@ -7737,10 +7886,10 @@ pub mod shadow {
     pub mod org_kde_kwin_shadow_manager {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_shadow_manager";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the org_kde_kwin_shadow_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinShadowManager: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_shadow_manager";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7786,6 +7935,8 @@ pub mod shadow {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn create(
                 &self,
                 client: &mut crate::server::Client,
@@ -7806,15 +7957,16 @@ pub mod shadow {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_shadow {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_shadow";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the org_kde_kwin_shadow interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinShadow: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_shadow";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7962,6 +8114,8 @@ pub mod shadow {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
@@ -8049,6 +8203,7 @@ pub mod shadow {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -8057,10 +8212,10 @@ pub mod slide {
     pub mod org_kde_kwin_slide_manager {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "org_kde_kwin_slide_manager";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_kwin_slide_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinSlideManager: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_slide_manager";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -8100,6 +8255,8 @@ pub mod slide {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn create(
                 &self,
                 client: &mut crate::server::Client,
@@ -8114,6 +8271,7 @@ pub mod slide {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "Ask the compositor to move the surface from a location to another"]
     #[doc = "with a slide animation."]
@@ -8150,10 +8308,10 @@ pub mod slide {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "org_kde_kwin_slide";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the org_kde_kwin_slide interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinSlide: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_slide";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -8195,6 +8353,8 @@ pub mod slide {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
@@ -8218,6 +8378,7 @@ pub mod slide {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -8226,10 +8387,10 @@ pub mod surface_extension {
     pub mod qt_surface_extension {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "qt_surface_extension";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the qt_surface_extension interface. See the module level documentation for more info"]
-        pub trait QtSurfaceExtension: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "qt_surface_extension";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -8259,6 +8420,8 @@ pub mod surface_extension {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn get_extended_surface(
                 &self,
                 client: &mut crate::server::Client,
@@ -8267,6 +8430,7 @@ pub mod surface_extension {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[allow(clippy::too_many_arguments)]
     pub mod qt_extended_surface {
@@ -8324,10 +8488,10 @@ pub mod surface_extension {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "qt_extended_surface";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the qt_extended_surface interface. See the module level documentation for more info"]
-        pub trait QtExtendedSurface: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "qt_extended_surface";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -8382,6 +8546,8 @@ pub mod surface_extension {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn update_generic_property(
                 &self,
                 client: &mut crate::server::Client,
@@ -8411,6 +8577,8 @@ pub mod surface_extension {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             fn onscreen_visibility(
                 &self,
                 client: &mut crate::server::Client,
@@ -8698,10 +8866,10 @@ pub mod text_input_unstable_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwp_text_input_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_text_input_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_text_input_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -8816,6 +8984,8 @@ pub mod text_input_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the wp_text_input object. Also disables all surfaces enabled"]
             #[doc = "through this wp_text_input object"]
             fn destroy(
@@ -8950,6 +9120,8 @@ pub mod text_input_unstable_v2 {
                 serial: u32,
                 reason: UpdateState,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Notification that this seat's text-input focus is on a certain surface."]
             #[doc = ""]
             #[doc = "When the seat has the keyboard capability the text-input focus follows"]
@@ -9403,10 +9575,10 @@ pub mod text_input_unstable_v2 {
     pub mod zwp_text_input_manager_v2 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwp_text_input_manager_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwp_text_input_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputManagerV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwp_text_input_manager_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9441,6 +9613,8 @@ pub mod text_input_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the wp_text_input_manager object."]
             fn destroy(
                 &self,
@@ -9456,6 +9630,7 @@ pub mod text_input_unstable_v2 {
                 seat: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -9667,10 +9842,10 @@ pub mod text {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_text_input";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wl_text_input interface. See the module level documentation for more info"]
-        pub trait WlTextInput: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_text_input";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9790,6 +9965,8 @@ pub mod text {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Requests the text-input object to be activated (typically when the"]
             #[doc = "text entry gets focus)."]
             #[doc = "The seat argument is a wl_seat which maintains the focus for this"]
@@ -9894,6 +10071,8 @@ pub mod text {
                 button: u32,
                 index: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Notify the text-input object when it received focus. Typically in"]
             #[doc = "response to an activate request."]
             fn enter(
@@ -10254,10 +10433,10 @@ pub mod text {
     pub mod wl_text_input_manager {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wl_text_input_manager";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wl_text_input_manager interface. See the module level documentation for more info"]
-        pub trait WlTextInputManager: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_text_input_manager";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10282,6 +10461,8 @@ pub mod text {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Creates a new text-input object."]
             fn create_text_input(
                 &self,
@@ -10290,6 +10471,7 @@ pub mod text {
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -10362,10 +10544,10 @@ pub mod wl_eglstream_controller {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_eglstream_controller";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the wl_eglstream_controller interface. See the module level documentation for more info"]
-        pub trait WlEglstreamController: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_eglstream_controller";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10424,6 +10606,8 @@ pub mod wl_eglstream_controller {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Creates the corresponding server side EGLStream from the given wl_buffer"]
             #[doc = "and attaches a consumer to it."]
             fn attach_eglstream_consumer(
@@ -10444,6 +10628,7 @@ pub mod wl_eglstream_controller {
                 attribs: Vec<u8>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -10483,10 +10668,10 @@ pub mod zkde_screencast_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zkde_screencast_unstable_v1";
+        pub const VERSION: u32 = 4u32;
         #[doc = "Trait to implement the zkde_screencast_unstable_v1 interface. See the module level documentation for more info"]
-        pub trait ZkdeScreencastUnstableV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zkde_screencast_unstable_v1";
-            const VERSION: u32 = 4u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10632,6 +10817,8 @@ pub mod zkde_screencast_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn stream_output(
                 &self,
                 client: &mut crate::server::Client,
@@ -10690,15 +10877,16 @@ pub mod zkde_screencast_unstable_v1 {
                 pointer: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[allow(clippy::too_many_arguments)]
     pub mod zkde_screencast_stream_unstable_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zkde_screencast_stream_unstable_v1";
+        pub const VERSION: u32 = 4u32;
         #[doc = "Trait to implement the zkde_screencast_stream_unstable_v1 interface. See the module level documentation for more info"]
-        pub trait ZkdeScreencastStreamUnstableV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zkde_screencast_stream_unstable_v1";
-            const VERSION: u32 = 4u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10721,11 +10909,15 @@ pub mod zkde_screencast_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn close(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             fn closed(
                 &self,
                 client: &mut crate::server::Client,

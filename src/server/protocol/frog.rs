@@ -10,10 +10,10 @@ pub mod frog_color_management_v1 {
     pub mod frog_color_management_factory_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "frog_color_management_factory_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the frog_color_management_factory_v1 interface. See the module level documentation for more info"]
-        pub trait FrogColorManagementFactoryV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "frog_color_management_factory_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -52,6 +52,8 @@ pub mod frog_color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
@@ -65,6 +67,7 @@ pub mod frog_color_management_v1 {
                 callback: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "Interface for changing surface color management and HDR state."]
     #[doc = ""]
@@ -164,10 +167,10 @@ pub mod frog_color_management_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "frog_color_managed_surface";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the frog_color_managed_surface interface. See the module level documentation for more info"]
-        pub trait FrogColorManagedSurface: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "frog_color_managed_surface";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -272,6 +275,8 @@ pub mod frog_color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroying the color managed surface resets all known color"]
             #[doc = "state for the surface back to 'undefined' implementation-specific"]
             #[doc = "values."]
@@ -327,6 +332,8 @@ pub mod frog_color_management_v1 {
                 max_cll: u32,
                 max_fall: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Current preferred metadata for a surface."]
             #[doc = "The application should use this information to tone-map its buffers"]
             #[doc = "to this target before committing."]
@@ -430,10 +437,10 @@ pub mod frog_fifo_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "frog_fifo_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the frog_fifo_manager_v1 interface. See the module level documentation for more info"]
-        pub trait FrogFifoManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "frog_fifo_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -468,6 +475,8 @@ pub mod frog_fifo_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Informs the server that the client will no longer be using"]
             #[doc = "this protocol object. Existing objects created by this object"]
             #[doc = "are not affected."]
@@ -492,6 +501,7 @@ pub mod frog_fifo_v1 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A fifo object for a surface that may be used to add"]
     #[doc = "display refresh constraints to content updates."]
@@ -522,10 +532,10 @@ pub mod frog_fifo_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "frog_fifo_surface_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the frog_fifo_surface_v1 interface. See the module level documentation for more info"]
-        pub trait FrogFifoSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "frog_fifo_surface_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -553,6 +563,8 @@ pub mod frog_fifo_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "When the content update containing the \"set_barrier\" is applied,"]
             #[doc = "it sets a \"fifo_barrier\" condition on the surface associated with"]
             #[doc = "the fifo object. The condition is cleared immediately after the"]
@@ -601,5 +613,6 @@ pub mod frog_fifo_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }

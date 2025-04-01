@@ -33,10 +33,10 @@ pub mod alpha_modifier_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_alpha_modifier_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_alpha_modifier_v1 interface. See the module level documentation for more info"]
-        pub trait WpAlphaModifierV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_alpha_modifier_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -71,6 +71,8 @@ pub mod alpha_modifier_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the alpha modifier manager. This doesn't destroy objects"]
             #[doc = "created with the manager."]
             fn destroy(
@@ -89,6 +91,7 @@ pub mod alpha_modifier_v1 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This interface allows the client to set a factor for the alpha values on"]
     #[doc = "a surface, which can be used to offload such operations to the compositor."]
@@ -122,10 +125,10 @@ pub mod alpha_modifier_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_alpha_modifier_surface_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_alpha_modifier_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpAlphaModifierSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_alpha_modifier_surface_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -154,6 +157,8 @@ pub mod alpha_modifier_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This destroys the object, and is equivalent to set_multiplier with"]
             #[doc = "a value of UINT32_MAX, with the same double-buffered semantics as"]
             #[doc = "set_multiplier."]
@@ -182,6 +187,7 @@ pub mod alpha_modifier_v1 {
                 factor: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[doc = "The aim of the color management extension is to allow clients to know"]
@@ -439,10 +445,10 @@ pub mod color_management_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_color_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_color_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_color_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -542,6 +548,8 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the wp_color_manager_v1 object. This does not affect any other"]
             #[doc = "objects in any way."]
             fn destroy(
@@ -664,6 +672,8 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each rendering intent the compositor supports."]
             fn supported_intent(
@@ -787,10 +797,10 @@ pub mod color_management_v1 {
     pub mod wp_color_management_output_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wp_color_management_output_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_color_management_output_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagementOutputV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_color_management_output_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -825,6 +835,8 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the color wp_color_management_output_v1 object. This does not"]
             #[doc = "affect any remaining protocol objects."]
             fn destroy(
@@ -869,6 +881,8 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is sent whenever the image description of the output changed,"]
             #[doc = "followed by one wl_output.done event common to output events across all"]
             #[doc = "extensions."]
@@ -931,10 +945,10 @@ pub mod color_management_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_color_management_surface_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_color_management_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagementSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_color_management_surface_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -983,6 +997,8 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the wp_color_management_surface_v1 object and do the same as"]
             #[doc = "unset_image_description."]
             fn destroy(
@@ -1048,6 +1064,7 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A wp_color_management_surface_feedback_v1 allows the client to get the"]
     #[doc = "preferred image description of a surface."]
@@ -1082,10 +1099,10 @@ pub mod color_management_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_color_management_surface_feedback_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_color_management_surface_feedback_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagementSurfaceFeedbackV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_color_management_surface_feedback_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1132,6 +1149,8 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the wp_color_management_surface_feedback_v1 object."]
             fn destroy(
                 &self,
@@ -1189,6 +1208,8 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The preferred image description is the one which likely has the most"]
             #[doc = "performance and/or quality benefits for the compositor if used by the"]
             #[doc = "client for its wl_surface contents. This event is sent whenever the"]
@@ -1279,10 +1300,10 @@ pub mod color_management_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_image_description_creator_icc_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_image_description_creator_icc_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionCreatorIccV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_image_description_creator_icc_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1323,6 +1344,8 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create an image description object based on the ICC information"]
             #[doc = "previously set on this object. A compositor must parse the ICC data in"]
             #[doc = "some undefined but finite amount of time."]
@@ -1396,6 +1419,7 @@ pub mod color_management_v1 {
                 length: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This type of object is used for collecting all the parameters required"]
     #[doc = "to create a wp_image_description_v1 object. A complete set of required"]
@@ -1464,10 +1488,10 @@ pub mod color_management_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_image_description_creator_params_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_image_description_creator_params_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionCreatorParamsV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_image_description_creator_params_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1618,6 +1642,8 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create an image description object based on the parameters previously"]
             #[doc = "set on this object."]
             #[doc = ""]
@@ -1915,6 +1941,7 @@ pub mod color_management_v1 {
                 max_fall: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An image description carries information about the color encoding used on"]
     #[doc = "a surface when attached to a wl_surface via"]
@@ -1993,10 +2020,10 @@ pub mod color_management_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_image_description_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_image_description_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_image_description_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2027,6 +2054,8 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy this object. It is safe to destroy an object which is not ready."]
             #[doc = ""]
             #[doc = "Destroying a wp_image_description_v1 object has no side-effects, not"]
@@ -2050,6 +2079,8 @@ pub mod color_management_v1 {
                 sender_id: crate::wire::ObjectId,
                 information: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "If creating a wp_image_description_v1 object fails for a reason that is"]
             #[doc = "not defined as a protocol error, this event is sent."]
             #[doc = ""]
@@ -2160,10 +2191,10 @@ pub mod color_management_v1 {
     pub mod wp_image_description_info_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wp_image_description_info_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_image_description_info_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionInfoV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_image_description_info_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
@@ -2177,6 +2208,9 @@ pub mod color_management_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {}
+        pub trait Events {
             #[doc = "Signals the end of information events and destroys the object."]
             fn done(
                 &self,
@@ -2569,10 +2603,10 @@ pub mod commit_timing_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_commit_timing_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_commit_timing_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpCommitTimingManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_commit_timing_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2607,6 +2641,8 @@ pub mod commit_timing_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Informs the server that the client will no longer be using"]
             #[doc = "this protocol object. Existing objects created by this object"]
             #[doc = "are not affected."]
@@ -2627,6 +2663,7 @@ pub mod commit_timing_v1 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An object to set a time constraint for a content update on a surface."]
     #[allow(clippy::too_many_arguments)]
@@ -2660,10 +2697,10 @@ pub mod commit_timing_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_commit_timer_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_commit_timer_v1 interface. See the module level documentation for more info"]
-        pub trait WpCommitTimerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_commit_timer_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2697,6 +2734,8 @@ pub mod commit_timing_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Provide a timing constraint for a surface content update."]
             #[doc = ""]
             #[doc = "A set_timestamp request may be made before a wl_surface.commit to"]
@@ -2729,6 +2768,7 @@ pub mod commit_timing_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -2765,10 +2805,10 @@ pub mod content_type_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_content_type_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_content_type_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpContentTypeManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_content_type_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2804,6 +2844,8 @@ pub mod content_type_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the content type manager. This doesn't destroy objects created"]
             #[doc = "with the manager."]
             fn destroy(
@@ -2823,6 +2865,7 @@ pub mod content_type_v1 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "The content type object allows the compositor to optimize for the kind"]
     #[doc = "of content shown on the surface. A compositor may for example use it to"]
@@ -2862,10 +2905,10 @@ pub mod content_type_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_content_type_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_content_type_v1 interface. See the module level documentation for more info"]
-        pub trait WpContentTypeV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_content_type_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2895,6 +2938,8 @@ pub mod content_type_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Switch back to not specifying the content type of this surface. This is"]
             #[doc = "equivalent to setting the content type to none, including double"]
             #[doc = "buffering semantics. See set_content_type for details."]
@@ -2918,6 +2963,7 @@ pub mod content_type_v1 {
                 content_type: Type,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -2934,10 +2980,10 @@ pub mod cursor_shape_v1 {
     pub mod wp_cursor_shape_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wp_cursor_shape_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_cursor_shape_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpCursorShapeManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_cursor_shape_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2994,6 +3040,8 @@ pub mod cursor_shape_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the cursor shape manager."]
             fn destroy(
                 &self,
@@ -3023,6 +3071,7 @@ pub mod cursor_shape_v1 {
                 tablet_tool: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This interface allows clients to set the cursor shape."]
     #[allow(clippy::too_many_arguments)]
@@ -3174,10 +3223,10 @@ pub mod cursor_shape_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_cursor_shape_device_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_cursor_shape_device_v1 interface. See the module level documentation for more info"]
-        pub trait WpCursorShapeDeviceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_cursor_shape_device_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3209,6 +3258,8 @@ pub mod cursor_shape_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the cursor shape device."]
             #[doc = ""]
             #[doc = "The device cursor shape remains unchanged."]
@@ -3243,6 +3294,7 @@ pub mod cursor_shape_v1 {
                 shape: Shape,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -3281,10 +3333,10 @@ pub mod drm_lease_v1 {
     pub mod wp_drm_lease_device_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wp_drm_lease_device_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_drm_lease_device_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseDeviceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_drm_lease_device_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3313,6 +3365,8 @@ pub mod drm_lease_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Creates a lease request object."]
             #[doc = ""]
             #[doc = "See the documentation for wp_drm_lease_request_v1 for details."]
@@ -3333,6 +3387,8 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The compositor will send this event when the wp_drm_lease_device_v1"]
             #[doc = "global is bound, although there are no guarantees as to how long this"]
             #[doc = "takes - the compositor might need to wait until regaining DRM master."]
@@ -3439,10 +3495,10 @@ pub mod drm_lease_v1 {
     pub mod wp_drm_lease_connector_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wp_drm_lease_connector_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_drm_lease_connector_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseConnectorV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_drm_lease_connector_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3462,6 +3518,8 @@ pub mod drm_lease_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "The client may send this request to indicate that it will not use this"]
             #[doc = "connector. Clients are encouraged to send this after receiving the"]
             #[doc = "\"withdrawn\" event so that the server can release the resources"]
@@ -3472,6 +3530,8 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The compositor sends this event once the connector is created to"]
             #[doc = "indicate the name of this connector. This will not change for the"]
             #[doc = "duration of the Wayland session, but is not guaranteed to be consistent"]
@@ -3630,10 +3690,10 @@ pub mod drm_lease_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_drm_lease_request_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_drm_lease_request_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseRequestV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_drm_lease_request_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3667,6 +3727,8 @@ pub mod drm_lease_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Indicates that the client would like to lease the given connector."]
             #[doc = "This is only used as a suggestion, the compositor may choose to"]
             #[doc = "include any resources in the lease it issues, or change the set of"]
@@ -3697,6 +3759,7 @@ pub mod drm_lease_v1 {
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A DRM lease object is used to transfer the DRM file descriptor to the"]
     #[doc = "client and manage the lifetime of the lease."]
@@ -3710,10 +3773,10 @@ pub mod drm_lease_v1 {
     pub mod wp_drm_lease_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wp_drm_lease_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_drm_lease_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_drm_lease_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3733,6 +3796,8 @@ pub mod drm_lease_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "The client should send this to indicate that it no longer wishes to use"]
             #[doc = "this lease. The compositor should use drmModeRevokeLease on the"]
             #[doc = "appropriate file descriptor, if necessary."]
@@ -3745,6 +3810,8 @@ pub mod drm_lease_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event returns a file descriptor suitable for use with DRM-related"]
             #[doc = "ioctls. The client should use drmModeGetLease to enumerate the DRM"]
             #[doc = "objects which have been leased to them. The compositor guarantees it"]
@@ -3818,10 +3885,10 @@ pub mod ext_data_control_v1 {
     pub mod ext_data_control_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ext_data_control_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_data_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_data_control_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3867,6 +3934,8 @@ pub mod ext_data_control_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a new data source."]
             fn create_data_source(
                 &self,
@@ -3890,6 +3959,7 @@ pub mod ext_data_control_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This interface allows a client to manage a seat's selection."]
     #[doc = ""]
@@ -3919,10 +3989,10 @@ pub mod ext_data_control_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ext_data_control_device_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_data_control_device_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlDeviceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_data_control_device_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3964,6 +4034,8 @@ pub mod ext_data_control_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request asks the compositor to set the selection to the data from"]
             #[doc = "the source on behalf of the client."]
             #[doc = ""]
@@ -4001,6 +4073,8 @@ pub mod ext_data_control_v1 {
                 sender_id: crate::wire::ObjectId,
                 source: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The data_offer event introduces a new ext_data_control_offer object,"]
             #[doc = "which will subsequently be used in either the"]
             #[doc = "ext_data_control_device.selection event (for the regular clipboard"]
@@ -4143,10 +4217,10 @@ pub mod ext_data_control_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ext_data_control_source_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_data_control_source_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlSourceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_data_control_source_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4177,6 +4251,8 @@ pub mod ext_data_control_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request adds a MIME type to the set of MIME types advertised to"]
             #[doc = "targets. Can be called several times to offer multiple types."]
             #[doc = ""]
@@ -4194,6 +4270,8 @@ pub mod ext_data_control_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Request for data from the client. Send the data as the specified MIME"]
             #[doc = "type over the passed file descriptor, then close it."]
             fn send(
@@ -4248,10 +4326,10 @@ pub mod ext_data_control_v1 {
     pub mod ext_data_control_offer_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ext_data_control_offer_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_data_control_offer_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlOfferV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_data_control_offer_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4284,6 +4362,8 @@ pub mod ext_data_control_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "To transfer the offered data, the client issues this request and"]
             #[doc = "indicates the MIME type it wants to receive. The transfer happens"]
             #[doc = "through the passed file descriptor (typically created with the pipe"]
@@ -4307,6 +4387,8 @@ pub mod ext_data_control_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Sent immediately after creating the ext_data_control_offer object."]
             #[doc = "One event per offered MIME type."]
             fn offer(
@@ -4375,10 +4457,10 @@ pub mod ext_foreign_toplevel_list_v1 {
     pub mod ext_foreign_toplevel_list_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ext_foreign_toplevel_list_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_foreign_toplevel_list_v1 interface. See the module level documentation for more info"]
-        pub trait ExtForeignToplevelListV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_foreign_toplevel_list_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4402,6 +4484,8 @@ pub mod ext_foreign_toplevel_list_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request indicates that the client no longer wishes to receive"]
             #[doc = "events for new toplevels."]
             #[doc = ""]
@@ -4426,6 +4510,8 @@ pub mod ext_foreign_toplevel_list_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is emitted whenever a new toplevel window is created. It is"]
             #[doc = "emitted for all toplevels, regardless of the app that has created them."]
             #[doc = ""]
@@ -4482,10 +4568,10 @@ pub mod ext_foreign_toplevel_list_v1 {
     pub mod ext_foreign_toplevel_handle_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ext_foreign_toplevel_handle_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ExtForeignToplevelHandleV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_foreign_toplevel_handle_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4508,6 +4594,8 @@ pub mod ext_foreign_toplevel_list_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request should be used when the client will no longer use the handle"]
             #[doc = "or after the closed event has been received to allow destruction of the"]
             #[doc = "object."]
@@ -4526,6 +4614,8 @@ pub mod ext_foreign_toplevel_list_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The server will emit no further events on the ext_foreign_toplevel_handle_v1"]
             #[doc = "after this event. Any requests received aside from the destroy request must"]
             #[doc = "be ignored. Upon receiving this event, the client should destroy the handle."]
@@ -4674,10 +4764,10 @@ pub mod ext_idle_notify_v1 {
     pub mod ext_idle_notifier_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ext_idle_notifier_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the ext_idle_notifier_v1 interface. See the module level documentation for more info"]
-        pub trait ExtIdleNotifierV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_idle_notifier_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4733,6 +4823,8 @@ pub mod ext_idle_notify_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the manager object. All objects created via this interface"]
             #[doc = "remain valid."]
             fn destroy(
@@ -4775,6 +4867,7 @@ pub mod ext_idle_notify_v1 {
                 seat: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This interface is used by the compositor to send idle notification events"]
     #[doc = "to clients."]
@@ -4802,10 +4895,10 @@ pub mod ext_idle_notify_v1 {
     pub mod ext_idle_notification_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ext_idle_notification_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the ext_idle_notification_v1 interface. See the module level documentation for more info"]
-        pub trait ExtIdleNotificationV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_idle_notification_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4825,12 +4918,16 @@ pub mod ext_idle_notify_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the notification object."]
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is sent when the notification object becomes idle."]
             #[doc = ""]
             #[doc = "It's a compositor protocol error to send this event twice without a"]
@@ -4896,10 +4993,10 @@ pub mod ext_image_capture_source_v1 {
     pub mod ext_image_capture_source_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ext_image_capture_source_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_image_capture_source_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCaptureSourceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_image_capture_source_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4919,6 +5016,8 @@ pub mod ext_image_capture_source_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroys the image capture source. This request may be sent at any time"]
             #[doc = "by the client."]
             fn destroy(
@@ -4927,16 +5026,17 @@ pub mod ext_image_capture_source_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A manager for creating image capture source objects for wl_output objects."]
     #[allow(clippy::too_many_arguments)]
     pub mod ext_output_image_capture_source_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ext_output_image_capture_source_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_output_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtOutputImageCaptureSourceManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_output_image_capture_source_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4974,6 +5074,8 @@ pub mod ext_image_capture_source_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Creates a source object for an output. Images captured from this source"]
             #[doc = "will show the same content as the output. Some elements may be omitted,"]
             #[doc = "such as cursors and overlays that have been marked as transparent to"]
@@ -4994,6 +5096,7 @@ pub mod ext_image_capture_source_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A manager for creating image capture source objects for"]
     #[doc = "ext_foreign_toplevel_handle_v1 objects."]
@@ -5001,10 +5104,10 @@ pub mod ext_image_capture_source_v1 {
     pub mod ext_foreign_toplevel_image_capture_source_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ext_foreign_toplevel_image_capture_source_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_foreign_toplevel_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtForeignToplevelImageCaptureSourceManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_foreign_toplevel_image_capture_source_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -5043,6 +5146,8 @@ pub mod ext_image_capture_source_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Creates a source object for a foreign toplevel handle. Images captured"]
             #[doc = "from this source will show the same content as the toplevel."]
             fn create_source(
@@ -5061,6 +5166,7 @@ pub mod ext_image_capture_source_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[doc = "This protocol allows clients to ask the compositor to capture image sources"]
@@ -5111,10 +5217,10 @@ pub mod ext_image_copy_capture_v1 {
                 self.bits().fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ext_image_copy_capture_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_image_copy_capture_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_image_copy_capture_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -5183,6 +5289,8 @@ pub mod ext_image_copy_capture_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a capturing session for an image capture source."]
             #[doc = ""]
             #[doc = "If the paint_cursors option is set, cursors shall be composited onto"]
@@ -5218,6 +5326,7 @@ pub mod ext_image_copy_capture_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This object represents an active image copy capture session."]
     #[doc = ""]
@@ -5260,10 +5369,10 @@ pub mod ext_image_copy_capture_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ext_image_copy_capture_session_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_image_copy_capture_session_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureSessionV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_image_copy_capture_session_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -5297,6 +5406,8 @@ pub mod ext_image_copy_capture_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a capture frame for this session."]
             #[doc = ""]
             #[doc = "At most one frame object can exist for a given session at any time. If"]
@@ -5318,6 +5429,8 @@ pub mod ext_image_copy_capture_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Provides the dimensions of the source image in buffer pixel coordinates."]
             #[doc = ""]
             #[doc = "The client must attach buffers that match this size."]
@@ -5538,10 +5651,10 @@ pub mod ext_image_copy_capture_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ext_image_copy_capture_frame_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_image_copy_capture_frame_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureFrameV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_image_copy_capture_frame_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -5598,6 +5711,8 @@ pub mod ext_image_copy_capture_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroys the frame. This request can be sent at any time by the"]
             #[doc = "client."]
             fn destroy(
@@ -5663,6 +5778,8 @@ pub mod ext_image_copy_capture_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is sent before the ready event and holds the transform that"]
             #[doc = "the compositor has applied to the buffer contents."]
             fn transform(
@@ -5833,10 +5950,10 @@ pub mod ext_image_copy_capture_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ext_image_copy_capture_cursor_session_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_image_copy_capture_cursor_session_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureCursorSessionV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_image_copy_capture_cursor_session_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -5870,6 +5987,8 @@ pub mod ext_image_copy_capture_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroys the session. This request can be sent at any time by the"]
             #[doc = "client."]
             #[doc = ""]
@@ -5893,6 +6012,8 @@ pub mod ext_image_copy_capture_v1 {
                 sender_id: crate::wire::ObjectId,
                 session: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Sent when a cursor enters the captured area. It shall be generated"]
             #[doc = "before the \"position\" and \"hotspot\" events when and only when a cursor"]
             #[doc = "enters the area."]
@@ -6032,10 +6153,10 @@ pub mod ext_session_lock_v1 {
     pub mod ext_session_lock_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ext_session_lock_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_session_lock_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtSessionLockManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_session_lock_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -6066,6 +6187,8 @@ pub mod ext_session_lock_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This informs the compositor that the session lock manager object will"]
             #[doc = "no longer be used. Existing objects created through this interface"]
             #[doc = "remain valid."]
@@ -6085,6 +6208,7 @@ pub mod ext_session_lock_v1 {
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "In response to the creation of this object the compositor must send"]
     #[doc = "either the locked or finished event."]
@@ -6171,10 +6295,10 @@ pub mod ext_session_lock_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ext_session_lock_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_session_lock_v1 interface. See the module level documentation for more info"]
-        pub trait ExtSessionLockV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_session_lock_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -6223,6 +6347,8 @@ pub mod ext_session_lock_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This informs the compositor that the lock object will no longer be"]
             #[doc = "used. Existing objects created through this interface remain valid."]
             #[doc = ""]
@@ -6284,6 +6410,8 @@ pub mod ext_session_lock_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This client is now responsible for displaying graphics while the"]
             #[doc = "session is locked and deciding when to unlock the session."]
             #[doc = ""]
@@ -6394,10 +6522,10 @@ pub mod ext_session_lock_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ext_session_lock_surface_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_session_lock_surface_v1 interface. See the module level documentation for more info"]
-        pub trait ExtSessionLockSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_session_lock_surface_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -6426,6 +6554,8 @@ pub mod ext_session_lock_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This informs the compositor that the lock surface object will no"]
             #[doc = "longer be used."]
             #[doc = ""]
@@ -6470,6 +6600,8 @@ pub mod ext_session_lock_v1 {
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is sent once on binding the interface and may be sent again"]
             #[doc = "at the compositor's discretion, for example if output geometry changes."]
             #[doc = ""]
@@ -6531,10 +6663,10 @@ pub mod ext_transient_seat_v1 {
     pub mod ext_transient_seat_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ext_transient_seat_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_transient_seat_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtTransientSeatManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_transient_seat_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -6568,6 +6700,8 @@ pub mod ext_transient_seat_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a new seat that is removed when the client side transient seat"]
             #[doc = "object is destroyed."]
             #[doc = ""]
@@ -6589,6 +6723,7 @@ pub mod ext_transient_seat_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "When the transient seat handle is destroyed, the seat itself will also be"]
     #[doc = "destroyed."]
@@ -6596,10 +6731,10 @@ pub mod ext_transient_seat_v1 {
     pub mod ext_transient_seat_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ext_transient_seat_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_transient_seat_v1 interface. See the module level documentation for more info"]
-        pub trait ExtTransientSeatV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_transient_seat_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -6619,6 +6754,8 @@ pub mod ext_transient_seat_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "When the transient seat object is destroyed by the client, the"]
             #[doc = "associated seat created by the compositor is also destroyed."]
             fn destroy(
@@ -6626,6 +6763,8 @@ pub mod ext_transient_seat_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event advertises the global name for the wl_seat to be used with"]
             #[doc = "wl_registry_bind."]
             #[doc = ""]
@@ -6702,10 +6841,10 @@ pub mod ext_workspace_v1 {
     pub mod ext_workspace_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "ext_workspace_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_workspace_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtWorkspaceManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_workspace_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -6727,6 +6866,8 @@ pub mod ext_workspace_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "The client must send this request after it has finished sending other"]
             #[doc = "requests. The compositor must process a series of requests preceding a"]
             #[doc = "commit request atomically."]
@@ -6752,6 +6893,8 @@ pub mod ext_workspace_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is emitted whenever a new workspace group has been created."]
             #[doc = ""]
             #[doc = "All initial details of the workspace group (outputs) will be"]
@@ -6877,10 +7020,10 @@ pub mod ext_workspace_v1 {
                 self.bits().fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ext_workspace_group_handle_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_workspace_group_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ExtWorkspaceGroupHandleV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_workspace_group_handle_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -6914,6 +7057,8 @@ pub mod ext_workspace_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Request that the compositor create a new workspace with the given name"]
             #[doc = "and assign it to this group."]
             #[doc = ""]
@@ -6935,6 +7080,8 @@ pub mod ext_workspace_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
             #[doc = "a capability isn't supported, clients should hide or disable the UI"]
             #[doc = "elements that expose this functionality. For instance, if the"]
@@ -7130,10 +7277,10 @@ pub mod ext_workspace_v1 {
                 self.bits().fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "ext_workspace_handle_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the ext_workspace_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ExtWorkspaceHandleV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "ext_workspace_handle_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7176,6 +7323,8 @@ pub mod ext_workspace_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroys the ext_workspace_handle_v1 object."]
             #[doc = ""]
             #[doc = "This request should be made either when the client does not want to"]
@@ -7222,6 +7371,8 @@ pub mod ext_workspace_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "If this event is emitted, it will be send immediately after the"]
             #[doc = "ext_workspace_handle_v1 is created or when an id is assigned to"]
             #[doc = "a workspace (at most once during it's lifetime)."]
@@ -7440,10 +7591,10 @@ pub mod fifo_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_fifo_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_fifo_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpFifoManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_fifo_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7478,6 +7629,8 @@ pub mod fifo_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Informs the server that the client will no longer be using"]
             #[doc = "this protocol object. Existing objects created by this object"]
             #[doc = "are not affected."]
@@ -7502,6 +7655,7 @@ pub mod fifo_v1 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A fifo object for a surface that may be used to add"]
     #[doc = "display refresh constraints to content updates."]
@@ -7532,10 +7686,10 @@ pub mod fifo_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_fifo_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_fifo_v1 interface. See the module level documentation for more info"]
-        pub trait WpFifoV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_fifo_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7563,6 +7717,8 @@ pub mod fifo_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "When the content update containing the \"set_barrier\" is applied,"]
             #[doc = "it sets a \"fifo_barrier\" condition on the surface associated with"]
             #[doc = "the fifo object. The condition is cleared immediately after the"]
@@ -7618,6 +7774,7 @@ pub mod fifo_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[doc = "This protocol allows a compositor to suggest for surfaces to render at"]
@@ -7666,10 +7823,10 @@ pub mod fractional_scale_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_fractional_scale_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_fractional_scale_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpFractionalScaleManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_fractional_scale_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7708,6 +7865,8 @@ pub mod fractional_scale_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Informs the server that the client will not be using this protocol"]
             #[doc = "object anymore. This does not affect any other objects,"]
             #[doc = "wp_fractional_scale_v1 objects included."]
@@ -7728,6 +7887,7 @@ pub mod fractional_scale_v1 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An additional interface to a wl_surface object which allows the compositor"]
     #[doc = "to inform the client of the preferred scale."]
@@ -7735,10 +7895,10 @@ pub mod fractional_scale_v1 {
     pub mod wp_fractional_scale_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wp_fractional_scale_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_fractional_scale_v1 interface. See the module level documentation for more info"]
-        pub trait WpFractionalScaleV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_fractional_scale_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7758,6 +7918,8 @@ pub mod fractional_scale_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the fractional scale object. When this object is destroyed,"]
             #[doc = "preferred_scale events will no longer be sent."]
             fn destroy(
@@ -7765,6 +7927,8 @@ pub mod fractional_scale_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Notification of a new preferred scale for this surface that the"]
             #[doc = "compositor suggests that the client should use."]
             #[doc = ""]
@@ -7851,10 +8015,10 @@ pub mod linux_drm_syncobj_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_linux_drm_syncobj_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_linux_drm_syncobj_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpLinuxDrmSyncobjManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_linux_drm_syncobj_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7905,6 +8069,8 @@ pub mod linux_drm_syncobj_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy this explicit synchronization factory object. Other objects"]
             #[doc = "shall not be affected by this request."]
             fn destroy(
@@ -7941,6 +8107,7 @@ pub mod linux_drm_syncobj_v1 {
                 fd: rustix::fd::OwnedFd,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This object represents an explicit synchronization object timeline"]
     #[doc = "imported by the client to the compositor."]
@@ -7948,10 +8115,10 @@ pub mod linux_drm_syncobj_v1 {
     pub mod wp_linux_drm_syncobj_timeline_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wp_linux_drm_syncobj_timeline_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_linux_drm_syncobj_timeline_v1 interface. See the module level documentation for more info"]
-        pub trait WpLinuxDrmSyncobjTimelineV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_linux_drm_syncobj_timeline_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -7974,6 +8141,8 @@ pub mod linux_drm_syncobj_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the synchronization object timeline. Other objects are not"]
             #[doc = "affected by this request, in particular timeline points set by"]
             #[doc = "set_acquire_point and set_release_point are not unset."]
@@ -7983,6 +8152,7 @@ pub mod linux_drm_syncobj_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This object is an add-on interface for wl_surface to enable explicit"]
     #[doc = "synchronization."]
@@ -8049,10 +8219,10 @@ pub mod linux_drm_syncobj_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_linux_drm_syncobj_surface_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_linux_drm_syncobj_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpLinuxDrmSyncobjSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_linux_drm_syncobj_surface_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -8107,6 +8277,8 @@ pub mod linux_drm_syncobj_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy this surface synchronization object."]
             #[doc = ""]
             #[doc = "Any timeline point set by this object with set_acquire_point or"]
@@ -8200,6 +8372,7 @@ pub mod linux_drm_syncobj_v1 {
                 point_lo: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -8250,10 +8423,10 @@ pub mod security_context_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_security_context_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_security_context_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpSecurityContextManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_security_context_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -8292,6 +8465,8 @@ pub mod security_context_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the manager. This doesn't destroy objects created with the"]
             #[doc = "manager."]
             fn destroy(
@@ -8323,6 +8498,7 @@ pub mod security_context_v1 {
                 close_fd: rustix::fd::OwnedFd,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "The security context allows a client to register a new client and attach"]
     #[doc = "security context metadata to the connections."]
@@ -8365,10 +8541,10 @@ pub mod security_context_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_security_context_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_security_context_v1 interface. See the module level documentation for more info"]
-        pub trait WpSecurityContextV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_security_context_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -8425,6 +8601,8 @@ pub mod security_context_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the security context object."]
             fn destroy(
                 &self,
@@ -8497,6 +8675,7 @@ pub mod security_context_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[doc = "This protocol extension allows clients to create single-pixel buffers."]
@@ -8517,10 +8696,10 @@ pub mod single_pixel_buffer_v1 {
     pub mod wp_single_pixel_buffer_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wp_single_pixel_buffer_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_single_pixel_buffer_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpSinglePixelBufferManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_single_pixel_buffer_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -8563,6 +8742,8 @@ pub mod single_pixel_buffer_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the wp_single_pixel_buffer_manager_v1 object."]
             #[doc = ""]
             #[doc = "The child objects created via this interface are unaffected."]
@@ -8588,6 +8769,7 @@ pub mod single_pixel_buffer_v1 {
                 a: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -8632,10 +8814,10 @@ pub mod tearing_control_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_tearing_control_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_tearing_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpTearingControlManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_tearing_control_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -8674,6 +8856,8 @@ pub mod tearing_control_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy this tearing control factory object. Other objects, including"]
             #[doc = "wp_tearing_control_v1 objects created by this factory, are not affected"]
             #[doc = "by this request."]
@@ -8695,6 +8879,7 @@ pub mod tearing_control_v1 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An additional interface to a wl_surface object, which allows the client"]
     #[doc = "to hint to the compositor if the content on the surface is suitable for"]
@@ -8732,10 +8917,10 @@ pub mod tearing_control_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wp_tearing_control_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wp_tearing_control_v1 interface. See the module level documentation for more info"]
-        pub trait WpTearingControlV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wp_tearing_control_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -8765,6 +8950,8 @@ pub mod tearing_control_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Set the presentation hint for the associated wl_surface. This state is"]
             #[doc = "double-buffered, see wl_surface.commit."]
             #[doc = ""]
@@ -8785,6 +8972,7 @@ pub mod tearing_control_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[doc = "The way for a client to pass focus to another toplevel is as follows."]
@@ -8834,10 +9022,10 @@ pub mod xdg_activation_v1 {
     pub mod xdg_activation_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "xdg_activation_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xdg_activation_v1 interface. See the module level documentation for more info"]
-        pub trait XdgActivationV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xdg_activation_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -8883,6 +9071,8 @@ pub mod xdg_activation_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Notify the compositor that the xdg_activation object will no longer be"]
             #[doc = "used."]
             #[doc = ""]
@@ -8920,6 +9110,7 @@ pub mod xdg_activation_v1 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An object for setting up a token and receiving a token handle that can"]
     #[doc = "be passed as an activation token to another client."]
@@ -8954,10 +9145,10 @@ pub mod xdg_activation_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "xdg_activation_token_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xdg_activation_token_v1 interface. See the module level documentation for more info"]
-        pub trait XdgActivationTokenV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xdg_activation_token_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9016,6 +9207,8 @@ pub mod xdg_activation_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Provides information about the seat and serial event that requested the"]
             #[doc = "token."]
             #[doc = ""]
@@ -9072,6 +9265,8 @@ pub mod xdg_activation_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The 'done' event contains the unique token of this activation request"]
             #[doc = "and notifies that the provider is done."]
             fn done(
@@ -9136,10 +9331,10 @@ pub mod xdg_dialog_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "xdg_wm_dialog_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xdg_wm_dialog_v1 interface. See the module level documentation for more info"]
-        pub trait XdgWmDialogV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xdg_wm_dialog_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9174,6 +9369,8 @@ pub mod xdg_dialog_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroys the xdg_wm_dialog_v1 object. This does not affect"]
             #[doc = "the xdg_dialog_v1 objects generated through it."]
             fn destroy(
@@ -9194,6 +9391,7 @@ pub mod xdg_dialog_v1 {
                 toplevel: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A xdg_dialog_v1 object is an ancillary object tied to a xdg_toplevel. Its"]
     #[doc = "purpose is hinting the compositor that the toplevel is a \"dialog\" (e.g. a"]
@@ -9208,10 +9406,10 @@ pub mod xdg_dialog_v1 {
     pub mod xdg_dialog_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "xdg_dialog_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xdg_dialog_v1 interface. See the module level documentation for more info"]
-        pub trait XdgDialogV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xdg_dialog_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9239,6 +9437,8 @@ pub mod xdg_dialog_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroys the xdg_dialog_v1 object. If this object is destroyed"]
             #[doc = "before the related xdg_toplevel, the compositor should unapply its"]
             #[doc = "effects."]
@@ -9271,6 +9471,7 @@ pub mod xdg_dialog_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -9285,10 +9486,10 @@ pub mod xdg_system_bell_v1 {
     pub mod xdg_system_bell_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "xdg_system_bell_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xdg_system_bell_v1 interface. See the module level documentation for more info"]
-        pub trait XdgSystemBellV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xdg_system_bell_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9319,6 +9520,8 @@ pub mod xdg_system_bell_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Notify that the object will no longer be used."]
             fn destroy(
                 &self,
@@ -9341,6 +9544,7 @@ pub mod xdg_system_bell_v1 {
                 surface: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -9403,10 +9607,10 @@ pub mod xdg_toplevel_drag_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "xdg_toplevel_drag_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xdg_toplevel_drag_manager_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelDragManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xdg_toplevel_drag_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9442,6 +9646,8 @@ pub mod xdg_toplevel_drag_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy this xdg_toplevel_drag_manager_v1 object. Other objects,"]
             #[doc = "including xdg_toplevel_drag_v1 objects created by this factory, are not"]
             #[doc = "affected by this request."]
@@ -9468,6 +9674,7 @@ pub mod xdg_toplevel_drag_v1 {
                 data_source: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_drag_v1 {
@@ -9497,10 +9704,10 @@ pub mod xdg_toplevel_drag_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "xdg_toplevel_drag_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xdg_toplevel_drag_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelDragV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xdg_toplevel_drag_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9536,6 +9743,8 @@ pub mod xdg_toplevel_drag_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy this xdg_toplevel_drag_v1 object. This request must only be"]
             #[doc = "called after the underlying wl_data_source drag has ended, as indicated"]
             #[doc = "by the dnd_drop_performed or cancelled events. In any other case an"]
@@ -9569,6 +9778,7 @@ pub mod xdg_toplevel_drag_v1 {
                 y_offset: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[doc = "This protocol allows clients to set icons for their toplevel surfaces"]
@@ -9594,10 +9804,10 @@ pub mod xdg_toplevel_icon_v1 {
     pub mod xdg_toplevel_icon_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "xdg_toplevel_icon_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xdg_toplevel_icon_manager_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelIconManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xdg_toplevel_icon_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9641,6 +9851,8 @@ pub mod xdg_toplevel_icon_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the toplevel icon manager."]
             #[doc = "This does not destroy objects created with the manager."]
             fn destroy(
@@ -9683,6 +9895,8 @@ pub mod xdg_toplevel_icon_v1 {
                 toplevel: crate::wire::ObjectId,
                 icon: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event indicates an icon size the compositor prefers to be"]
             #[doc = "available if the client has scalable icons and can render to any size."]
             #[doc = ""]
@@ -9770,10 +9984,10 @@ pub mod xdg_toplevel_icon_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "xdg_toplevel_icon_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xdg_toplevel_icon_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelIconV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xdg_toplevel_icon_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9817,6 +10031,8 @@ pub mod xdg_toplevel_icon_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroys the 'xdg_toplevel_icon_v1' object."]
             #[doc = "The icon must still remain set on every toplevel it was assigned to,"]
             #[doc = "until the toplevel icon is reset explicitly."]
@@ -9878,6 +10094,7 @@ pub mod xdg_toplevel_icon_v1 {
                 scale: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[doc = "This protocol adds a xwayland_surface role which allows an Xwayland"]
@@ -9951,10 +10168,10 @@ pub mod xwayland_shell_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "xwayland_shell_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xwayland_shell_v1 interface. See the module level documentation for more info"]
-        pub trait XwaylandShellV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xwayland_shell_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -9990,6 +10207,8 @@ pub mod xwayland_shell_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the xwayland_shell_v1 object."]
             #[doc = ""]
             #[doc = "The child objects created via this interface are unaffected."]
@@ -10015,6 +10234,7 @@ pub mod xwayland_shell_v1 {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An Xwayland surface is a surface managed by an Xwayland server."]
     #[doc = "It is used for associating surfaces to Xwayland windows."]
@@ -10052,10 +10272,10 @@ pub mod xwayland_shell_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "xwayland_surface_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the xwayland_surface_v1 interface. See the module level documentation for more info"]
-        pub trait XwaylandSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "xwayland_surface_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10087,6 +10307,8 @@ pub mod xwayland_shell_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Associates an Xwayland window to a wl_surface."]
             #[doc = "The association state is double-buffered, see wl_surface.commit."]
             #[doc = ""]
@@ -10124,5 +10346,6 @@ pub mod xwayland_shell_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }

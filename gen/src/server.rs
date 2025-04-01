@@ -1,4 +1,4 @@
-use heck::{ToSnekCase, ToUpperCamelCase};
+use heck::ToSnekCase;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use tracing::debug;
@@ -20,7 +20,6 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
         for interface in &protocol.interfaces {
             let docs = description_to_docs(interface.description.as_ref());
             let module_name = make_ident(&interface.name);
-            let trait_name = make_ident(interface.name.to_upper_camel_case());
 
             let trait_docs = format!(
                 "Trait to implement the {} interface. See the module level documentation for more info",
@@ -56,11 +55,11 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
 
                     #(#enums)*
 
-                    #[doc = #trait_docs]
-                    pub trait #trait_name: crate::server::Dispatcher {
-                        const INTERFACE: &'static str = #name;
-                        const VERSION: u32 = #version;
+                    pub const INTERFACE: &'static str = #name;
+                    pub const VERSION: u32 = #version;
 
+                    #[doc = #trait_docs]
+                    pub trait ServerHandler: Requests + Events + crate::server::Dispatcher{
                         fn handle_request(
                             &self,
                             #handler_args
@@ -74,10 +73,10 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                                 }
                             }
                         }
-
-                        #(#requests)*
-                        #(#events)*
                     }
+
+                    pub trait Requests {#(#requests)*}
+                    pub trait Events {#(#events)*}
                 }
             })
         }

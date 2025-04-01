@@ -18,10 +18,10 @@ pub mod wlr_data_control_unstable_v1 {
     pub mod zwlr_data_control_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwlr_data_control_manager_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the zwlr_data_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrDataControlManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_data_control_manager_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -67,6 +67,8 @@ pub mod wlr_data_control_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a new data source."]
             fn create_data_source(
                 &self,
@@ -90,6 +92,7 @@ pub mod wlr_data_control_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This interface allows a client to manage a seat's selection."]
     #[doc = ""]
@@ -119,10 +122,10 @@ pub mod wlr_data_control_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwlr_data_control_device_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the zwlr_data_control_device_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrDataControlDeviceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_data_control_device_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -164,6 +167,8 @@ pub mod wlr_data_control_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request asks the compositor to set the selection to the data from"]
             #[doc = "the source on behalf of the client."]
             #[doc = ""]
@@ -201,6 +206,8 @@ pub mod wlr_data_control_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 source: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The data_offer event introduces a new wlr_data_control_offer object,"]
             #[doc = "which will subsequently be used in either the"]
             #[doc = "wlr_data_control_device.selection event (for the regular clipboard"]
@@ -340,10 +347,10 @@ pub mod wlr_data_control_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwlr_data_control_source_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwlr_data_control_source_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrDataControlSourceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_data_control_source_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -374,6 +381,8 @@ pub mod wlr_data_control_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request adds a MIME type to the set of MIME types advertised to"]
             #[doc = "targets. Can be called several times to offer multiple types."]
             #[doc = ""]
@@ -391,6 +400,8 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Request for data from the client. Send the data as the specified MIME"]
             #[doc = "type over the passed file descriptor, then close it."]
             fn send(
@@ -445,10 +456,10 @@ pub mod wlr_data_control_unstable_v1 {
     pub mod zwlr_data_control_offer_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwlr_data_control_offer_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwlr_data_control_offer_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrDataControlOfferV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_data_control_offer_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -481,6 +492,8 @@ pub mod wlr_data_control_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "To transfer the offered data, the client issues this request and"]
             #[doc = "indicates the MIME type it wants to receive. The transfer happens"]
             #[doc = "through the passed file descriptor (typically created with the pipe"]
@@ -504,6 +517,8 @@ pub mod wlr_data_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Sent immediately after creating the wlr_data_control_offer object."]
             #[doc = "One event per offered MIME type."]
             fn offer(
@@ -547,10 +562,10 @@ pub mod wlr_export_dmabuf_unstable_v1 {
     pub mod zwlr_export_dmabuf_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwlr_export_dmabuf_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwlr_export_dmabuf_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrExportDmabufManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_export_dmabuf_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -591,6 +606,8 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Capture the next frame of an entire output."]
             fn capture_output(
                 &self,
@@ -608,6 +625,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This object represents a single DMA-BUF frame."]
     #[doc = ""]
@@ -677,10 +695,10 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwlr_export_dmabuf_frame_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwlr_export_dmabuf_frame_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrExportDmabufFrameV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_export_dmabuf_frame_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -700,6 +718,8 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Unreferences the frame. This request must be called as soon as its no"]
             #[doc = "longer used."]
             #[doc = ""]
@@ -710,6 +730,8 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Main event supplying the client with information about the frame. If the"]
             #[doc = "capture didn't fail, this event is always emitted first before any other"]
             #[doc = "events."]
@@ -889,10 +911,10 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
     pub mod zwlr_foreign_toplevel_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwlr_foreign_toplevel_manager_v1";
+        pub const VERSION: u32 = 3u32;
         #[doc = "Trait to implement the zwlr_foreign_toplevel_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrForeignToplevelManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_foreign_toplevel_manager_v1";
-            const VERSION: u32 = 3u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -913,6 +935,8 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Indicates the client no longer wishes to receive events for new toplevels."]
             #[doc = "However the compositor may emit further toplevel_created events, until"]
             #[doc = "the finished event is emitted."]
@@ -923,6 +947,8 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is emitted whenever a new toplevel window is created. It"]
             #[doc = "is emitted for all toplevels, regardless of the app that has created"]
             #[doc = "them."]
@@ -1036,10 +1062,10 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwlr_foreign_toplevel_handle_v1";
+        pub const VERSION: u32 = 3u32;
         #[doc = "Trait to implement the zwlr_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrForeignToplevelHandleV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_foreign_toplevel_handle_v1";
-            const VERSION: u32 = 3u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1146,6 +1172,8 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Requests that the toplevel be maximized. If the maximized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
             fn set_maximized(
@@ -1245,6 +1273,8 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is emitted whenever the title of the toplevel changes."]
             fn title(
                 &self,
@@ -1444,10 +1474,10 @@ pub mod wlr_gamma_control_unstable_v1 {
     pub mod zwlr_gamma_control_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwlr_gamma_control_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwlr_gamma_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrGammaControlManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_gamma_control_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1485,6 +1515,8 @@ pub mod wlr_gamma_control_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a gamma control that can be used to adjust gamma tables for the"]
             #[doc = "provided output."]
             fn get_gamma_control(
@@ -1502,6 +1534,7 @@ pub mod wlr_gamma_control_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This interface allows a client to adjust gamma tables for a particular"]
     #[doc = "output."]
@@ -1538,10 +1571,10 @@ pub mod wlr_gamma_control_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwlr_gamma_control_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwlr_gamma_control_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrGammaControlV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_gamma_control_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1570,6 +1603,8 @@ pub mod wlr_gamma_control_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Set the gamma table. The file descriptor can be memory-mapped to provide"]
             #[doc = "the raw gamma table, which contains successive gamma ramps for the red,"]
             #[doc = "green and blue channels. Each gamma ramp is an array of 16-byte unsigned"]
@@ -1590,6 +1625,8 @@ pub mod wlr_gamma_control_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Advertise the size of each gamma ramp."]
             #[doc = ""]
             #[doc = "This event is sent immediately when the gamma control object is created."]
@@ -1671,10 +1708,10 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwlr_input_inhibit_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwlr_input_inhibit_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrInputInhibitManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_input_inhibit_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1699,6 +1736,8 @@ pub mod wlr_input_inhibit_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Activates the input inhibitor. As long as the inhibitor is active, the"]
             #[doc = "compositor will not send input events to other clients."]
             fn get_inhibitor(
@@ -1708,6 +1747,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "While this resource exists, input to clients other than the owner of the"]
     #[doc = "inhibitor resource will not receive input events. Any client which"]
@@ -1722,10 +1762,10 @@ pub mod wlr_input_inhibit_unstable_v1 {
     pub mod zwlr_input_inhibitor_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwlr_input_inhibitor_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwlr_input_inhibitor_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrInputInhibitorV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_input_inhibitor_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1745,6 +1785,8 @@ pub mod wlr_input_inhibit_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the inhibitor and allow other clients to receive input."]
             fn destroy(
                 &self,
@@ -1752,6 +1794,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -1826,10 +1869,10 @@ pub mod wlr_layer_shell_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwlr_layer_shell_v1";
+        pub const VERSION: u32 = 5u32;
         #[doc = "Trait to implement the zwlr_layer_shell_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrLayerShellV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_layer_shell_v1";
-            const VERSION: u32 = 5u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1883,6 +1926,8 @@ pub mod wlr_layer_shell_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a layer surface for an existing surface. This assigns the role of"]
             #[doc = "layer_surface, or raises a protocol error if another role is already"]
             #[doc = "assigned."]
@@ -1923,6 +1968,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An interface that may be implemented by a wl_surface, for surfaces that"]
     #[doc = "are designed to be rendered as a layer of a stacked desktop-like"]
@@ -2017,10 +2063,10 @@ pub mod wlr_layer_shell_unstable_v1 {
                 self.bits().fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwlr_layer_surface_v1";
+        pub const VERSION: u32 = 5u32;
         #[doc = "Trait to implement the zwlr_layer_surface_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrLayerSurfaceV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_layer_surface_v1";
-            const VERSION: u32 = 5u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2138,6 +2184,8 @@ pub mod wlr_layer_shell_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Sets the size of the surface in surface-local coordinates. The"]
             #[doc = "compositor will display the surface centered with respect to its"]
             #[doc = "anchors."]
@@ -2303,6 +2351,8 @@ pub mod wlr_layer_shell_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 edge: Anchor,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The configure event asks the client to resize its surface."]
             #[doc = ""]
             #[doc = "Clients should arrange their surface for the new states, and then send"]
@@ -2416,10 +2466,10 @@ pub mod wlr_output_management_unstable_v1 {
     pub mod zwlr_output_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwlr_output_manager_v1";
+        pub const VERSION: u32 = 4u32;
         #[doc = "Trait to implement the zwlr_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_output_manager_v1";
-            const VERSION: u32 = 4u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2451,6 +2501,8 @@ pub mod wlr_output_management_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a new output configuration object. This allows to update head"]
             #[doc = "properties."]
             fn create_configuration(
@@ -2470,6 +2522,8 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event introduces a new head. This happens whenever a new head"]
             #[doc = "appears (e.g. a monitor is plugged in) or after the output manager is"]
             #[doc = "bound."]
@@ -2578,10 +2632,10 @@ pub mod wlr_output_management_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwlr_output_head_v1";
+        pub const VERSION: u32 = 4u32;
         #[doc = "Trait to implement the zwlr_output_head_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputHeadV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_output_head_v1";
-            const VERSION: u32 = 4u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2601,6 +2655,8 @@ pub mod wlr_output_management_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request indicates that the client will no longer use this head"]
             #[doc = "object."]
             fn release(
@@ -2608,6 +2664,8 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event describes the head name."]
             #[doc = ""]
             #[doc = "The naming convention is compositor defined, but limited to alphanumeric"]
@@ -3013,10 +3071,10 @@ pub mod wlr_output_management_unstable_v1 {
     pub mod zwlr_output_mode_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwlr_output_mode_v1";
+        pub const VERSION: u32 = 3u32;
         #[doc = "Trait to implement the zwlr_output_mode_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputModeV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_output_mode_v1";
-            const VERSION: u32 = 3u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3036,6 +3094,8 @@ pub mod wlr_output_management_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request indicates that the client will no longer use this mode"]
             #[doc = "object."]
             fn release(
@@ -3043,6 +3103,8 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event describes the mode size. The size is given in physical"]
             #[doc = "hardware units of the output device. This is not necessarily the same as"]
             #[doc = "the output size in the global compositor space. For instance, the output"]
@@ -3164,10 +3226,10 @@ pub mod wlr_output_management_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwlr_output_configuration_v1";
+        pub const VERSION: u32 = 4u32;
         #[doc = "Trait to implement the zwlr_output_configuration_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputConfigurationV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_output_configuration_v1";
-            const VERSION: u32 = 4u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3221,6 +3283,8 @@ pub mod wlr_output_management_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Enable a head. This request creates a head configuration object that can"]
             #[doc = "be used to change the head's properties."]
             fn enable_head(
@@ -3277,6 +3341,8 @@ pub mod wlr_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Sent after the compositor has successfully applied the changes or"]
             #[doc = "tested them."]
             #[doc = ""]
@@ -3384,10 +3450,10 @@ pub mod wlr_output_management_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwlr_output_configuration_head_v1";
+        pub const VERSION: u32 = 4u32;
         #[doc = "Trait to implement the zwlr_output_configuration_head_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputConfigurationHeadV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_output_configuration_head_v1";
-            const VERSION: u32 = 4u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3466,6 +3532,8 @@ pub mod wlr_output_management_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request sets the head's mode."]
             fn set_mode(
                 &self,
@@ -3517,6 +3585,7 @@ pub mod wlr_output_management_unstable_v1 {
                 state : super :: super :: super :: wlr :: wlr_output_management_unstable_v1 :: zwlr_output_head_v1 :: AdaptiveSyncState,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[doc = "This protocol allows clients to control power management modes"]
@@ -3543,10 +3612,10 @@ pub mod wlr_output_power_management_unstable_v1 {
     pub mod zwlr_output_power_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwlr_output_power_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwlr_output_power_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputPowerManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_output_power_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3581,6 +3650,8 @@ pub mod wlr_output_power_management_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create an output power management mode control that can be used to"]
             #[doc = "adjust the power management mode for a given output."]
             fn get_output_power(
@@ -3598,6 +3669,7 @@ pub mod wlr_output_power_management_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This object offers requests to set the power management mode of"]
     #[doc = "an output."]
@@ -3650,10 +3722,10 @@ pub mod wlr_output_power_management_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwlr_output_power_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zwlr_output_power_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputPowerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_output_power_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3682,6 +3754,8 @@ pub mod wlr_output_power_management_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Set an output's power save mode to the given mode. The mode change"]
             #[doc = "is effective immediately. If the output does not support the given"]
             #[doc = "mode a failed event is sent."]
@@ -3697,6 +3771,8 @@ pub mod wlr_output_power_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Report the power management mode change of an output."]
             #[doc = ""]
             #[doc = "The mode event is sent after an output changed its power"]
@@ -3766,10 +3842,10 @@ pub mod wlr_screencopy_unstable_v1 {
     pub mod zwlr_screencopy_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwlr_screencopy_manager_v1";
+        pub const VERSION: u32 = 3u32;
         #[doc = "Trait to implement the zwlr_screencopy_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrScreencopyManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_screencopy_manager_v1";
-            const VERSION: u32 = 3u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3843,6 +3919,8 @@ pub mod wlr_screencopy_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Capture the next frame of an entire output."]
             fn capture_output(
                 &self,
@@ -3877,6 +3955,7 @@ pub mod wlr_screencopy_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This object represents a single frame."]
     #[doc = ""]
@@ -3934,10 +4013,10 @@ pub mod wlr_screencopy_unstable_v1 {
                 self.bits().fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwlr_screencopy_frame_v1";
+        pub const VERSION: u32 = 3u32;
         #[doc = "Trait to implement the zwlr_screencopy_frame_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrScreencopyFrameV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_screencopy_frame_v1";
-            const VERSION: u32 = 3u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3979,6 +4058,8 @@ pub mod wlr_screencopy_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Copy the frame to the supplied buffer. The buffer must have a the"]
             #[doc = "correct size, see zwlr_screencopy_frame_v1.buffer and"]
             #[doc = "zwlr_screencopy_frame_v1.linux_dmabuf. The buffer needs to have a"]
@@ -4005,6 +4086,8 @@ pub mod wlr_screencopy_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Provides information about wl_shm buffer parameters that need to be"]
             #[doc = "used for this frame. This event is sent once after the frame is created"]
             #[doc = "if wl_shm buffers are supported."]
@@ -4236,10 +4319,10 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zwlr_virtual_pointer_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the zwlr_virtual_pointer_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrVirtualPointerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_virtual_pointer_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4367,6 +4450,8 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "The pointer has moved by a relative amount to the previous request."]
             #[doc = ""]
             #[doc = "Values are in the global compositor space."]
@@ -4450,16 +4535,17 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This object allows clients to create individual virtual pointer objects."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_virtual_pointer_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zwlr_virtual_pointer_manager_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the zwlr_virtual_pointer_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrVirtualPointerManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zwlr_virtual_pointer_manager_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4516,6 +4602,8 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Creates a new virtual pointer. The optional seat is a suggestion to the"]
             #[doc = "compositor."]
             fn create_virtual_pointer(
@@ -4543,5 +4631,6 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }

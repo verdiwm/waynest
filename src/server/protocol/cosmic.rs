@@ -31,10 +31,10 @@ pub mod cosmic_a11y_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "cosmic_a11y_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the cosmic_a11y_manager_v1 interface. See the module level documentation for more info"]
-        pub trait CosmicA11yManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "cosmic_a11y_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -58,12 +58,16 @@ pub mod cosmic_a11y_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn set_magnifier(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 active: ActiveState,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             fn magnifier(
                 &self,
                 client: &mut crate::server::Client,
@@ -101,10 +105,10 @@ pub mod cosmic_atspi_v1 {
     pub mod cosmic_atspi_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "cosmic_atspi_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the cosmic_atspi_manager_v1 interface. See the module level documentation for more info"]
-        pub trait CosmicAtspiManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "cosmic_atspi_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -166,6 +170,8 @@ pub mod cosmic_atspi_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Any grabs that are still active will be disabled."]
             fn destroy(
                 &self,
@@ -202,6 +208,8 @@ pub mod cosmic_atspi_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Produces an fd that can be used with libei to monitor keyboard input."]
             fn key_events_eis(
                 &self,
@@ -234,10 +242,10 @@ pub mod cosmic_image_source_unstable_v1 {
     pub mod zcosmic_workspace_image_capture_source_manager_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zcosmic_workspace_image_capture_source_manager_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zcosmic_workspace_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceImageCaptureSourceManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_workspace_image_capture_source_manager_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -275,6 +283,8 @@ pub mod cosmic_image_source_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Creates a source object for a workspaces. Images captured from this source"]
             #[doc = "will show the same content as the workspace. Some elements may be omitted,"]
             #[doc = "such as cursors and overlays that have been marked as transparent to"]
@@ -295,6 +305,7 @@ pub mod cosmic_image_source_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[doc = "This protocol serves as an extension to wlr-output-management."]
@@ -332,10 +343,10 @@ pub mod cosmic_output_management_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zcosmic_output_manager_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the zcosmic_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_output_manager_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -402,6 +413,8 @@ pub mod cosmic_output_management_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Gets an extension object for zwlr_output_head_v1."]
             #[doc = ""]
             #[doc = "As soon as the extended output is created, events will be dispatched with an accompanying"]
@@ -449,6 +462,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "Extension to zwlr_output_head_v1."]
     #[doc = ""]
@@ -514,10 +528,10 @@ pub mod cosmic_output_management_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zcosmic_output_head_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the zcosmic_output_head_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputHeadV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_output_head_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -537,6 +551,8 @@ pub mod cosmic_output_management_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Using this request a client can tell the compositor that it is not interested"]
             #[doc = "in the head object anymore."]
             fn release(
@@ -544,6 +560,8 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This events describes the scale of the head in the global compositor"]
             #[doc = "space multiplied by 1000 for additional precision."]
             #[doc = ""]
@@ -677,10 +695,10 @@ pub mod cosmic_output_management_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zcosmic_output_configuration_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zcosmic_output_configuration_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputConfigurationV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_output_configuration_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -723,6 +741,8 @@ pub mod cosmic_output_management_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Enable a head mirroring another."]
             #[doc = ""]
             #[doc = "This request creates a head configuration object that can be used to change the head's properties."]
@@ -753,6 +773,8 @@ pub mod cosmic_output_management_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event indicates that the configuration is no longer available."]
             #[doc = ""]
             #[doc = "This usually happens when the original configuration was `cancelled`, `suceeded` or `failed`."]
@@ -789,10 +811,10 @@ pub mod cosmic_output_management_unstable_v1 {
     pub mod zcosmic_output_configuration_head_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zcosmic_output_configuration_head_v1";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the zcosmic_output_configuration_head_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputConfigurationHeadV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_output_configuration_head_v1";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -834,6 +856,8 @@ pub mod cosmic_output_management_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request sets the head's scale multiplied by 1000 for additional precision."]
             #[doc = ""]
             #[doc = "This request is meant to be used in place of `zwlr_output_configuration_head_v1::set_scale`."]
@@ -870,6 +894,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 state : super :: super :: super :: cosmic :: cosmic_output_management_unstable_v1 :: zcosmic_output_head_v1 :: AdaptiveSyncStateExt,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
 #[allow(clippy::module_inception)]
@@ -884,10 +909,10 @@ pub mod cosmic_overlap_notify_unstable_v1 {
     pub mod zcosmic_overlap_notify_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zcosmic_overlap_notify_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zcosmic_overlap_notify_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOverlapNotifyV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_overlap_notify_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -922,6 +947,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Requests notifications for toplevels and layer-surfaces entering and leaving the"]
             #[doc = "surface-area of the given zwlr_layer_surface_v1. This can be used e.g. to"]
             #[doc = "implement auto-hide functionality."]
@@ -936,15 +963,16 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 layer_surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_overlap_notification_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zcosmic_overlap_notification_v1";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zcosmic_overlap_notification_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOverlapNotificationV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_overlap_notification_v1";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -967,6 +995,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request should be called when the client has no interest in overlap"]
             #[doc = "notifications anymore."]
             fn destroy(
@@ -974,6 +1004,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "A ext_foreign_toplevel_handle_v1 has entered the surface area."]
             #[doc = ""]
             #[doc = "This event will be emitted once for every ext_foreign_toplevel_handle_v1"]
@@ -1163,10 +1195,10 @@ pub mod cosmic_screencopy_unstable_v2 {
                 self.bits().fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zcosmic_screencopy_manager_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zcosmic_screencopy_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopyManagerV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_screencopy_manager_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1237,6 +1269,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a capturing session for an image source."]
             #[doc = ""]
             #[doc = "If the paint_cursors option is set, cursors shall be composited onto"]
@@ -1272,6 +1306,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This object represents an active screencopy session."]
     #[doc = ""]
@@ -1293,10 +1328,10 @@ pub mod cosmic_screencopy_unstable_v2 {
     pub mod zcosmic_screencopy_session_v2 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zcosmic_screencopy_session_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zcosmic_screencopy_session_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopySessionV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_screencopy_session_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1330,6 +1365,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a capture frame for this session."]
             fn create_frame(
                 &self,
@@ -1347,6 +1384,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Provides the dimensions of the source image in buffer pixel coordinates."]
             #[doc = ""]
             #[doc = "The client must attach buffers that match this size."]
@@ -1563,10 +1602,10 @@ pub mod cosmic_screencopy_unstable_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zcosmic_screencopy_frame_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zcosmic_screencopy_frame_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopyFrameV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_screencopy_frame_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1617,6 +1656,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroys the session. This request can be sent at any time by the"]
             #[doc = "client."]
             fn destroy(
@@ -1680,6 +1721,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is sent before the ready event and holds the transform of"]
             #[doc = "the source buffer."]
             fn transform(
@@ -1850,10 +1893,10 @@ pub mod cosmic_screencopy_unstable_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zcosmic_screencopy_cursor_session_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zcosmic_screencopy_cursor_session_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopyCursorSessionV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_screencopy_cursor_session_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1888,6 +1931,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroys the session. This request can be sent at any time by the"]
             #[doc = "client."]
             #[doc = ""]
@@ -1911,6 +1956,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 session: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Sent when a cursor enters the captured area. It shall be generated"]
             #[doc = "before the \"position\" and \"hotspot\" events when and only when a cursor"]
             #[doc = "enters the area."]
@@ -2036,10 +2083,10 @@ pub mod cosmic_toplevel_info_unstable_v1 {
     pub mod zcosmic_toplevel_info_v1 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "zcosmic_toplevel_info_v1";
+        pub const VERSION: u32 = 3u32;
         #[doc = "Trait to implement the zcosmic_toplevel_info_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelInfoV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_toplevel_info_v1";
-            const VERSION: u32 = 3u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2078,6 +2125,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request indicates that the client no longer wishes to receive"]
             #[doc = "events for new toplevels.  However, the compositor may emit further"]
             #[doc = "toplevel_created events until the finished event is emitted."]
@@ -2104,6 +2153,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 cosmic_toplevel: crate::wire::ObjectId,
                 foreign_toplevel: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event is never emitted for clients binding version 2"]
             #[doc = "of this protocol, they should use `get_cosmic_toplevel` instead."]
             #[doc = ""]
@@ -2222,10 +2273,10 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zcosmic_toplevel_handle_v1";
+        pub const VERSION: u32 = 3u32;
         #[doc = "Trait to implement the zcosmic_toplevel_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelHandleV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_toplevel_handle_v1";
-            const VERSION: u32 = 3u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2245,6 +2296,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request should be called either when the client will no longer"]
             #[doc = "use the zcosmic_toplevel_handle_v1."]
             fn destroy(
@@ -2252,6 +2305,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The server will emit no further events on the"]
             #[doc = "zcosmic_toplevel_handle_v1 after this event. Any requests received"]
             #[doc = "aside from the destroy request will be ignored. Upon receiving this"]
@@ -2630,10 +2685,10 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zcosmic_toplevel_manager_v1";
+        pub const VERSION: u32 = 4u32;
         #[doc = "Trait to implement the zcosmic_toplevel_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelManagerV1: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_toplevel_manager_v1";
-            const VERSION: u32 = 4u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2840,6 +2895,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request indicates that the client has finished using the"]
             #[doc = "zcosmic_toplevel_manager_v1 object and that it can be safely"]
             #[doc = "destroyed."]
@@ -2976,6 +3033,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 workspace: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
             #[doc = "a capability isn't supported, clients should hide or disable the UI"]
             #[doc = "elements that expose this functionality. For instance, if the"]
@@ -3047,10 +3106,10 @@ pub mod cosmic_workspace_unstable_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zcosmic_workspace_manager_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zcosmic_workspace_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceManagerV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_workspace_manager_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3091,6 +3150,8 @@ pub mod cosmic_workspace_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Request a `zcosmic_workspace_handle_v2` extension object for an existing"]
             #[doc = "`ext_workspace_handle_v1`."]
             #[doc = ""]
@@ -3111,6 +3172,7 @@ pub mod cosmic_workspace_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A zcosmic_workspace_handle_v2 object represents a a workspace that handles a"]
     #[doc = "group of surfaces."]
@@ -3165,10 +3227,10 @@ pub mod cosmic_workspace_unstable_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "zcosmic_workspace_handle_v2";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the zcosmic_workspace_handle_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceHandleV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_workspace_handle_v2";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3209,6 +3271,8 @@ pub mod cosmic_workspace_unstable_v2 {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request should be called either when the client will no longer"]
             #[doc = "use the `zcosmic_workspace_handle_v1`."]
             fn destroy(
@@ -3234,6 +3298,8 @@ pub mod cosmic_workspace_unstable_v2 {
                 sender_id: crate::wire::ObjectId,
                 state: TilingState,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
             #[doc = "a capability isn't supported, clients should hide or disable the UI"]
             #[doc = "elements that expose this functionality. For instance, if the"]

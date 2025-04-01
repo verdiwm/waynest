@@ -38,10 +38,10 @@ pub mod wayland {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_display";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wl_display interface. See the module level documentation for more info"]
-        pub trait WlDisplay: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_display";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -69,6 +69,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "The sync request asks the server to emit the 'done' event"]
             #[doc = "on the returned wl_callback object.  Since requests are"]
             #[doc = "handled in-order and events are delivered in-order, this can"]
@@ -101,6 +103,8 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 registry: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The error event is sent out when a fatal (non-recoverable)"]
             #[doc = "error has occurred.  The object_id argument is the object"]
             #[doc = "where the error occurred, most often in response to a request"]
@@ -181,10 +185,10 @@ pub mod wayland {
     pub mod wl_registry {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wl_registry";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wl_registry interface. See the module level documentation for more info"]
-        pub trait WlRegistry: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_registry";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -204,6 +208,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Binds a new, client-created object to the server using the"]
             #[doc = "specified name as the identifier."]
             fn bind(
@@ -213,6 +219,8 @@ pub mod wayland {
                 name: u32,
                 id: crate::wire::NewId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Notify the client of global objects."]
             #[doc = ""]
             #[doc = "The event notifies the client that a global object with"]
@@ -281,10 +289,10 @@ pub mod wayland {
     pub mod wl_callback {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wl_callback";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wl_callback interface. See the module level documentation for more info"]
-        pub trait WlCallback: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_callback";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
@@ -298,6 +306,9 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {}
+        pub trait Events {
             #[doc = "Notify the client when the related request is done."]
             fn done(
                 &self,
@@ -325,10 +336,10 @@ pub mod wayland {
     pub mod wl_compositor {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wl_compositor";
+        pub const VERSION: u32 = 6u32;
         #[doc = "Trait to implement the wl_compositor interface. See the module level documentation for more info"]
-        pub trait WlCompositor: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_compositor";
-            const VERSION: u32 = 6u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -356,6 +367,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Ask the compositor to create a new surface."]
             fn create_surface(
                 &self,
@@ -371,6 +384,7 @@ pub mod wayland {
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "The wl_shm_pool object encapsulates a piece of memory shared"]
     #[doc = "between the compositor and client.  Through the wl_shm_pool"]
@@ -383,10 +397,10 @@ pub mod wayland {
     pub mod wl_shm_pool {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wl_shm_pool";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the wl_shm_pool interface. See the module level documentation for more info"]
-        pub trait WlShmPool: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_shm_pool";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -442,6 +456,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a wl_buffer object from the pool."]
             #[doc = ""]
             #[doc = "The buffer is created offset bytes into the pool and has"]
@@ -491,6 +507,7 @@ pub mod wayland {
                 size: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "A singleton global object that provides support for shared"]
     #[doc = "memory."]
@@ -920,10 +937,10 @@ pub mod wayland {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_shm";
+        pub const VERSION: u32 = 2u32;
         #[doc = "Trait to implement the wl_shm interface. See the module level documentation for more info"]
-        pub trait WlShm: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_shm";
-            const VERSION: u32 = 2u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -958,6 +975,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a new wl_shm_pool object."]
             #[doc = ""]
             #[doc = "The pool can be used to create shared memory based buffer"]
@@ -980,6 +999,8 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Informs the client about a valid pixel format that"]
             #[doc = "can be used for buffers. Known formats include"]
             #[doc = "argb8888 and xrgb8888."]
@@ -1021,10 +1042,10 @@ pub mod wayland {
     pub mod wl_buffer {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wl_buffer";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wl_buffer interface. See the module level documentation for more info"]
-        pub trait WlBuffer: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_buffer";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1044,6 +1065,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy a buffer. If and how you need to release the backing"]
             #[doc = "storage is defined by the buffer factory interface."]
             #[doc = ""]
@@ -1053,6 +1076,8 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Sent when this wl_buffer is no longer used by the compositor."]
             #[doc = "The client is now free to reuse or destroy this buffer and its"]
             #[doc = "backing storage."]
@@ -1121,10 +1146,10 @@ pub mod wayland {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_data_offer";
+        pub const VERSION: u32 = 3u32;
         #[doc = "Trait to implement the wl_data_offer interface. See the module level documentation for more info"]
-        pub trait WlDataOffer: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_data_offer";
-            const VERSION: u32 = 3u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1191,6 +1216,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Indicate that the client can accept the given mime type, or"]
             #[doc = "NULL for not accepted."]
             #[doc = ""]
@@ -1297,6 +1324,8 @@ pub mod wayland {
                 dnd_actions: super::super::super::core::wayland::wl_data_device_manager::DndAction,
                 preferred_action : super :: super :: super :: core :: wayland :: wl_data_device_manager :: DndAction,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Sent immediately after creating the wl_data_offer object.  One"]
             #[doc = "event per offered mime type."]
             fn offer(
@@ -1427,10 +1456,10 @@ pub mod wayland {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_data_source";
+        pub const VERSION: u32 = 3u32;
         #[doc = "Trait to implement the wl_data_source interface. See the module level documentation for more info"]
-        pub trait WlDataSource: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_data_source";
-            const VERSION: u32 = 3u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1471,6 +1500,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request adds a mime type to the set of mime types"]
             #[doc = "advertised to targets.  Can be called several times to offer"]
             #[doc = "multiple types."]
@@ -1505,6 +1536,8 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 dnd_actions: super::super::super::core::wayland::wl_data_device_manager::DndAction,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Sent when a target accepts pointer_focus or motion events.  If"]
             #[doc = "a target does not accept any of the offered types, type is NULL."]
             #[doc = ""]
@@ -1713,10 +1746,10 @@ pub mod wayland {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_data_device";
+        pub const VERSION: u32 = 3u32;
         #[doc = "Trait to implement the wl_data_device interface. See the module level documentation for more info"]
-        pub trait WlDataDevice: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_data_device";
-            const VERSION: u32 = 3u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1769,6 +1802,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "This request asks the compositor to start a drag-and-drop"]
             #[doc = "operation on behalf of the client."]
             #[doc = ""]
@@ -1828,6 +1863,8 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The data_offer event introduces a new wl_data_offer object,"]
             #[doc = "which will subsequently be used in either the"]
             #[doc = "data_device.enter event (for drag-and-drop) or the"]
@@ -2023,10 +2060,10 @@ pub mod wayland {
                 self.bits().fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_data_device_manager";
+        pub const VERSION: u32 = 3u32;
         #[doc = "Trait to implement the wl_data_device_manager interface. See the module level documentation for more info"]
-        pub trait WlDataDeviceManager: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_data_device_manager";
-            const VERSION: u32 = 3u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2066,6 +2103,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a new data source."]
             fn create_data_source(
                 &self,
@@ -2082,6 +2121,7 @@ pub mod wayland {
                 seat: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "This interface is implemented by servers that provide"]
     #[doc = "desktop-style user interfaces."]
@@ -2117,10 +2157,10 @@ pub mod wayland {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_shell";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wl_shell interface. See the module level documentation for more info"]
-        pub trait WlShell: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_shell";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2149,6 +2189,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Create a shell surface for an existing surface. This gives"]
             #[doc = "the wl_surface the role of a shell surface. If the wl_surface"]
             #[doc = "already has another role, it raises a protocol error."]
@@ -2162,6 +2204,7 @@ pub mod wayland {
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An interface that may be implemented by a wl_surface, for"]
     #[doc = "implementations that provide a desktop-style user interface."]
@@ -2235,10 +2278,10 @@ pub mod wayland {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_shell_surface";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wl_shell_surface interface. See the module level documentation for more info"]
-        pub trait WlShellSurface: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_shell_surface";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2396,6 +2439,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "A client must respond to a ping event with a pong request or"]
             #[doc = "the client may be deemed unresponsive."]
             fn pong(
@@ -2573,6 +2618,8 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
                 class: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Ping a client to check if it is receiving events and sending"]
             #[doc = "requests. A client is expected to reply with a pong request."]
             fn ping(
@@ -2734,10 +2781,10 @@ pub mod wayland {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_surface";
+        pub const VERSION: u32 = 6u32;
         #[doc = "Trait to implement the wl_surface interface. See the module level documentation for more info"]
-        pub trait WlSurface: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_surface";
-            const VERSION: u32 = 6u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2857,6 +2904,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Deletes the surface and invalidates its object ID."]
             fn destroy(
                 &self,
@@ -3211,6 +3260,8 @@ pub mod wayland {
                 x: i32,
                 y: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This is emitted whenever a surface's creation, movement, or resizing"]
             #[doc = "results in some part of it being within the scanout region of an"]
             #[doc = "output."]
@@ -3364,10 +3415,10 @@ pub mod wayland {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_seat";
+        pub const VERSION: u32 = 9u32;
         #[doc = "Trait to implement the wl_seat interface. See the module level documentation for more info"]
-        pub trait WlSeat: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_seat";
-            const VERSION: u32 = 9u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3408,6 +3459,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "The ID provided will be initialized to the wl_pointer interface"]
             #[doc = "for this seat."]
             #[doc = ""]
@@ -3457,6 +3510,8 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This is emitted whenever a seat gains or loses the pointer,"]
             #[doc = "keyboard or touch capabilities.  The argument is a capability"]
             #[doc = "enum containing the complete set of capabilities this seat has."]
@@ -3689,10 +3744,10 @@ pub mod wayland {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_pointer";
+        pub const VERSION: u32 = 9u32;
         #[doc = "Trait to implement the wl_pointer interface. See the module level documentation for more info"]
-        pub trait WlPointer: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_pointer";
-            const VERSION: u32 = 9u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3732,6 +3787,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Set the pointer surface, i.e., the surface that contains the"]
             #[doc = "pointer image (cursor). This request gives the surface the role"]
             #[doc = "of a cursor. If the surface already has another role, it raises"]
@@ -3784,6 +3841,8 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "Notification that this seat's pointer is focused on a certain"]
             #[doc = "surface."]
             #[doc = ""]
@@ -4311,10 +4370,10 @@ pub mod wayland {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_keyboard";
+        pub const VERSION: u32 = 9u32;
         #[doc = "Trait to implement the wl_keyboard interface. See the module level documentation for more info"]
-        pub trait WlKeyboard: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_keyboard";
-            const VERSION: u32 = 9u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4334,11 +4393,15 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "This event provides a file descriptor to the client which can be"]
             #[doc = "memory-mapped in read-only mode to provide a keyboard mapping"]
             #[doc = "description."]
@@ -4587,10 +4650,10 @@ pub mod wayland {
     pub mod wl_touch {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wl_touch";
+        pub const VERSION: u32 = 9u32;
         #[doc = "Trait to implement the wl_touch interface. See the module level documentation for more info"]
-        pub trait WlTouch: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_touch";
-            const VERSION: u32 = 9u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4610,11 +4673,15 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             fn release(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "A new touch point has appeared on the surface. This touch point is"]
             #[doc = "assigned a unique ID. Future events from this touch point reference"]
             #[doc = "this ID. The ID ceases to be valid after a touch up event and may be"]
@@ -4967,10 +5034,10 @@ pub mod wayland {
                 self.bits().fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_output";
+        pub const VERSION: u32 = 4u32;
         #[doc = "Trait to implement the wl_output interface. See the module level documentation for more info"]
-        pub trait WlOutput: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_output";
-            const VERSION: u32 = 4u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4990,6 +5057,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Using this request a client can tell the server that it is not going to"]
             #[doc = "use the output object anymore."]
             fn release(
@@ -4997,6 +5066,8 @@ pub mod wayland {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+        pub trait Events {
             #[doc = "The geometry event describes geometric properties of the output."]
             #[doc = "The event is sent when binding to the output object and whenever"]
             #[doc = "any of the properties change."]
@@ -5264,10 +5335,10 @@ pub mod wayland {
     pub mod wl_region {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        pub const INTERFACE: &'static str = "wl_region";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wl_region interface. See the module level documentation for more info"]
-        pub trait WlRegion: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_region";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -5317,6 +5388,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Destroy the region.  This will invalidate the object ID."]
             fn destroy(
                 &self,
@@ -5344,6 +5417,7 @@ pub mod wayland {
                 height: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "The global interface exposing sub-surface compositing capabilities."]
     #[doc = "A wl_surface, that has sub-surfaces associated, is called the"]
@@ -5392,10 +5466,10 @@ pub mod wayland {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_subcompositor";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wl_subcompositor interface. See the module level documentation for more info"]
-        pub trait WlSubcompositor: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_subcompositor";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -5435,6 +5509,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "Informs the server that the client will not be using this"]
             #[doc = "protocol object anymore. This does not affect any other"]
             #[doc = "objects, wl_subsurface objects included."]
@@ -5471,6 +5547,7 @@ pub mod wayland {
                 parent: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
     #[doc = "An additional interface to a wl_surface object, which has been"]
     #[doc = "made a sub-surface. A sub-surface has one parent surface. A"]
@@ -5549,10 +5626,10 @@ pub mod wayland {
                 (*self as u32).fmt(f)
             }
         }
+        pub const INTERFACE: &'static str = "wl_subsurface";
+        pub const VERSION: u32 = 1u32;
         #[doc = "Trait to implement the wl_subsurface interface. See the module level documentation for more info"]
-        pub trait WlSubsurface: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "wl_subsurface";
-            const VERSION: u32 = 1u32;
+        pub trait ServerHandler: Requests + Events + crate::server::Dispatcher {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -5605,6 +5682,8 @@ pub mod wayland {
                     }
                 }
             }
+        }
+        pub trait Requests {
             #[doc = "The sub-surface interface is removed from the wl_surface object"]
             #[doc = "that was turned into a sub-surface with a"]
             #[doc = "wl_subcompositor.get_subsurface request. The wl_surface's association"]
@@ -5705,5 +5784,6 @@ pub mod wayland {
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
+        pub trait Events {}
     }
 }
