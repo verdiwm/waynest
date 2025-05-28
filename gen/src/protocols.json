@@ -12,6 +12,7 @@
   "staging": [
     "protocols/wayland-protocols/staging/alpha-modifier/alpha-modifier-v1.xml",
     "protocols/wayland-protocols/staging/color-management/color-management-v1.xml",
+    "protocols/wayland-protocols/staging/color-representation/color-representation-v1.xml",
     "protocols/wayland-protocols/staging/commit-timing/commit-timing-v1.xml",
     "protocols/wayland-protocols/staging/content-type/content-type-v1.xml",
     "protocols/wayland-protocols/staging/cursor-shape/cursor-shape-v1.xml",
@@ -35,6 +36,7 @@
     "protocols/wayland-protocols/staging/xdg-system-bell/xdg-system-bell-v1.xml",
     "protocols/wayland-protocols/staging/xdg-toplevel-drag/xdg-toplevel-drag-v1.xml",
     "protocols/wayland-protocols/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml",
+    "protocols/wayland-protocols/staging/xdg-toplevel-tag/xdg-toplevel-tag-v1.xml",
     "protocols/wayland-protocols/staging/xwayland-shell/xwayland-shell-v1.xml"
   ],
   "unstable": [
