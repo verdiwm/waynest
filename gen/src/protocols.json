@@ -142,7 +142,9 @@
     "protocols/hyprland-protocols/protocols/hyprland-ctm-control-v1.xml",
     "protocols/hyprland-protocols/protocols/hyprland-focus-grab-v1.xml",
     "protocols/hyprland-protocols/protocols/hyprland-global-shortcuts-v1.xml",
+    "protocols/hyprland-protocols/protocols/hyprland-lock-notify-v1.xml",
     "protocols/hyprland-protocols/protocols/hyprland-surface-v1.xml",
-    "protocols/hyprland-protocols/protocols/hyprland-toplevel-export-v1.xml"
+    "protocols/hyprland-protocols/protocols/hyprland-toplevel-export-v1.xml",
+    "protocols/hyprland-protocols/protocols/hyprland-toplevel-mapping-v1.xml"
   ]
 }
