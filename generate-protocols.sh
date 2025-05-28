@@ -36,6 +36,7 @@ declare -a excluded_files=(
     "tests.xml"
     "cosmic-image-source-unstable-v1.xml"
     "cosmic-workspace-unstable-v1.xml"
+    "cosmic-workspace-unstable-v2.xml"
 )
 
 # Process each folder in the specified order
