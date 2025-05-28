@@ -55,6 +55,8 @@ pub struct Interface {
 pub struct Message {
     #[serde(rename(deserialize = "@name"))]
     pub name: String,
+    #[serde(rename(deserialize = "@version"))]
+    pub version: Option<u32>,
     #[serde(rename(deserialize = "@type"))]
     pub ty: Option<MessageType>,
     #[serde(rename(deserialize = "@since"))]
