@@ -1,6 +1,7 @@
 {
-  "core": ["protocols/wayland/protocol/wayland.xml"],
-
+  "core": [
+    "protocols/wayland/protocol/wayland.xml"
+  ],
   "stable": [
     "protocols/wayland-protocols/stable/linux-dmabuf/linux-dmabuf-v1.xml",
     "protocols/wayland-protocols/stable/presentation-time/presentation-time.xml",
@@ -8,7 +9,6 @@
     "protocols/wayland-protocols/stable/viewporter/viewporter.xml",
     "protocols/wayland-protocols/stable/xdg-shell/xdg-shell.xml"
   ],
-
   "staging": [
     "protocols/wayland-protocols/staging/alpha-modifier/alpha-modifier-v1.xml",
     "protocols/wayland-protocols/staging/color-management/color-management-v1.xml",
@@ -37,7 +37,6 @@
     "protocols/wayland-protocols/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml",
     "protocols/wayland-protocols/staging/xwayland-shell/xwayland-shell-v1.xml"
   ],
-
   "unstable": [
     "protocols/wayland-protocols/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml",
     "protocols/wayland-protocols/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml",
@@ -62,7 +61,6 @@
     "protocols/wayland-protocols/unstable/xdg-shell/xdg-shell-unstable-v6.xml",
     "protocols/wayland-protocols/unstable/xwayland-keyboard-grab/xwayland-keyboard-grab-unstable-v1.xml"
   ],
-
   "wlr": [
     "protocols/wlr-protocols/unstable/wlr-data-control-unstable-v1.xml",
     "protocols/wlr-protocols/unstable/wlr-export-dmabuf-unstable-v1.xml",
@@ -75,7 +73,6 @@
     "protocols/wlr-protocols/unstable/wlr-screencopy-unstable-v1.xml",
     "protocols/wlr-protocols/unstable/wlr-virtual-pointer-unstable-v1.xml"
   ],
-
   "plasma": [
     "protocols/plasma-wayland-protocols/src/protocols/appmenu.xml",
     "protocols/plasma-wayland-protocols/src/protocols/blur.xml",
@@ -93,8 +90,8 @@
     "protocols/plasma-wayland-protocols/src/protocols/kde-screen-edge-v1.xml",
     "protocols/plasma-wayland-protocols/src/protocols/keystate.xml",
     "protocols/plasma-wayland-protocols/src/protocols/org-kde-plasma-virtual-desktop.xml",
-    "protocols/plasma-wayland-protocols/src/protocols/output-management.xml",
     "protocols/plasma-wayland-protocols/src/protocols/outputdevice.xml",
+    "protocols/plasma-wayland-protocols/src/protocols/output-management.xml",
     "protocols/plasma-wayland-protocols/src/protocols/plasma-shell.xml",
     "protocols/plasma-wayland-protocols/src/protocols/plasma-window-management.xml",
     "protocols/plasma-wayland-protocols/src/protocols/remote-access.xml",
@@ -108,7 +105,6 @@
     "protocols/plasma-wayland-protocols/src/protocols/wayland-eglstream-controller.xml",
     "protocols/plasma-wayland-protocols/src/protocols/zkde-screencast-unstable-v1.xml"
   ],
-
   "weston": [
     "protocols/weston/protocol/color-management-v1.xml",
     "protocols/weston/protocol/ivi-application.xml",
@@ -122,7 +118,6 @@
     "protocols/weston/protocol/weston-test.xml",
     "protocols/weston/protocol/weston-touch-calibration.xml"
   ],
-
   "cosmic": [
     "protocols/cosmic-protocols/unstable/cosmic-a11y-unstable-v1.xml",
     "protocols/cosmic-protocols/unstable/cosmic-atspi-unstable-v1.xml",
@@ -133,20 +128,16 @@
     "protocols/cosmic-protocols/unstable/cosmic-toplevel-info-unstable-v1.xml",
     "protocols/cosmic-protocols/unstable/cosmic-toplevel-management-unstable-v1.xml",
     "protocols/cosmic-protocols/unstable/cosmic-workspace-unstable-v2.xml"
-
   ],
-
   "frog": [
     "protocols/frog-protcols/frog-protocols/frog-color-management-v1.xml",
     "protocols/frog-protcols/frog-protocols/frog-fifo-v1.xml"
   ],
-
   "ivi": [
     "protocols/wayland-ivi-extension/protocol/ivi-application.xml",
     "protocols/wayland-ivi-extension/protocol/ivi-input.xml",
     "protocols/wayland-ivi-extension/protocol/ivi-wm.xml"
   ],
-
   "hyprland": [
     "protocols/hyprland-protocols/protocols/hyprland-ctm-control-v1.xml",
     "protocols/hyprland-protocols/protocols/hyprland-focus-grab-v1.xml",
