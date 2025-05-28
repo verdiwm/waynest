@@ -1338,7 +1338,7 @@ pub mod tablet_v2 {
         #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletManagerV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_manager_v2";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1402,7 +1402,7 @@ pub mod tablet_v2 {
         #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletSeatV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_seat_v2";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1664,7 +1664,7 @@ pub mod tablet_v2 {
         #[doc = "Trait to implement the zwp_tablet_tool_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletToolV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_tool_v2";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2272,10 +2272,44 @@ pub mod tablet_v2 {
     pub mod zwp_tablet_v2 {
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        #[doc = "Describes the bus types this tablet is connected to."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Bustype {
+            #[doc = "USB"]
+            Usb = 3u32,
+            #[doc = "Bluetooth"]
+            Bluetooth = 5u32,
+            #[doc = "Virtual"]
+            Virtual = 6u32,
+            #[doc = "Serial"]
+            Serial = 17u32,
+            #[doc = "I2C"]
+            I2c = 24u32,
+        }
+        impl TryFrom<u32> for Bustype {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    3u32 => Ok(Self::Usb),
+                    5u32 => Ok(Self::Bluetooth),
+                    6u32 => Ok(Self::Virtual),
+                    17u32 => Ok(Self::Serial),
+                    24u32 => Ok(Self::I2c),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Bustype {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the zwp_tablet_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_v2";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2324,9 +2358,14 @@ pub mod tablet_v2 {
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
-            #[doc = "The USB vendor and product IDs for the tablet device."]
+            #[doc = "The vendor and product IDs for the tablet device."]
             #[doc = ""]
-            #[doc = "If the device has no USB vendor/product ID, this event is not sent."]
+            #[doc = "The interpretation of the id depends on the wp_tablet.bustype."]
+            #[doc = "Prior to version v2 of this protocol, the id was implied to be a USB"]
+            #[doc = "vendor and product ID. If no wp_tablet.bustype is sent, the ID"]
+            #[doc = "is to be interpreted as USB vendor and product ID."]
+            #[doc = ""]
+            #[doc = "If the device has no vendor/product ID, this event is not sent."]
             #[doc = "This can happen for virtual devices or non-USB devices, for instance."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
@@ -2418,6 +2457,31 @@ pub mod tablet_v2 {
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
+            #[doc = "The bustype argument is one of the BUS_ defines in the Linux kernel's"]
+            #[doc = "linux/input.h"]
+            #[doc = ""]
+            #[doc = "If the device has no known bustype or the bustype cannot be"]
+            #[doc = "queried, this event is not sent."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet.done event."]
+            fn bustype(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                bustype: Bustype,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> zwp_tablet_v2#{}.bustype({})", sender_id, bustype);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(bustype as u32)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
         }
     }
     #[doc = "A circular interaction area, such as the touch ring on the Wacom Intuos"]
@@ -2457,7 +2521,7 @@ pub mod tablet_v2 {
         #[doc = "Trait to implement the zwp_tablet_pad_ring_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletPadRingV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_pad_ring_v2";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2664,7 +2728,7 @@ pub mod tablet_v2 {
         #[doc = "Trait to implement the zwp_tablet_pad_strip_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletPadStripV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_pad_strip_v2";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -2872,7 +2936,7 @@ pub mod tablet_v2 {
         #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletPadGroupV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_pad_group_v2";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3023,7 +3087,7 @@ pub mod tablet_v2 {
             }
             #[doc = "Notification that the mode was switched."]
             #[doc = ""]
-            #[doc = "A mode applies to all buttons, rings and strips in a group"]
+            #[doc = "A mode applies to all buttons, rings, strips and dials in a group"]
             #[doc = "simultaneously, but a client is not required to assign different actions"]
             #[doc = "for each mode. For example, a client may have mode-specific button"]
             #[doc = "mappings but map the ring to vertical scrolling in all modes. Mode"]
@@ -3044,10 +3108,10 @@ pub mod tablet_v2 {
             #[doc = "previous mode, the client should immediately issue a"]
             #[doc = "wp_tablet_pad.set_feedback request for each changed button."]
             #[doc = ""]
-            #[doc = "If a ring or strip action in the new mode differs from the action"]
+            #[doc = "If a ring, strip or dial action in the new mode differs from the action"]
             #[doc = "in the previous mode, the client should immediately issue a"]
-            #[doc = "wp_tablet_ring.set_feedback or wp_tablet_strip.set_feedback request"]
-            #[doc = "for each changed ring or strip."]
+            #[doc = "wp_tablet_ring.set_feedback, wp_tablet_strip.set_feedback or"]
+            #[doc = "wp_tablet_dial.set_feedback request for each changed ring, strip or dial."]
             fn mode_switch(
                 &self,
                 client: &mut crate::server::Client,
@@ -3075,9 +3139,31 @@ pub mod tablet_v2 {
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
+            #[doc = "Sent on wp_tablet_pad initialization to announce available dials."]
+            #[doc = "One event is sent for each dial available on this pad group."]
+            #[doc = ""]
+            #[doc = "This event is sent in the initial burst of events before the"]
+            #[doc = "wp_tablet_pad_group.done event."]
+            fn dial(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                dial: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> zwp_tablet_pad_group_v2#{}.dial({})", sender_id, dial);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_object(Some(dial))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
         }
     }
-    #[doc = "A pad device is a set of buttons, rings and strips"]
+    #[doc = "A pad device is a set of buttons, rings, strips and dials"]
     #[doc = "usually physically present on the tablet device itself. Some"]
     #[doc = "exceptions exist where the pad device is physically detached, e.g. the"]
     #[doc = "Wacom ExpressKey Remote."]
@@ -3091,7 +3177,7 @@ pub mod tablet_v2 {
     #[doc = "This initial event sequence is terminated by a wp_tablet_pad.done"]
     #[doc = "event."]
     #[doc = ""]
-    #[doc = "All pad features (buttons, rings and strips) are logically divided into"]
+    #[doc = "All pad features (buttons, rings, strips and dials) are logically divided into"]
     #[doc = "groups and all pads have at least one group. The available groups are"]
     #[doc = "notified through the wp_tablet_pad.group event; the compositor will"]
     #[doc = "emit one event per group before emitting wp_tablet_pad.done."]
@@ -3132,7 +3218,7 @@ pub mod tablet_v2 {
         #[doc = "Trait to implement the zwp_tablet_pad_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletPadV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zwp_tablet_pad_v2";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3393,6 +3479,141 @@ pub mod tablet_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                     client
                         .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+        }
+    }
+    #[doc = "A rotary control, e.g. a dial or a wheel."]
+    #[doc = ""]
+    #[doc = "Events on a dial are logically grouped by the wl_tablet_pad_dial.frame"]
+    #[doc = "event."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod zwp_tablet_pad_dial_v2 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the zwp_tablet_pad_dial_v2 interface. See the module level documentation for more info"]
+        pub trait ZwpTabletPadDialV2: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "zwp_tablet_pad_dial_v2";
+            const VERSION: u32 = 2u32;
+            fn handle_request(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                message: &mut crate::wire::Message,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let description = message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let serial = message.uint()?;
+                            tracing::debug!(
+                                "zwp_tablet_pad_dial_v2#{}.set_feedback(\"{}\", {})",
+                                sender_id,
+                                description,
+                                serial
+                            );
+                            self.set_feedback(client, sender_id, description, serial)
+                                .await
+                        }
+                        1u16 => {
+                            tracing::debug!("zwp_tablet_pad_dial_v2#{}.destroy()", sender_id,);
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
+                        }
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
+                    }
+                }
+            }
+            #[doc = "Requests the compositor to use the provided feedback string"]
+            #[doc = "associated with this dial. This request should be issued immediately"]
+            #[doc = "after a wp_tablet_pad_group.mode_switch event from the corresponding"]
+            #[doc = "group is received, or whenever the dial is mapped to a different"]
+            #[doc = "action. See wp_tablet_pad_group.mode_switch for more details."]
+            #[doc = ""]
+            #[doc = "Clients are encouraged to provide context-aware descriptions for"]
+            #[doc = "the actions associated with the dial, and compositors may use this"]
+            #[doc = "information to offer visual feedback about the button layout"]
+            #[doc = "(eg. on-screen displays)."]
+            #[doc = ""]
+            #[doc = "The provided string 'description' is a UTF-8 encoded string to be"]
+            #[doc = "associated with this ring, and is considered user-visible; general"]
+            #[doc = "internationalization rules apply."]
+            #[doc = ""]
+            #[doc = "The serial argument will be that of the last"]
+            #[doc = "wp_tablet_pad_group.mode_switch event received for the group of this"]
+            #[doc = "dial. Requests providing other serials than the most recent one will be"]
+            #[doc = "ignored."]
+            fn set_feedback(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                description: String,
+                serial: u32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "This destroys the client's resource for this dial object."]
+            fn destroy(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Sent whenever the position on a dial changes."]
+            #[doc = ""]
+            #[doc = "This event carries the wheel delta as multiples or fractions"]
+            #[doc = "of 120 with each multiple of 120 representing one logical wheel detent."]
+            #[doc = "For example, an axis_value120 of 30 is one quarter of"]
+            #[doc = "a logical wheel step in the positive direction, a value120 of"]
+            #[doc = "-240 are two logical wheel steps in the negative direction within the"]
+            #[doc = "same hardware event. See the wl_pointer.axis_value120 for more details."]
+            #[doc = ""]
+            #[doc = "The value120 must not be zero."]
+            fn delta(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                value120: i32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> zwp_tablet_pad_dial_v2#{}.delta({})",
+                        sender_id,
+                        value120
+                    );
+                    let (payload, fds) =
+                        crate::wire::PayloadBuilder::new().put_int(value120).build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+            #[doc = "Indicates the end of a set of events that represent one logical"]
+            #[doc = "hardware dial event. A client is expected to accumulate the data"]
+            #[doc = "in all events within the frame before proceeding."]
+            #[doc = ""]
+            #[doc = "All wp_tablet_pad_dial events before a wp_tablet_pad_dial.frame event belong"]
+            #[doc = "logically together."]
+            #[doc = ""]
+            #[doc = "A wp_tablet_pad_dial.frame event is sent for every logical event"]
+            #[doc = "group, even if the group only contains a single wp_tablet_pad_dial"]
+            #[doc = "event. Specifically, a client may get a sequence: delta, frame,"]
+            #[doc = "delta, frame, etc."]
+            fn frame(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                time: u32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> zwp_tablet_pad_dial_v2#{}.frame({})", sender_id, time);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(time).build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3729,7 +3950,7 @@ pub mod xdg_shell {
         #[doc = "Trait to implement the xdg_wm_base interface. See the module level documentation for more info"]
         pub trait XdgWmBase: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_wm_base";
-            const VERSION: u32 = 6u32;
+            const VERSION: u32 = 7u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3986,7 +4207,7 @@ pub mod xdg_shell {
         #[doc = "Trait to implement the xdg_positioner interface. See the module level documentation for more info"]
         pub trait XdgPositioner: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_positioner";
-            const VERSION: u32 = 6u32;
+            const VERSION: u32 = 7u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4325,7 +4546,7 @@ pub mod xdg_shell {
         #[doc = "Trait to implement the xdg_surface interface. See the module level documentation for more info"]
         pub trait XdgSurface: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_surface";
-            const VERSION: u32 = 6u32;
+            const VERSION: u32 = 7u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -4660,6 +4881,10 @@ pub mod xdg_shell {
             TiledTop = 7u32,
             TiledBottom = 8u32,
             Suspended = 9u32,
+            ConstrainedLeft = 10u32,
+            ConstrainedRight = 11u32,
+            ConstrainedTop = 12u32,
+            ConstrainedBottom = 13u32,
         }
         impl TryFrom<u32> for State {
             type Error = crate::wire::DecodeError;
@@ -4674,6 +4899,10 @@ pub mod xdg_shell {
                     7u32 => Ok(Self::TiledTop),
                     8u32 => Ok(Self::TiledBottom),
                     9u32 => Ok(Self::Suspended),
+                    10u32 => Ok(Self::ConstrainedLeft),
+                    11u32 => Ok(Self::ConstrainedRight),
+                    12u32 => Ok(Self::ConstrainedTop),
+                    13u32 => Ok(Self::ConstrainedBottom),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -4716,7 +4945,7 @@ pub mod xdg_shell {
         #[doc = "Trait to implement the xdg_toplevel interface. See the module level documentation for more info"]
         pub trait XdgToplevel: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_toplevel";
-            const VERSION: u32 = 6u32;
+            const VERSION: u32 = 7u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -5415,7 +5644,7 @@ pub mod xdg_shell {
         #[doc = "Trait to implement the xdg_popup interface. See the module level documentation for more info"]
         pub trait XdgPopup: crate::server::Dispatcher {
             const INTERFACE: &'static str = "xdg_popup";
-            const VERSION: u32 = 6u32;
+            const VERSION: u32 = 7u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,

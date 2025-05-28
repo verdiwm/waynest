@@ -2865,7 +2865,7 @@ pub mod wlr_screencopy_unstable_v1 {
     #[doc = "supported buffer type. The \"buffer_done\" event is sent afterwards to"]
     #[doc = "indicate that all supported buffer types have been enumerated. The client"]
     #[doc = "will then be able to send a \"copy\" request. If the capture is successful,"]
-    #[doc = "the compositor will send a \"flags\" followed by a \"ready\" event."]
+    #[doc = "the compositor will send a \"flags\" event followed by a \"ready\" event."]
     #[doc = ""]
     #[doc = "For objects version 2 or lower, wl_shm buffers are always supported, ie."]
     #[doc = "the \"buffer\" event is guaranteed to be sent."]
@@ -2927,12 +2927,12 @@ pub mod wlr_screencopy_unstable_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
-            #[doc = "Copy the frame to the supplied buffer. The buffer must have a the"]
+            #[doc = "Copy the frame to the supplied buffer. The buffer must have the"]
             #[doc = "correct size, see zwlr_screencopy_frame_v1.buffer and"]
             #[doc = "zwlr_screencopy_frame_v1.linux_dmabuf. The buffer needs to have a"]
             #[doc = "supported format."]
             #[doc = ""]
-            #[doc = "If the frame is successfully copied, a \"flags\" and a \"ready\" events are"]
+            #[doc = "If the frame is successfully copied, \"flags\" and \"ready\" events are"]
             #[doc = "sent. Otherwise, a \"failed\" event is sent."]
             async fn copy(
                 &self,
@@ -2995,8 +2995,7 @@ pub mod wlr_screencopy_unstable_v1 {
             #[doc = "\"ready\" event."]
             async fn flags(&self, flags: Flags) -> crate::client::Result<()>;
             #[doc = "Called as soon as the frame is copied, indicating it is available"]
-            #[doc = "for reading. This event includes the time at which presentation happened"]
-            #[doc = "at."]
+            #[doc = "for reading. This event includes the time at which the presentation took place."]
             #[doc = ""]
             #[doc = "The timestamp is expressed as tv_sec_hi, tv_sec_lo, tv_nsec triples,"]
             #[doc = "each component being an unsigned 32-bit value. Whole seconds are in"]

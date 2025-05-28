@@ -306,7 +306,7 @@ pub mod color_management_v1 {
             SetLuminances = 4u32,
             SetMasteringDisplayPrimaries = 5u32,
             ExtendedTargetVolume = 6u32,
-            #[doc = "get_windows_scrgb request"]
+            #[doc = "create_windows_scrgb request"]
             WindowsScrgb = 7u32,
         }
         impl TryFrom<u32> for Feature {
@@ -2053,6 +2053,452 @@ pub mod color_management_v1 {
         }
     }
 }
+#[doc = "This protocol extension delivers the metadata required to define alpha mode,"]
+#[doc = "the color model, sub-sampling and quantization range used when interpreting"]
+#[doc = "buffer contents. The main use case is defining how the YCbCr family of pixel"]
+#[doc = "formats convert to RGB."]
+#[doc = ""]
+#[doc = "Note that this protocol does not define the colorimetry of the resulting RGB"]
+#[doc = "channels / tristimulus values. Without the help of other extensions the"]
+#[doc = "resulting colorimetry is therefore implementation defined."]
+#[doc = ""]
+#[doc = "If this extension is not used, the color representation used is compositor"]
+#[doc = "implementation defined."]
+#[doc = ""]
+#[doc = "Recommendation ITU-T H.273"]
+#[doc = "\"Coding-independent code points for video signal type identification\""]
+#[doc = "shall be referred to as simply H.273 here."]
+#[allow(clippy::module_inception)]
+pub mod color_representation_v1 {
+    #[doc = "A singleton global interface used for getting color representation"]
+    #[doc = "extensions for wl_surface. The extension interfaces allow setting the"]
+    #[doc = "color representation of surfaces."]
+    #[doc = ""]
+    #[doc = "Compositors should never remove this global."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_color_representation_manager_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "color representation surface exists already"]
+            SurfaceExists = 1u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::SurfaceExists),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_color_representation_manager_v1 interface. See the module level documentation for more info"]
+        pub trait WpColorRepresentationManagerV1 {
+            const INTERFACE: &'static str = "wp_color_representation_manager_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode() {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the wp_color_representation_manager_v1 object. This does not"]
+            #[doc = "affect any other objects in any way."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_color_representation_manager_v1#{}.destroy()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "If a wp_color_representation_surface_v1 object already exists for the"]
+            #[doc = "given wl_surface, the protocol error surface_exists is raised."]
+            #[doc = ""]
+            #[doc = "This creates a new color wp_color_representation_surface_v1 object for"]
+            #[doc = "the given wl_surface."]
+            #[doc = ""]
+            #[doc = "See the wp_color_representation_surface_v1 interface for more details."]
+            async fn get_surface(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_color_representation_manager_v1#{}.get_surface()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(id))
+                    .put_object(Some(surface))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "When this object is created, it shall immediately send this event once"]
+            #[doc = "for each alpha mode the compositor supports."]
+            #[doc = ""]
+            #[doc = "For the definition of the supported values, see the"]
+            #[doc = "wp_color_representation_surface_v1::alpha_mode enum."]
+            async fn supported_alpha_mode(
+                &self,
+                alpha_mode : super :: super :: super :: staging :: color_representation_v1 :: wp_color_representation_surface_v1 :: AlphaMode,
+            ) -> crate::client::Result<()>;
+            #[doc = "When this object is created, it shall immediately send this event once"]
+            #[doc = "for each matrix coefficient and color range combination the compositor"]
+            #[doc = "supports."]
+            #[doc = ""]
+            #[doc = "For the definition of the supported values, see the"]
+            #[doc = "wp_color_representation_surface_v1::coefficients and"]
+            #[doc = "wp_color_representation_surface_v1::range enums."]
+            async fn supported_coefficients_and_ranges(
+                &self,
+                coefficients : super :: super :: super :: staging :: color_representation_v1 :: wp_color_representation_surface_v1 :: Coefficients,
+                range : super :: super :: super :: staging :: color_representation_v1 :: wp_color_representation_surface_v1 :: Range,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent when all supported features have been sent."]
+            async fn done(&self) -> crate::client::Result<()>;
+        }
+    }
+    #[doc = "A wp_color_representation_surface_v1 allows the client to set the color"]
+    #[doc = "representation metadata of a surface."]
+    #[doc = ""]
+    #[doc = "By default, a surface does not have any color representation metadata set."]
+    #[doc = "The reconstruction of R, G, B signals on such surfaces is compositor"]
+    #[doc = "implementation defined. The alpha mode is assumed to be"]
+    #[doc = "premultiplied_electrical when the alpha mode is unset."]
+    #[doc = ""]
+    #[doc = "If the wl_surface associated with the wp_color_representation_surface_v1"]
+    #[doc = "is destroyed, the wp_color_representation_surface_v1 object becomes inert."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_color_representation_surface_v1 {
+        use futures_util::SinkExt;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "unsupported alpha mode"]
+            AlphaMode = 1u32,
+            #[doc = "unsupported coefficients"]
+            Coefficients = 2u32,
+            #[doc = "the pixel format and a set value are incompatible"]
+            PixelFormat = 3u32,
+            #[doc = "forbidden request on inert object"]
+            Inert = 4u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::AlphaMode),
+                    2u32 => Ok(Self::Coefficients),
+                    3u32 => Ok(Self::PixelFormat),
+                    4u32 => Ok(Self::Inert),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Specifies how the alpha channel affects the color channels."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum AlphaMode {
+            PremultipliedElectrical = 0u32,
+            PremultipliedOptical = 1u32,
+            Straight = 2u32,
+        }
+        impl TryFrom<u32> for AlphaMode {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::PremultipliedElectrical),
+                    1u32 => Ok(Self::PremultipliedOptical),
+                    2u32 => Ok(Self::Straight),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for AlphaMode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Named matrix coefficients used to encode well-known sets of"]
+        #[doc = "coefficients. H.273 is the authority, when it comes to the exact values"]
+        #[doc = "of coefficients and authoritative specifications, where an equivalent"]
+        #[doc = "code point exists."]
+        #[doc = ""]
+        #[doc = "A value of 0 is invalid and will never be present in the list of enums."]
+        #[doc = ""]
+        #[doc = "Descriptions do list the specifications for convenience."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Coefficients {
+            Identity = 1u32,
+            Bt709 = 2u32,
+            Fcc = 3u32,
+            Bt601 = 4u32,
+            Smpte240 = 5u32,
+            Bt2020 = 6u32,
+            Bt2020Cl = 7u32,
+            Ictcp = 8u32,
+        }
+        impl TryFrom<u32> for Coefficients {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::Identity),
+                    2u32 => Ok(Self::Bt709),
+                    3u32 => Ok(Self::Fcc),
+                    4u32 => Ok(Self::Bt601),
+                    5u32 => Ok(Self::Smpte240),
+                    6u32 => Ok(Self::Bt2020),
+                    7u32 => Ok(Self::Bt2020Cl),
+                    8u32 => Ok(Self::Ictcp),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Coefficients {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Possible color range values."]
+        #[doc = ""]
+        #[doc = "A value of 0 is invalid and will never be present in the list of enums."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Range {
+            #[doc = "Full color range"]
+            Full = 1u32,
+            #[doc = "Limited color range"]
+            Limited = 2u32,
+        }
+        impl TryFrom<u32> for Range {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::Full),
+                    2u32 => Ok(Self::Limited),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Range {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Chroma sample location as defined by H.273 Chroma420SampleLocType."]
+        #[doc = ""]
+        #[doc = "A value of 0 is invalid and will never be present in the list of enums."]
+        #[doc = ""]
+        #[doc = "The descriptions list the matching Vulkan VkChromaLocation combinations"]
+        #[doc = "for convenience."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ChromaLocation {
+            Type0 = 1u32,
+            Type1 = 2u32,
+            Type2 = 3u32,
+            Type3 = 4u32,
+            Type4 = 5u32,
+            Type5 = 6u32,
+        }
+        impl TryFrom<u32> for ChromaLocation {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::Type0),
+                    2u32 => Ok(Self::Type1),
+                    3u32 => Ok(Self::Type2),
+                    4u32 => Ok(Self::Type3),
+                    5u32 => Ok(Self::Type4),
+                    6u32 => Ok(Self::Type5),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ChromaLocation {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the wp_color_representation_surface_v1 interface. See the module level documentation for more info"]
+        pub trait WpColorRepresentationSurfaceV1 {
+            const INTERFACE: &'static str = "wp_color_representation_surface_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode() {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy the wp_color_representation_surface_v1 object."]
+            #[doc = ""]
+            #[doc = "Destroying this object unsets all the color representation metadata from"]
+            #[doc = "the surface. See the wp_color_representation_surface_v1 interface"]
+            #[doc = "description for how a compositor handles a surface without color"]
+            #[doc = "representation metadata. Unsetting is double-buffered state, see"]
+            #[doc = "wl_surface.commit."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_color_representation_surface_v1#{}.destroy()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "If this protocol object is inert, the protocol error inert is raised."]
+            #[doc = ""]
+            #[doc = "Assuming an alpha channel exists, it is always linear. The alpha mode"]
+            #[doc = "determines whether and how the color channels include pre-multiplied"]
+            #[doc = "alpha. Using straight alpha might have performance benefits."]
+            #[doc = ""]
+            #[doc = "Only alpha modes advertised by the compositor are allowed to be used as"]
+            #[doc = "argument for this request. The \"alpha_mode\" protocol error is raised"]
+            #[doc = "otherwise."]
+            #[doc = ""]
+            #[doc = "Alpha mode is double buffered, see wl_surface.commit."]
+            async fn set_alpha_mode(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                alpha_mode: AlphaMode,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_color_representation_surface_v1#{}.set_alpha_mode()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(alpha_mode as u32)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "If this protocol object is inert, the protocol error inert is raised."]
+            #[doc = ""]
+            #[doc = "Set the matrix coefficients and video range which defines the formula"]
+            #[doc = "and the related constants used to derive red, green and blue signals."]
+            #[doc = "Usually coefficients correspond to MatrixCoefficients code points in"]
+            #[doc = "H.273."]
+            #[doc = ""]
+            #[doc = "Only combinations advertised by the compositor are allowed to be used as"]
+            #[doc = "argument for this request. The \"coefficients\" protocol error is raised"]
+            #[doc = "otherwise."]
+            #[doc = ""]
+            #[doc = "A call to wl_surface.commit verifies that the pixel format and the"]
+            #[doc = "coefficients-range combination in the committed surface contents are"]
+            #[doc = "compatible, if contents exist. The \"pixel_format\" protocol error is"]
+            #[doc = "raised otherwise."]
+            #[doc = ""]
+            #[doc = "A pixel format is compatible with the coefficients-range combination if"]
+            #[doc = "the related equations and conventions as defined in H.273 can produce"]
+            #[doc = "the color channels (RGB or YCbCr) of the pixel format."]
+            #[doc = ""]
+            #[doc = "For the definition of the supported combination, see the"]
+            #[doc = "wp_color_representation_surface_v1::coefficients and"]
+            #[doc = "wp_color_representation_surface_v1::range enums."]
+            #[doc = ""]
+            #[doc = "The coefficients-range combination is double-buffered, see"]
+            #[doc = "wl_surface.commit."]
+            async fn set_coefficients_and_range(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                coefficients: Coefficients,
+                range: Range,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_color_representation_surface_v1#{}.set_coefficients_and_range()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(coefficients as u32)
+                    .put_uint(range as u32)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "If this protocol object is inert, the protocol error inert is raised."]
+            #[doc = ""]
+            #[doc = "Set the chroma location type which defines the position of downsampled"]
+            #[doc = "chroma samples, corresponding to Chroma420SampleLocType code points in"]
+            #[doc = "H.273."]
+            #[doc = ""]
+            #[doc = "A call to wl_surface.commit verifies that the pixel format and chroma"]
+            #[doc = "location type in the committed surface contents are compatible, if"]
+            #[doc = "contents exist. The \"pixel_format\" protocol error is raised otherwise."]
+            #[doc = ""]
+            #[doc = "For the definition of the supported chroma location types, see the"]
+            #[doc = "wp_color_representation_surface_v1::chroma_location enum."]
+            #[doc = ""]
+            #[doc = "The chroma location type is double-buffered, see wl_surface.commit."]
+            async fn set_chroma_location(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                chroma_location: ChromaLocation,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> wp_color_representation_surface_v1#{}.set_chroma_location()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_uint(chroma_location as u32)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
 #[allow(clippy::module_inception)]
 pub mod commit_timing_v1 {
     #[doc = "When a compositor latches on to new content updates it will check for"]
@@ -2440,7 +2886,7 @@ pub mod cursor_shape_v1 {
         #[doc = "Trait to implement the wp_cursor_shape_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpCursorShapeManagerV1 {
             const INTERFACE: &'static str = "wp_cursor_shape_manager_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,
@@ -2518,6 +2964,14 @@ pub mod cursor_shape_v1 {
         #[doc = ""]
         #[doc = "The names are taken from the CSS W3C specification:"]
         #[doc = "https://w3c.github.io/csswg-drafts/css-ui/#cursor"]
+        #[doc = "with a few additions."]
+        #[doc = ""]
+        #[doc = "Note that there are some groups of cursor shapes that are related:"]
+        #[doc = "The first group is drag-and-drop cursors which are used to indicate"]
+        #[doc = "the selected action during dnd operations. The second group is resize"]
+        #[doc = "cursors which are used to indicate resizing and moving possibilities"]
+        #[doc = "on window borders. It is recommended that the shapes in these groups"]
+        #[doc = "should use visually compatible images and metaphors."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2590,6 +3044,10 @@ pub mod cursor_shape_v1 {
             ZoomIn = 33u32,
             #[doc = "something can be zoomed out"]
             ZoomOut = 34u32,
+            #[doc = "drag-and-drop: the user will select which action will be carried out (non-css value)"]
+            DndAsk = 35u32,
+            #[doc = "resizing: something can be moved or resized in any direction (non-css value)"]
+            AllResize = 36u32,
         }
         impl TryFrom<u32> for Shape {
             type Error = crate::wire::DecodeError;
@@ -2629,6 +3087,8 @@ pub mod cursor_shape_v1 {
                     32u32 => Ok(Self::AllScroll),
                     33u32 => Ok(Self::ZoomIn),
                     34u32 => Ok(Self::ZoomOut),
+                    35u32 => Ok(Self::DndAsk),
+                    36u32 => Ok(Self::AllResize),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -2662,7 +3122,7 @@ pub mod cursor_shape_v1 {
         #[doc = "Trait to implement the wp_cursor_shape_device_v1 interface. See the module level documentation for more info"]
         pub trait WpCursorShapeDeviceV1 {
             const INTERFACE: &'static str = "wp_cursor_shape_device_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,
@@ -7936,6 +8396,114 @@ pub mod xdg_toplevel_icon_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(buffer))
                     .put_int(scale)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod xdg_toplevel_tag_v1 {
+    #[doc = "In order to make some window properties like position, size,"]
+    #[doc = "\"always on top\" or user defined rules for window behavior persistent, the"]
+    #[doc = "compositor needs some way to identify windows even after the application"]
+    #[doc = "has been restarted."]
+    #[doc = "This protocol allows clients to make this possible by setting a tag for"]
+    #[doc = "toplevels."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xdg_toplevel_tag_manager_v1 {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the xdg_toplevel_tag_manager_v1 interface. See the module level documentation for more info"]
+        pub trait XdgToplevelTagManagerV1 {
+            const INTERFACE: &'static str = "xdg_toplevel_tag_manager_v1";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode() {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "Destroy this toplevel tag manager object. This request has no other"]
+            #[doc = "effects."]
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> xdg_toplevel_tag_manager_v1#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Set a tag for a toplevel. The tag may be shown to the user in UI, so"]
+            #[doc = "it's preferable for it to be human readable, but it must be suitable"]
+            #[doc = "for configuration files and should not be translated."]
+            #[doc = "Suitable tags would for example be \"main window\", \"settings\","]
+            #[doc = "\"e-mail composer\" or similar."]
+            #[doc = ""]
+            #[doc = "The tag does not need to be unique across applications, and the client"]
+            #[doc = "may set the same tag for multiple windows, for example if the user has"]
+            #[doc = "opened the same UI twice. How the potentially resulting conflicts are"]
+            #[doc = "handled is compositor policy."]
+            #[doc = ""]
+            #[doc = "The client should set the tag as part of the initial commit on the"]
+            #[doc = "associated toplevel, but it may set it at any time afterwards as well,"]
+            #[doc = "for example if the purpose of the toplevel changes."]
+            async fn set_toplevel_tag(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                toplevel: crate::wire::ObjectId,
+                tag: String,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> xdg_toplevel_tag_manager_v1#{}.set_toplevel_tag()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(toplevel))
+                    .put_string(Some(tag))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Set a description for a toplevel. This description may be shown to the"]
+            #[doc = "user in UI or read by a screen reader for accessibility purposes, and"]
+            #[doc = "should be translated."]
+            #[doc = "It is recommended to make the description the translation of the tag."]
+            #[doc = ""]
+            #[doc = "The client should set the description as part of the initial commit on"]
+            #[doc = "the associated toplevel, but it may set it at any time afterwards as"]
+            #[doc = "well, for example if the purpose of the toplevel changes."]
+            async fn set_toplevel_description(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                toplevel: crate::wire::ObjectId,
+                description: String,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> xdg_toplevel_tag_manager_v1#{}.set_toplevel_description()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(toplevel))
+                    .put_string(Some(description))
                     .build();
                 socket
                     .send(crate::wire::Message::new(object_id, 2u16, payload, fds))

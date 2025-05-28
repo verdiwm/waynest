@@ -35,7 +35,7 @@ pub mod hyprland_ctm_control_v1 {
         #[doc = "Trait to implement the hyprland_ctm_control_manager_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandCtmControlManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "hyprland_ctm_control_manager_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -141,6 +141,26 @@ pub mod hyprland_ctm_control_v1 {
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "This event is sent if another manager was bound by any client"]
+            #[doc = "at the time the current manager was bound."]
+            #[doc = "Any set_ctm_for_output requests from a blocked manager will be"]
+            #[doc = "silently ignored by the compositor."]
+            #[doc = ""]
+            #[doc = "The client should destroy the manager after receiving this event."]
+            fn blocked(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> hyprland_ctm_control_manager_v1#{}.blocked()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
         }
     }
 }
@@ -549,6 +569,156 @@ pub mod hyprland_global_shortcuts_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
+pub mod hyprland_lock_notify_v1 {
+    #[doc = "This interface allows clients to monitor whether the wayland session is"]
+    #[doc = "locked or unlocked."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod hyprland_lock_notifier_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the hyprland_lock_notifier_v1 interface. See the module level documentation for more info"]
+        pub trait HyprlandLockNotifierV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "hyprland_lock_notifier_v1";
+            const VERSION: u32 = 1u32;
+            fn handle_request(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                message: &mut crate::wire::Message,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            tracing::debug!("hyprland_lock_notifier_v1#{}.destroy()", sender_id,);
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "hyprland_lock_notifier_v1#{}.get_lock_notification({})",
+                                sender_id,
+                                id
+                            );
+                            self.get_lock_notification(client, sender_id, id).await
+                        }
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
+                    }
+                }
+            }
+            #[doc = "Destroy the manager object. All objects created via this interface"]
+            #[doc = "remain valid."]
+            fn destroy(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Create a new lock notification object."]
+            #[doc = ""]
+            #[doc = "If the session is already locked when calling this method,"]
+            #[doc = "the locked event shall be sent immediately."]
+            fn get_lock_notification(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+    }
+    #[doc = "This interface is used by the compositor to send lock notification events"]
+    #[doc = "to clients."]
+    #[doc = ""]
+    #[doc = "Typically the \"locked\" and \"unlocked\" events are emitted when a client"]
+    #[doc = "locks/unlocks the session via ext-session-lock, but the compositor may"]
+    #[doc = "choose to send notifications for any other locking mechanisms."]
+    #[doc = ""]
+    #[doc = "The compositor must notfiy after possible transition periods"]
+    #[doc = "between locked and unlocked states of the session."]
+    #[doc = "In the context of ext-session-lock, that means the \"locked\" event is"]
+    #[doc = "expected to be sent after the session-lock client has presented"]
+    #[doc = "a lock screen frame on every output, which corresponds to the \"locked\""]
+    #[doc = "event of ext-session-lock."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod hyprland_lock_notification_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the hyprland_lock_notification_v1 interface. See the module level documentation for more info"]
+        pub trait HyprlandLockNotificationV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "hyprland_lock_notification_v1";
+            const VERSION: u32 = 1u32;
+            fn handle_request(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                message: &mut crate::wire::Message,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            tracing::debug!(
+                                "hyprland_lock_notification_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
+                        }
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
+                    }
+                }
+            }
+            #[doc = "Destroy the notification object."]
+            fn destroy(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "This event is sent when the wayland session is locked."]
+            #[doc = ""]
+            #[doc = "It's a compositor protocol error to send this event twice without an"]
+            #[doc = "unlock event in-between."]
+            fn locked(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> hyprland_lock_notification_v1#{}.locked()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+            #[doc = "This event is sent when the wayland session is unlocked."]
+            #[doc = ""]
+            #[doc = "It's a compositor protocol error to send this event twice without an"]
+            #[doc = "locked event in-between. It's a compositor protocol error to send this"]
+            #[doc = "event prior to any locked event."]
+            fn unlocked(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> hyprland_lock_notification_v1#{}.unlocked()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+        }
+    }
+}
 #[doc = "This protocol exposes hyprland-specific wl_surface properties."]
 #[allow(clippy::module_inception)]
 pub mod hyprland_surface_v1 {
@@ -581,7 +751,7 @@ pub mod hyprland_surface_v1 {
         #[doc = "Trait to implement the hyprland_surface_manager_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandSurfaceManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "hyprland_surface_manager_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -672,7 +842,7 @@ pub mod hyprland_surface_v1 {
         #[doc = "Trait to implement the hyprland_surface_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandSurfaceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "hyprland_surface_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -697,6 +867,17 @@ pub mod hyprland_surface_v1 {
                             client.remove(sender_id);
                             result
                         }
+                        2u16 => {
+                            let region = message.object()?;
+                            tracing::debug!(
+                                "hyprland_surface_v1#{}.set_visible_region({})",
+                                sender_id,
+                                region
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_visible_region(client, sender_id, region).await
+                        }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -720,6 +901,31 @@ pub mod hyprland_surface_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "This request sets the region of the surface that contains visible content."]
+            #[doc = "Visible content refers to content that has an alpha value greater than zero."]
+            #[doc = ""]
+            #[doc = "The visible region is an optimization hint for the compositor that lets it"]
+            #[doc = "avoid drawing parts of the surface that are not visible. Setting a visible region"]
+            #[doc = "that does not contain all content in the surface may result in missing content"]
+            #[doc = "not being drawn."]
+            #[doc = ""]
+            #[doc = "The visible region is specified in buffer-local coordinates."]
+            #[doc = ""]
+            #[doc = "The compositor ignores the parts of the visible region that fall outside of the surface."]
+            #[doc = "When all parts of the region fall outside of the buffer geometry, the compositor may"]
+            #[doc = "avoid rendering the surface entirely."]
+            #[doc = ""]
+            #[doc = "The initial value for the visible region is empty. Setting the"]
+            #[doc = "visible region has copy semantics, and the wl_region object can be destroyed immediately."]
+            #[doc = "A NULL wl_region causes the visible region to be set to empty."]
+            #[doc = ""]
+            #[doc = "Does not take effect until wl_surface.commit is called."]
+            fn set_visible_region(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                region: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -1157,6 +1363,187 @@ pub mod hyprland_toplevel_export_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                     client
                         .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+        }
+    }
+}
+#[doc = "This protocol allows clients to retrieve the mapping of toplevels to hyprland window addresses."]
+#[allow(clippy::module_inception)]
+pub mod hyprland_toplevel_mapping_v1 {
+    #[doc = "This object is a manager which offers requests to retrieve a window address"]
+    #[doc = "for a toplevel."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod hyprland_toplevel_mapping_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the hyprland_toplevel_mapping_manager_v1 interface. See the module level documentation for more info"]
+        pub trait HyprlandToplevelMappingManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "hyprland_toplevel_mapping_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn handle_request(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                message: &mut crate::wire::Message,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let handle = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let toplevel = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "hyprland_toplevel_mapping_manager_v1#{}.get_window_for_toplevel({}, {})",
+                                sender_id,
+                                handle,
+                                toplevel
+                            );
+                            self.get_window_for_toplevel(client, sender_id, handle, toplevel)
+                                .await
+                        }
+                        1u16 => {
+                            let handle = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let toplevel = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "hyprland_toplevel_mapping_manager_v1#{}.get_window_for_toplevel_wlr({}, {})",
+                                sender_id,
+                                handle,
+                                toplevel
+                            );
+                            self.get_window_for_toplevel_wlr(client, sender_id, handle, toplevel)
+                                .await
+                        }
+                        2u16 => {
+                            tracing::debug!(
+                                "hyprland_toplevel_mapping_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
+                        }
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
+                    }
+                }
+            }
+            #[doc = "Get the window address for a toplevel."]
+            fn get_window_for_toplevel(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                handle: crate::wire::ObjectId,
+                toplevel: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Get the window address for a wlr toplevel."]
+            fn get_window_for_toplevel_wlr(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                handle: crate::wire::ObjectId,
+                toplevel: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "All objects created by the manager will still remain valid, until their appropriate destroy"]
+            #[doc = "request has been called."]
+            fn destroy(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+    }
+    #[doc = "This object represents a mapping of a (wlr) toplevel to a window address."]
+    #[doc = ""]
+    #[doc = "Once created, the `window_address` event will be sent containing the address of the window"]
+    #[doc = "associated with the toplevel."]
+    #[doc = "Should the mapping fail, the `failed` event will be sent."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod hyprland_toplevel_window_mapping_handle_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the hyprland_toplevel_window_mapping_handle_v1 interface. See the module level documentation for more info"]
+        pub trait HyprlandToplevelWindowMappingHandleV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "hyprland_toplevel_window_mapping_handle_v1";
+            const VERSION: u32 = 1u32;
+            fn handle_request(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                message: &mut crate::wire::Message,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            tracing::debug!(
+                                "hyprland_toplevel_window_mapping_handle_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
+                        }
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
+                    }
+                }
+            }
+            #[doc = "Destroy the handle. This request can be sent at any time by the client."]
+            fn destroy(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "The full 64bit window address. The `address` field contains the lower 32 bits whilst the"]
+            #[doc = "`address_hi` contains the upper 32 bits"]
+            fn window_address(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                address_hi: u32,
+                address: u32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> hyprland_toplevel_window_mapping_handle_v1#{}.window_address({}, {})",
+                        sender_id,
+                        address_hi,
+                        address
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(address_hi)
+                        .put_uint(address)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+            #[doc = "The mapping of the toplevel to a window address failed. Most likely the window does not"]
+            #[doc = "exist (anymore)."]
+            fn failed(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> hyprland_toplevel_window_mapping_handle_v1#{}.failed()",
+                        sender_id,
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }

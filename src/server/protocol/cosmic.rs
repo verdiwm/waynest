@@ -31,10 +31,67 @@ pub mod cosmic_a11y_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Filter {
+            #[doc = "No screen filter is set"]
+            Disabled = 0u32,
+            #[doc = "A custom or unknown screen filter"]
+            Unknown = 1u32,
+            #[doc = "Greyscale colors"]
+            Greyscale = 2u32,
+            #[doc = "Daltonize for Protanopia"]
+            DaltonizeProtanopia = 3u32,
+            #[doc = "Daltonize for Deuteranopia"]
+            DaltonizeDeuteranopia = 4u32,
+            #[doc = "Daltonize for Tritanopia"]
+            DaltonizeTritanopia = 5u32,
+        }
+        impl TryFrom<u32> for Filter {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Disabled),
+                    1u32 => Ok(Self::Unknown),
+                    2u32 => Ok(Self::Greyscale),
+                    3u32 => Ok(Self::DaltonizeProtanopia),
+                    4u32 => Ok(Self::DaltonizeDeuteranopia),
+                    5u32 => Ok(Self::DaltonizeTritanopia),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Filter {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "A deprecated request or value was used"]
+            Deprecated = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Deprecated),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the cosmic_a11y_manager_v1 interface. See the module level documentation for more info"]
         pub trait CosmicA11yManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "cosmic_a11y_manager_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 3u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -54,16 +111,97 @@ pub mod cosmic_a11y_v1 {
                             self.set_magnifier(client, sender_id, active.try_into()?)
                                 .await
                         }
+                        1u16 => {
+                            let inverted = message.uint()?;
+                            let filter = message.uint()?;
+                            tracing::debug!(
+                                "cosmic_a11y_manager_v1#{}.set_screen_filter({}, {})",
+                                sender_id,
+                                inverted,
+                                filter
+                            );
+                            self.set_screen_filter(
+                                client,
+                                sender_id,
+                                inverted.try_into()?,
+                                filter.try_into()?,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            let inverted = message.uint()?;
+                            let filter = message.uint()?;
+                            let filter_state = message.uint()?;
+                            tracing::debug!(
+                                "cosmic_a11y_manager_v1#{}.set_screen_filter2({}, {}, {})",
+                                sender_id,
+                                inverted,
+                                filter,
+                                filter_state
+                            );
+                            self.set_screen_filter2(
+                                client,
+                                sender_id,
+                                inverted.try_into()?,
+                                filter.try_into()?,
+                                filter_state.try_into()?,
+                            )
+                            .await
+                        }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
             }
+            #[doc = "Sets the state of the screen magnifier."]
+            #[doc = ""]
+            #[doc = "The client must not assume any requested changes are actually applied and should wait"]
+            #[doc = "until the next magnifier event before updating it's UI."]
             fn set_magnifier(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 active: ActiveState,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Set the parameters for screen filtering."]
+            #[doc = ""]
+            #[doc = "If the filter is set to unknown, the compositor MUST not change the current state"]
+            #[doc = "of the filter. This is to allow clients to update the inverted state, even if they"]
+            #[doc = "don't know about the current active filter."]
+            #[doc = ""]
+            #[doc = "The client must not assume any requested changes are actually applied and should wait"]
+            #[doc = "until the next screen_filter event before updating it's UI."]
+            #[doc = ""]
+            #[doc = "Send this request will raised a \"deprecated\" protocol error, if version 3 or higher was bound."]
+            #[doc = "Use `set_screen_filter2` instead."]
+            fn set_screen_filter(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                inverted: ActiveState,
+                filter: Filter,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Set the parameters for screen filtering."]
+            #[doc = ""]
+            #[doc = "If the filter is set to unknown, the compositor MUST not change the currently set"]
+            #[doc = "filter. This is to allow clients to update the inverted state or toggle the screen filter,"]
+            #[doc = "even if they don't know about the currently selected filter."]
+            #[doc = ""]
+            #[doc = "The client must not assume any requested changes are actually applied and should wait"]
+            #[doc = "until the next screen_filter event before updating it's UI."]
+            #[doc = ""]
+            #[doc = "The \"deprecated\" protocol error is raised, if \"disabled\" is set for \"filter\"."]
+            fn set_screen_filter2(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                inverted: ActiveState,
+                filter: Filter,
+                filter_state: ActiveState,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "State of the screen magnifier."]
+            #[doc = ""]
+            #[doc = "This event will be emitted by the compositor when binding the protocol"]
+            #[doc = "and whenever the state changes."]
             fn magnifier(
                 &self,
                 client: &mut crate::server::Client,
@@ -81,6 +219,75 @@ pub mod cosmic_a11y_v1 {
                         .build();
                     client
                         .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+            #[doc = "Parameters used for screen filtering."]
+            #[doc = ""]
+            #[doc = "This event will be emitted by the compositor when binding the protocol"]
+            #[doc = "and whenever the state changes."]
+            #[doc = ""]
+            #[doc = "If a screen filter is used not known to the protocol or the bound version"]
+            #[doc = "filter will be set to unknown."]
+            #[doc = ""]
+            #[doc = "Since version 3 this event will not be emitted anymore, instead use `screen_filter2`."]
+            fn screen_filter(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                inverted: ActiveState,
+                filter: Filter,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> cosmic_a11y_manager_v1#{}.screen_filter({}, {})",
+                        sender_id,
+                        inverted,
+                        filter
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(inverted as u32)
+                        .put_uint(filter as u32)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+            #[doc = "Parameters used for screen filtering."]
+            #[doc = ""]
+            #[doc = "This event will be emitted by the compositor when binding the protocol"]
+            #[doc = "and whenever the state changes."]
+            #[doc = ""]
+            #[doc = "If a screen filter is used not known to the protocol or the bound version"]
+            #[doc = "filter will be set to unknown."]
+            #[doc = ""]
+            #[doc = "The compositor must never send \"disabled\" as the \"filter\" argument."]
+            fn screen_filter2(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                inverted: ActiveState,
+                filter: Filter,
+                filter_state: ActiveState,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> cosmic_a11y_manager_v1#{}.screen_filter2({}, {}, {})",
+                        sender_id,
+                        inverted,
+                        filter,
+                        filter_state
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(inverted as u32)
+                        .put_uint(filter as u32)
+                        .put_uint(filter_state as u32)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -335,7 +542,7 @@ pub mod cosmic_output_management_unstable_v1 {
         #[doc = "Trait to implement the zcosmic_output_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicOutputManagerV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_output_manager_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -398,6 +605,15 @@ pub mod cosmic_output_management_unstable_v1 {
                             client.remove(sender_id);
                             result
                         }
+                        4u16 => {
+                            let head = message.object()?;
+                            tracing::debug!(
+                                "zcosmic_output_manager_v1#{}.set_xwayland_primary({})",
+                                sender_id,
+                                head.as_ref().map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_xwayland_primary(client, sender_id, head).await
+                        }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -447,6 +663,16 @@ pub mod cosmic_output_management_unstable_v1 {
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "This requests a head to be advertised as the primary output via randr to Xwayland."]
+            #[doc = ""]
+            #[doc = "No head has to be marked primary, if `null` is passed Xwayland won't advertise a primary output."]
+            #[doc = "Sending a disabled head will be ignored to avoid races."]
+            fn set_xwayland_primary(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                head: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -517,7 +743,7 @@ pub mod cosmic_output_management_unstable_v1 {
         #[doc = "Trait to implement the zcosmic_output_head_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicOutputHeadV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zcosmic_output_head_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -640,6 +866,29 @@ pub mod cosmic_output_management_unstable_v1 {
                         .build();
                     client
                         .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+            #[doc = "This event describes if this head is advertised as the primary output via randr to Xwayland."]
+            #[doc = ""]
+            #[doc = "At most one output is marked primary, but it is not guaranteed that any output is marked."]
+            #[doc = "It is only sent if the output is enabled."]
+            fn xwayland_primary(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                state: u32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> zcosmic_output_head_v1#{}.xwayland_primary({})",
+                        sender_id,
+                        state
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(state).build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3009,285 +3258,6 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                         .build();
                     client
                         .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod cosmic_workspace_unstable_v2 {
-    #[doc = "This protocol extends `ext-workspace-v1` with addtional requests and events."]
-    #[doc = ""]
-    #[doc = "The caller should call `get_cosmic_workspace` whenever a new ext workspace is"]
-    #[doc = "created."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod zcosmic_workspace_manager_v2 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "zcosmic_workspace_handle_v2 already exists for ext_workspace_handle_v1"]
-            WorkspaceExists = 0u32,
-        }
-        impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::WorkspaceExists),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the zcosmic_workspace_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceManagerV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_workspace_manager_v2";
-            const VERSION: u32 = 1u32;
-            fn handle_request(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let cosmic_workspace = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let workspace = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing::debug!(
-                                "zcosmic_workspace_manager_v2#{}.get_cosmic_workspace({}, {})",
-                                sender_id,
-                                cosmic_workspace,
-                                workspace
-                            );
-                            self.get_cosmic_workspace(
-                                client,
-                                sender_id,
-                                cosmic_workspace,
-                                workspace,
-                            )
-                            .await
-                        }
-                        1u16 => {
-                            tracing::debug!("zcosmic_workspace_manager_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
-                        }
-                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
-                    }
-                }
-            }
-            #[doc = "Request a `zcosmic_workspace_handle_v2` extension object for an existing"]
-            #[doc = "`ext_workspace_handle_v1`."]
-            #[doc = ""]
-            #[doc = "If a `zcosmic_workspace_handle_v2` already exists for the `ext_workspace_handle_v1`, this"]
-            #[doc = "will raise a `workspace_exists` protocol error."]
-            fn get_cosmic_workspace(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                cosmic_workspace: crate::wire::ObjectId,
-                workspace: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "This request should be called either when the client will no longer"]
-            #[doc = "use the `zcosmic_workspace_manager_v2`."]
-            fn destroy(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-        }
-    }
-    #[doc = "A zcosmic_workspace_handle_v2 object represents a a workspace that handles a"]
-    #[doc = "group of surfaces."]
-    #[doc = ""]
-    #[doc = "Each workspace has a name, conveyed to the client with the name event; a"]
-    #[doc = "list of states, conveyed to the client with the state event; and"]
-    #[doc = "optionally a set of coordinates, conveyed to the client with the"]
-    #[doc = "coordinates event. The client may request that the compositor activate or"]
-    #[doc = "deactivate the workspace."]
-    #[doc = ""]
-    #[doc = "Each workspace can belong to only a single workspace group."]
-    #[doc = "Depepending on the compositor policy, there might be workspaces with"]
-    #[doc = "the same name in different workspace groups, but these workspaces are still"]
-    #[doc = "separate (e.g. one of them might be active while the other is not)."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod zcosmic_workspace_handle_v2 {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct WorkspaceCapabilities : u32 { # [doc = "rename request is available"] const Rename = 1u32 ; # [doc = "set_tiling_state request is available"] const SetTilingState = 2u32 ; } }
-        impl TryFrom<u32> for WorkspaceCapabilities {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
-        impl std::fmt::Display for WorkspaceCapabilities {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                self.bits().fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum TilingState {
-            #[doc = "The workspace has no active tiling properties"]
-            FloatingOnly = 0u32,
-            #[doc = "Tiling behavior is enabled for the workspace"]
-            TilingEnabled = 1u32,
-        }
-        impl TryFrom<u32> for TilingState {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::FloatingOnly),
-                    1u32 => Ok(Self::TilingEnabled),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for TilingState {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the zcosmic_workspace_handle_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceHandleV2: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "zcosmic_workspace_handle_v2";
-            const VERSION: u32 = 1u32;
-            fn handle_request(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            tracing::debug!("zcosmic_workspace_handle_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
-                        }
-                        1u16 => {
-                            let name = message
-                                .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing::debug!(
-                                "zcosmic_workspace_handle_v2#{}.rename(\"{}\")",
-                                sender_id,
-                                name
-                            );
-                            self.rename(client, sender_id, name).await
-                        }
-                        2u16 => {
-                            let state = message.uint()?;
-                            tracing::debug!(
-                                "zcosmic_workspace_handle_v2#{}.set_tiling_state({})",
-                                sender_id,
-                                state
-                            );
-                            self.set_tiling_state(client, sender_id, state.try_into()?)
-                                .await
-                        }
-                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
-                    }
-                }
-            }
-            #[doc = "This request should be called either when the client will no longer"]
-            #[doc = "use the `zcosmic_workspace_handle_v1`."]
-            fn destroy(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "Request that this workspace is renamed."]
-            #[doc = ""]
-            #[doc = "There is no guarantee the workspace will actually be renamed."]
-            fn rename(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                name: String,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "Request that this workspace's tiling state is changed."]
-            #[doc = ""]
-            #[doc = "There is no guarantee the workspace will actually change it's tiling state."]
-            fn set_tiling_state(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                state: TilingState,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "This event advertises the capabilities supported by the compositor. If"]
-            #[doc = "a capability isn't supported, clients should hide or disable the UI"]
-            #[doc = "elements that expose this functionality. For instance, if the"]
-            #[doc = "compositor doesn't advertise support for removing workspaces, a button"]
-            #[doc = "triggering the remove request should not be displayed."]
-            #[doc = ""]
-            #[doc = "The compositor will ignore requests it doesn't support. For instance,"]
-            #[doc = "a compositor which doesn't advertise support for remove will ignore"]
-            #[doc = "remove requests."]
-            #[doc = ""]
-            #[doc = "Compositors must send this event once after creation of a"]
-            #[doc = "`zcosmic_workspace_handle_v2`. When the capabilities change, compositors"]
-            #[doc = "must send this event again."]
-            fn capabilities(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                capabilities: WorkspaceCapabilities,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zcosmic_workspace_handle_v2#{}.capabilities({})",
-                        sender_id,
-                        capabilities
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(capabilities.bits())
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
-            }
-            #[doc = "This event is emitted immediately after the zcosmic_workspace_handle_v2 is created"]
-            #[doc = "and each time the workspace tiling state changes, either because of a"]
-            #[doc = "compositor action or because of a request in this protocol."]
-            fn tiling_state(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                state: TilingState,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> zcosmic_workspace_handle_v2#{}.tiling_state({})",
-                        sender_id,
-                        state
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(state as u32)
-                        .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }

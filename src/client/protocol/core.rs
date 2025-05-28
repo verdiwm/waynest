@@ -913,8 +913,10 @@ pub mod wayland {
                     .map_err(crate::client::Error::IoError)
             }
             #[doc = "Sent when this wl_buffer is no longer used by the compositor."]
-            #[doc = "The client is now free to reuse or destroy this buffer and its"]
-            #[doc = "backing storage."]
+            #[doc = ""]
+            #[doc = "For more information on when release events may or may not be sent,"]
+            #[doc = "and what consequences it has, please see the description of"]
+            #[doc = "wl_surface.attach."]
             #[doc = ""]
             #[doc = "If a client receives a release event before the frame callback"]
             #[doc = "requested in the same wl_surface.commit that attaches this"]
@@ -2254,7 +2256,8 @@ pub mod wayland {
             #[doc = "the delivery of wl_buffer.release events becomes undefined. A well"]
             #[doc = "behaved client should not rely on wl_buffer.release events in this"]
             #[doc = "case. Alternatively, a client could create multiple wl_buffer objects"]
-            #[doc = "from the same backing storage or use wp_linux_buffer_release."]
+            #[doc = "from the same backing storage or use a protocol extension providing"]
+            #[doc = "per-commit release notifications."]
             #[doc = ""]
             #[doc = "Destroying the wl_buffer after wl_buffer.release does not change"]
             #[doc = "the surface contents. Destroying the wl_buffer before wl_buffer.release"]
@@ -2629,6 +2632,9 @@ pub mod wayland {
             #[doc = "x and y, combined with the new surface size define in which"]
             #[doc = "directions the surface's size changes."]
             #[doc = ""]
+            #[doc = "The exact semantics of wl_surface.offset are role-specific. Refer to"]
+            #[doc = "the documentation of specific roles for more information."]
+            #[doc = ""]
             #[doc = "Surface location offset is double-buffered state, see"]
             #[doc = "wl_surface.commit."]
             #[doc = ""]
@@ -2740,7 +2746,7 @@ pub mod wayland {
         #[doc = "Trait to implement the wl_seat interface. See the module level documentation for more info"]
         pub trait WlSeat {
             const INTERFACE: &'static str = "wl_seat";
-            const VERSION: u32 = 9u32;
+            const VERSION: u32 = 10u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,
@@ -2833,9 +2839,10 @@ pub mod wayland {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
-            #[doc = "This is emitted whenever a seat gains or loses the pointer,"]
-            #[doc = "keyboard or touch capabilities.  The argument is a capability"]
-            #[doc = "enum containing the complete set of capabilities this seat has."]
+            #[doc = "This is sent on binding to the seat global or whenever a seat gains"]
+            #[doc = "or loses the pointer, keyboard or touch capabilities."]
+            #[doc = "The argument is a capability enum containing the complete set of"]
+            #[doc = "capabilities this seat has."]
             #[doc = ""]
             #[doc = "When the pointer capability is added, a client may create a"]
             #[doc = "wl_pointer object using the wl_seat.get_pointer request. This object"]
@@ -2868,9 +2875,9 @@ pub mod wayland {
             #[doc = "The same seat names are used for all clients. Thus, the name can be"]
             #[doc = "shared across processes to refer to a specific wl_seat global."]
             #[doc = ""]
-            #[doc = "The name event is sent after binding to the seat global. This event is"]
-            #[doc = "only sent once per seat object, and the name does not change over the"]
-            #[doc = "lifetime of the wl_seat global."]
+            #[doc = "The name event is sent after binding to the seat global, and should be sent"]
+            #[doc = "before announcing capabilities. This event only sent once per seat object,"]
+            #[doc = "and the name does not change over the lifetime of the wl_seat global."]
             #[doc = ""]
             #[doc = "Compositors may re-use the same seat name if the wl_seat global is"]
             #[doc = "destroyed and re-created later."]
@@ -3035,7 +3042,7 @@ pub mod wayland {
         #[doc = "Trait to implement the wl_pointer interface. See the module level documentation for more info"]
         pub trait WlPointer {
             const INTERFACE: &'static str = "wl_pointer";
-            const VERSION: u32 = 9u32;
+            const VERSION: u32 = 10u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,
@@ -3404,6 +3411,14 @@ pub mod wayland {
             }
         }
         #[doc = "Describes the physical state of a key that produced the key event."]
+        #[doc = ""]
+        #[doc = "Since version 10, the key can be in a \"repeated\" pseudo-state which"]
+        #[doc = "means the same as \"pressed\", but is used to signal repetition in the"]
+        #[doc = "key event."]
+        #[doc = ""]
+        #[doc = "The key may only enter the repeated state after entering the pressed"]
+        #[doc = "state and before entering the released state. This event may be"]
+        #[doc = "generated multiple times while the key is down."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3412,6 +3427,8 @@ pub mod wayland {
             Released = 0u32,
             #[doc = "key is pressed"]
             Pressed = 1u32,
+            #[doc = "key was repeated"]
+            Repeated = 2u32,
         }
         impl TryFrom<u32> for KeyState {
             type Error = crate::wire::DecodeError;
@@ -3419,6 +3436,7 @@ pub mod wayland {
                 match v {
                     0u32 => Ok(Self::Released),
                     1u32 => Ok(Self::Pressed),
+                    2u32 => Ok(Self::Repeated),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -3431,7 +3449,7 @@ pub mod wayland {
         #[doc = "Trait to implement the wl_keyboard interface. See the module level documentation for more info"]
         pub trait WlKeyboard {
             const INTERFACE: &'static str = "wl_keyboard";
-            const VERSION: u32 = 9u32;
+            const VERSION: u32 = 10u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,
@@ -3475,6 +3493,9 @@ pub mod wayland {
             #[doc = "the surface argument and the keys currently logically down to the keys"]
             #[doc = "in the keys argument. The compositor must not send this event if the"]
             #[doc = "wl_keyboard already had an active surface immediately before this event."]
+            #[doc = ""]
+            #[doc = "Clients should not use the list of pressed keys to emulate key-press"]
+            #[doc = "events. The order of keys in the list is unspecified."]
             async fn enter(
                 &self,
                 serial: u32,
@@ -3514,6 +3535,11 @@ pub mod wayland {
             #[doc = "compositor must not send this event if state is pressed (resp. released)"]
             #[doc = "and the key was already logically down (resp. was not logically down)"]
             #[doc = "immediately before this event."]
+            #[doc = ""]
+            #[doc = "Since version 10, compositors may send key events with the \"repeated\""]
+            #[doc = "key state when a wl_keyboard.repeat_info event with a rate argument of"]
+            #[doc = "0 has been received. This allows the compositor to take over the"]
+            #[doc = "responsibility of key repetition."]
             async fn key(
                 &self,
                 serial: u32,
@@ -3571,7 +3597,7 @@ pub mod wayland {
         #[doc = "Trait to implement the wl_touch interface. See the module level documentation for more info"]
         pub trait WlTouch {
             const INTERFACE: &'static str = "wl_touch";
-            const VERSION: u32 = 9u32;
+            const VERSION: u32 = 10u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,
@@ -4404,6 +4430,62 @@ pub mod wayland {
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
                     .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+        }
+    }
+    #[doc = "This global fixes problems with other core-protocol interfaces that"]
+    #[doc = "cannot be fixed in these interfaces themselves."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wl_fixes {
+        use futures_util::SinkExt;
+        #[doc = "Trait to implement the wl_fixes interface. See the module level documentation for more info"]
+        pub trait WlFixes {
+            const INTERFACE: &'static str = "wl_fixes";
+            const VERSION: u32 = 1u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode() {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            async fn destroy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wl_fixes#{}.destroy()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This request destroys a wl_registry object."]
+            #[doc = ""]
+            #[doc = "The client should no longer use the wl_registry after making this"]
+            #[doc = "request."]
+            #[doc = ""]
+            #[doc = "The compositor will emit a wl_display.delete_id event with the object ID"]
+            #[doc = "of the registry and will no longer emit any events on the registry. The"]
+            #[doc = "client should re-use the object ID once it receives the"]
+            #[doc = "wl_display.delete_id event."]
+            async fn destroy_registry(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                registry: crate::wire::ObjectId,
+            ) -> crate::client::Result<()> {
+                tracing::debug!("-> wl_fixes#{}.destroy_registry()", object_id);
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(registry))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }

@@ -1207,7 +1207,7 @@ pub mod kde_external_brightness_v1 {
         #[doc = "Trait to implement the kde_external_brightness_v1 interface. See the module level documentation for more info"]
         pub trait KdeExternalBrightnessV1 {
             const INTERFACE: &'static str = "kde_external_brightness_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,
@@ -1259,7 +1259,7 @@ pub mod kde_external_brightness_v1 {
         #[doc = "Trait to implement the kde_external_brightness_device_v1 interface. See the module level documentation for more info"]
         pub trait KdeExternalBrightnessDeviceV1 {
             const INTERFACE: &'static str = "kde_external_brightness_device_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,
@@ -1368,6 +1368,26 @@ pub mod kde_external_brightness_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(value).build();
                 socket
                     .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "The compositor can use this information to ignore this object if its commands"]
+            #[doc = "expose monitor issues. The compositor may also reduce the amount of brightness"]
+            #[doc = "requests given potentially slow response times and concerns about monitor EEPROM"]
+            #[doc = "longevity/wear-out."]
+            async fn set_uses_ddc_ci(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                value: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> kde_external_brightness_device_v1#{}.set_uses_ddc_ci()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(value).build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 6u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1558,7 +1578,7 @@ pub mod kde_output_device_v2 {
                 (*self as u32).fmt(f)
             }
         }
-        bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this output_device can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; # [doc = "if setting the rgb range is possible"] const RgbRange = 4u32 ; # [doc = "if this outputdevice supports high dynamic range"] const HighDynamicRange = 8u32 ; # [doc = "if this outputdevice supports a wide color gamut"] const WideColorGamut = 16u32 ; # [doc = "if this outputdevice supports autorotation"] const AutoRotate = 32u32 ; # [doc = "if this outputdevice supports icc profiles"] const IccProfile = 64u32 ; # [doc = "if this outputdevice supports the brightness setting"] const Brightness = 128u32 ; } }
+        bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this output_device can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; # [doc = "if setting the rgb range is possible"] const RgbRange = 4u32 ; # [doc = "if this outputdevice supports high dynamic range"] const HighDynamicRange = 8u32 ; # [doc = "if this outputdevice supports a wide color gamut"] const WideColorGamut = 16u32 ; # [doc = "if this outputdevice supports autorotation"] const AutoRotate = 32u32 ; # [doc = "if this outputdevice supports icc profiles"] const IccProfile = 64u32 ; # [doc = "if this outputdevice supports the brightness setting"] const Brightness = 128u32 ; # [doc = "if this outputdevice supports the built-in color profile"] const BuiltInColor = 256u32 ; # [doc = "if this outputdevice supports DDC/CI"] const DdcCi = 512u32 ; # [doc = "if this outputdevice supports setting max bpc"] const MaxBitsPerColor = 1024u32 ; # [doc = "if this outputdevice supports EDR"] const Edr = 2048u32 ; } }
         impl TryFrom<u32> for Capability {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -1696,10 +1716,32 @@ pub mod kde_output_device_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum EdrPolicy {
+            Never = 0u32,
+            Always = 1u32,
+        }
+        impl TryFrom<u32> for EdrPolicy {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::Always),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for EdrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the kde_output_device_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputDeviceV2 {
             const INTERFACE: &'static str = "kde_output_device_v2";
-            const VERSION: u32 = 11u32;
+            const VERSION: u32 = 16u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,
@@ -1854,6 +1896,27 @@ pub mod kde_output_device_v2 {
             #[doc = "0 is the minimum dimming factor (not completely dark) and 10000"]
             #[doc = "means the output is not dimmed."]
             async fn dimming(&self, multiplier: u32) -> crate::client::Result<()>;
+            async fn replication_source(&self, source: String) -> crate::client::Result<()>;
+            #[doc = "If the ddc_ci capability is present, this determines if settings"]
+            #[doc = "such as brightness, contrast or others should be set using DDC/CI."]
+            async fn ddc_ci_allowed(&self, allowed: u32) -> crate::client::Result<()>;
+            #[doc = "This limits the amount of bits per color that are sent to the display."]
+            async fn max_bits_per_color(&self, max_bpc: u32) -> crate::client::Result<()>;
+            async fn max_bits_per_color_range(
+                &self,
+                min_value: u32,
+                max_value: u32,
+            ) -> crate::client::Result<()>;
+            async fn automatic_max_bits_per_color_limit(
+                &self,
+                max_bpc_limit: u32,
+            ) -> crate::client::Result<()>;
+            #[doc = "When EDR is enabled, the compositor may increase the backlight beyond"]
+            #[doc = "the user-specified setting, in order to present HDR content on displays"]
+            #[doc = "without native HDR support."]
+            #[doc = "This will usually result in better visuals, but also increases battery"]
+            #[doc = "usage."]
+            async fn edr_policy(&self, policy: EdrPolicy) -> crate::client::Result<()>;
         }
     }
     #[doc = "This object describes an output mode."]
@@ -1946,7 +2009,7 @@ pub mod kde_output_management_v2 {
         #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputManagementV2 {
             const INTERFACE: &'static str = "kde_output_management_v2";
-            const VERSION: u32 = 12u32;
+            const VERSION: u32 = 16u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,
@@ -2141,10 +2204,32 @@ pub mod kde_output_management_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum EdrPolicy {
+            Never = 0u32,
+            Always = 1u32,
+        }
+        impl TryFrom<u32> for EdrPolicy {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::Always),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for EdrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the kde_output_configuration_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputConfigurationV2 {
             const INTERFACE: &'static str = "kde_output_configuration_v2";
-            const VERSION: u32 = 12u32;
+            const VERSION: u32 = 16u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,
@@ -2559,7 +2644,7 @@ pub mod kde_output_management_v2 {
             #[doc = "0 is the minimum brightness (not completely dark) and 10000 is"]
             #[doc = "the maximum brightness."]
             #[doc = "This is supported while HDR is active in versions 8 and below,"]
-            #[doc = "or when the device supports the brightness_control capability in"]
+            #[doc = "or when the device supports the \"brightness\" capability in"]
             #[doc = "versions 9 and above."]
             async fn set_brightness(
                 &self,
@@ -2608,7 +2693,7 @@ pub mod kde_output_management_v2 {
             #[doc = "0 is the minimum dimming factor (not completely dark) and 10000"]
             #[doc = "means the output is not dimmed."]
             #[doc = ""]
-            #[doc = "This is supported only when the brightness_control capability is"]
+            #[doc = "This is supported only when the \"brightness\" capability is"]
             #[doc = "also supported."]
             async fn set_dimming(
                 &self,
@@ -2624,6 +2709,94 @@ pub mod kde_output_management_v2 {
                     .build();
                 socket
                     .send(crate::wire::Message::new(object_id, 22u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "Set the source output that the outputdevice should mirror its"]
+            #[doc = "viewport from."]
+            async fn set_replication_source(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                source: String,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_configuration_v2#{}.set_replication_source()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(outputdevice))
+                    .put_string(Some(source))
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 23u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            async fn set_ddc_ci_allowed(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                allowed: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_configuration_v2#{}.set_ddc_ci_allowed()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(outputdevice))
+                    .put_uint(allowed)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 24u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "This limits the amount of bits per color that are sent to the display."]
+            async fn set_max_bits_per_color(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                max_bpc: u32,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_configuration_v2#{}.set_max_bits_per_color()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(outputdevice))
+                    .put_uint(max_bpc)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 25u16, payload, fds))
+                    .await
+                    .map_err(crate::client::Error::IoError)
+            }
+            #[doc = "When EDR is enabled, the compositor may increase the backlight beyond"]
+            #[doc = "the user-specified setting, in order to present HDR content on displays"]
+            #[doc = "without native HDR support."]
+            #[doc = "This will usually result in better visuals, but also increases battery"]
+            #[doc = "usage."]
+            async fn set_edr_policy(
+                &self,
+                socket: &mut crate::wire::Socket,
+                object_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                policy: EdrPolicy,
+            ) -> crate::client::Result<()> {
+                tracing::debug!(
+                    "-> kde_output_configuration_v2#{}.set_edr_policy()",
+                    object_id
+                );
+                let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    .put_object(Some(outputdevice))
+                    .put_uint(policy as u32)
+                    .build();
+                socket
+                    .send(crate::wire::Message::new(object_id, 26u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3195,6 +3368,339 @@ pub mod org_kde_plasma_virtual_desktop {
     }
 }
 #[allow(clippy::module_inception)]
+pub mod org_kde_kwin_outputdevice {
+    #[doc = "An outputdevice describes a display device available to the compositor."]
+    #[doc = "outputdevice is similar to wl_output, but focuses on output"]
+    #[doc = "configuration management."]
+    #[doc = ""]
+    #[doc = "A client can query all global outputdevice objects to enlist all"]
+    #[doc = "available display devices, even those that may currently not be"]
+    #[doc = "represented by the compositor as a wl_output."]
+    #[doc = ""]
+    #[doc = "The client sends configuration changes to the server through the"]
+    #[doc = "outputconfiguration interface, and the server applies the configuration"]
+    #[doc = "changes to the hardware and signals changes to the outputdevices"]
+    #[doc = "accordingly."]
+    #[doc = ""]
+    #[doc = "This object is published as global during start up for every available"]
+    #[doc = "display devices, or when one later becomes available, for example by"]
+    #[doc = "being hotplugged via a physical connector."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_kwin_outputdevice {
+        #[doc = "This enumeration describes how the physical pixels on an output are"]
+        #[doc = "laid out."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Subpixel {
+            Unknown = 0u32,
+            None = 1u32,
+            HorizontalRgb = 2u32,
+            HorizontalBgr = 3u32,
+            VerticalRgb = 4u32,
+            VerticalBgr = 5u32,
+        }
+        impl TryFrom<u32> for Subpixel {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Unknown),
+                    1u32 => Ok(Self::None),
+                    2u32 => Ok(Self::HorizontalRgb),
+                    3u32 => Ok(Self::HorizontalBgr),
+                    4u32 => Ok(Self::VerticalRgb),
+                    5u32 => Ok(Self::VerticalBgr),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Subpixel {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "This describes the transform, that a compositor will apply to a"]
+        #[doc = "surface to compensate for the rotation or mirroring of an"]
+        #[doc = "output device."]
+        #[doc = ""]
+        #[doc = "The flipped values correspond to an initial flip around a"]
+        #[doc = "vertical axis followed by rotation."]
+        #[doc = ""]
+        #[doc = "The purpose is mainly to allow clients to render accordingly and"]
+        #[doc = "tell the compositor, so that for fullscreen surfaces, the"]
+        #[doc = "compositor is still able to scan out directly client surfaces."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Transform {
+            Normal = 0u32,
+            _90 = 1u32,
+            _180 = 2u32,
+            _270 = 3u32,
+            Flipped = 4u32,
+            Flipped90 = 5u32,
+            Flipped180 = 6u32,
+            Flipped270 = 7u32,
+        }
+        impl TryFrom<u32> for Transform {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Normal),
+                    1u32 => Ok(Self::_90),
+                    2u32 => Ok(Self::_180),
+                    3u32 => Ok(Self::_270),
+                    4u32 => Ok(Self::Flipped),
+                    5u32 => Ok(Self::Flipped90),
+                    6u32 => Ok(Self::Flipped180),
+                    7u32 => Ok(Self::Flipped270),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Transform {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "These flags describe properties of an output mode. They are"]
+        #[doc = "used in the flags bitfield of the mode event."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Mode {
+            #[doc = "indicates this is the current mode"]
+            Current = 1u32,
+            #[doc = "indicates this is the preferred mode"]
+            Preferred = 2u32,
+        }
+        impl TryFrom<u32> for Mode {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::Current),
+                    2u32 => Ok(Self::Preferred),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Mode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Describes whether a device is enabled, i.e. device is used to"]
+        #[doc = "display content by the compositor. This wraps a boolean around"]
+        #[doc = "an int to avoid a boolean trap."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Enablement {
+            Disabled = 0u32,
+            Enabled = 1u32,
+        }
+        impl TryFrom<u32> for Enablement {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Disabled),
+                    1u32 => Ok(Self::Enabled),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Enablement {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this outputdevice can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; } }
+        impl TryFrom<u32> for Capability {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[doc = "Describes when the compositor may employ variable refresh rate"]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum VrrPolicy {
+            Never = 0u32,
+            Always = 1u32,
+            Automatic = 2u32,
+        }
+        impl TryFrom<u32> for VrrPolicy {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::Always),
+                    2u32 => Ok(Self::Automatic),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for VrrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the org_kde_kwin_outputdevice interface. See the module level documentation for more info"]
+        pub trait OrgKdeKwinOutputdevice {
+            const INTERFACE: &'static str = "org_kde_kwin_outputdevice";
+            const VERSION: u32 = 4u32;
+            async fn handle_event(
+                &self,
+                message: &mut crate::wire::Message,
+            ) -> crate::client::Result<()> {
+                #[allow(clippy::match_single_binding)]
+                match message.opcode() {
+                    _ => Err(crate::client::Error::UnknownOpcode),
+                }
+            }
+            #[doc = "The geometry event describes geometric properties of the output."]
+            #[doc = "The event is sent when binding to the output object and whenever"]
+            #[doc = "any of the properties change."]
+            async fn geometry(
+                &self,
+                x: i32,
+                y: i32,
+                physical_width: i32,
+                physical_height: i32,
+                subpixel: i32,
+                make: String,
+                model: String,
+                transform: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "The mode event describes an available mode for the output."]
+            #[doc = ""]
+            #[doc = "When the client binds to the outputdevice object, the server sends this"]
+            #[doc = "event once for every available mode the outputdevice can be operated by."]
+            #[doc = ""]
+            #[doc = "There will always be at least one event sent out on initial binding,"]
+            #[doc = "which represents the current mode."]
+            #[doc = ""]
+            #[doc = "Later on if an output changes its mode the event is sent again, whereby"]
+            #[doc = "this event represents the mode that has now become current. In other"]
+            #[doc = "words, the current mode is always represented by the latest event sent"]
+            #[doc = "with the current flag set."]
+            #[doc = ""]
+            #[doc = "The size of a mode is given in physical hardware units of the output device."]
+            #[doc = "This is not necessarily the same as the output size in the global compositor"]
+            #[doc = "space. For instance, the output may be scaled, as described in"]
+            #[doc = "org_kde_kwin_outputdevice.scale, or transformed, as described in"]
+            #[doc = "org_kde_kwin_outputdevice.transform."]
+            #[doc = ""]
+            #[doc = "The id can be used to refer to a mode when calling set_mode on an"]
+            #[doc = "org_kde_kwin_outputconfiguration object."]
+            async fn mode(
+                &self,
+                flags: u32,
+                width: i32,
+                height: i32,
+                refresh: i32,
+                mode_id: i32,
+            ) -> crate::client::Result<()>;
+            #[doc = "This event is sent after all other properties have been"]
+            #[doc = "sent on binding to the output object as well as after any"]
+            #[doc = "other output property change have been applied later on."]
+            #[doc = "This allows to see changes to the output properties as atomic,"]
+            #[doc = "even if multiple events successively announce them."]
+            async fn done(&self) -> crate::client::Result<()>;
+            #[doc = "This event contains scaling geometry information"]
+            #[doc = "that is not in the geometry event. It may be sent after"]
+            #[doc = "binding the output object or if the output scale changes"]
+            #[doc = "later. If it is not sent, the client should assume a"]
+            #[doc = "scale of 1."]
+            #[doc = ""]
+            #[doc = "A scale larger than 1 means that the compositor will"]
+            #[doc = "automatically scale surface buffers by this amount"]
+            #[doc = "when rendering. This is used for high resolution"]
+            #[doc = "displays where applications rendering at the native"]
+            #[doc = "resolution would be too small to be legible."]
+            #[doc = ""]
+            #[doc = "It is intended that scaling aware clients track the"]
+            #[doc = "current output of a surface, and if it is on a scaled"]
+            #[doc = "output it should use wl_surface.set_buffer_scale with"]
+            #[doc = "the scale of the output. That way the compositor can"]
+            #[doc = "avoid scaling the surface, and the client can supply"]
+            #[doc = "a higher detail image."]
+            async fn scale(&self, factor: i32) -> crate::client::Result<()>;
+            #[doc = "The edid event encapsulates the EDID data for the outputdevice."]
+            #[doc = ""]
+            #[doc = "The event is sent when binding to the output object. The EDID"]
+            #[doc = "data may be empty, in which case this event is sent anyway."]
+            #[doc = "If the EDID information is empty, you can fall back to the name"]
+            #[doc = "et al. properties of the outputdevice."]
+            async fn edid(&self, raw: String) -> crate::client::Result<()>;
+            #[doc = "The enabled event notifies whether this output is currently"]
+            #[doc = "enabled and used for displaying content by the server."]
+            #[doc = "The event is sent when binding to the output object and"]
+            #[doc = "whenever later on an output changes its state by becoming"]
+            #[doc = "enabled or disabled."]
+            async fn enabled(&self, enabled: i32) -> crate::client::Result<()>;
+            #[doc = "The uuid can be used to identify the output. It's controlled by"]
+            #[doc = "the server entirely. The server should make sure the uuid is"]
+            #[doc = "persistent across restarts. An empty uuid is considered invalid."]
+            async fn uuid(&self, uuid: String) -> crate::client::Result<()>;
+            #[doc = "This event contains scaling geometry information"]
+            #[doc = "that is not in the geometry event. It may be sent after"]
+            #[doc = "binding the output object or if the output scale changes"]
+            #[doc = "later. If it is not sent, the client should assume a"]
+            #[doc = "scale of 1."]
+            #[doc = ""]
+            #[doc = "A scale larger than 1 means that the compositor will"]
+            #[doc = "automatically scale surface buffers by this amount"]
+            #[doc = "when rendering. This is used for high resolution"]
+            #[doc = "displays where applications rendering at the native"]
+            #[doc = "resolution would be too small to be legible."]
+            #[doc = ""]
+            #[doc = "It is intended that scaling aware clients track the"]
+            #[doc = "current output of a surface, and if it is on a scaled"]
+            #[doc = "output it should use wl_surface.set_buffer_scale with"]
+            #[doc = "the scale of the output. That way the compositor can"]
+            #[doc = "avoid scaling the surface, and the client can supply"]
+            #[doc = "a higher detail image."]
+            #[doc = ""]
+            #[doc = "wl_output will keep the output scale as an integer. In every situation except"]
+            #[doc = "configuring the window manager you want to use that."]
+            async fn scalef(&self, factor: crate::wire::Fixed) -> crate::client::Result<()>;
+            #[doc = "Describes the color intensity profile of the output."]
+            #[doc = "Commonly used for gamma/color correction."]
+            #[doc = ""]
+            #[doc = "The array contains all color ramp values of the output."]
+            #[doc = "For example on 8bit screens there are 256 of them."]
+            #[doc = ""]
+            #[doc = "The array elements are unsigned 16bit integers."]
+            async fn colorcurves(
+                &self,
+                red: Vec<u8>,
+                green: Vec<u8>,
+                blue: Vec<u8>,
+            ) -> crate::client::Result<()>;
+            #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
+            async fn serial_number(&self, serial_number: String) -> crate::client::Result<()>;
+            #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
+            async fn eisa_id(&self, eisa_id: String) -> crate::client::Result<()>;
+            #[doc = "What capabilities this device has, sent on startup before the first"]
+            #[doc = "done event."]
+            async fn capabilities(&self, flags: Capability) -> crate::client::Result<()>;
+            #[doc = "Overscan value of the monitor in percent, sent on startup before the"]
+            #[doc = "first done event."]
+            async fn overscan(&self, overscan: u32) -> crate::client::Result<()>;
+            #[doc = "What policy the compositor will employ regarding its use of variable"]
+            #[doc = "refresh rate."]
+            async fn vrr_policy(&self, vrr_policy: VrrPolicy) -> crate::client::Result<()>;
+        }
+    }
+}
+#[allow(clippy::module_inception)]
 pub mod outputmanagement {
     #[doc = "This interface enables clients to set properties of output devices for screen"]
     #[doc = "configuration purposes via the server. To this end output devices are referenced"]
@@ -3554,339 +4060,6 @@ pub mod outputmanagement {
             async fn applied(&self) -> crate::client::Result<()>;
             #[doc = "Sent if the server rejects the changes or failed to apply them."]
             async fn failed(&self) -> crate::client::Result<()>;
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod org_kde_kwin_outputdevice {
-    #[doc = "An outputdevice describes a display device available to the compositor."]
-    #[doc = "outputdevice is similar to wl_output, but focuses on output"]
-    #[doc = "configuration management."]
-    #[doc = ""]
-    #[doc = "A client can query all global outputdevice objects to enlist all"]
-    #[doc = "available display devices, even those that may currently not be"]
-    #[doc = "represented by the compositor as a wl_output."]
-    #[doc = ""]
-    #[doc = "The client sends configuration changes to the server through the"]
-    #[doc = "outputconfiguration interface, and the server applies the configuration"]
-    #[doc = "changes to the hardware and signals changes to the outputdevices"]
-    #[doc = "accordingly."]
-    #[doc = ""]
-    #[doc = "This object is published as global during start up for every available"]
-    #[doc = "display devices, or when one later becomes available, for example by"]
-    #[doc = "being hotplugged via a physical connector."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_kwin_outputdevice {
-        #[doc = "This enumeration describes how the physical pixels on an output are"]
-        #[doc = "laid out."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Subpixel {
-            Unknown = 0u32,
-            None = 1u32,
-            HorizontalRgb = 2u32,
-            HorizontalBgr = 3u32,
-            VerticalRgb = 4u32,
-            VerticalBgr = 5u32,
-        }
-        impl TryFrom<u32> for Subpixel {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Unknown),
-                    1u32 => Ok(Self::None),
-                    2u32 => Ok(Self::HorizontalRgb),
-                    3u32 => Ok(Self::HorizontalBgr),
-                    4u32 => Ok(Self::VerticalRgb),
-                    5u32 => Ok(Self::VerticalBgr),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Subpixel {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "This describes the transform, that a compositor will apply to a"]
-        #[doc = "surface to compensate for the rotation or mirroring of an"]
-        #[doc = "output device."]
-        #[doc = ""]
-        #[doc = "The flipped values correspond to an initial flip around a"]
-        #[doc = "vertical axis followed by rotation."]
-        #[doc = ""]
-        #[doc = "The purpose is mainly to allow clients to render accordingly and"]
-        #[doc = "tell the compositor, so that for fullscreen surfaces, the"]
-        #[doc = "compositor is still able to scan out directly client surfaces."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Transform {
-            Normal = 0u32,
-            _90 = 1u32,
-            _180 = 2u32,
-            _270 = 3u32,
-            Flipped = 4u32,
-            Flipped90 = 5u32,
-            Flipped180 = 6u32,
-            Flipped270 = 7u32,
-        }
-        impl TryFrom<u32> for Transform {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Normal),
-                    1u32 => Ok(Self::_90),
-                    2u32 => Ok(Self::_180),
-                    3u32 => Ok(Self::_270),
-                    4u32 => Ok(Self::Flipped),
-                    5u32 => Ok(Self::Flipped90),
-                    6u32 => Ok(Self::Flipped180),
-                    7u32 => Ok(Self::Flipped270),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Transform {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "These flags describe properties of an output mode. They are"]
-        #[doc = "used in the flags bitfield of the mode event."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Mode {
-            #[doc = "indicates this is the current mode"]
-            Current = 1u32,
-            #[doc = "indicates this is the preferred mode"]
-            Preferred = 2u32,
-        }
-        impl TryFrom<u32> for Mode {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    1u32 => Ok(Self::Current),
-                    2u32 => Ok(Self::Preferred),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Mode {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Describes whether a device is enabled, i.e. device is used to"]
-        #[doc = "display content by the compositor. This wraps a boolean around"]
-        #[doc = "an int to avoid a boolean trap."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Enablement {
-            Disabled = 0u32,
-            Enabled = 1u32,
-        }
-        impl TryFrom<u32> for Enablement {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Disabled),
-                    1u32 => Ok(Self::Enabled),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Enablement {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this outputdevice can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; } }
-        impl TryFrom<u32> for Capability {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
-            }
-        }
-        impl std::fmt::Display for Capability {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                self.bits().fmt(f)
-            }
-        }
-        #[doc = "Describes when the compositor may employ variable refresh rate"]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum VrrPolicy {
-            Never = 0u32,
-            Always = 1u32,
-            Automatic = 2u32,
-        }
-        impl TryFrom<u32> for VrrPolicy {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Never),
-                    1u32 => Ok(Self::Always),
-                    2u32 => Ok(Self::Automatic),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for VrrPolicy {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the org_kde_kwin_outputdevice interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputdevice {
-            const INTERFACE: &'static str = "org_kde_kwin_outputdevice";
-            const VERSION: u32 = 4u32;
-            async fn handle_event(
-                &self,
-                message: &mut crate::wire::Message,
-            ) -> crate::client::Result<()> {
-                #[allow(clippy::match_single_binding)]
-                match message.opcode() {
-                    _ => Err(crate::client::Error::UnknownOpcode),
-                }
-            }
-            #[doc = "The geometry event describes geometric properties of the output."]
-            #[doc = "The event is sent when binding to the output object and whenever"]
-            #[doc = "any of the properties change."]
-            async fn geometry(
-                &self,
-                x: i32,
-                y: i32,
-                physical_width: i32,
-                physical_height: i32,
-                subpixel: i32,
-                make: String,
-                model: String,
-                transform: i32,
-            ) -> crate::client::Result<()>;
-            #[doc = "The mode event describes an available mode for the output."]
-            #[doc = ""]
-            #[doc = "When the client binds to the outputdevice object, the server sends this"]
-            #[doc = "event once for every available mode the outputdevice can be operated by."]
-            #[doc = ""]
-            #[doc = "There will always be at least one event sent out on initial binding,"]
-            #[doc = "which represents the current mode."]
-            #[doc = ""]
-            #[doc = "Later on if an output changes its mode the event is sent again, whereby"]
-            #[doc = "this event represents the mode that has now become current. In other"]
-            #[doc = "words, the current mode is always represented by the latest event sent"]
-            #[doc = "with the current flag set."]
-            #[doc = ""]
-            #[doc = "The size of a mode is given in physical hardware units of the output device."]
-            #[doc = "This is not necessarily the same as the output size in the global compositor"]
-            #[doc = "space. For instance, the output may be scaled, as described in"]
-            #[doc = "org_kde_kwin_outputdevice.scale, or transformed, as described in"]
-            #[doc = "org_kde_kwin_outputdevice.transform."]
-            #[doc = ""]
-            #[doc = "The id can be used to refer to a mode when calling set_mode on an"]
-            #[doc = "org_kde_kwin_outputconfiguration object."]
-            async fn mode(
-                &self,
-                flags: u32,
-                width: i32,
-                height: i32,
-                refresh: i32,
-                mode_id: i32,
-            ) -> crate::client::Result<()>;
-            #[doc = "This event is sent after all other properties have been"]
-            #[doc = "sent on binding to the output object as well as after any"]
-            #[doc = "other output property change have been applied later on."]
-            #[doc = "This allows to see changes to the output properties as atomic,"]
-            #[doc = "even if multiple events successively announce them."]
-            async fn done(&self) -> crate::client::Result<()>;
-            #[doc = "This event contains scaling geometry information"]
-            #[doc = "that is not in the geometry event. It may be sent after"]
-            #[doc = "binding the output object or if the output scale changes"]
-            #[doc = "later. If it is not sent, the client should assume a"]
-            #[doc = "scale of 1."]
-            #[doc = ""]
-            #[doc = "A scale larger than 1 means that the compositor will"]
-            #[doc = "automatically scale surface buffers by this amount"]
-            #[doc = "when rendering. This is used for high resolution"]
-            #[doc = "displays where applications rendering at the native"]
-            #[doc = "resolution would be too small to be legible."]
-            #[doc = ""]
-            #[doc = "It is intended that scaling aware clients track the"]
-            #[doc = "current output of a surface, and if it is on a scaled"]
-            #[doc = "output it should use wl_surface.set_buffer_scale with"]
-            #[doc = "the scale of the output. That way the compositor can"]
-            #[doc = "avoid scaling the surface, and the client can supply"]
-            #[doc = "a higher detail image."]
-            async fn scale(&self, factor: i32) -> crate::client::Result<()>;
-            #[doc = "The edid event encapsulates the EDID data for the outputdevice."]
-            #[doc = ""]
-            #[doc = "The event is sent when binding to the output object. The EDID"]
-            #[doc = "data may be empty, in which case this event is sent anyway."]
-            #[doc = "If the EDID information is empty, you can fall back to the name"]
-            #[doc = "et al. properties of the outputdevice."]
-            async fn edid(&self, raw: String) -> crate::client::Result<()>;
-            #[doc = "The enabled event notifies whether this output is currently"]
-            #[doc = "enabled and used for displaying content by the server."]
-            #[doc = "The event is sent when binding to the output object and"]
-            #[doc = "whenever later on an output changes its state by becoming"]
-            #[doc = "enabled or disabled."]
-            async fn enabled(&self, enabled: i32) -> crate::client::Result<()>;
-            #[doc = "The uuid can be used to identify the output. It's controlled by"]
-            #[doc = "the server entirely. The server should make sure the uuid is"]
-            #[doc = "persistent across restarts. An empty uuid is considered invalid."]
-            async fn uuid(&self, uuid: String) -> crate::client::Result<()>;
-            #[doc = "This event contains scaling geometry information"]
-            #[doc = "that is not in the geometry event. It may be sent after"]
-            #[doc = "binding the output object or if the output scale changes"]
-            #[doc = "later. If it is not sent, the client should assume a"]
-            #[doc = "scale of 1."]
-            #[doc = ""]
-            #[doc = "A scale larger than 1 means that the compositor will"]
-            #[doc = "automatically scale surface buffers by this amount"]
-            #[doc = "when rendering. This is used for high resolution"]
-            #[doc = "displays where applications rendering at the native"]
-            #[doc = "resolution would be too small to be legible."]
-            #[doc = ""]
-            #[doc = "It is intended that scaling aware clients track the"]
-            #[doc = "current output of a surface, and if it is on a scaled"]
-            #[doc = "output it should use wl_surface.set_buffer_scale with"]
-            #[doc = "the scale of the output. That way the compositor can"]
-            #[doc = "avoid scaling the surface, and the client can supply"]
-            #[doc = "a higher detail image."]
-            #[doc = ""]
-            #[doc = "wl_output will keep the output scale as an integer. In every situation except"]
-            #[doc = "configuring the window manager you want to use that."]
-            async fn scalef(&self, factor: crate::wire::Fixed) -> crate::client::Result<()>;
-            #[doc = "Describes the color intensity profile of the output."]
-            #[doc = "Commonly used for gamma/color correction."]
-            #[doc = ""]
-            #[doc = "The array contains all color ramp values of the output."]
-            #[doc = "For example on 8bit screens there are 256 of them."]
-            #[doc = ""]
-            #[doc = "The array elements are unsigned 16bit integers."]
-            async fn colorcurves(
-                &self,
-                red: Vec<u8>,
-                green: Vec<u8>,
-                blue: Vec<u8>,
-            ) -> crate::client::Result<()>;
-            #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
-            async fn serial_number(&self, serial_number: String) -> crate::client::Result<()>;
-            #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
-            async fn eisa_id(&self, eisa_id: String) -> crate::client::Result<()>;
-            #[doc = "What capabilities this device has, sent on startup before the first"]
-            #[doc = "done event."]
-            async fn capabilities(&self, flags: Capability) -> crate::client::Result<()>;
-            #[doc = "Overscan value of the monitor in percent, sent on startup before the"]
-            #[doc = "first done event."]
-            async fn overscan(&self, overscan: u32) -> crate::client::Result<()>;
-            #[doc = "What policy the compositor will employ regarding its use of variable"]
-            #[doc = "refresh rate."]
-            async fn vrr_policy(&self, vrr_policy: VrrPolicy) -> crate::client::Result<()>;
         }
     }
 }
@@ -4388,6 +4561,8 @@ pub mod plasma_window_management {
             Resizable = 65536u32,
             VirtualDesktopChangeable = 131072u32,
             Skipswitcher = 262144u32,
+            NoBorder = 524288u32,
+            CanSetNoBorder = 1048576u32,
         }
         impl TryFrom<u32> for State {
             type Error = crate::wire::DecodeError;
@@ -4412,6 +4587,8 @@ pub mod plasma_window_management {
                     65536u32 => Ok(Self::Resizable),
                     131072u32 => Ok(Self::VirtualDesktopChangeable),
                     262144u32 => Ok(Self::Skipswitcher),
+                    524288u32 => Ok(Self::NoBorder),
+                    1048576u32 => Ok(Self::CanSetNoBorder),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -4446,7 +4623,7 @@ pub mod plasma_window_management {
         #[doc = "Trait to implement the org_kde_plasma_window_management interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaWindowManagement {
             const INTERFACE: &'static str = "org_kde_plasma_window_management";
-            const VERSION: u32 = 18u32;
+            const VERSION: u32 = 19u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,
@@ -7427,7 +7604,7 @@ pub mod zkde_screencast_unstable_v1 {
         #[doc = "Trait to implement the zkde_screencast_unstable_v1 interface. See the module level documentation for more info"]
         pub trait ZkdeScreencastUnstableV1 {
             const INTERFACE: &'static str = "zkde_screencast_unstable_v1";
-            const VERSION: u32 = 4u32;
+            const VERSION: u32 = 5u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,
@@ -7522,6 +7699,8 @@ pub mod zkde_screencast_unstable_v1 {
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = "Since version 5, the compositor will choose the highest scale"]
+            #[doc = "factor for the region if the given scale is 0.0."]
             async fn stream_region(
                 &self,
                 socket: &mut crate::wire::Socket,
@@ -7590,7 +7769,7 @@ pub mod zkde_screencast_unstable_v1 {
         #[doc = "Trait to implement the zkde_screencast_stream_unstable_v1 interface. See the module level documentation for more info"]
         pub trait ZkdeScreencastStreamUnstableV1 {
             const INTERFACE: &'static str = "zkde_screencast_stream_unstable_v1";
-            const VERSION: u32 = 4u32;
+            const VERSION: u32 = 5u32;
             async fn handle_event(
                 &self,
                 message: &mut crate::wire::Message,

@@ -1462,7 +1462,7 @@ pub mod kde_external_brightness_v1 {
         #[doc = "Trait to implement the kde_external_brightness_v1 interface. See the module level documentation for more info"]
         pub trait KdeExternalBrightnessV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "kde_external_brightness_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1517,7 +1517,7 @@ pub mod kde_external_brightness_v1 {
         #[doc = "Trait to implement the kde_external_brightness_device_v1 interface. See the module level documentation for more info"]
         pub trait KdeExternalBrightnessDeviceV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "kde_external_brightness_device_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -1581,6 +1581,15 @@ pub mod kde_external_brightness_v1 {
                             );
                             self.set_observed_brightness(client, sender_id, value).await
                         }
+                        6u16 => {
+                            let value = message.uint()?;
+                            tracing::debug!(
+                                "kde_external_brightness_device_v1#{}.set_uses_ddc_ci({})",
+                                sender_id,
+                                value
+                            );
+                            self.set_uses_ddc_ci(client, sender_id, value).await
+                        }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -1618,6 +1627,16 @@ pub mod kde_external_brightness_v1 {
             #[doc = "the brightness level has changed due to external factors."]
             #[doc = "The compositor is free to use or ignore this value as it sees fit."]
             fn set_observed_brightness(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                value: u32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "The compositor can use this information to ignore this object if its commands"]
+            #[doc = "expose monitor issues. The compositor may also reduce the amount of brightness"]
+            #[doc = "requests given potentially slow response times and concerns about monitor EEPROM"]
+            #[doc = "longevity/wear-out."]
+            fn set_uses_ddc_ci(
                 &self,
                 client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
@@ -1836,7 +1855,7 @@ pub mod kde_output_device_v2 {
                 (*self as u32).fmt(f)
             }
         }
-        bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this output_device can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; # [doc = "if setting the rgb range is possible"] const RgbRange = 4u32 ; # [doc = "if this outputdevice supports high dynamic range"] const HighDynamicRange = 8u32 ; # [doc = "if this outputdevice supports a wide color gamut"] const WideColorGamut = 16u32 ; # [doc = "if this outputdevice supports autorotation"] const AutoRotate = 32u32 ; # [doc = "if this outputdevice supports icc profiles"] const IccProfile = 64u32 ; # [doc = "if this outputdevice supports the brightness setting"] const Brightness = 128u32 ; } }
+        bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this output_device can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; # [doc = "if setting the rgb range is possible"] const RgbRange = 4u32 ; # [doc = "if this outputdevice supports high dynamic range"] const HighDynamicRange = 8u32 ; # [doc = "if this outputdevice supports a wide color gamut"] const WideColorGamut = 16u32 ; # [doc = "if this outputdevice supports autorotation"] const AutoRotate = 32u32 ; # [doc = "if this outputdevice supports icc profiles"] const IccProfile = 64u32 ; # [doc = "if this outputdevice supports the brightness setting"] const Brightness = 128u32 ; # [doc = "if this outputdevice supports the built-in color profile"] const BuiltInColor = 256u32 ; # [doc = "if this outputdevice supports DDC/CI"] const DdcCi = 512u32 ; # [doc = "if this outputdevice supports setting max bpc"] const MaxBitsPerColor = 1024u32 ; # [doc = "if this outputdevice supports EDR"] const Edr = 2048u32 ; } }
         impl TryFrom<u32> for Capability {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -1974,10 +1993,32 @@ pub mod kde_output_device_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum EdrPolicy {
+            Never = 0u32,
+            Always = 1u32,
+        }
+        impl TryFrom<u32> for EdrPolicy {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::Always),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for EdrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the kde_output_device_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputDeviceV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "kde_output_device_v2";
-            const VERSION: u32 = 11u32;
+            const VERSION: u32 = 16u32;
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
@@ -2647,6 +2688,141 @@ pub mod kde_output_device_v2 {
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
+            fn replication_source(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                source: String,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.replication_source(\"{}\")",
+                        sender_id,
+                        source
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_string(Some(source))
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 27u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+            #[doc = "If the ddc_ci capability is present, this determines if settings"]
+            #[doc = "such as brightness, contrast or others should be set using DDC/CI."]
+            fn ddc_ci_allowed(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                allowed: u32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.ddc_ci_allowed({})",
+                        sender_id,
+                        allowed
+                    );
+                    let (payload, fds) =
+                        crate::wire::PayloadBuilder::new().put_uint(allowed).build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 28u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+            #[doc = "This limits the amount of bits per color that are sent to the display."]
+            fn max_bits_per_color(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                max_bpc: u32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.max_bits_per_color({})",
+                        sender_id,
+                        max_bpc
+                    );
+                    let (payload, fds) =
+                        crate::wire::PayloadBuilder::new().put_uint(max_bpc).build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 29u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+            fn max_bits_per_color_range(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                min_value: u32,
+                max_value: u32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.max_bits_per_color_range({}, {})",
+                        sender_id,
+                        min_value,
+                        max_value
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(min_value)
+                        .put_uint(max_value)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 30u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+            fn automatic_max_bits_per_color_limit(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                max_bpc_limit: u32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.automatic_max_bits_per_color_limit({})",
+                        sender_id,
+                        max_bpc_limit
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(max_bpc_limit)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 31u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+            #[doc = "When EDR is enabled, the compositor may increase the backlight beyond"]
+            #[doc = "the user-specified setting, in order to present HDR content on displays"]
+            #[doc = "without native HDR support."]
+            #[doc = "This will usually result in better visuals, but also increases battery"]
+            #[doc = "usage."]
+            fn edr_policy(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                policy: EdrPolicy,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.edr_policy({})",
+                        sender_id,
+                        policy
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(policy as u32)
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 32u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
         }
     }
     #[doc = "This object describes an output mode."]
@@ -2814,7 +2990,7 @@ pub mod kde_output_management_v2 {
         #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputManagementV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "kde_output_management_v2";
-            const VERSION: u32 = 12u32;
+            const VERSION: u32 = 16u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3013,10 +3189,32 @@ pub mod kde_output_management_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum EdrPolicy {
+            Never = 0u32,
+            Always = 1u32,
+        }
+        impl TryFrom<u32> for EdrPolicy {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::Always),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for EdrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the kde_output_configuration_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputConfigurationV2: crate::server::Dispatcher {
             const INTERFACE: &'static str = "kde_output_configuration_v2";
-            const VERSION: u32 = 12u32;
+            const VERSION: u32 = 16u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -3365,6 +3563,64 @@ pub mod kde_output_management_v2 {
                             self.set_dimming(client, sender_id, outputdevice, multiplier)
                                 .await
                         }
+                        23u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let source = message
+                                .string()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_replication_source({}, \"{}\")",
+                                sender_id,
+                                outputdevice,
+                                source
+                            );
+                            self.set_replication_source(client, sender_id, outputdevice, source)
+                                .await
+                        }
+                        24u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let allowed = message.uint()?;
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_ddc_ci_allowed({}, {})",
+                                sender_id,
+                                outputdevice,
+                                allowed
+                            );
+                            self.set_ddc_ci_allowed(client, sender_id, outputdevice, allowed)
+                                .await
+                        }
+                        25u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let max_bpc = message.uint()?;
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_max_bits_per_color({}, {})",
+                                sender_id,
+                                outputdevice,
+                                max_bpc
+                            );
+                            self.set_max_bits_per_color(client, sender_id, outputdevice, max_bpc)
+                                .await
+                        }
+                        26u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let policy = message.uint()?;
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_edr_policy({}, {})",
+                                sender_id,
+                                outputdevice,
+                                policy
+                            );
+                            self.set_edr_policy(client, sender_id, outputdevice, policy.try_into()?)
+                                .await
+                        }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
                 }
@@ -3542,7 +3798,7 @@ pub mod kde_output_management_v2 {
             #[doc = "0 is the minimum brightness (not completely dark) and 10000 is"]
             #[doc = "the maximum brightness."]
             #[doc = "This is supported while HDR is active in versions 8 and below,"]
-            #[doc = "or when the device supports the brightness_control capability in"]
+            #[doc = "or when the device supports the \"brightness\" capability in"]
             #[doc = "versions 9 and above."]
             fn set_brightness(
                 &self,
@@ -3565,7 +3821,7 @@ pub mod kde_output_management_v2 {
             #[doc = "0 is the minimum dimming factor (not completely dark) and 10000"]
             #[doc = "means the output is not dimmed."]
             #[doc = ""]
-            #[doc = "This is supported only when the brightness_control capability is"]
+            #[doc = "This is supported only when the \"brightness\" capability is"]
             #[doc = "also supported."]
             fn set_dimming(
                 &self,
@@ -3573,6 +3829,42 @@ pub mod kde_output_management_v2 {
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 multiplier: u32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Set the source output that the outputdevice should mirror its"]
+            #[doc = "viewport from."]
+            fn set_replication_source(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                source: String,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            fn set_ddc_ci_allowed(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                allowed: u32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "This limits the amount of bits per color that are sent to the display."]
+            fn set_max_bits_per_color(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                max_bpc: u32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "When EDR is enabled, the compositor may increase the backlight beyond"]
+            #[doc = "the user-specified setting, in order to present HDR content on displays"]
+            #[doc = "without native HDR support."]
+            #[doc = "This will usually result in better visuals, but also increases battery"]
+            #[doc = "usage."]
+            fn set_edr_policy(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                policy: EdrPolicy,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent after the server has successfully applied the changes."]
             #[doc = "."]
@@ -4473,425 +4765,6 @@ pub mod org_kde_plasma_virtual_desktop {
     }
 }
 #[allow(clippy::module_inception)]
-pub mod outputmanagement {
-    #[doc = "This interface enables clients to set properties of output devices for screen"]
-    #[doc = "configuration purposes via the server. To this end output devices are referenced"]
-    #[doc = "by global org_kde_kwin_outputdevice objects."]
-    #[doc = ""]
-    #[doc = "outputmanagement (wl_global)"]
-    #[doc = "--------------------------"]
-    #[doc = "request:"]
-    #[doc = "* create_configuration -> outputconfiguration (wl_resource)"]
-    #[doc = ""]
-    #[doc = "outputconfiguration (wl_resource)"]
-    #[doc = "--------------------------"]
-    #[doc = "requests:"]
-    #[doc = "* enable(outputdevice, bool)"]
-    #[doc = "* mode(outputdevice, mode_id)"]
-    #[doc = "* transformation(outputdevice, flag)"]
-    #[doc = "* position(outputdevice, x, y)"]
-    #[doc = "* apply"]
-    #[doc = ""]
-    #[doc = "events:"]
-    #[doc = "* applied"]
-    #[doc = "* failed"]
-    #[doc = ""]
-    #[doc = "The server registers one outputmanagement object as a global object. In order"]
-    #[doc = "to configure outputs a client requests create_configuration, which provides a"]
-    #[doc = "resource referencing an outputconfiguration for one-time configuration. That"]
-    #[doc = "way the server knows which requests belong together and can group them by that."]
-    #[doc = ""]
-    #[doc = "On the outputconfiguration object the client calls for each output whether the"]
-    #[doc = "output should be enabled, which mode should be set (by referencing the mode from"]
-    #[doc = "the list of announced modes) and the output's global position. Once all outputs"]
-    #[doc = "are configured that way, the client calls apply."]
-    #[doc = "At that point and not earlier the server should try to apply the configuration."]
-    #[doc = "If this succeeds the server emits the applied signal, otherwise the failed"]
-    #[doc = "signal, such that the configuring client is noticed about the success of its"]
-    #[doc = "configuration request."]
-    #[doc = ""]
-    #[doc = "Through this design the interface enables atomic output configuration changes if"]
-    #[doc = "internally supported by the server."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_kwin_outputmanagement {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Trait to implement the org_kde_kwin_outputmanagement interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputmanagement: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_outputmanagement";
-            const VERSION: u32 = 4u32;
-            fn handle_request(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let id = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            tracing::debug!(
-                                "org_kde_kwin_outputmanagement#{}.create_configuration({})",
-                                sender_id,
-                                id
-                            );
-                            self.create_configuration(client, sender_id, id).await
-                        }
-                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
-                    }
-                }
-            }
-            #[doc = "Request an outputconfiguration object through which the client can configure"]
-            #[doc = "output devices."]
-            fn create_configuration(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-        }
-    }
-    #[doc = "outputconfiguration is a client-specific resource that can be used to ask"]
-    #[doc = "the server to apply changes to available output devices."]
-    #[doc = ""]
-    #[doc = "The client receives a list of output devices from the registry. When it wants"]
-    #[doc = "to apply new settings, it creates a configuration object from the"]
-    #[doc = "outputmanagement global, writes changes through this object's enable, scale,"]
-    #[doc = "transform and mode calls. It then asks the server to apply these settings in"]
-    #[doc = "an atomic fashion, for example through Linux' DRM interface."]
-    #[doc = ""]
-    #[doc = "The server signals back whether the new settings have applied successfully"]
-    #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
-    #[doc = "applied to the hardware and before the server side sends the applied event."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_kwin_outputconfiguration {
-        #[allow(unused)]
-        use std::os::fd::AsRawFd;
-        #[doc = "Describes when the compositor may employ variable refresh rate"]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum VrrPolicy {
-            Never = 0u32,
-            Always = 1u32,
-            Automatic = 2u32,
-        }
-        impl TryFrom<u32> for VrrPolicy {
-            type Error = crate::wire::DecodeError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Never),
-                    1u32 => Ok(Self::Always),
-                    2u32 => Ok(Self::Automatic),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for VrrPolicy {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the org_kde_kwin_outputconfiguration interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputconfiguration: crate::server::Dispatcher {
-            const INTERFACE: &'static str = "org_kde_kwin_outputconfiguration";
-            const VERSION: u32 = 4u32;
-            fn handle_request(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let outputdevice = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let enable = message.int()?;
-                            tracing::debug!(
-                                "org_kde_kwin_outputconfiguration#{}.enable({}, {})",
-                                sender_id,
-                                outputdevice,
-                                enable
-                            );
-                            self.enable(client, sender_id, outputdevice, enable).await
-                        }
-                        1u16 => {
-                            let outputdevice = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let mode_id = message.int()?;
-                            tracing::debug!(
-                                "org_kde_kwin_outputconfiguration#{}.mode({}, {})",
-                                sender_id,
-                                outputdevice,
-                                mode_id
-                            );
-                            self.mode(client, sender_id, outputdevice, mode_id).await
-                        }
-                        2u16 => {
-                            let outputdevice = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let transform = message.int()?;
-                            tracing::debug!(
-                                "org_kde_kwin_outputconfiguration#{}.transform({}, {})",
-                                sender_id,
-                                outputdevice,
-                                transform
-                            );
-                            self.transform(client, sender_id, outputdevice, transform)
-                                .await
-                        }
-                        3u16 => {
-                            let outputdevice = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let x = message.int()?;
-                            let y = message.int()?;
-                            tracing::debug!(
-                                "org_kde_kwin_outputconfiguration#{}.position({}, {}, {})",
-                                sender_id,
-                                outputdevice,
-                                x,
-                                y
-                            );
-                            self.position(client, sender_id, outputdevice, x, y).await
-                        }
-                        4u16 => {
-                            let outputdevice = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let scale = message.int()?;
-                            tracing::debug!(
-                                "org_kde_kwin_outputconfiguration#{}.scale({}, {})",
-                                sender_id,
-                                outputdevice,
-                                scale
-                            );
-                            self.scale(client, sender_id, outputdevice, scale).await
-                        }
-                        5u16 => {
-                            tracing::debug!(
-                                "org_kde_kwin_outputconfiguration#{}.apply()",
-                                sender_id,
-                            );
-                            self.apply(client, sender_id).await
-                        }
-                        6u16 => {
-                            let outputdevice = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let scale = message.fixed()?;
-                            tracing::debug!(
-                                "org_kde_kwin_outputconfiguration#{}.scalef({}, {})",
-                                sender_id,
-                                outputdevice,
-                                scale
-                            );
-                            self.scalef(client, sender_id, outputdevice, scale).await
-                        }
-                        7u16 => {
-                            let outputdevice = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let red = message.array()?;
-                            let green = message.array()?;
-                            let blue = message.array()?;
-                            tracing::debug!(
-                                "org_kde_kwin_outputconfiguration#{}.colorcurves({}, array[{}], array[{}], array[{}])",
-                                sender_id,
-                                outputdevice,
-                                red.len(),
-                                green.len(),
-                                blue.len()
-                            );
-                            self.colorcurves(client, sender_id, outputdevice, red, green, blue)
-                                .await
-                        }
-                        8u16 => {
-                            tracing::debug!(
-                                "org_kde_kwin_outputconfiguration#{}.destroy()",
-                                sender_id,
-                            );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
-                        }
-                        9u16 => {
-                            let outputdevice = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let overscan = message.uint()?;
-                            tracing::debug!(
-                                "org_kde_kwin_outputconfiguration#{}.overscan({}, {})",
-                                sender_id,
-                                outputdevice,
-                                overscan
-                            );
-                            self.overscan(client, sender_id, outputdevice, overscan)
-                                .await
-                        }
-                        10u16 => {
-                            let outputdevice = message
-                                .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let policy = message.uint()?;
-                            tracing::debug!(
-                                "org_kde_kwin_outputconfiguration#{}.set_vrr_policy({}, {})",
-                                sender_id,
-                                outputdevice,
-                                policy
-                            );
-                            self.set_vrr_policy(client, sender_id, outputdevice, policy.try_into()?)
-                                .await
-                        }
-                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
-                    }
-                }
-            }
-            #[doc = "Mark the output as enabled or disabled."]
-            fn enable(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                outputdevice: crate::wire::ObjectId,
-                enable: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "Sets the mode for a given output by its mode size (width and height) and refresh rate."]
-            fn mode(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                outputdevice: crate::wire::ObjectId,
-                mode_id: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "Sets the transformation for a given output."]
-            fn transform(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                outputdevice: crate::wire::ObjectId,
-                transform: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "Sets the position for this output device. (x,y) describe the top-left corner"]
-            #[doc = "of the output in global space, whereby the origin (0,0) of the global space"]
-            #[doc = "has to be aligned with the top-left corner of the most left and in case this"]
-            #[doc = "does not define a single one the top output."]
-            #[doc = ""]
-            #[doc = "There may be no gaps or overlaps between outputs, i.e. the outputs are"]
-            #[doc = "stacked horizontally, vertically, or both on each other."]
-            fn position(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                outputdevice: crate::wire::ObjectId,
-                x: i32,
-                y: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "Sets the scaling factor for this output device."]
-            fn scale(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                outputdevice: crate::wire::ObjectId,
-                scale: i32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "Asks the server to apply property changes requested through this outputconfiguration"]
-            #[doc = "object to all outputs on the server side."]
-            fn apply(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "Sets the scaling factor for this output device."]
-            #[doc = "Sending both scale and scalef is undefined."]
-            fn scalef(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                outputdevice: crate::wire::ObjectId,
-                scale: crate::wire::Fixed,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "Set color curves of output devices through RGB color ramps. Allows color"]
-            #[doc = "correction of output device from user space."]
-            #[doc = ""]
-            #[doc = "These are the raw values. A compositor might opt to adjust these values"]
-            #[doc = "internally, for example to shift color temperature at night."]
-            fn colorcurves(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                outputdevice: crate::wire::ObjectId,
-                red: Vec<u8>,
-                green: Vec<u8>,
-                blue: Vec<u8>,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            fn destroy(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "Set the overscan value of this output device with a value in percent."]
-            fn overscan(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                outputdevice: crate::wire::ObjectId,
-                overscan: u32,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "Set what policy the compositor should employ regarding its use of"]
-            #[doc = "variable refresh rate."]
-            fn set_vrr_policy(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                outputdevice: crate::wire::ObjectId,
-                policy: VrrPolicy,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send;
-            #[doc = "Sent after the server has successfully applied the changes."]
-            #[doc = "."]
-            fn applied(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!(
-                        "-> org_kde_kwin_outputconfiguration#{}.applied()",
-                        sender_id,
-                    );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
-            }
-            #[doc = "Sent if the server rejects the changes or failed to apply them."]
-            fn failed(
-                &self,
-                client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-            ) -> impl Future<Output = crate::server::Result<()>> + Send {
-                async move {
-                    tracing::debug!("-> org_kde_kwin_outputconfiguration#{}.failed()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
-                        .await
-                        .map_err(crate::server::error::Error::IoError)
-                }
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
 pub mod org_kde_kwin_outputdevice {
     #[doc = "An outputdevice describes a display device available to the compositor."]
     #[doc = "outputdevice is similar to wl_output, but focuses on output"]
@@ -5517,6 +5390,425 @@ pub mod org_kde_kwin_outputdevice {
     }
 }
 #[allow(clippy::module_inception)]
+pub mod outputmanagement {
+    #[doc = "This interface enables clients to set properties of output devices for screen"]
+    #[doc = "configuration purposes via the server. To this end output devices are referenced"]
+    #[doc = "by global org_kde_kwin_outputdevice objects."]
+    #[doc = ""]
+    #[doc = "outputmanagement (wl_global)"]
+    #[doc = "--------------------------"]
+    #[doc = "request:"]
+    #[doc = "* create_configuration -> outputconfiguration (wl_resource)"]
+    #[doc = ""]
+    #[doc = "outputconfiguration (wl_resource)"]
+    #[doc = "--------------------------"]
+    #[doc = "requests:"]
+    #[doc = "* enable(outputdevice, bool)"]
+    #[doc = "* mode(outputdevice, mode_id)"]
+    #[doc = "* transformation(outputdevice, flag)"]
+    #[doc = "* position(outputdevice, x, y)"]
+    #[doc = "* apply"]
+    #[doc = ""]
+    #[doc = "events:"]
+    #[doc = "* applied"]
+    #[doc = "* failed"]
+    #[doc = ""]
+    #[doc = "The server registers one outputmanagement object as a global object. In order"]
+    #[doc = "to configure outputs a client requests create_configuration, which provides a"]
+    #[doc = "resource referencing an outputconfiguration for one-time configuration. That"]
+    #[doc = "way the server knows which requests belong together and can group them by that."]
+    #[doc = ""]
+    #[doc = "On the outputconfiguration object the client calls for each output whether the"]
+    #[doc = "output should be enabled, which mode should be set (by referencing the mode from"]
+    #[doc = "the list of announced modes) and the output's global position. Once all outputs"]
+    #[doc = "are configured that way, the client calls apply."]
+    #[doc = "At that point and not earlier the server should try to apply the configuration."]
+    #[doc = "If this succeeds the server emits the applied signal, otherwise the failed"]
+    #[doc = "signal, such that the configuring client is noticed about the success of its"]
+    #[doc = "configuration request."]
+    #[doc = ""]
+    #[doc = "Through this design the interface enables atomic output configuration changes if"]
+    #[doc = "internally supported by the server."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_kwin_outputmanagement {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the org_kde_kwin_outputmanagement interface. See the module level documentation for more info"]
+        pub trait OrgKdeKwinOutputmanagement: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "org_kde_kwin_outputmanagement";
+            const VERSION: u32 = 4u32;
+            fn handle_request(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                message: &mut crate::wire::Message,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "org_kde_kwin_outputmanagement#{}.create_configuration({})",
+                                sender_id,
+                                id
+                            );
+                            self.create_configuration(client, sender_id, id).await
+                        }
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
+                    }
+                }
+            }
+            #[doc = "Request an outputconfiguration object through which the client can configure"]
+            #[doc = "output devices."]
+            fn create_configuration(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+    }
+    #[doc = "outputconfiguration is a client-specific resource that can be used to ask"]
+    #[doc = "the server to apply changes to available output devices."]
+    #[doc = ""]
+    #[doc = "The client receives a list of output devices from the registry. When it wants"]
+    #[doc = "to apply new settings, it creates a configuration object from the"]
+    #[doc = "outputmanagement global, writes changes through this object's enable, scale,"]
+    #[doc = "transform and mode calls. It then asks the server to apply these settings in"]
+    #[doc = "an atomic fashion, for example through Linux' DRM interface."]
+    #[doc = ""]
+    #[doc = "The server signals back whether the new settings have applied successfully"]
+    #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
+    #[doc = "applied to the hardware and before the server side sends the applied event."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_kwin_outputconfiguration {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Describes when the compositor may employ variable refresh rate"]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum VrrPolicy {
+            Never = 0u32,
+            Always = 1u32,
+            Automatic = 2u32,
+        }
+        impl TryFrom<u32> for VrrPolicy {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::Always),
+                    2u32 => Ok(Self::Automatic),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for VrrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the org_kde_kwin_outputconfiguration interface. See the module level documentation for more info"]
+        pub trait OrgKdeKwinOutputconfiguration: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "org_kde_kwin_outputconfiguration";
+            const VERSION: u32 = 4u32;
+            fn handle_request(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                message: &mut crate::wire::Message,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let enable = message.int()?;
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.enable({}, {})",
+                                sender_id,
+                                outputdevice,
+                                enable
+                            );
+                            self.enable(client, sender_id, outputdevice, enable).await
+                        }
+                        1u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let mode_id = message.int()?;
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.mode({}, {})",
+                                sender_id,
+                                outputdevice,
+                                mode_id
+                            );
+                            self.mode(client, sender_id, outputdevice, mode_id).await
+                        }
+                        2u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let transform = message.int()?;
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.transform({}, {})",
+                                sender_id,
+                                outputdevice,
+                                transform
+                            );
+                            self.transform(client, sender_id, outputdevice, transform)
+                                .await
+                        }
+                        3u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.position({}, {}, {})",
+                                sender_id,
+                                outputdevice,
+                                x,
+                                y
+                            );
+                            self.position(client, sender_id, outputdevice, x, y).await
+                        }
+                        4u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let scale = message.int()?;
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.scale({}, {})",
+                                sender_id,
+                                outputdevice,
+                                scale
+                            );
+                            self.scale(client, sender_id, outputdevice, scale).await
+                        }
+                        5u16 => {
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.apply()",
+                                sender_id,
+                            );
+                            self.apply(client, sender_id).await
+                        }
+                        6u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let scale = message.fixed()?;
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.scalef({}, {})",
+                                sender_id,
+                                outputdevice,
+                                scale
+                            );
+                            self.scalef(client, sender_id, outputdevice, scale).await
+                        }
+                        7u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let red = message.array()?;
+                            let green = message.array()?;
+                            let blue = message.array()?;
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.colorcurves({}, array[{}], array[{}], array[{}])",
+                                sender_id,
+                                outputdevice,
+                                red.len(),
+                                green.len(),
+                                blue.len()
+                            );
+                            self.colorcurves(client, sender_id, outputdevice, red, green, blue)
+                                .await
+                        }
+                        8u16 => {
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.destroy()",
+                                sender_id,
+                            );
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
+                        }
+                        9u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let overscan = message.uint()?;
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.overscan({}, {})",
+                                sender_id,
+                                outputdevice,
+                                overscan
+                            );
+                            self.overscan(client, sender_id, outputdevice, overscan)
+                                .await
+                        }
+                        10u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let policy = message.uint()?;
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.set_vrr_policy({}, {})",
+                                sender_id,
+                                outputdevice,
+                                policy
+                            );
+                            self.set_vrr_policy(client, sender_id, outputdevice, policy.try_into()?)
+                                .await
+                        }
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
+                    }
+                }
+            }
+            #[doc = "Mark the output as enabled or disabled."]
+            fn enable(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                enable: i32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Sets the mode for a given output by its mode size (width and height) and refresh rate."]
+            fn mode(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                mode_id: i32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Sets the transformation for a given output."]
+            fn transform(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                transform: i32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Sets the position for this output device. (x,y) describe the top-left corner"]
+            #[doc = "of the output in global space, whereby the origin (0,0) of the global space"]
+            #[doc = "has to be aligned with the top-left corner of the most left and in case this"]
+            #[doc = "does not define a single one the top output."]
+            #[doc = ""]
+            #[doc = "There may be no gaps or overlaps between outputs, i.e. the outputs are"]
+            #[doc = "stacked horizontally, vertically, or both on each other."]
+            fn position(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Sets the scaling factor for this output device."]
+            fn scale(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                scale: i32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Asks the server to apply property changes requested through this outputconfiguration"]
+            #[doc = "object to all outputs on the server side."]
+            fn apply(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Sets the scaling factor for this output device."]
+            #[doc = "Sending both scale and scalef is undefined."]
+            fn scalef(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                scale: crate::wire::Fixed,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Set color curves of output devices through RGB color ramps. Allows color"]
+            #[doc = "correction of output device from user space."]
+            #[doc = ""]
+            #[doc = "These are the raw values. A compositor might opt to adjust these values"]
+            #[doc = "internally, for example to shift color temperature at night."]
+            fn colorcurves(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                red: Vec<u8>,
+                green: Vec<u8>,
+                blue: Vec<u8>,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            fn destroy(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Set the overscan value of this output device with a value in percent."]
+            fn overscan(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                overscan: u32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Set what policy the compositor should employ regarding its use of"]
+            #[doc = "variable refresh rate."]
+            fn set_vrr_policy(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                outputdevice: crate::wire::ObjectId,
+                policy: VrrPolicy,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Sent after the server has successfully applied the changes."]
+            #[doc = "."]
+            fn applied(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputconfiguration#{}.applied()",
+                        sender_id,
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+            #[doc = "Sent if the server rejects the changes or failed to apply them."]
+            fn failed(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!("-> org_kde_kwin_outputconfiguration#{}.failed()", sender_id,);
+                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
 pub mod plasma_shell {
     #[doc = "This interface is used by KF5 powered Wayland shells to communicate with"]
     #[doc = "the compositor and can only be bound one time."]
@@ -6055,6 +6347,8 @@ pub mod plasma_window_management {
             Resizable = 65536u32,
             VirtualDesktopChangeable = 131072u32,
             Skipswitcher = 262144u32,
+            NoBorder = 524288u32,
+            CanSetNoBorder = 1048576u32,
         }
         impl TryFrom<u32> for State {
             type Error = crate::wire::DecodeError;
@@ -6079,6 +6373,8 @@ pub mod plasma_window_management {
                     65536u32 => Ok(Self::Resizable),
                     131072u32 => Ok(Self::VirtualDesktopChangeable),
                     262144u32 => Ok(Self::Skipswitcher),
+                    524288u32 => Ok(Self::NoBorder),
+                    1048576u32 => Ok(Self::CanSetNoBorder),
                     _ => Err(crate::wire::DecodeError::MalformedPayload),
                 }
             }
@@ -6113,7 +6409,7 @@ pub mod plasma_window_management {
         #[doc = "Trait to implement the org_kde_plasma_window_management interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaWindowManagement: crate::server::Dispatcher {
             const INTERFACE: &'static str = "org_kde_plasma_window_management";
-            const VERSION: u32 = 18u32;
+            const VERSION: u32 = 19u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10486,7 +10782,7 @@ pub mod zkde_screencast_unstable_v1 {
         #[doc = "Trait to implement the zkde_screencast_unstable_v1 interface. See the module level documentation for more info"]
         pub trait ZkdeScreencastUnstableV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zkde_screencast_unstable_v1";
-            const VERSION: u32 = 4u32;
+            const VERSION: u32 = 5u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
@@ -10665,6 +10961,8 @@ pub mod zkde_screencast_unstable_v1 {
                 scale: crate::wire::Fixed,
                 pointer: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Since version 5, the compositor will choose the highest scale"]
+            #[doc = "factor for the region if the given scale is 0.0."]
             fn stream_region(
                 &self,
                 client: &mut crate::server::Client,
@@ -10698,7 +10996,7 @@ pub mod zkde_screencast_unstable_v1 {
         #[doc = "Trait to implement the zkde_screencast_stream_unstable_v1 interface. See the module level documentation for more info"]
         pub trait ZkdeScreencastStreamUnstableV1: crate::server::Dispatcher {
             const INTERFACE: &'static str = "zkde_screencast_stream_unstable_v1";
-            const VERSION: u32 = 4u32;
+            const VERSION: u32 = 5u32;
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
