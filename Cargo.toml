@@ -45,10 +45,8 @@ arbitrary = { version = "1.4.1", optional = true, features = ["derive"] }
 async-trait = "0.1.88"
 bitflags = "2.9.1"
 bytes = "1.10.1"
-downcast-rs = "2.0.1"
-futures-util = { version = "0.3.31", default-features = false, features = [
-    "sink",
-] }
+futures-core = "0.3.31"
+futures-sink = "0.3.31"
 pin-project-lite = "0.2.16"
 rustix = { version = "1.0.7", features = ["fs", "net"] }
 thiserror = "2.0.12"

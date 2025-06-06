@@ -10,7 +10,8 @@ use std::{
 };
 
 use bytes::{Buf, BufMut, BytesMut};
-use futures_util::{Sink, Stream, ready};
+use futures_core::{Stream, ready};
+use futures_sink::Sink;
 use pin_project_lite::pin_project;
 use rustix::{
     fd::IntoRawFd,
