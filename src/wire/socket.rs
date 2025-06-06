@@ -21,9 +21,9 @@ use rustix::{
     },
 };
 use tokio::io::{ReadBuf, unix::AsyncFd};
-use tracing::trace;
 
 use super::{DecodeError, Message};
+use crate::trace;
 
 pin_project! {
     pub struct Socket {

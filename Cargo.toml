@@ -22,8 +22,9 @@ repository.workspace = true
 include = ["src/**/*.rs", "README.md", "LICENSE"]
 
 [features]
-client = []
-server = []
+client = ["dep:async-trait", "dep:bitflags"]
+server = ["dep:async-trait", "dep:bitflags"]
+tracing = ["dep:tracing"]
 
 # Various protocols
 stable = []
@@ -41,9 +42,6 @@ hyprland = []
 fuzz = ["dep:arbitrary"]
 
 [dependencies]
-arbitrary = { version = "1.4.1", optional = true, features = ["derive"] }
-async-trait = "0.1.88"
-bitflags = "2.9.1"
 bytes = "1.10.1"
 futures-core = "0.3.31"
 futures-sink = "0.3.31"
@@ -51,8 +49,13 @@ pin-project-lite = "0.2.16"
 rustix = { version = "1.0.7", features = ["fs", "net"] }
 thiserror = "2.0.12"
 tokio = { version = "1.45.1", features = ["net"] }
-tracing = "0.1.41"
 waynest-macros = { version = "0.0.25", path = "macros" }
+
+async-trait = { version = "0.1.88", optional = true }
+bitflags = { version = "2.9.1", optional = true }
+
+tracing = { version = "0.1.41", optional = true }
+arbitrary = { version = "1.4.1", optional = true, features = ["derive"] }
 
 [dev-dependencies]
 anyhow = "1.0.98"

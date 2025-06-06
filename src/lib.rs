@@ -8,4 +8,15 @@ pub mod client;
 pub mod server;
 pub mod wire;
 
+#[cfg(any(feature = "client", feature = "server"))]
 pub use async_trait;
+
+#[cfg(feature = "tracing")]
+pub use tracing::trace;
+
+#[cfg(not(feature = "tracing"))]
+macro_rules! trace {
+    ($($_:tt)+) => {};
+}
+
+pub(crate) use trace;
