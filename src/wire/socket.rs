@@ -10,8 +10,7 @@ use std::{
 };
 
 use bytes::{Buf, BufMut, BytesMut};
-use futures_core::{Stream, ready};
-use futures_sink::Sink;
+use futures_util::{Sink, ready};
 use pin_project_lite::pin_project;
 use rustix::{
     fd::IntoRawFd,
@@ -21,6 +20,7 @@ use rustix::{
     },
 };
 use tokio::io::{ReadBuf, unix::AsyncFd};
+use tokio_stream::Stream;
 
 use super::{DecodeError, Message};
 use crate::trace;

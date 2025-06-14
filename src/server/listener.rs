@@ -5,9 +5,9 @@ use std::{
     task::{Context, Poll},
 };
 
-use futures_util::Stream;
 use pin_project_lite::pin_project;
 use tokio::net::{UnixListener, UnixStream};
+use tokio_stream::Stream;
 
 use crate::server::Error;
 

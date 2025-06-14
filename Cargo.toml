@@ -43,12 +43,15 @@ fuzz = ["dep:arbitrary"]
 
 [dependencies]
 bytes = "1.10.1"
-futures-core = "0.3.31"
-futures-sink = "0.3.31"
 pin-project-lite = "0.2.16"
 rustix = { version = "1.0.7", features = ["fs", "net"] }
 thiserror = "2.0.12"
-tokio = { version = "1.45.1", features = ["net"] }
+tokio = { version = "1.45.1", features = ["io-util", "net"] }
+tokio-stream = { version = "0.1.17", default-features = false }
+futures-util = { version = "0.3.31", default-features = false, features = [
+    "sink",
+] }
+
 waynest-macros = { version = "0.0.25", path = "macros" }
 
 async-trait = { version = "0.1.88", optional = true }

@@ -19,4 +19,5 @@ macro_rules! trace {
     ($($_:tt)+) => {};
 }
 
+#[cfg(not(feature = "tracing"))]
 pub(crate) use trace;

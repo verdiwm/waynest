@@ -8,9 +8,10 @@ pub use waynest_macros::Dispatcher;
 
 use async_trait::async_trait;
 use core::fmt;
-use futures_util::{SinkExt, TryStreamExt};
+use futures_util::SinkExt;
 use std::{any::Any, collections::HashMap, io, sync::Arc};
 use tokio::net::UnixStream;
+use tokio_stream::StreamExt;
 
 use crate::wire::{Message, ObjectId, Socket};
 
