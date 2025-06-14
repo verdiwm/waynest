@@ -1,13 +1,13 @@
-// mod error;
-// pub mod protocol;
+mod error;
+pub mod protocol;
 
-// use downcast_rs::{DowncastSync, impl_downcast};
-// pub use error::{Error, Result};
+use downcast_rs::{DowncastSync, impl_downcast};
+pub use error::{Error, Result};
 
-// use crate::wire::Message;
+use crate::wire::Message;
 
-// pub trait Dispatcher: DowncastSync {
-//     fn dispatch(&self, message: &Message);
-// }
+pub trait Dispatcher: DowncastSync {
+    fn dispatch(&self, message: &Message);
+}
 
-// impl_downcast!(sync Dispatcher);
+impl_downcast!(sync Dispatcher);
