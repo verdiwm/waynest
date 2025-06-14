@@ -4321,6 +4321,242 @@ pub mod drm_lease_v1 {
         }
     }
 }
+#[allow(clippy::module_inception)]
+pub mod ext_background_effect_v1 {
+    #[doc = "This protocol provides a way to improve visuals of translucent surfaces"]
+    #[doc = "by applying effects like blur to the background behind them."]
+    #[doc = ""]
+    #[doc = "The capabilities are send when the global is bound, and every time they"]
+    #[doc = "change. Note that when the capability goes away, the corresponding effect"]
+    #[doc = "is no longer applied by the compositor, even if it was set before."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_background_effect_manager_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the surface already has a background effect object"]
+            BackgroundEffectExists = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::BackgroundEffectExists),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "the compositor supports applying blur"] const Blur = 0u32 ; } }
+        impl TryFrom<u32> for Capability {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the ext_background_effect_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ExtBackgroundEffectManagerV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_background_effect_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn handle_request(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                message: &mut crate::wire::Message,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            tracing::debug!(
+                                "ext_background_effect_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            tracing::debug!(
+                                "ext_background_effect_manager_v1#{}.get_background_effect({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_background_effect(client, sender_id, id, surface)
+                                .await
+                        }
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
+                    }
+                }
+            }
+            #[doc = "Informs the server that the client will no longer be using this"]
+            #[doc = "protocol object. Existing objects created by this object are not"]
+            #[doc = "affected."]
+            fn destroy(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Instantiate an interface extension for the given wl_surface to add"]
+            #[doc = "effects like blur for the background behind it."]
+            #[doc = ""]
+            #[doc = "If the given wl_surface already has a ext_background_effect_surface_v1"]
+            #[doc = "object associated, the background_effect_exists protocol error will be"]
+            #[doc = "raised."]
+            fn get_background_effect(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            fn capabilities(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                flags: Capability,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    tracing::debug!(
+                        "-> ext_background_effect_manager_v1#{}.capabilities({})",
+                        sender_id,
+                        flags
+                    );
+                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                        .put_uint(flags.bits())
+                        .build();
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .await
+                        .map_err(crate::server::error::Error::IoError)
+                }
+            }
+        }
+    }
+    #[doc = "The background effect object provides a way to specify a region behind"]
+    #[doc = "a surface that should have background effects like blur applied."]
+    #[doc = ""]
+    #[doc = "If the wl_surface associated with the ext_background_effect_surface_v1"]
+    #[doc = "object has been destroyed, this object becomes inert."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod ext_background_effect_surface_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the associated surface has been destroyed"]
+            SurfaceDestroyed = 0u32,
+        }
+        impl TryFrom<u32> for Error {
+            type Error = crate::wire::DecodeError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::SurfaceDestroyed),
+                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the ext_background_effect_surface_v1 interface. See the module level documentation for more info"]
+        pub trait ExtBackgroundEffectSurfaceV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "ext_background_effect_surface_v1";
+            const VERSION: u32 = 1u32;
+            fn handle_request(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                message: &mut crate::wire::Message,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            tracing::debug!(
+                                "ext_background_effect_surface_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
+                        }
+                        1u16 => {
+                            let region = message.object()?;
+                            tracing::debug!(
+                                "ext_background_effect_surface_v1#{}.set_blur_region({})",
+                                sender_id,
+                                region
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_blur_region(client, sender_id, region).await
+                        }
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
+                    }
+                }
+            }
+            #[doc = "Informs the server that the client will no longer be using this protocol"]
+            #[doc = "object. The effect regions will be removed on the next commit."]
+            fn destroy(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "This request sets the region of the surface that will have its"]
+            #[doc = "background blurred."]
+            #[doc = ""]
+            #[doc = "The blur region is specified in the surface-local coordinates, and"]
+            #[doc = "clipped by the compositor to the surface size."]
+            #[doc = ""]
+            #[doc = "The initial value for the blur region is empty. Setting the pending"]
+            #[doc = "blur region has copy semantics, and the wl_region object can be"]
+            #[doc = "destroyed immediately. A NULL wl_region removes the effect."]
+            #[doc = ""]
+            #[doc = "The blur region is double-buffered state, and will be applied on"]
+            #[doc = "the next wl_surface.commit."]
+            #[doc = ""]
+            #[doc = "The blur algorithm is subject to compositor policies."]
+            #[doc = ""]
+            #[doc = "If the associated surface has been destroyed, the surface_destroyed"]
+            #[doc = "error will be raised."]
+            fn set_blur_region(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                region: Option<crate::wire::ObjectId>,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+    }
+}
 #[doc = "This protocol allows a privileged client to control data devices. In"]
 #[doc = "particular, the client will be able to manage the current selection and take"]
 #[doc = "the role of a clipboard manager."]
@@ -7618,7 +7854,7 @@ pub mod ext_workspace_v1 {
     #[doc = "The client may request that the compositor activate or deactivate the workspace."]
     #[doc = ""]
     #[doc = "Each workspace can belong to only a single workspace group."]
-    #[doc = "Depepending on the compositor policy, there might be workspaces with"]
+    #[doc = "Depending on the compositor policy, there might be workspaces with"]
     #[doc = "the same name in different workspace groups, but these workspaces are still"]
     #[doc = "separate (e.g. one of them might be active while the other is not)."]
     #[allow(clippy::too_many_arguments)]
@@ -8722,6 +8958,98 @@ pub mod linux_drm_syncobj_v1 {
     }
 }
 #[allow(clippy::module_inception)]
+pub mod pointer_warp_v1 {
+    #[doc = "This global interface allows applications to request the pointer to be"]
+    #[doc = "moved to a position relative to a wl_surface."]
+    #[doc = ""]
+    #[doc = "Note that if the desired behavior is to constrain the pointer to an area"]
+    #[doc = "or lock it to a position, this protocol does not provide a reliable way"]
+    #[doc = "to do that. The pointer constraint and pointer lock protocols should be"]
+    #[doc = "used for those use cases instead."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_pointer_warp_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
+        #[doc = "Trait to implement the wp_pointer_warp_v1 interface. See the module level documentation for more info"]
+        pub trait WpPointerWarpV1: crate::server::Dispatcher {
+            const INTERFACE: &'static str = "wp_pointer_warp_v1";
+            const VERSION: u32 = 1u32;
+            fn handle_request(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                message: &mut crate::wire::Message,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            tracing::debug!("wp_pointer_warp_v1#{}.destroy()", sender_id,);
+                            let result = self.destroy(client, sender_id).await;
+                            client.remove(sender_id);
+                            result
+                        }
+                        1u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let pointer = message
+                                .object()?
+                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                            let x = message.fixed()?;
+                            let y = message.fixed()?;
+                            let serial = message.uint()?;
+                            tracing::debug!(
+                                "wp_pointer_warp_v1#{}.warp_pointer({}, {}, {}, {}, {})",
+                                sender_id,
+                                surface,
+                                pointer,
+                                x,
+                                y,
+                                serial
+                            );
+                            self.warp_pointer(client, sender_id, surface, pointer, x, y, serial)
+                                .await
+                        }
+                        opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
+                    }
+                }
+            }
+            #[doc = "Destroy the pointer warp manager."]
+            fn destroy(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+            #[doc = "Request the compositor to move the pointer to a surface-local position."]
+            #[doc = "Whether or not the compositor honors the request is implementation defined,"]
+            #[doc = "but it should"]
+            #[doc = "- honor it if the surface has pointer focus, including"]
+            #[doc = "when it has an implicit pointer grab"]
+            #[doc = "- reject it if the enter serial is incorrect"]
+            #[doc = "- reject it if the requested position is outside of the surface"]
+            #[doc = ""]
+            #[doc = "Note that the enter serial is valid for any surface of the client,"]
+            #[doc = "and does not have to be from the surface the pointer is warped to."]
+            fn warp_pointer(
+                &self,
+                client: &mut crate::server::Client,
+                sender_id: crate::wire::ObjectId,
+                surface: crate::wire::ObjectId,
+                pointer: crate::wire::ObjectId,
+                x: crate::wire::Fixed,
+                y: crate::wire::Fixed,
+                serial: u32,
+            ) -> impl Future<Output = crate::server::Result<()>> + Send;
+        }
+    }
+}
+#[allow(clippy::module_inception)]
 pub mod security_context_v1 {
     #[doc = "This interface allows a client to register a new Wayland connection to"]
     #[doc = "the compositor and attach a security context to it."]
@@ -9096,6 +9424,13 @@ pub mod single_pixel_buffer_v1 {
             #[doc = "pre-multiplied alpha."]
             #[doc = ""]
             #[doc = "The width and height of the buffer are 1."]
+            #[doc = ""]
+            #[doc = "The r, g, b and a arguments valid range is from UINT32_MIN (0)"]
+            #[doc = "to UINT32_MAX (0xffffffff)."]
+            #[doc = ""]
+            #[doc = "These arguments should be interpreted as a percentage, i.e."]
+            #[doc = "- UINT32_MIN = 0% of the given color component"]
+            #[doc = "- UINT32_MAX = 100% of the given color component"]
             fn create_u32_rgba_buffer(
                 &self,
                 client: &mut crate::server::Client,
