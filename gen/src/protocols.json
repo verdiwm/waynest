@@ -130,7 +130,8 @@
     "protocols/cosmic-protocols/unstable/cosmic-overlap-notify-unstable-v1.xml",
     "protocols/cosmic-protocols/unstable/cosmic-screencopy-unstable-v2.xml",
     "protocols/cosmic-protocols/unstable/cosmic-toplevel-info-unstable-v1.xml",
-    "protocols/cosmic-protocols/unstable/cosmic-toplevel-management-unstable-v1.xml"
+    "protocols/cosmic-protocols/unstable/cosmic-toplevel-management-unstable-v1.xml",
+    "protocols/cosmic-protocols/unstable/cosmic-workspace-unstable-v2.xml"
   ],
   "frog": [
     "protocols/frog-protcols/frog-protocols/frog-color-management-v1.xml",
