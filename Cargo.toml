@@ -69,6 +69,6 @@ tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
-[[example]]
-name = "client"
-required-features = ["client"]
+# [[example]]
+# name = "client"
+# required-features = ["client"]
