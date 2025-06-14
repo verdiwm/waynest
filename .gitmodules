@@ -15,7 +15,7 @@
 	url = https://gitlab.freedesktop.org/wayland/weston.git
 [submodule "cosmic-protocols"]
 	path = protocols/cosmic-protocols
-	url = https://github.com/pop-os/cosmic-protocols.git
+	url = https://github.com/verdiwm/cosmic-protocols.git
 [submodule "frog-protocols"]
 	path = protocols/frog-protcols
 	url = https://github.com/misyltoad/frog-protocols.git
