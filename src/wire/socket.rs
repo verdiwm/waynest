@@ -61,7 +61,7 @@ impl MessageCodec {
                 if buf.is_empty() {
                     Ok(None)
                 } else {
-                    Err(io::Error::other("bytes remaining on stream").into())
+                    Err(io::Error::new(io::ErrorKind::Other, "bytes remaining on stream").into())
                 }
             }
         }
@@ -232,11 +232,7 @@ impl Sink<Message> for Socket {
         let pinned = self.project();
         let state = pinned.write_state;
 
-        let fds = state
-            .fds
-            .drain(..)
-            .map(|fd| unsafe { OwnedFd::from_raw_fd(fd) })
-            .collect::<Vec<_>>();
+        let fds = state.fds.as_slice();
 
         let mut cmsg_space = vec![MaybeUninit::uninit(); rustix::cmsg_space!(ScmRights(fds.len()))];
         let mut ancillary_buf = SendAncillaryBuffer::new(&mut cmsg_space);
@@ -251,7 +247,7 @@ impl Sink<Message> for Socket {
             let mut slices = [IoSlice::new(&[]); MAX_BUFS];
             let cnt = state.buffer.chunks_vectored(&mut slices);
 
-            let io_result = guard.try_io(|stream| {
+            match guard.try_io(|stream| {
                 sendmsg(
                     stream,
                     &slices[..cnt],
@@ -259,8 +255,7 @@ impl Sink<Message> for Socket {
                     SendFlags::DONTWAIT | SendFlags::NOSIGNAL,
                 )
                 .map_err(|errno| io::Error::from_raw_os_error(errno.raw_os_error()))
-            });
-            match io_result {
+            }) {
                 Ok(Ok(len)) => {
                     state.buffer.advance(len);
 
