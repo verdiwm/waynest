@@ -232,7 +232,12 @@ impl Sink<Message> for Socket {
         let pinned = self.project();
         let state = pinned.write_state;
 
-        let fds = state.fds.as_slice();
+        // TODO: optimize
+        let fds = state
+            .fds
+            .drain(..)
+            .map(|fd| unsafe { OwnedFd::from_raw_fd(fd) })
+            .collect::<Vec<_>>();
 
         let mut cmsg_space = vec![MaybeUninit::uninit(); rustix::cmsg_space!(ScmRights(fds.len()))];
         let mut ancillary_buf = SendAncillaryBuffer::new(&mut cmsg_space);
