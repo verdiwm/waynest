@@ -1,10 +1,7 @@
 use std::{
     io::{self, IoSlice, IoSliceMut},
     mem::MaybeUninit,
-    os::{
-        fd::{BorrowedFd, FromRawFd, OwnedFd, RawFd},
-        unix::net::UnixStream,
-    },
+    os::{fd::BorrowedFd, unix::net::UnixStream},
     pin::Pin,
     task::{Context, Poll},
 };
@@ -22,8 +19,8 @@ use rustix::{
 use tokio::io::{ReadBuf, unix::AsyncFd};
 use tokio_stream::Stream;
 
-use super::{DecodeError, Message};
-use crate::trace;
+use super::{DecodeError, Message, fd::FdWrapper};
+use crate::{trace, wire::fd::Wrapper};
 
 pin_project! {
     pub struct Socket {
@@ -45,7 +42,7 @@ impl MessageCodec {
     fn decode(
         &mut self,
         src: &mut BytesMut,
-        fds: &mut [RawFd],
+        fds: &mut [FdWrapper],
     ) -> std::result::Result<Option<Message>, DecodeError> {
         Message::decode(src, fds)
     }
@@ -53,7 +50,7 @@ impl MessageCodec {
     fn decode_eof(
         &mut self,
         buf: &mut BytesMut,
-        fds: &mut [RawFd],
+        fds: &mut [FdWrapper],
     ) -> Result<Option<Message>, DecodeError> {
         match self.decode(buf, fds)? {
             Some(frame) => Ok(Some(frame)),
@@ -71,7 +68,7 @@ impl MessageCodec {
 struct ReadState {
     eof: bool,
     buffer: BytesMut,
-    fds: Vec<RawFd>,
+    fds: Vec<FdWrapper>,
     is_readable: bool,
     has_errored: bool,
 }
@@ -90,7 +87,7 @@ impl ReadState {
 
 struct WriteState {
     buffer: BytesMut,
-    fds: Vec<RawFd>,
+    fds: Vec<FdWrapper>,
 }
 
 impl WriteState {
@@ -143,7 +140,6 @@ impl Stream for Socket {
                     if frame.is_none() {
                         state.is_readable = false; // prepare pausing -> paused
                     }
-                    state.fds.clear();
                     // implicit pausing -> pausing or pausing -> paused
                     return Poll::Ready(frame.map(Ok));
                 }
@@ -160,7 +156,6 @@ impl Stream for Socket {
                     })?
                 {
                     trace!("frame decoded from buffer");
-                    state.fds.clear();
                     // implicit framing -> framing
                     return Poll::Ready(Some(Ok(frame)));
                 }
@@ -238,7 +233,7 @@ impl Sink<Message> for Socket {
         let fds = state
             .fds
             .drain(..)
-            .map(|fd| unsafe { OwnedFd::from_raw_fd(fd) })
+            .filter_map(|fd| fd.as_owned_fd())
             .collect::<Vec<_>>();
 
         let mut cmsg_space = vec![MaybeUninit::uninit(); rustix::cmsg_space!(ScmRights(fds.len()))];
@@ -309,7 +304,7 @@ impl Socket {
         stream: &mut AsyncFd<UnixStream>,
         cx: &mut Context<'_>,
         buf: &mut B,
-        fds: &mut Vec<RawFd>,
+        fds: &mut Vec<FdWrapper>,
     ) -> Poll<io::Result<usize>> {
         if !buf.has_remaining_mut() {
             return Poll::Ready(Ok(0));
@@ -343,7 +338,7 @@ impl Socket {
         stream: &mut AsyncFd<UnixStream>,
         cx: &mut Context<'_>,
         buf: &mut ReadBuf<'_>,
-        fds: &mut Vec<RawFd>,
+        fds: &mut Vec<FdWrapper>,
     ) -> Poll<io::Result<()>> {
         loop {
             let mut guard = ready!(stream.poll_read_ready(cx))?;
@@ -368,7 +363,7 @@ impl Socket {
                             for fd in scm_rights {
                                 let fd = fd.into_raw_fd();
                                 trace!("receive file descriptor: {fd}");
-                                fds.push(fd);
+                                fds.push(Wrapper::new(fd));
                             }
                         }
                     }

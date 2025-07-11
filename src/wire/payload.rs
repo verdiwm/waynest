@@ -1,13 +1,16 @@
-use std::os::fd::{IntoRawFd, OwnedFd, RawFd};
+use std::os::fd::{IntoRawFd, OwnedFd};
 
 use bytes::{BufMut, Bytes, BytesMut};
 
-use super::{Fixed, NewId, ObjectId};
+use super::{
+    Fixed, NewId, ObjectId,
+    fd::{FdWrapper, Wrapper},
+};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct PayloadBuilder {
     payload: BytesMut,
-    fds: Vec<RawFd>,
+    fds: Vec<FdWrapper>,
 }
 
 impl Default for PayloadBuilder {
@@ -105,12 +108,12 @@ impl PayloadBuilder {
     }
 
     pub fn put_fd<Fd: Into<OwnedFd>>(mut self, fd: Fd) -> Self {
-        self.fds.push(fd.into().into_raw_fd());
+        self.fds.push(Wrapper::new(fd.into().into_raw_fd()));
 
         self
     }
 
-    pub fn build(self) -> (Bytes, Vec<RawFd>) {
+    pub fn build(self) -> (Bytes, Vec<FdWrapper>) {
         (self.payload.freeze(), self.fds)
     }
 }

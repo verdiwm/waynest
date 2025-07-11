@@ -1,16 +1,13 @@
-use std::os::fd::RawFd;
-
+use super::{DecodeError, Fixed, NewId, ObjectId, fd::FdWrapper};
 use bytes::{Buf, BufMut, Bytes, BytesMut};
-use rustix::fd::{FromRawFd, OwnedFd};
-
-use super::{DecodeError, Fixed, NewId, ObjectId};
+use rustix::fd::OwnedFd;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Message {
     object_id: ObjectId,
     opcode: u16,
     payload: Bytes,
-    fds: Vec<RawFd>,
+    fds: Vec<FdWrapper>,
 }
 
 #[cfg(feature = "fuzz")]
@@ -24,13 +21,18 @@ impl<'a> arbitrary::Arbitrary<'a> for Message {
             object_id: ObjectId::arbitrary(u)?,
             opcode: u16::arbitrary(u)?,
             payload,
-            fds: Vec::<RawFd>::arbitrary(u)?,
+            fds: Vec::<FdWrapper>::arbitrary(u)?,
         })
     }
 }
 
 impl Message {
-    pub const fn new(object_id: ObjectId, opcode: u16, payload: Bytes, fds: Vec<RawFd>) -> Self {
+    pub const fn new(
+        object_id: ObjectId,
+        opcode: u16,
+        payload: Bytes,
+        fds: Vec<FdWrapper>,
+    ) -> Self {
         Self {
             object_id,
             opcode,
@@ -47,7 +49,7 @@ impl Message {
         self.opcode
     }
 
-    pub fn encode(&self, buf: &mut BytesMut, fds: &mut Vec<RawFd>) {
+    pub fn encode(&self, buf: &mut BytesMut, fds: &mut Vec<FdWrapper>) {
         buf.reserve(8 + self.payload.len());
         buf.put_u32_ne(self.object_id.as_raw());
         buf.put_u32_ne((((self.payload.len() + 8) as u32) << 16) | self.opcode as u32);
@@ -56,7 +58,10 @@ impl Message {
         fds.extend_from_slice(&self.fds);
     }
 
-    pub fn decode(bytes: &mut BytesMut, fds: &mut [RawFd]) -> Result<Option<Self>, DecodeError> {
+    pub fn decode(
+        bytes: &mut BytesMut,
+        fds: &mut [FdWrapper],
+    ) -> Result<Option<Self>, DecodeError> {
         let object_id = match bytes.chunk().get(..4) {
             Some(peek) => ObjectId::new(u32::from_ne_bytes(unsafe {
                 *(peek as *const _ as *const [u8; 4])
@@ -161,8 +166,8 @@ impl Message {
 
     pub fn fd(&mut self) -> Result<OwnedFd, DecodeError> {
         self.fds
-            .pop()
-            .map(|fd| unsafe { OwnedFd::from_raw_fd(fd) })
+            .iter()
+            .find_map(|fd| fd.as_owned_fd())
             .ok_or(DecodeError::MalformedPayload)
     }
 }
@@ -171,7 +176,7 @@ impl Message {
 mod tests {
     use bytes::{Bytes, BytesMut};
 
-    use crate::wire::{Message, ObjectId};
+    use crate::wire::{Message, ObjectId, fd::Wrapper};
 
     #[test]
     fn encode_decode_roundtrip() {
@@ -179,7 +184,14 @@ mod tests {
             object_id: unsafe { ObjectId::from_raw(10) },
             opcode: 0,
             payload: Bytes::copy_from_slice(b"\x03\0\0\0"),
-            fds: vec![10, 20, 0, 33, 48, 17],
+            fds: vec![
+                Wrapper::new(10),
+                Wrapper::new(20),
+                Wrapper::new(0),
+                Wrapper::new(33),
+                Wrapper::new(48),
+                Wrapper::new(17),
+            ],
         };
 
         let mut bytes = BytesMut::new();
