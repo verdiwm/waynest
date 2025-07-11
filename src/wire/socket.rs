@@ -143,6 +143,7 @@ impl Stream for Socket {
                     if frame.is_none() {
                         state.is_readable = false; // prepare pausing -> paused
                     }
+                    state.fds.clear();
                     // implicit pausing -> pausing or pausing -> paused
                     return Poll::Ready(frame.map(Ok));
                 }
@@ -159,6 +160,7 @@ impl Stream for Socket {
                     })?
                 {
                     trace!("frame decoded from buffer");
+                    state.fds.clear();
                     // implicit framing -> framing
                     return Poll::Ready(Some(Ok(frame)));
                 }
