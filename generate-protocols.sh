@@ -18,7 +18,7 @@ TEMP_JSON=$(mktemp)
 # Initialize empty JSON object
 echo '{}' >"$TEMP_JSON"
 
-declare -a ordered_keys=("core" "stable" "staging" "unstable" "wlr" "plasma" "weston" "cosmic" "frog" "ivi" "hyprland")
+declare -a ordered_keys=("core" "stable" "staging" "unstable" "wlr" "plasma" "weston" "cosmic" "frog" "ivi" "hyprland" "mesa")
 declare -A folders=(
     ["core"]="protocols/wayland/protocol"
     ["stable"]="protocols/wayland-protocols/stable"
@@ -31,6 +31,7 @@ declare -A folders=(
     ["frog"]="protocols/frog-protcols/frog-protocols"
     ["ivi"]="protocols/wayland-ivi-extension/protocol"
     ["hyprland"]="protocols/hyprland-protocols/protocols"
+    ["mesa"]="protocols/mesa/src/egl/wayland/wayland-drm"
 )
 declare -a excluded_files=(
     "tests.xml"

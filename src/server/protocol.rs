@@ -11,6 +11,9 @@ pub mod hyprland;
 #[cfg(feature = "ivi")]
 #[cfg_attr(docsrs, doc(cfg(feature = "ivi")))]
 pub mod ivi;
+#[cfg(feature = "mesa")]
+#[cfg_attr(docsrs, doc(cfg(feature = "mesa")))]
+pub mod mesa;
 #[cfg(feature = "plasma")]
 #[cfg_attr(docsrs, doc(cfg(feature = "plasma")))]
 pub mod plasma;

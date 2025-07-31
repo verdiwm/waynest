@@ -150,5 +150,8 @@
     "protocols/hyprland-protocols/protocols/hyprland-surface-v1.xml",
     "protocols/hyprland-protocols/protocols/hyprland-toplevel-export-v1.xml",
     "protocols/hyprland-protocols/protocols/hyprland-toplevel-mapping-v1.xml"
+  ],
+  "mesa": [
+    "protocols/mesa/src/egl/wayland/wayland-drm/wayland-drm.xml"
   ]
 }
