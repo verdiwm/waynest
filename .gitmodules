@@ -28,3 +28,6 @@
 [submodule "protocols/mesa"]
 	path = protocols/mesa
 	url = https://gitlab.freedesktop.org/mesa/mesa.git
+[submodule "protocols/treeland-protocols"]
+	path = protocols/treeland-protocols
+	url = https://github.com/linuxdeepin/treeland-protocols
